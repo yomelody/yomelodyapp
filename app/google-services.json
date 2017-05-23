@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "195104594658",
+    "firebase_url": "https://instamelody-d2b73.firebaseio.com",
+    "project_id": "instamelody-d2b73",
+    "storage_bucket": "instamelody-d2b73.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:195104594658:android:9700cffa2198302d",
+        "android_client_info": {
+          "package_name": "com.instamelody.instamelody"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "195104594658-90hogp60anj9l08bm9b2of0gi5s45bta.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.instamelody.instamelody",
+            "certificate_hash": "0323D16A90FFA4AD08E1D8AFFBD3A104516954FF"
+          }
+        },
+        {
+          "client_id": "195104594658-391llpehf32rnqmhdq24amjtcan0momc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuNKmUEwCx1ZUz6dJ9BI4iLpE8zvHyMic"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "195104594658-391llpehf32rnqmhdq24amjtcan0momc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

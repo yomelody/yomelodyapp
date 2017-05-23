@@ -1,0 +1,44 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/background_material_dark</item>
+        <item name="android:textColorPrimary">@color/primary_text_material_dark</item>
+        <item name="android:textColorHint">@color/secondary_text</item>
+    </style>
+
+
+
+    <!-- Tab Widget Theme -->
+    <style name="TabWidgetTheme" parent="AppTheme">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/color_text_selected_tabhost</item>
+        <item name="android:textColorSecondary">@color/primary_text_material_dark</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+	
+	 <style name="MyDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <!-- Used for the buttons -->
+        <item name="colorAccent">#3B6EFE</item>
+        <!-- Used for the title and text -->
+        <item name="android:textColorPrimary">#3B6EFE</item>
+        <!-- Used for the background -->
+        <item name="android:windowBackground">@drawable/background_new_dialog</item>
+
+    </style>
+
+    <style name="FacebookLoginButton">
+        <item name="android:background">@drawable/facebook</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+</resources>
+

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/rlMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/userProfileImage"
+            android:layout_toStartOf="@+id/userProfileImage"
+            android:background="@drawable/newest_blue_bubble">
+
+            <TextView
+                android:id="@+id/chatMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="25dp"
+                android:text="A"
+                android:textSize="16sp" />
+
+            <RelativeLayout
+                android:id="@+id/rlChatImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/chatMessage"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/chatImage"
+                    android:layout_width="150dp"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/background_dialog" />
+
+                <ImageView
+                    android:id="@+id/fileClip"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_below="@+id/chatImage"
+                    android:background="@drawable/white_paperclip" />
+
+                <TextView
+                    android:id="@+id/chatImageName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="photo.jpg"
+                    android:textSize="13sp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_toEndOf="@+id/fileClip"
+                    android:layout_alignBaseline="@+id/fileClip"
+                    android:layout_toRightOf="@+id/fileClip"
+                    android:layout_below="@+id/chatImage" />
+
+            </RelativeLayout>
+        </RelativeLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/textView10"
+            android:layout_toLeftOf="@+id/userProfileImage"
+            android:layout_toStartOf="@+id/userProfileImage">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="12dp"
+                android:paddingRight="8dp">
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="8dp"
+                    android:id="@+id/tick"
+                    android:background="@drawable/tick_white"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginEnd="18dp"
+                    android:visibility="gone"/>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="8dp"
+                    android:id="@+id/doubleTick"
+                    android:background="@drawable/dubble_tick_white"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginEnd="18dp"
+                    android:visibility="gone"/>
+
+            </RelativeLayout>
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/textView10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Friday 11:55 AM"
+            android:textAlignment="center"
+            android:textSize="12sp"
+            android:textColor="#425661"
+            android:layout_below="@+id/rlMessage"/>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/userProfileImage"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/profile1"
+            android:layout_above="@+id/textView10"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
+</RelativeLayout>
+

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fragment_bio"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="234dp"
+    android:orientation="vertical"
+    android:weightSum="1">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.81">
+
+        <EditText
+            android:id="@+id/etBio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Description"
+            android:layout_below="@+id/textView11"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Description:"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textColor="#415560"
+            android:textSize="18dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <RelativeLayout
+            android:id="@+id/relativeLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true">
+
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/userBioImage"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginEnd="290dp"
+                android:layout_marginRight="290dp"
+                android:layout_marginTop="40dp"
+                android:src="@drawable/profile1"
+                app:civ_border_color="#FF000000"
+                app:civ_border_width="2dp" />
+
+
+            <TextView
+                android:id="@+id/textViewName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignTop="@+id/userBioImage"
+                android:layout_marginLeft="80dp"
+                android:layout_marginStart="80dp"
+                android:text="Artist: Matt Jacob"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="#415560"
+                android:textSize="18dp" />
+
+
+            <TextView
+                android:id="@+id/tvStation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/textViewName"
+                android:layout_alignStart="@+id/textViewName"
+                android:layout_below="@+id/textViewName"
+                android:text="Station:@sillypoint"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="#415560"
+                android:textSize="18dp" />
+
+            <TextView
+                android:id="@+id/tvDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/textViewName"
+                android:layout_alignStart="@+id/textViewName"
+                android:layout_below="@+id/tvStation"
+                android:text="Created:01/01/2016"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="#415560"
+                android:textSize="18dp" />
+
+            <ImageView
+                android:id="@+id/ivEdit"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/edit"
+                android:layout_above="@+id/textViewName"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="13dp"
+                android:layout_marginEnd="13dp" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="#6195C7"
+                android:textSize="18dp"
+                android:layout_marginTop="11dp"
+                android:layout_alignParentTop="true"
+                android:layout_toLeftOf="@+id/ivEdit"
+                android:layout_toStartOf="@+id/ivEdit"
+                android:layout_marginRight="14dp"
+                android:layout_marginEnd="14dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:text="About"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="#415560"
+                android:textSize="18dp"
+                android:id="@+id/textView7"
+                android:layout_marginStart="12dp"
+                android:layout_alignBaseline="@+id/textView6"
+                android:layout_alignBottom="@+id/textView6"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+        </RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>

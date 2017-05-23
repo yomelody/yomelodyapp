@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_messenger"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cvMessenger"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="#FFFFFF">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="70dp">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/userProfileImage"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginTop="10dp"
+                    android:src="@drawable/profile1" />
+
+                <TextView
+                    android:id="@+id/tvUserName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_toRightOf="@+id/userProfileImage"
+                    android:text="Tosha Jet"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="#425661"
+                    android:textSize="15dp"
+                    android:textStyle="normal|bold" />
+
+                <TextView
+                    android:id="@+id/tvMsg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_toRightOf="@+id/userProfileImage"
+                    android:maxLines="2"
+                    android:paddingEnd="10dp"
+                    android:paddingRight="10dp"
+                    android:text="Hi what are you guys up today? Did you want to hang out?"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="#425661"
+                    android:textSize="13dp" />
+
+                <ImageView
+                    android:id="@+id/ivViewMsg"
+                    android:layout_width="20dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/tvUserName"
+                    android:layout_marginRight="15dp"
+                    android:src="@drawable/right_arrow_grey" />
+
+                <TextView
+                    android:id="@+id/tvTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_alignTop="@+id/ivViewMsg"
+                    android:layout_toLeftOf="@+id/ivViewMsg"
+                    android:layout_toStartOf="@+id/ivViewMsg"
+                    android:layout_marginRight="10dp"
+                    android:text="1 hr"
+                    android:textColor="#000000"
+                    android:textStyle="normal|italic" />
+
+            </RelativeLayout>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</LinearLayout>

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true"
+    android:id="@+id/activity_station"
+    tools:context="com.instamelody.instamelody.StationActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:background="#FFFFFF"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true">
+
+            <ImageView
+                android:id="@+id/ivBackButton"
+                android:layout_width="45dp"
+                android:layout_height="28dp"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="5dp"
+                android:src="@drawable/left_arrow" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true">
+
+                <TextView
+                    android:id="@+id/appBarMainText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="Station"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:textStyle="normal|bold" />
+
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/ivSound"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="8dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/rewind" />
+
+            <ImageView
+                android:id="@+id/ivHomeButton"
+                android:layout_width="40dp"
+                android:layout_height="28dp"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/ivBackButton"
+                android:layout_toRightOf="@+id/ivBackButton"
+                android:src="@drawable/menu_dots" />
+
+        </RelativeLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <include layout="@layout/content_station" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="#fbf7f7"
+            android:layout_alignParentBottom="true">
+
+            <LinearLayout
+                android:id="@+id/linear1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_alignParentBottom="true">
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.33"
+                    android:layout_height="match_parent"
+                    android:background="#FFFFFF"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:id="@+id/audio_feed"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/audio_feed"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.33"
+                    android:layout_height="match_parent"
+                    android:background="#FFFFFF"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:id="@+id/discover"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/discover"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.33"
+                    android:layout_height="match_parent"
+                    android:background="#FFFFFF">
+
+                    <ImageView
+                        android:id="@+id/message"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/messenger"
+                        android:layout_alignParentTop="true"
+                        android:layout_margin="5dp"
+                        android:layout_centerHorizontal="true" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/message_count"
+                            android:layout_width="15dp"
+                            android:layout_height="15dp"
+                            android:background="@drawable/red_circle"
+                            android:text="99"
+                            android:textSize="12sp"
+                            android:textAlignment="center"
+                            android:textStyle="normal|bold"
+                            android:layout_gravity="right"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginRight="32dp"
+                            android:visibility="invisible"/>
+
+                    </FrameLayout>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.33"
+                    android:layout_height="match_parent"
+                    android:background="#FFFFFF"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:id="@+id/ivProfile"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/profile"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>
