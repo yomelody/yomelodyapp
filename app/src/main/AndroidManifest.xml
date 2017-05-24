@@ -9,8 +9,11 @@
     <uses-permission android:name="android.permission.STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
-    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
 
 
     <application
@@ -19,6 +22,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -39,7 +43,9 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
 
-        <activity android:name=".HomeActivity"
+
+        <activity
+            android:name=".HomeActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -51,51 +57,67 @@
         <activity android:name=".MainActivity" />
         <activity
             android:name=".StudioActivity"
-            android:label="@string/title_activity_studio"
-            android:theme="@style/AppTheme"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
+            android:label="@string/title_activity_studio"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".StationActivity"
-            android:label="@string/title_activity_station"
-            android:theme="@style/AppTheme"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
+            android:label="@string/title_activity_station"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" >
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable">
+            </meta-data>
+    </activity>
         <activity
             android:name=".MelodyActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_melody"
-            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".SignUpActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".SignUpActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SettingsActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".SettingsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SignInActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".SignInActivity"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".DiscoverActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_discover"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SocialActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".SocialActivity"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".MessengerActivity"
-            android:label="@string/title_activity_messenger"
-            android:theme="@style/AppTheme"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
+            android:label="@string/title_activity_messenger"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".ChatActivity"
-            android:label="@string/title_activity_chat"
-            android:theme="@style/AppTheme"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
+            android:label="@string/title_activity_chat"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".ContactsActivity"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_studio"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
 
         <service android:name=".Services.MyFirebaseInstanceIDService">
             <intent-filter>
@@ -111,15 +133,19 @@
 
         <activity
             android:name=".ProfileActivity"
-            android:label="@string/title_activity_profile"
-            android:theme="@style/AppTheme"
             android:configChanges="orientation"
-            android:screenOrientation="portrait">
-        </activity>
+            android:label="@string/title_activity_profile"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"></activity>
 
         <activity
             android:name=".CommentsActivity"
             android:label="@string/title_activity_comments"
+            android:theme="@style/AppTheme"></activity>
+
+        <activity
+            android:name=".JoinActivity"
+            android:label="@string/title_activity_join"
             android:theme="@style/AppTheme"></activity>
 
     </application>

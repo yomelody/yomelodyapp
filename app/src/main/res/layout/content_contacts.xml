@@ -2,12 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/content_chat"
+    android:id="@+id/content_messenger"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#E4E4E4"
+    android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.instamelody.instamelody.ChatActivity"
-    tools:showIn="@layout/activity_chat">
+    tools:context="com.instamelody.instamelody.ContactsActivity"
+    tools:showIn="@layout/activity_contacts">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -16,51 +18,46 @@
         android:background="#E4E4E4">
 
         <TextView
-            android:id="@+id/tvUserName"
+            android:id="@+id/newMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
             android:padding="10dp"
-            android:text=""
+            android:text="New Message"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:textColor="#425661"
-            android:textSize="15dp"
-            android:textStyle="normal|bold" />
+            android:textSize="15dp" />
 
-        <RelativeLayout
-            android:id="@+id/rlInviteButton"
-            android:layout_width="80dp"
+        <Button
+            android:id="@+id/btnOK"
+            android:layout_width="85dp"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true">
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:background="#E4E4E4"
+            android:text="OK"
+            android:visibility="gone"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textColor="#3B6EFF"
+            android:textSize="15dp" />
 
-            <ImageView
-                android:id="@+id/ivInvite"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_gravity="start|bottom"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                app:srcCompat="@drawable/plus" />
-
-            <TextView
-                android:id="@+id/tvInvite"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="8dp"
-                android:layout_toLeftOf="@+id/ivInvite"
-                android:text="Invite"
-                android:textColor="@color/cardview_dark_background"
-                android:textSize="14sp" />
-
-        </RelativeLayout>
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="85dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:background="#E4E4E4"
+            android:text="Cancel"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textColor="#3B6EFF"
+            android:textSize="15dp" />
 
     </RelativeLayout>
 
@@ -71,11 +68,12 @@
         android:layout_marginTop="42dp">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerViewChat"
+            android:id="@+id/recyclerViewContacts"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="none" />
 
     </RelativeLayout>
-
 </RelativeLayout>
+
+

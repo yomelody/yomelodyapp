@@ -1,29 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/recordingsFragment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <FrameLayout
-        android:id="@+id/rlLoginToSee"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        android:layout_marginBottom="45dp"
-        android:layout_marginTop="80dp">
-
-        <TextView
-            android:id="@+id/textView12"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="You must log in to see your recordings."
-            android:textColor="#000000"
-            android:textSize="16dp"
-            android:textStyle="italic" />
-
-    </FrameLayout>
+    android:layout_height="match_parent">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -31,11 +9,11 @@
         android:layout_marginBottom="45dp"
         android:layout_marginTop="80dp"
         android:orientation="vertical"
-        android:paddingBottom="1dp"
-        android:paddingTop="1dp">
+        android:paddingBottom="2dp"
+        android:paddingTop="2dp">
 
         <TabHost
-            android:id="@+id/tabHostRecordings"
+            android:id="@+id/tabHostAudio"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
@@ -73,15 +51,16 @@
                         android:orientation="vertical">
 
                         <android.support.v7.widget.RecyclerView
-                            android:id="@+id/recyclerViewRecordings"
+                            android:id="@+id/recyclerViewAudio"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:scrollbars="vertical"
-                            android:visibility="gone" />
+                            android:visibility="visible" />
 
                     </LinearLayout>
                 </FrameLayout>
             </LinearLayout>
         </TabHost>
     </RelativeLayout>
+
 </LinearLayout>

@@ -49,14 +49,14 @@
             </RelativeLayout>
 
             <ImageView
-                android:id="@+id/ivSound"
+                android:id="@+id/ivSound1"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_marginRight="8dp"
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
-                android:src="@drawable/rewind" />
+                android:src="@drawable/music_circle" />
 
             <ImageView
                 android:id="@+id/ivHomeButton"
@@ -75,7 +75,24 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="80dp">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerViewAudio"
+                android:layout_marginTop="45dp"
+                android:layout_marginBottom="45dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical" />
+
+        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
