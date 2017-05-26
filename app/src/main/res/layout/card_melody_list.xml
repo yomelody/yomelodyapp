@@ -66,10 +66,10 @@
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentLeft="true"
                                     android:layout_alignParentStart="true"
+                                    android:maxLength="25"
                                     android:text="Space Time jhnfkjsdf  kjh"
                                     android:textColor="#FFFFFF"
                                     android:textSize="18sp"
-                                    android:maxLength="25"
                                     android:textStyle="normal|bold" />
 
                                 <TextView
@@ -314,9 +314,9 @@
                         android:id="@+id/ivPlayButton"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
-                        app:srcCompat="@drawable/play_outline"
+                        android:layout_centerVertical="true"
                         android:layout_marginLeft="5dp"
-                        android:layout_centerVertical="true" />
+                        app:srcCompat="@drawable/play_outline" />
 
                     <TextView
                         android:id="@+id/tvPlayCount"
@@ -356,8 +356,8 @@
                             android:id="@+id/ivDislikeButton"
                             android:layout_width="25dp"
                             android:layout_height="25dp"
-                            app:srcCompat="@drawable/hand_fill"
-                            android:visibility="gone" />
+                            android:visibility="gone"
+                            app:srcCompat="@drawable/hand_fill" />
 
                     </RelativeLayout>
 
@@ -386,9 +386,9 @@
                         android:id="@+id/ivCommentButton"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
+                        android:layout_centerVertical="true"
                         android:layout_marginLeft="5dp"
-                        app:srcCompat="@drawable/chat_outline"
-                        android:layout_centerVertical="true" />
+                        app:srcCompat="@drawable/chat_outline" />
 
                     <TextView
                         android:id="@+id/tvCommentCount"
@@ -414,9 +414,9 @@
                         android:id="@+id/ivShareButton"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
+                        android:layout_centerVertical="true"
                         android:layout_marginLeft="5dp"
-                        app:srcCompat="@drawable/go_outline"
-                        android:layout_centerVertical="true" />
+                        app:srcCompat="@drawable/go_outline" />
 
                     <TextView
                         android:id="@+id/tvShareCount"
@@ -449,10 +449,10 @@
                         android:id="@+id/btnMore"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
-                        android:background="@drawable/menu"
-                        android:textColor="@color/cardview_dark_background"
+                        android:layout_centerHorizontal="true"
                         android:layout_centerVertical="true"
-                        android:layout_centerHorizontal="true" />
+                        android:background="@drawable/menu"
+                        android:textColor="@color/cardview_dark_background" />
 
                 </RelativeLayout>
             </LinearLayout>

@@ -5,11 +5,11 @@
     android:id="@+id/content_messenger"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#E4E4E4"
     android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.instamelody.instamelody.MessengerActivity"
-    tools:showIn="@layout/activity_messenger"
-    android:background="#E4E4E4">
+    tools:showIn="@layout/activity_messenger">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -20,23 +20,23 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="10dp"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
+            android:padding="10dp"
             android:text="Messages"
-            android:textSize="15sp"
-            android:layout_centerVertical="true"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textColor="#425661" />
+            android:textColor="#425661"
+            android:textSize="15sp" />
 
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="42dp"
-        android:layout_marginBottom="46dp">
+        android:layout_marginBottom="46dp"
+        android:layout_marginTop="42dp">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerViewMessenger"
@@ -44,6 +44,57 @@
             android:layout_height="match_parent"
             android:background="#FFFFFF"
             android:scrollbars="none" />
+
+        <RelativeLayout
+            android:id="@+id/rlNoMsg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/noConvMsg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="You have no messages yet"
+                android:textColor="#000000"
+                android:textStyle="italic" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/noConvMsg"
+                android:layout_centerHorizontal="true">
+
+                <ImageView
+                    android:id="@+id/newMess"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_toRightOf="@+id/txtPress"
+                    android:src="@drawable/edit" />
+
+                <TextView
+                    android:id="@+id/txtPress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Press  "
+                    android:textColor="#000000"
+                    android:textStyle="italic" />
+
+                <TextView
+                    android:id="@+id/txtNew"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/newMess"
+                    android:text="  to start a new one."
+                    android:textColor="#000000"
+                    android:textStyle="italic" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
 
     </RelativeLayout>
 </RelativeLayout>
