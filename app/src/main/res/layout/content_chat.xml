@@ -11,23 +11,45 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
         android:layout_marginTop="1dp"
         android:background="#E4E4E4">
 
-        <TextView
-            android:id="@+id/tvUserName"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:padding="10dp"
-            android:text=""
-            android:textAlignment="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textColor="#425661"
-            android:textSize="15dp"
-            android:textStyle="normal|bold" />
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_toLeftOf="@+id/rlInviteButton"
+            android:layout_toStartOf="@+id/rlInviteButton">
+
+            <TextView
+                android:id="@+id/tvGroupName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Faadu Group"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="#425661"
+                android:textSize="18dp"
+                android:textStyle="normal|bold"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvUserName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tvGroupName"
+                android:layout_marginLeft="4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text=""
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="#425661"
+                android:textSize="16dp"
+                android:textStyle="normal|bold" />
+
+        </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/rlInviteButton"
@@ -82,23 +104,25 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="60dp"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/ivStartNewMsg"
+                android:id="@+id/ivRecieverProfilePic"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:layout_centerHorizontal="true"/>
+                android:layout_centerHorizontal="true" />
 
             <RelativeLayout
+                android:id="@+id/rlTxtContent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/ivStartNewMsg"
+                android:layout_below="@+id/ivRecieverProfilePic"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="15dp">
+                android:layout_marginTop="15dp"
+                android:visibility="gone">
 
                 <TextView
-                    android:id="@+id/newMess"
+                    android:id="@+id/tvRecieverName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@+id/txtPress"
@@ -119,7 +143,7 @@
                     android:id="@+id/txtNew"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/newMess"
+                    android:layout_toRightOf="@+id/tvRecieverName"
                     android:text=" a message'"
                     android:textColor="#000000"
                     android:textStyle="italic" />
