@@ -10,6 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -44,6 +46,7 @@ public class ContactsActivity extends AppCompatActivity {
     ArrayList<Contacts> contactList = new ArrayList<>();
     String CONTACTS_LIST_URL = "http://35.165.96.167/api/userdetails.php";
     public static Button btnCancel , btnOK;
+    ImageView discover, message, profile, audio_feed, ivBackButton, ivHomeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +57,13 @@ public class ContactsActivity extends AppCompatActivity {
 
         btnCancel = (Button) findViewById(R.id.btnCancel);
         btnOK = (Button) findViewById(R.id.btnOK);
+
+        ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
+        ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
+        discover = (ImageView) findViewById(R.id.discover);
+        message = (ImageView) findViewById(R.id.message);
+        profile = (ImageView) findViewById(R.id.profile);
+        audio_feed = (ImageView) findViewById(R.id.audio_feed);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewContacts);
         recyclerView.setHasFixedSize(true);
@@ -79,6 +89,64 @@ public class ContactsActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        profile.setOnClickListener(new View.OnClickListener()
+
+        {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        audio_feed.setOnClickListener(new View.OnClickListener()
+
+        {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), StationActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        discover.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), DiscoverActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        ivBackButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                finish();
+                String caller = getIntent().getStringExtra("Previous");
+                Intent intent = new Intent();
+                if(caller == "chat")
+                {
+                     intent = new Intent(getApplicationContext(), ChatActivity.class);
+                }
+                else
+                {
+                    intent = new Intent(getApplicationContext(), MessengerActivity.class);
+                }
+                startActivity(intent);
+            }
+        });
+
+        ivHomeButton.setOnClickListener(new View.OnClickListener()
+
+        {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     public void getContacts() {
