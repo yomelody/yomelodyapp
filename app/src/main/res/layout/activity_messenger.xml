@@ -134,7 +134,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.33"
-                    android:background="#FFFFFF">
+                    android:background="#EDEDED">
 
                     <ImageView
                         android:id="@+id/message"
@@ -142,8 +142,7 @@
                         android:layout_height="match_parent"
                         android:layout_alignParentTop="true"
                         android:layout_centerHorizontal="true"
-                        android:layout_margin="5dp"
-                        android:background="@drawable/messenger" />
+                        android:background="@drawable/messenger_bold" />
 
                     <FrameLayout
                         android:layout_width="match_parent"
@@ -151,17 +150,20 @@
 
                         <TextView
                             android:id="@+id/message_count"
-                            android:layout_width="15dp"
-                            android:layout_height="15dp"
-                            android:layout_gravity="right"
-                            android:layout_marginRight="32dp"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_gravity="end"
+                            android:layout_marginRight="30dp"
+                            android:layout_marginEnd="30dp"
                             android:layout_marginTop="2dp"
                             android:background="@drawable/red_circle"
-                            android:text="99"
+                            android:text="8"
+                            android:gravity="center"
                             android:textAlignment="center"
-                            android:textSize="12sp"
+                            android:textColor="#FFFFFF"
+                            android:textSize="10sp"
                             android:textStyle="normal|bold"
-                            android:visibility="invisible" />
+                            android:visibility="visible" />
 
                     </FrameLayout>
                 </RelativeLayout>

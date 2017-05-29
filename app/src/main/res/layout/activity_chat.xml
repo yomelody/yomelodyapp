@@ -47,7 +47,7 @@
         </RelativeLayout>
 
         <ImageView
-            android:id="@+id/ivSound"
+            android:id="@+id/ivNewChat"
             android:layout_width="38dp"
             android:layout_height="38dp"
             android:padding="8dp"
