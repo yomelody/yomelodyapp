@@ -58,6 +58,11 @@ import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.app.Config;
 import com.instamelody.instamelody.utils.NotificationUtils;
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,6 +70,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -95,6 +101,7 @@ public class ChatActivity extends AppCompatActivity {
     String DEVICE_TYPE = "device_type";
     String SENDER_ID = "senderID";
     String RECEIVER_ID = "receiverID";
+    String CHAT_ID = "chatID";
     String IS_READ = "isread";
     String TITLE = "title";
     String MESSAGE = "message";
@@ -109,7 +116,7 @@ public class ChatActivity extends AppCompatActivity {
     EditText etMessage;
 
     public View customView;
-    ImageView ivBackButton, ivHomeButton, ivAdjust, ivCamera, tvImgChat;
+    ImageView ivBackButton, ivHomeButton, ivAdjust, ivCamera, tvImgChat, ivNewChat;
     TextView tvSend, tvMsgChat;
     RecyclerView recycleImage, recyclerViewChat;
     LayoutInflater inflater;
@@ -118,9 +125,11 @@ public class ChatActivity extends AppCompatActivity {
     RecentImagesAdapter riAdapter;
     ChatAdapter cAdapter;
     public static TextView tvUserName;
-
-    String userId, recieverId;
-
+    String KEY_FLAG = "flag";
+    String userId, recieverId, recieverName, chatId = "", recieverImage;
+    RelativeLayout rlNoMsg, rlTxtContent;
+    ImageView ivRecieverProfilePic;
+    TextView tvRecieverName;
 
     @TargetApi(18)
     @Override
@@ -138,14 +147,11 @@ public class ChatActivity extends AppCompatActivity {
 
         SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
         recieverId = prefs.getString("receiverId", null);
+        recieverName = prefs.getString("recieverName", null);
+        recieverImage = prefs.getString("recieverImage", null);
+        chatId = prefs.getString("chatId", null);
 
-//        List<String> list = new ArrayList<String>(recieverId);
-//        for (int i=0; i<list.size(); i++)
-//        {
-//            recipientIds = recipientIds +","+list.get(i);
-//        }
-
-        getChatMsgs(userId, recieverId);
+        getChatMsgs(chatId);
 
         etMessage = (EditText) findViewById(R.id.etMessage);
         etMessage.setHintTextColor(Color.parseColor("#7B888F"));
@@ -156,6 +162,11 @@ public class ChatActivity extends AppCompatActivity {
         ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
         ivCamera = (ImageView) findViewById(R.id.ivCamera);
         rlMessage = (RelativeLayout) findViewById(R.id.rlMessage);
+        rlNoMsg = (RelativeLayout) findViewById(R.id.rlNoMsg);
+        ivRecieverProfilePic = (ImageView) findViewById(R.id.ivRecieverProfilePic);
+        tvRecieverName = (TextView) findViewById(R.id.tvRecieverName);
+        rlTxtContent = (RelativeLayout) findViewById(R.id.rlTxtContent);
+        ivNewChat = (ImageView) findViewById(R.id.ivNewChat);
 
         recyclerViewChat = (RecyclerView) findViewById(R.id.recyclerViewChat);
         recyclerViewChat.setHasFixedSize(true);
@@ -222,11 +233,29 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+        ivNewChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                editor.putString("receiverId", "");
+                editor.putString("recieverName", "");
+                editor.putString("recieverImage", "");
+                editor.putString("chatId", "");
+                editor.commit();
+                Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
+                intent.putExtra("Previous", "Chat");
+                startActivity(intent);
+            }
+        });
+
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
-                SharedPreferences.Editor editor = prefs.edit().remove("receiverId");
+                SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                editor.putString("receiverId", "");
+                editor.putString("recieverName", "");
+                editor.putString("recieverImage", "");
+                editor.putString("chatId", "");
                 editor.commit();
                 finish();
             }
@@ -237,6 +266,12 @@ public class ChatActivity extends AppCompatActivity {
         {
             @Override
             public void onClick(View v) {
+                SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                editor.putString("receiverId", "");
+                editor.putString("recieverName", "");
+                editor.putString("recieverImage", "");
+                editor.putString("chatId", "");
+                editor.commit();
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
             }
@@ -353,6 +388,19 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+        editor.putString("receiverId", "");
+        editor.putString("recieverName", "");
+        editor.putString("recieverImage", "");
+        editor.putString("chatId", "");
+        editor.commit();
+        finish();
+        Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
+        startActivity(intent);
+    }
+
     /**
      * Downloading image and showing as a message
      */
@@ -375,11 +423,9 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-
 //            ivAdjust.setVisibility(View.VISIBLE);
 //            tvCancel.setVisibility(View.GONE);
 //            ivAdjust.invalidate();
-
         }
         return super.onKeyDown(keyCode, event);
     }
@@ -388,7 +434,6 @@ public class ChatActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (this.requestCode == requestCode && resultCode == RESULT_OK && null != data) {
-
         }
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && null != data) {
             Uri selectedImageUri = data.getData();
@@ -422,7 +467,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onPause();
     }
 
-    public void getChatMsgs(final String user_Id, final String recipient_Id) {
+    public void getChatMsgs(final String chat_Id) {
 
         final StringRequest stringRequest = new StringRequest(Request.Method.POST, MESSAGES_LIST_URL,
                 new Response.Listener<String>() {
@@ -431,11 +476,58 @@ public class ChatActivity extends AppCompatActivity {
 
                         chatList.clear();
                         cAdapter.notifyDataSetChanged();
-                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
-                        new ParseContents(getApplicationContext()).parseChats(response, chatList);
+//                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
+
+                        JSONObject jsonObject;
+                        try {
+                            jsonObject = new JSONObject(response);
+                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
+                                JSONObject result = jsonObject.getJSONObject("result");
+                                JSONArray resultArray = result.getJSONArray("message LIst");
+                                String uname = "";
+                                if (resultArray.length() > 0) {
+                                    for (int i = 0; i < resultArray.length(); i++) {
+                                        Message message = new Message();
+                                        JSONObject chatJson = resultArray.getJSONObject(i);
+                                        message.setId(chatJson.getString("id"));
+                                        message.setSenderId(chatJson.getString("senderID"));
+                                        message.setCreatedAt(chatJson.getString("sendat"));
+                                        uname = chatJson.getString("receiver_name");
+                                        message.setMessage(chatJson.getString("message"));
+                                        SharedPreferences loginSharedPref = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+                                        String profilePic = loginSharedPref.getString("profilePic", null);
+                                        message.userProfileImage(profilePic);
+                                        chatList.add(message);
+                                    }
+
+                                    List<String> groupNameList = Arrays.asList(uname.split(","));
+
+                                    String listnames = "";
+                                    if (groupNameList.size() == 1) {
+                                        tvUserName.setText(groupNameList.get(0));
+                                    } else {
+                                        for (int i = 1; i < groupNameList.size(); i++) {
+                                            listnames = listnames + ", " + groupNameList.get(i);
+                                        }
+                                        tvUserName.setText(listnames);
+                                    }
+
+                                } else {
+                                    tvUserName.setText(recieverName);
+                                    tvRecieverName.setText(" " + recieverName);
+                                    Picasso.with(ivRecieverProfilePic.getContext()).load(recieverImage).into(ivRecieverProfilePic);
+                                    rlNoMsg.setVisibility(View.VISIBLE);
+                                    rlTxtContent.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 },
-                new Response.ErrorListener() {
+                new Response.ErrorListener()
+
+                {
                     @Override
                     public void onErrorResponse(VolleyError error) {
 
@@ -445,24 +537,24 @@ public class ChatActivity extends AppCompatActivity {
                         } else if (error instanceof NoConnectionError) {
                             errorMsg = "There is no connection";
                         } else if (error instanceof AuthFailureError) {
-//                            errorMsg = "AuthFailureError";
+                            errorMsg = "AuthFailureError";
                         } else if (error instanceof ServerError) {
                             errorMsg = "We are facing problem in connecting to server";
                         } else if (error instanceof NetworkError) {
                             errorMsg = "We are facing problem in connecting to network";
                         } else if (error instanceof ParseError) {
-//                            errorMsg = "ParseError";
+                            errorMsg = "ParseError";
                         }
                         Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
-                }) {
+                })
+
+        {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-
-                params.put(SENDER_ID, user_Id);
-                params.put(RECEIVER_ID, recipient_Id);
+                params.put(CHAT_ID, chat_Id);
                 return params;
             }
         };
@@ -472,18 +564,13 @@ public class ChatActivity extends AppCompatActivity {
 
     public void sendMessage(final String message, final String user_Id) {
 
-//        if (TextUtils.isEmpty(message)) {
-//            Toast.makeText(getApplicationContext(), "Enter a message", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-
         final StringRequest stringRequest = new StringRequest(Request.Method.POST, SEND_MESSAGE_URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
                         cAdapter.notifyDataSetChanged();
-                        getChatMsgs(user_Id, recieverId);
+                        getChatMsgs(chatId);
                         recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
                     }
                 },
@@ -497,13 +584,13 @@ public class ChatActivity extends AppCompatActivity {
                         } else if (error instanceof NoConnectionError) {
                             errorMsg = "There is no connection";
                         } else if (error instanceof AuthFailureError) {
-//                            errorMsg = "AuthFailureError";
+                            errorMsg = "AuthFailureError";
                         } else if (error instanceof ServerError) {
                             errorMsg = "We are facing problem in connecting to server";
                         } else if (error instanceof NetworkError) {
                             errorMsg = "We are facing problem in connecting to network";
                         } else if (error instanceof ParseError) {
-//                            errorMsg = "ParseError";
+                            errorMsg = "ParseError";
                         }
                         Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
@@ -513,12 +600,12 @@ public class ChatActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
 
-                params.put(DEVICE_TYPE, "android");
                 params.put(SENDER_ID, user_Id);
                 params.put(RECEIVER_ID, recieverId);
-                params.put(IS_READ, "");
+                params.put(CHAT_ID, chatId);
                 params.put(TITLE, "");
                 params.put(MESSAGE, message);
+                params.put(IS_READ, "");
 
                 return params;
             }

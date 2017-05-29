@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -45,6 +46,7 @@ public class MessengerActivity extends AppCompatActivity {
     ImageView discover, message, profile, audio_feed, ivBackButton, ivHomeButton, ivNewMessage;
     MessengerAdapter adapter;
     RecyclerView recyclerView;
+    RelativeLayout rlNoMsg;
     ArrayList<Chat> chatList = new ArrayList<>();
     String CONVERSATION_LIST_URL = " http://35.165.96.167//api//UserConversation.php";
     String KEY_FLAG = "flag";
@@ -64,6 +66,9 @@ public class MessengerActivity extends AppCompatActivity {
         message = (ImageView) findViewById(R.id.message);
         profile = (ImageView) findViewById(R.id.profile);
         audio_feed = (ImageView) findViewById(R.id.audio_feed);
+        rlNoMsg = (RelativeLayout) findViewById(R.id.rlNoMsg);
+
+        rlNoMsg.setVisibility(View.GONE);
 
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userId = loginSharedPref.getString("userId", null);
@@ -100,11 +105,12 @@ public class MessengerActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
+                intent.putExtra("Previous", "Messenger");
                 startActivity(intent);
             }
         });
 
-        message.setOnClickListener(new View.OnClickListener()
+       /* message.setOnClickListener(new View.OnClickListener()
 
         {
             @Override
@@ -112,7 +118,7 @@ public class MessengerActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
                 startActivity(intent);
             }
-        });
+        });*/
 
         profile.setOnClickListener(new View.OnClickListener()
 
@@ -135,11 +141,12 @@ public class MessengerActivity extends AppCompatActivity {
         });
 
         ivBackButton.setOnClickListener(new View.OnClickListener()
-
         {
             @Override
             public void onClick(View v) {
                 finish();
+                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -152,6 +159,13 @@ public class MessengerActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+        startActivity(intent);
     }
 
     public void getChats(final String userId) {
@@ -169,17 +183,22 @@ public class MessengerActivity extends AppCompatActivity {
                         try {
                             jsonObject = new JSONObject(response);
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
+                                rlNoMsg.setVisibility(View.GONE);
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     Chat chat = new Chat();
                                     JSONObject commentJson = jsonArray.getJSONObject(i);
                                     chat.setReceiverID(commentJson.getString("receiverID"));
+                                    chat.setChatID(commentJson.getString("chatID"));
                                     chat.setReceiverName(commentJson.getString("receiver_name"));
                                     chat.setMessage(commentJson.getString("message"));
                                     chat.setSendAt(commentJson.getString("sendat"));
                                     chat.setUserProfileImage(commentJson.getString("profilePick"));
                                     chatList.add(chat);
                                 }
+                            }
+                            else{
+                                rlNoMsg.setVisibility(View.VISIBLE);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

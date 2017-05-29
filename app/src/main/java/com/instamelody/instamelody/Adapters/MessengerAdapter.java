@@ -28,7 +28,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
 
     ArrayList<Chat> chatList = new ArrayList<>();
     Context context;
-    String receiverId = "";
+    String receiverId = "", chatID = "";
 
     public MessengerAdapter(ArrayList<Chat> chatList, Context context) {
         this.chatList = chatList;
@@ -55,8 +55,10 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
                 public void onClick(View view) {
 
                     receiverId = chatList.get(getAdapterPosition()).getReceiverID();
+                    chatID = chatList.get(getAdapterPosition()).getChatID();
                     SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                     editor.putString("receiverId", receiverId);
+                    editor.putString("chatId", chatID);
                     editor.commit();
 
 //                    editor.putString("receiverId", chatList.get(getAdapterPosition()).getReceiverID());

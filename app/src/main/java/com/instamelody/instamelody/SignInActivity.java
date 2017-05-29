@@ -93,12 +93,13 @@ public class SignInActivity extends AppCompatActivity {
     String KEY_APP_ID = "appid";
     String KEY_GENDER = "gender";
     String KEY_DOB = "dob";
-    String KEY_DEVICE_TYPE = "device_type";
     String KEY_DEVICE_TOKEN_SIGN_UP = "device_token";
+    String KEY_PROFILE_PIC = "profile_pic";
+
 
     String REGISTER_URL = "http://35.165.96.167/api/registration.php";
 
-    String DeviceToken, f_name, l_name, userId, dob, deviceType;
+    String DeviceToken, f_name, l_name, userId, dob,fbProfilePic;
     TextView tvSettings, tvDone, tvSignUp, tvFirstName, tvUserName;
     String LOGIN_URL = "http://35.165.96.167/api/login.php";
     String KEY = "key";
@@ -288,6 +289,7 @@ public class SignInActivity extends AppCompatActivity {
                                     gender = object.getString("gender");
                                     birthday = object.getString("birthday");
                                     String temp = object.getString("email");
+                                    fbProfilePic = "https://graph.facebook.com/" + fbId + "/picture";
                                     username = temp.substring(0, temp.indexOf("@"));
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -312,7 +314,7 @@ public class SignInActivity extends AppCompatActivity {
                         });
 
                 Bundle parameters = new Bundle();
-                parameters.putString("fields", "id, first_name, last_name, email, gender, birthday, location");
+                parameters.putString("fields", "id, first_name, last_name, email,gender, birthday, location");
                 request.setParameters(parameters);
                 //   Toast.makeText(SignInActivity.this,fbImg, Toast.LENGTH_SHORT).show();
                 request.executeAsync();
@@ -469,6 +471,7 @@ public class SignInActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
                 startActivity(intent);
+
             }
         });
 
@@ -477,10 +480,12 @@ public class SignInActivity extends AppCompatActivity {
             public void onClick(View view) {
                 LoginManager.getInstance().logInWithReadPermissions(SignInActivity.this, Arrays.asList("public_profile", "email", "user_birthday", "user_friends", "user_about_me"));
                /* LoginManager.getInstance().logOut();*/
+
             }
         });
 
     }
+
 
     private void initCustomLogin() {
         client = new TwitterAuthClient();
@@ -561,7 +566,7 @@ public class SignInActivity extends AppCompatActivity {
                             /*profilePic = "http://" + rspns.getString("profilepic");*/
                             String profPic1 = rspns.getString("profilepic");
                             profilePic = profPic1;
-                            deviceType = rspns.getString("device type");
+
                             coverPic = rspns.getString("coverpic");
                             lastLogin = rspns.getString("lastlogin");
                             userName = rspns.getString("username");
@@ -575,7 +580,6 @@ public class SignInActivity extends AppCompatActivity {
                             editor.putString("coverPic", coverPic);
                             editor.putString("lastLogin", lastLogin);
                             editor.putString("userName", userName);
-                            editor.putString("deviceType", deviceType);
                             editor.putInt("status", 1);
                             editor.commit();
                             obj.setId(1);
@@ -619,7 +623,6 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY, "admin@123");
                 params.put(KEY_EMAIL, email);
                 params.put(KEY_PASSWORD, password);
-                params.put(KEY_DEVICE_TYPE, "android");
                 params.put(KEY_DEVICE_TOKEN, DeviceToken);
                 return params;
             }
@@ -648,7 +651,7 @@ public class SignInActivity extends AppCompatActivity {
                     public void onResponse(String response) {
 
                         String successmsg = response.toString();
-                        Toast.makeText(SignInActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SignInActivity.this, ""+successmsg, Toast.LENGTH_SHORT).show();
 
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
@@ -663,7 +666,6 @@ public class SignInActivity extends AppCompatActivity {
 //                            profilepic = rspns.getString("profilepic");
 //                            coverpic = rspns.getString("coverpic");
                             dob = rspns.getString("dob");
-                            deviceType = rspns.getString("device_type");
 
                             SharedPreferences.Editor fbEditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
 //                            fbEditor.putString("fbId", fbId);
@@ -674,7 +676,6 @@ public class SignInActivity extends AppCompatActivity {
 //                            fbEditor.putString("Birthday", dob);
 //                            fbEditor.putString("UserName", username);
                             fbEditor.putString("userId", userId);
-                            fbEditor.putString("deviceType", deviceType);
 //                            fbEditor.putInt("status", 1);
                             fbEditor.commit();
 
@@ -705,8 +706,8 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY_GENDER, gender);
                 params.put(KEY_DOB, birthday);
                 params.put(KEY_USER_TYPE, "2");
-                params.put(KEY_DEVICE_TYPE, "android");
-                params.put(KEY_DEVICE_TOKEN_SIGN_UP, "xyz");
+                params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);
+                params.put(KEY_PROFILE_PIC,fbProfilePic);
                 return params;
             }
         };
