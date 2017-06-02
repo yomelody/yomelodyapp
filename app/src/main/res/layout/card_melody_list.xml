@@ -289,12 +289,18 @@
                     </RelativeLayout>
                 </RelativeLayout>
             </RelativeLayout>
+
+            <include
+                android:id="@+id/pop_up_more"
+                layout="@layout/more_float_layout"
+                android:visibility="gone" />
+
         </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:background="#E7E7E7"
+            android:layout_height="40dp"
+            android:background="#FFFFFF"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -435,15 +441,16 @@
                 <RelativeLayout
                     android:id="@+id/nullspace"
                     android:layout_width="0dp"
-                    android:layout_height="25dp"
-                    android:layout_weight="0.15">
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.08">
 
                 </RelativeLayout>
 
                 <RelativeLayout
+                    android:id="@+id/rlMore"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="0.15">
+                    android:layout_weight="0.18">
 
                     <Button
                         android:id="@+id/btnMore"
@@ -451,10 +458,18 @@
                         android:layout_height="25dp"
                         android:layout_centerHorizontal="true"
                         android:layout_centerVertical="true"
-                        android:background="@drawable/menu"
-                        android:textColor="@color/cardview_dark_background" />
+                        android:background="@drawable/menu" />
 
                 </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/nullspace2"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.02">
+
+                </RelativeLayout>
+
             </LinearLayout>
         </RelativeLayout>
     </LinearLayout>
