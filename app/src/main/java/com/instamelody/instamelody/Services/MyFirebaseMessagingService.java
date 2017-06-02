@@ -53,16 +53,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(0, notificationBuilder.build());
-
-        SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
-        String chatId = prefs.getString("chatId", null);
-        ChatActivity ca = new ChatActivity();
-        ca.getChatMsgs(chatId);
-
-        if (remoteMessage.getData().size() > 0) {
-            String str = remoteMessage.getData().toString();
-            Log.d("FirebaseText",str);
-        }
+//
+//        SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
+//        String chatId = prefs.getString("chatId", null);
+//        ChatActivity ca = new ChatActivity();
+//        ca.getChatMsgs(chatId);
+//
+//        if (remoteMessage.getData().size() > 0) {
+//            String str = remoteMessage.getData().toString();
+//            Log.d("FirebaseText",str);
+//        }
     }
 }
 
