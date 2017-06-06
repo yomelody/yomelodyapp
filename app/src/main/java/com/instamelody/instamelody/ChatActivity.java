@@ -93,15 +93,16 @@ public class ChatActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
     public static final int MY_PERMISSIONS_REQUEST_READ_STORAGE = 201;
     private static final String TAG = MainActivity.class.getSimpleName();
-    private ChatAdapter mAdapter;
 
     ArrayList<Message> chatList = new ArrayList<>();// list of messages
     String SEND_MESSAGE_URL = "http://35.165.96.167/api/chat.php";
     String MESSAGES_LIST_URL = "http://35.165.96.167/api/messageList.php";
+    String CHECK_FILE_URL = "http://35.165.96.167/api/ShareAudioChat.php";
     String DEVICE_TYPE = "device_type";
     String SENDER_ID = "senderID";
     String RECEIVER_ID = "receiverID";
-    String CHAT_ID = "chatID";
+    String CHAT_ID = "chat_id";
+    String CHAT_ID_ = "chatID";
     String IS_READ = "isread";
     String TITLE = "title";
     String MESSAGE = "message";
@@ -126,8 +127,9 @@ public class ChatActivity extends AppCompatActivity {
     ChatAdapter cAdapter;
     public static TextView tvUserName;
     String KEY_FLAG = "flag";
-    String userId, recieverId, recieverName, chatId = "", recieverImage;
-    RelativeLayout rlNoMsg, rlTxtContent;
+    String userId, recieverId, recieverName, packId, packType, recieverImage;
+    static String chatId;
+    RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton;
     ImageView ivRecieverProfilePic;
     TextView tvRecieverName;
 
@@ -151,7 +153,17 @@ public class ChatActivity extends AppCompatActivity {
         recieverImage = prefs.getString("recieverImage", null);
         chatId = prefs.getString("chatId", null);
 
+        SharedPreferences packPref = getSharedPreferences("PackData", MODE_PRIVATE);
+        packId = packPref.getString("PackId", null);
+        packType = packPref.getString("PackType", null);
+
+//        checkFile(packId, packType);
+//        final String temp = packPref.getString("PackPresent", null);
+
         getChatMsgs(chatId);
+//        if (temp.equals("true")) {
+//            sendMessage("hello", userId, temp);
+//        }
 
         etMessage = (EditText) findViewById(R.id.etMessage);
         etMessage.setHintTextColor(Color.parseColor("#7B888F"));
@@ -167,6 +179,7 @@ public class ChatActivity extends AppCompatActivity {
         tvRecieverName = (TextView) findViewById(R.id.tvRecieverName);
         rlTxtContent = (RelativeLayout) findViewById(R.id.rlTxtContent);
         ivNewChat = (ImageView) findViewById(R.id.ivNewChat);
+        rlInviteButton = (RelativeLayout) findViewById(R.id.rlInviteButton);
 
         recyclerViewChat = (RecyclerView) findViewById(R.id.recyclerViewChat);
         recyclerViewChat.setHasFixedSize(true);
@@ -242,6 +255,7 @@ public class ChatActivity extends AppCompatActivity {
                 editor.putString("recieverImage", "");
                 editor.putString("chatId", "");
                 editor.commit();
+
                 Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
                 intent.putExtra("Previous", "Chat");
                 startActivity(intent);
@@ -257,6 +271,7 @@ public class ChatActivity extends AppCompatActivity {
                 editor.putString("recieverImage", "");
                 editor.putString("chatId", "");
                 editor.commit();
+
                 finish();
             }
         });
@@ -277,6 +292,21 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+        rlInviteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                editor.putString("receiverId", "");
+                editor.putString("recieverName", "");
+                editor.putString("recieverImage", "");
+                editor.putString("chatId", "");
+                editor.commit();
+                Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
+                intent.putExtra("Previous", "Chat");
+                startActivity(intent);
+            }
+        });
+
         tvSend.setOnClickListener(new View.OnClickListener()
 
         {
@@ -289,7 +319,7 @@ public class ChatActivity extends AppCompatActivity {
                     ivAdjust.setVisibility(View.VISIBLE);
                     tvSend.setVisibility(View.GONE);
 
-                    sendMessage(message, userId);
+                    sendMessage(message, userId/*, temp*/);
 
 //                    int messageCount = Integer.parseInt(tvMessageCount.getText().toString().trim()) + 1;
 //                    tvMessageCount.setText(String.valueOf(messageCount));
@@ -396,6 +426,7 @@ public class ChatActivity extends AppCompatActivity {
         editor.putString("recieverImage", "");
         editor.putString("chatId", "");
         editor.commit();
+
         finish();
         Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
         startActivity(intent);
@@ -450,8 +481,16 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onRestart() {
+        super.onRestart();
+        getChatMsgs(chatId);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+
+        getChatMsgs(chatId);
         // register new push message receiver
         // by doing this, the activity will be notified each time a new message arrives
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
@@ -467,6 +506,63 @@ public class ChatActivity extends AppCompatActivity {
         super.onPause();
     }
 
+   /* public void checkFile(final String pack_id, final String pack_type) {
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, CHECK_FILE_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        JSONObject jsonObject;
+                        try {
+                            jsonObject = new JSONObject(response);
+                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
+                                SharedPreferences.Editor editor = getSharedPreferences("PackData", MODE_PRIVATE).edit();
+                                editor.putString("PackPresent", "True");
+                                editor.commit();
+                            } else {
+                                SharedPreferences.Editor editor = getSharedPreferences("PackData", MODE_PRIVATE).edit();
+                                editor.putString("PackPresent", "False");
+                                editor.commit();
+                                Toast.makeText(ChatActivity.this, "Failed to send this file", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("file", pack_id);
+                params.put("file_type", pack_type);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+    }*/
+
     public void getChatMsgs(final String chat_Id) {
 
         final StringRequest stringRequest = new StringRequest(Request.Method.POST, MESSAGES_LIST_URL,
@@ -476,7 +572,7 @@ public class ChatActivity extends AppCompatActivity {
 
                         chatList.clear();
                         cAdapter.notifyDataSetChanged();
-//                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
+                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
 
                         JSONObject jsonObject;
                         try {
@@ -554,7 +650,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(CHAT_ID, chat_Id);
+                params.put(CHAT_ID_, chat_Id);
                 return params;
             }
         };
@@ -562,19 +658,21 @@ public class ChatActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
-    public void sendMessage(final String message, final String user_Id) {
+    public void sendMessage(final String message, final String user_Id/*, final String packAvailable*/) {
 
         final StringRequest stringRequest = new StringRequest(Request.Method.POST, SEND_MESSAGE_URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
-                        cAdapter.notifyDataSetChanged();
                         getChatMsgs(chatId);
-                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
+
+//                        cAdapter.notifyDataSetChanged();
+//                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
                     }
                 },
-                new Response.ErrorListener() {
+                new Response.ErrorListener()
+                {
                     @Override
                     public void onErrorResponse(VolleyError error) {
 
@@ -595,23 +693,41 @@ public class ChatActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
-                }) {
+                })
+        {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-
                 params.put(SENDER_ID, user_Id);
                 params.put(RECEIVER_ID, recieverId);
                 params.put(CHAT_ID, chatId);
-                params.put(TITLE, "");
+                params.put(TITLE, "message");
                 params.put(MESSAGE, message);
-                params.put(IS_READ, "");
+                params.put(IS_READ, "0");
 
+                /*if (packAvailable.equals("True")) {
+                    params.put("file", packId);
+                    params.put("file_type", packType);
+                }*/
                 return params;
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
+    }
+
+    public String checkIt(String response) {
+        JSONObject jsonObject;
+        String value = "0";
+        try {
+            jsonObject = new JSONObject(response);
+            if (jsonObject.getString("success").equals("1")) {
+                value = "1";
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return value;
     }
 
     public void getGalleryImages() {

@@ -168,11 +168,13 @@ public class MessengerActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void getChats(final String userId) {
+    public void getChats(final String user_Id) {
         final StringRequest stringRequest = new StringRequest(Request.Method.POST, CONVERSATION_LIST_URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+
+//                        Toast.makeText(MessengerActivity.this, " Shubz" + response, Toast.LENGTH_LONG).show();
 
                         chatList.clear();
                         adapter.notifyDataSetChanged();
@@ -232,7 +234,7 @@ public class MessengerActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(USER_ID, userId);
+                params.put(USER_ID, user_Id);
                 return params;
             }
         };
