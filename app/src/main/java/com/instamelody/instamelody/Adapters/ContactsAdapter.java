@@ -139,8 +139,8 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
 
                     SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                     editor.putString("receiverId", recieverId);
-                    editor.putString("recieverName", recieverName);
-                    editor.putString("recieverImage", recieverImage);
+                    editor.putString("receiverName", recieverName);
+                    editor.putString("receiverImage", recieverImage);
                     editor.commit();
                 }
             });

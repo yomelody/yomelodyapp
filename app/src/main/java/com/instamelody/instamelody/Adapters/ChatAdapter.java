@@ -96,11 +96,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         final int itemType = getItemViewType(position);
         if (itemType == SELF_AUDIO || itemType == OTHER_AUDIO) {
             Message message = chatList.get(position);
-            Picasso.with(holder.userProfileImage.getContext()).load(message.userProfileImage()).into(holder.userProfileImage);
+            Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).into(holder.userProfileImage);
             holder.timeStamp.setText(message.getCreatedAt());
         } else {
             Message message = chatList.get(position);
-            Picasso.with(holder.userProfileImage.getContext()).load(message.userProfileImage()).into(holder.userProfileImage);
+            Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).into(holder.userProfileImage);
             holder.chatMessage.setText(message.getMessage());
             holder.timeStamp.setText(message.getCreatedAt());
         }
