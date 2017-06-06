@@ -8,8 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 
 public class TestClasses extends AppCompatActivity {
 
-    public void counter(){
-        
+    public void counter() {
+
+    }
+
+    public void rythm() {
     }
 
 }
