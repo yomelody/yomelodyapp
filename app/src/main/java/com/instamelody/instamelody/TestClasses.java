@@ -8,8 +8,15 @@ import android.support.v7.app.AppCompatActivity;
 
 public class TestClasses extends AppCompatActivity {
 
+
     public void counter(){
         
+    }
+
+
+    void getcount()
+    {
+        int i=0;
     }
 
 }
