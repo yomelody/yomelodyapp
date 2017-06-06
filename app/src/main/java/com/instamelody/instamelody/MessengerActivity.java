@@ -110,16 +110,6 @@ public class MessengerActivity extends AppCompatActivity {
             }
         });
 
-       /* message.setOnClickListener(new View.OnClickListener()
-
-        {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
-                startActivity(intent);
-            }
-        });*/
-
         profile.setOnClickListener(new View.OnClickListener()
 
         {
@@ -190,12 +180,18 @@ public class MessengerActivity extends AppCompatActivity {
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     Chat chat = new Chat();
                                     JSONObject commentJson = jsonArray.getJSONObject(i);
+                                    chat.setId(commentJson.getString("id"));
+                                    chat.setSenderID(commentJson.getString("senderID"));
+                                    chat.setSenderName(commentJson.getString("sender_name"));
                                     chat.setReceiverID(commentJson.getString("receiverID"));
-                                    chat.setChatID(commentJson.getString("chatID"));
                                     chat.setReceiverName(commentJson.getString("receiver_name"));
-                                    chat.setMessage(commentJson.getString("message"));
-                                    chat.setSendAt(commentJson.getString("sendat"));
+                                    chat.setCoverPick(commentJson.getString("coverPick"));
                                     chat.setUserProfileImage(commentJson.getString("profilePick"));
+                                    chat.setMessage(commentJson.getString("message"));
+                                    chat.setChatID(commentJson.getString("chatID"));
+                                    chat.setIsRead(commentJson.getString("isread"));
+                                    chat.setSendAt(commentJson.getString("sendat"));
+
                                     chatList.add(chat);
                                 }
                             }

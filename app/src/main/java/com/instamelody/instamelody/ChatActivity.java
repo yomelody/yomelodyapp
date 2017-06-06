@@ -24,7 +24,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
@@ -55,7 +54,6 @@ import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.ChatAdapter;
 import com.instamelody.instamelody.Adapters.RecentImagesAdapter;
 import com.instamelody.instamelody.Models.Message;
-import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.app.Config;
 import com.instamelody.instamelody.utils.NotificationUtils;
 import com.squareup.picasso.Picasso;
@@ -72,11 +70,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static android.os.Environment.isExternalStorageEmulated;
 import static android.os.Environment.isExternalStorageRemovable;
@@ -127,7 +122,7 @@ public class ChatActivity extends AppCompatActivity {
     ChatAdapter cAdapter;
     public static TextView tvUserName;
     String KEY_FLAG = "flag";
-    String userId, recieverId, recieverName, packId, packType, recieverImage;
+    String userId, receiverId, receiverName, packId, packType, receiverImage;
     static String chatId;
     RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton;
     ImageView ivRecieverProfilePic;
@@ -147,11 +142,33 @@ public class ChatActivity extends AppCompatActivity {
         SharedPreferences loginSharedPref = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userId = loginSharedPref.getString("userId", null);
 
+//        SharedPreferences chatPrefs = getSharedPreferences("MessengerData", MODE_PRIVATE);
+//        id= chatPrefs.getString("id", null);
+//        senderId = chatPrefs.getString("senderId", null);
+//        senderName = chatPrefs.getString("senderName", null);
+//        receiverId = chatPrefs.getString("receiverId", null);
+//        receiverName = chatPrefs.getString("receiverName", null);
+//        coverPic = chatPrefs.getString("coverPic", null);
+//        profilePic = chatPrefs.getString("profilePic", null);
+//        message = chatPrefs.getString("message", null);
+//        chatId = chatPrefs.getString("chatId", null);
+//        isRead = chatPrefs.getString("isRead", null);
+//        sendAt = chatPrefs.getString("sendAt", null);
+
         SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
-        recieverId = prefs.getString("receiverId", null);
-        recieverName = prefs.getString("recieverName", null);
-        recieverImage = prefs.getString("recieverImage", null);
+        receiverId = prefs.getString("receiverId", null);
+        receiverName = prefs.getString("receiverName", null);
+        receiverImage = prefs.getString("receiverImage", null);
         chatId = prefs.getString("chatId", null);
+
+        Bundle bundle = getIntent().getExtras();
+
+        if (bundle != null) {
+            String message = bundle.getString("chat_id");
+            if (message != null) {
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            }
+        }
 
         SharedPreferences packPref = getSharedPreferences("PackData", MODE_PRIVATE);
         packId = packPref.getString("PackId", null);
@@ -216,7 +233,6 @@ public class ChatActivity extends AppCompatActivity {
 
         SharedPreferences token = this.getSharedPreferences(Config.SHARED_PREF, MODE_PRIVATE);
         deviceToken = token.getString("regId", null);
-
         //if token is not null
 //        if (deviceToken != null) {
 //            //displaying the token
@@ -251,8 +267,8 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View view) {
                 SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                 editor.putString("receiverId", "");
-                editor.putString("recieverName", "");
-                editor.putString("recieverImage", "");
+                editor.putString("receiverName", "");
+                editor.putString("receiverImage", "");
                 editor.putString("chatId", "");
                 editor.commit();
 
@@ -267,8 +283,8 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View v) {
                 SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                 editor.putString("receiverId", "");
-                editor.putString("recieverName", "");
-                editor.putString("recieverImage", "");
+                editor.putString("receiverName", "");
+                editor.putString("receiverImage", "");
                 editor.putString("chatId", "");
                 editor.commit();
 
@@ -283,8 +299,8 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View v) {
                 SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                 editor.putString("receiverId", "");
-                editor.putString("recieverName", "");
-                editor.putString("recieverImage", "");
+                editor.putString("receiverName", "");
+                editor.putString("receiverImage", "");
                 editor.putString("chatId", "");
                 editor.commit();
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
@@ -297,8 +313,8 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View view) {
                 SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                 editor.putString("receiverId", "");
-                editor.putString("recieverName", "");
-                editor.putString("recieverImage", "");
+                editor.putString("receiverName", "");
+                editor.putString("receiverImage", "");
                 editor.putString("chatId", "");
                 editor.commit();
                 Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
@@ -320,10 +336,8 @@ public class ChatActivity extends AppCompatActivity {
                     tvSend.setVisibility(View.GONE);
 
                     sendMessage(message, userId/*, temp*/);
-
 //                    int messageCount = Integer.parseInt(tvMessageCount.getText().toString().trim()) + 1;
 //                    tvMessageCount.setText(String.valueOf(messageCount));
-
                     InputMethodManager inputManager = (InputMethodManager)
                             getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
@@ -343,7 +357,6 @@ public class ChatActivity extends AppCompatActivity {
         {
             @Override
             public void onClick(View view) {
-
                 /**
                  *  Make a RecyclerView in DialogBox which gets images from gallery
                  */
@@ -408,12 +421,9 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        ivAdjust.setOnClickListener(new View.OnClickListener()
-
-        {
+        ivAdjust.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
             }
         });
     }
@@ -422,8 +432,8 @@ public class ChatActivity extends AppCompatActivity {
     public void onBackPressed() {
         SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
         editor.putString("receiverId", "");
-        editor.putString("recieverName", "");
-        editor.putString("recieverImage", "");
+        editor.putString("receiverName", "");
+        editor.putString("receiverImage", "");
         editor.putString("chatId", "");
         editor.commit();
 
@@ -489,14 +499,9 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         getChatMsgs(chatId);
-        // register new push message receiver
-        // by doing this, the activity will be notified each time a new message arrives
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(Config.PUSH_NOTIFICATION));
-
-        // clear the notification area when the app is opened
         NotificationUtils.clearNotifications(getApplicationContext());
     }
 
@@ -585,14 +590,22 @@ public class ChatActivity extends AppCompatActivity {
                                     for (int i = 0; i < resultArray.length(); i++) {
                                         Message message = new Message();
                                         JSONObject chatJson = resultArray.getJSONObject(i);
-                                        message.setId(chatJson.getString("id"));
-                                        message.setSenderId(chatJson.getString("senderID"));
-                                        message.setCreatedAt(chatJson.getString("sendat"));
+                                        String id = chatJson.getString("id");
+                                        message.setId(id);
+                                        String senderID = chatJson.getString("senderID");
+                                        String receiverID = chatJson.getString("receiverID");
+                                        SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                                        editor.putString("receiverId", senderID);
+                                        editor.putString("temp", receiverID);
+                                        editor.commit();
+                                        message.setSenderId(senderID);
+                                        String sendat = chatJson.getString("sendat");
+                                        message.setCreatedAt(sendat);
                                         uname = chatJson.getString("receiver_name");
-                                        message.setMessage(chatJson.getString("message"));
-                                        SharedPreferences loginSharedPref = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-                                        String profilePic = loginSharedPref.getString("profilePic", null);
-                                        message.userProfileImage(profilePic);
+                                        String messagef = chatJson.getString("message");
+                                        message.setMessage(messagef);
+                                        String profilePic = chatJson.getString("sender_pic");
+                                        message.setProfilePic(profilePic);
                                         chatList.add(message);
                                     }
 
@@ -609,9 +622,9 @@ public class ChatActivity extends AppCompatActivity {
                                     }
 
                                 } else {
-                                    tvUserName.setText(recieverName);
-                                    tvRecieverName.setText(" " + recieverName);
-                                    Picasso.with(ivRecieverProfilePic.getContext()).load(recieverImage).into(ivRecieverProfilePic);
+                                    tvUserName.setText(receiverName);
+                                    tvRecieverName.setText(" " + receiverName);
+                                    Picasso.with(ivRecieverProfilePic.getContext()).load(receiverImage).into(ivRecieverProfilePic);
                                     rlNoMsg.setVisibility(View.VISIBLE);
                                     rlTxtContent.setVisibility(View.VISIBLE);
                                 }
@@ -671,8 +684,7 @@ public class ChatActivity extends AppCompatActivity {
 //                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
                     }
                 },
-                new Response.ErrorListener()
-                {
+                new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
 
@@ -693,13 +705,17 @@ public class ChatActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
-                })
-        {
+                }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+
+                SharedPreferences userDetails = getSharedPreferences("ContactsData", MODE_PRIVATE);
+                String rcvrId = userDetails.getString("receiverId", "");
+//                String temp = userDetails.getString("temp","");
+
                 params.put(SENDER_ID, user_Id);
-                params.put(RECEIVER_ID, recieverId);
+                params.put(RECEIVER_ID, rcvrId);
                 params.put(CHAT_ID, chatId);
                 params.put(TITLE, "message");
                 params.put(MESSAGE, message);

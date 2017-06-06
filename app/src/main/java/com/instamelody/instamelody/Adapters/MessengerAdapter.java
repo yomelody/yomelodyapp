@@ -28,7 +28,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
 
     ArrayList<Chat> chatList = new ArrayList<>();
     Context context;
-    String receiverId = "", chatID = "";
+    String id, senderId, senderName, receiverId, receiverName, coverPic, profilePic, message, chatId, isRead, sendAt;
 
     public MessengerAdapter(ArrayList<Chat> chatList, Context context) {
         this.chatList = chatList;
@@ -54,14 +54,37 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
                 @Override
                 public void onClick(View view) {
 
+                    id = chatList.get(getAdapterPosition()).getId();
+                    senderId = chatList.get(getAdapterPosition()).getSenderID();
+                    senderName = chatList.get(getAdapterPosition()).getSenderName();
                     receiverId = chatList.get(getAdapterPosition()).getReceiverID();
-                    chatID = chatList.get(getAdapterPosition()).getChatID();
+                    receiverName = chatList.get(getAdapterPosition()).getReceiverName();
+                    coverPic = chatList.get(getAdapterPosition()).getCoverPick();
+                    profilePic = chatList.get(getAdapterPosition()).getUserProfileImage();
+                    message = chatList.get(getAdapterPosition()).getMessage();
+                    chatId = chatList.get(getAdapterPosition()).getChatID();
+                    isRead = chatList.get(getAdapterPosition()).getIsRead();
+                    sendAt = chatList.get(getAdapterPosition()).getSendAt();
+
+//                    SharedPreferences.Editor editor = context.getSharedPreferences("MessengerData", MODE_PRIVATE).edit();
+//                    editor.putString("id", id);
+//                    editor.putString("senderId", senderId);
+//                    editor.putString("senderName", senderName);
+//                    editor.putString("receiverId", receiverId);
+//                    editor.putString("receiverName", receiverName);
+//                    editor.putString("coverPic", coverPic);
+//                    editor.putString("profilePic", profilePic);
+//                    editor.putString("message", message);
+//                    editor.putString("chatId", chatId);
+//                    editor.putString("isRead", isRead);
+//                    editor.putString("sendAt", sendAt);
+//                    editor.commit();
+
                     SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                     editor.putString("receiverId", receiverId);
-                    editor.putString("chatId", chatID);
+                    editor.putString("chatId", chatId);
                     editor.commit();
 
-//                    editor.putString("receiverId", chatList.get(getAdapterPosition()).getReceiverID());
                     Intent intent = new Intent(context, ChatActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);

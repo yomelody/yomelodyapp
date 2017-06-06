@@ -462,7 +462,6 @@ public class SignInActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
-
             }
         });
 
@@ -472,7 +471,6 @@ public class SignInActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
                 startActivity(intent);
-
             }
         });
 
@@ -481,12 +479,9 @@ public class SignInActivity extends AppCompatActivity {
             public void onClick(View view) {
                 LoginManager.getInstance().logInWithReadPermissions(SignInActivity.this, Arrays.asList("public_profile", "email", "user_birthday", "user_friends", "user_about_me"));
                /* LoginManager.getInstance().logOut();*/
-
             }
         });
-
     }
-
 
     private void initCustomLogin() {
         client = new TwitterAuthClient();
