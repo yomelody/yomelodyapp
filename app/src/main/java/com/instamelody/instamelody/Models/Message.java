@@ -13,7 +13,7 @@ import java.util.Date;
 public class Message implements Serializable {
 
     String id, message, createdAt, senderId;
-    String profilePic;
+    String userProfileImage;
 
     public Message() {
     }
@@ -22,15 +22,7 @@ public class Message implements Serializable {
         this.id = id;
         this.message = message;
         this.createdAt = createdAt;
-        this.profilePic = userProfileImage;
-    }
-
-    public String getProfilePic() {
-        return profilePic;
-    }
-
-    public void setProfilePic(String profilePic) {
-        this.profilePic = profilePic;
+        this.userProfileImage = userProfileImage;
     }
 
     public String getId() {
@@ -139,5 +131,13 @@ public class Message implements Serializable {
             e.printStackTrace();
         }
         return val;
+    }
+
+    public String userProfileImage() {
+        return userProfileImage;
+    }
+
+    public void userProfileImage(String userProfilePic) {
+        this.userProfileImage = userProfilePic;
     }
 }

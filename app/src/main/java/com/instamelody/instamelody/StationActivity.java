@@ -56,7 +56,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.instamelody.instamelody.R.attr.position;
-import static com.instamelody.instamelody.R.id.tabHost;
 import static com.instamelody.instamelody.R.id.tabHostRecordings;
 
 

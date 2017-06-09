@@ -302,7 +302,7 @@ public class ParseContents {
                     message.setSenderId(chatJson.getString("senderID"));
                     SharedPreferences loginSharedPref = mContext.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
                     String profilePic = loginSharedPref.getString("profilePic", null);
-                    message.setProfilePic(profilePic);
+                    message.userProfileImage(profilePic);
                     uname = chatJson.getString("receiver_name");
                     chatList.add(message);
                 }

@@ -276,7 +276,7 @@ public class StudioActivity extends AppCompatActivity {
         frameSync = (FrameLayout) findViewById(R.id.frameSync);
         rlSync = (RelativeLayout) findViewById(R.id.rlSync);
         SharedPreferences loginSharedPref1 = this.getSharedPreferences("Url_recording", MODE_PRIVATE);
-        fetchRecordingUrl =loginSharedPref1.getString("Recording_url",null);
+        fetchRecordingUrl = loginSharedPref1.getString("Recording_url", null);
 
 //        instrumentFilePath = Environment.getExternalStorageDirectory().getAbsoluteFile() + "sdcard/InstaMelody/Downloads/Melodies/" + 0 + ".mp3";
 //        Log.d("File Path",instrumentFilePath);
@@ -917,7 +917,6 @@ public class StudioActivity extends AppCompatActivity {
     }
 
 
-
     private void openDialog2() {
         LayoutInflater inflater = LayoutInflater.from(StudioActivity.this);
         View subView1 = inflater.inflate(R.layout.dialog_layout2, null);
@@ -1417,6 +1416,29 @@ public class StudioActivity extends AppCompatActivity {
                                 myTask = new LongOperation();
                                 myTask.execute();
                                 frameSync.setVisibility(View.GONE);
+                                android.app.AlertDialog.Builder builder1 = new android.app.AlertDialog.Builder(StudioActivity.this);
+                                builder1.setMessage("Wants to share InstaMelody music on Social Networks.....");
+                                builder1.setCancelable(true);
+
+                                builder1.setPositiveButton(
+                                        "Yes",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                Intent i = new Intent(StudioActivity.this, SocialActivity.class);
+                                                startActivity(i);
+                                            }
+                                        });
+
+                                builder1.setNegativeButton(
+                                        "No",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                dialog.cancel();
+                                            }
+                                        });
+
+                                android.app.AlertDialog alert11 = builder1.create();
+                                alert11.show();
                             } else {
                                 Toast.makeText(StudioActivity.this, response, Toast.LENGTH_SHORT).show();
                             }
@@ -1502,7 +1524,7 @@ public class StudioActivity extends AppCompatActivity {
 
                         SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("Url_recording", MODE_PRIVATE).edit();
                         editor.putString("Recording_url", urlRecording);
-                        editor.apply();
+                        editor.commit();
 
 
                     }
@@ -1871,15 +1893,5 @@ public class StudioActivity extends AppCompatActivity {
         }, mp.getDuration() + 100);
     }
 
-
-    public void FbShare() {
-        ShareDialog sd = new ShareDialog(StudioActivity.this);
-        ShareLinkContent linkContent = new ShareLinkContent.Builder()
-                .setContentTitle("title")
-                .setContentDescription(
-                        "Description")
-                .setContentUrl(Uri.parse(fetchRecordingUrl)).build();
-        shareDialog.show(linkContent);
-    }
 }
 

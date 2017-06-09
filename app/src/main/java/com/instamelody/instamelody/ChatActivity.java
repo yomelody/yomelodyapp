@@ -24,6 +24,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
@@ -54,6 +55,7 @@ import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.ChatAdapter;
 import com.instamelody.instamelody.Adapters.RecentImagesAdapter;
 import com.instamelody.instamelody.Models.Message;
+import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.app.Config;
 import com.instamelody.instamelody.utils.NotificationUtils;
 import com.squareup.picasso.Picasso;
@@ -70,8 +72,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static android.os.Environment.isExternalStorageEmulated;
 import static android.os.Environment.isExternalStorageRemovable;
@@ -88,16 +93,15 @@ public class ChatActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
     public static final int MY_PERMISSIONS_REQUEST_READ_STORAGE = 201;
     private static final String TAG = MainActivity.class.getSimpleName();
+    private ChatAdapter mAdapter;
 
     ArrayList<Message> chatList = new ArrayList<>();// list of messages
     String SEND_MESSAGE_URL = "http://35.165.96.167/api/chat.php";
     String MESSAGES_LIST_URL = "http://35.165.96.167/api/messageList.php";
-    String CHECK_FILE_URL = "http://35.165.96.167/api/ShareAudioChat.php";
     String DEVICE_TYPE = "device_type";
     String SENDER_ID = "senderID";
     String RECEIVER_ID = "receiverID";
-    String CHAT_ID = "chat_id";
-    String CHAT_ID_ = "chatID";
+    String CHAT_ID = "chatID";
     String IS_READ = "isread";
     String TITLE = "title";
     String MESSAGE = "message";
@@ -122,9 +126,8 @@ public class ChatActivity extends AppCompatActivity {
     ChatAdapter cAdapter;
     public static TextView tvUserName;
     String KEY_FLAG = "flag";
-    String userId, receiverId, receiverName, packId, packType, receiverImage;
-    static String chatId;
-    RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton;
+    String userId, recieverId, recieverName, chatId = "", recieverImage;
+    RelativeLayout rlNoMsg, rlTxtContent;
     ImageView ivRecieverProfilePic;
     TextView tvRecieverName;
 
@@ -142,45 +145,13 @@ public class ChatActivity extends AppCompatActivity {
         SharedPreferences loginSharedPref = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userId = loginSharedPref.getString("userId", null);
 
-//        SharedPreferences chatPrefs = getSharedPreferences("MessengerData", MODE_PRIVATE);
-//        id= chatPrefs.getString("id", null);
-//        senderId = chatPrefs.getString("senderId", null);
-//        senderName = chatPrefs.getString("senderName", null);
-//        receiverId = chatPrefs.getString("receiverId", null);
-//        receiverName = chatPrefs.getString("receiverName", null);
-//        coverPic = chatPrefs.getString("coverPic", null);
-//        profilePic = chatPrefs.getString("profilePic", null);
-//        message = chatPrefs.getString("message", null);
-//        chatId = chatPrefs.getString("chatId", null);
-//        isRead = chatPrefs.getString("isRead", null);
-//        sendAt = chatPrefs.getString("sendAt", null);
-
         SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
-        receiverId = prefs.getString("receiverId", null);
-        receiverName = prefs.getString("receiverName", null);
-        receiverImage = prefs.getString("receiverImage", null);
+        recieverId = prefs.getString("receiverId", null);
+        recieverName = prefs.getString("recieverName", null);
+        recieverImage = prefs.getString("recieverImage", null);
         chatId = prefs.getString("chatId", null);
 
-        Bundle bundle = getIntent().getExtras();
-
-        if (bundle != null) {
-            String message = bundle.getString("chat_id");
-            if (message != null) {
-                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        SharedPreferences packPref = getSharedPreferences("PackData", MODE_PRIVATE);
-        packId = packPref.getString("PackId", null);
-        packType = packPref.getString("PackType", null);
-
-//        checkFile(packId, packType);
-//        final String temp = packPref.getString("PackPresent", null);
-
         getChatMsgs(chatId);
-//        if (temp.equals("true")) {
-//            sendMessage("hello", userId, temp);
-//        }
 
         etMessage = (EditText) findViewById(R.id.etMessage);
         etMessage.setHintTextColor(Color.parseColor("#7B888F"));
@@ -196,7 +167,6 @@ public class ChatActivity extends AppCompatActivity {
         tvRecieverName = (TextView) findViewById(R.id.tvRecieverName);
         rlTxtContent = (RelativeLayout) findViewById(R.id.rlTxtContent);
         ivNewChat = (ImageView) findViewById(R.id.ivNewChat);
-        rlInviteButton = (RelativeLayout) findViewById(R.id.rlInviteButton);
 
         recyclerViewChat = (RecyclerView) findViewById(R.id.recyclerViewChat);
         recyclerViewChat.setHasFixedSize(true);
@@ -233,6 +203,7 @@ public class ChatActivity extends AppCompatActivity {
 
         SharedPreferences token = this.getSharedPreferences(Config.SHARED_PREF, MODE_PRIVATE);
         deviceToken = token.getString("regId", null);
+
         //if token is not null
 //        if (deviceToken != null) {
 //            //displaying the token
@@ -267,11 +238,10 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View view) {
                 SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                 editor.putString("receiverId", "");
-                editor.putString("receiverName", "");
-                editor.putString("receiverImage", "");
+                editor.putString("recieverName", "");
+                editor.putString("recieverImage", "");
                 editor.putString("chatId", "");
                 editor.commit();
-
                 Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
                 intent.putExtra("Previous", "Chat");
                 startActivity(intent);
@@ -283,11 +253,10 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View v) {
                 SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                 editor.putString("receiverId", "");
-                editor.putString("receiverName", "");
-                editor.putString("receiverImage", "");
+                editor.putString("recieverName", "");
+                editor.putString("recieverImage", "");
                 editor.putString("chatId", "");
                 editor.commit();
-
                 finish();
             }
         });
@@ -299,26 +268,11 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View v) {
                 SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                 editor.putString("receiverId", "");
-                editor.putString("receiverName", "");
-                editor.putString("receiverImage", "");
+                editor.putString("recieverName", "");
+                editor.putString("recieverImage", "");
                 editor.putString("chatId", "");
                 editor.commit();
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        rlInviteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
-                editor.putString("receiverId", "");
-                editor.putString("receiverName", "");
-                editor.putString("receiverImage", "");
-                editor.putString("chatId", "");
-                editor.commit();
-                Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
-                intent.putExtra("Previous", "Chat");
                 startActivity(intent);
             }
         });
@@ -335,9 +289,11 @@ public class ChatActivity extends AppCompatActivity {
                     ivAdjust.setVisibility(View.VISIBLE);
                     tvSend.setVisibility(View.GONE);
 
-                    sendMessage(message, userId/*, temp*/);
+                    sendMessage(message, userId);
+
 //                    int messageCount = Integer.parseInt(tvMessageCount.getText().toString().trim()) + 1;
 //                    tvMessageCount.setText(String.valueOf(messageCount));
+
                     InputMethodManager inputManager = (InputMethodManager)
                             getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
@@ -357,6 +313,7 @@ public class ChatActivity extends AppCompatActivity {
         {
             @Override
             public void onClick(View view) {
+
                 /**
                  *  Make a RecyclerView in DialogBox which gets images from gallery
                  */
@@ -421,9 +378,12 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        ivAdjust.setOnClickListener(new View.OnClickListener() {
+        ivAdjust.setOnClickListener(new View.OnClickListener()
+
+        {
             @Override
             public void onClick(View view) {
+
             }
         });
     }
@@ -432,11 +392,10 @@ public class ChatActivity extends AppCompatActivity {
     public void onBackPressed() {
         SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
         editor.putString("receiverId", "");
-        editor.putString("receiverName", "");
-        editor.putString("receiverImage", "");
+        editor.putString("recieverName", "");
+        editor.putString("recieverImage", "");
         editor.putString("chatId", "");
         editor.commit();
-
         finish();
         Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
         startActivity(intent);
@@ -491,17 +450,14 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRestart() {
-        super.onRestart();
-        getChatMsgs(chatId);
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
-        getChatMsgs(chatId);
+        // register new push message receiver
+        // by doing this, the activity will be notified each time a new message arrives
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(Config.PUSH_NOTIFICATION));
+
+        // clear the notification area when the app is opened
         NotificationUtils.clearNotifications(getApplicationContext());
     }
 
@@ -510,63 +466,6 @@ public class ChatActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
         super.onPause();
     }
-
-   /* public void checkFile(final String pack_id, final String pack_type) {
-        final StringRequest stringRequest = new StringRequest(Request.Method.POST, CHECK_FILE_URL,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        JSONObject jsonObject;
-                        try {
-                            jsonObject = new JSONObject(response);
-                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
-                                SharedPreferences.Editor editor = getSharedPreferences("PackData", MODE_PRIVATE).edit();
-                                editor.putString("PackPresent", "True");
-                                editor.commit();
-                            } else {
-                                SharedPreferences.Editor editor = getSharedPreferences("PackData", MODE_PRIVATE).edit();
-                                editor.putString("PackPresent", "False");
-                                editor.commit();
-                                Toast.makeText(ChatActivity.this, "Failed to send this file", Toast.LENGTH_SHORT).show();
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        String errorMsg = "";
-                        if (error instanceof TimeoutError) {
-                            errorMsg = "Internet connection timed out";
-                        } else if (error instanceof NoConnectionError) {
-                            errorMsg = "There is no connection";
-                        } else if (error instanceof AuthFailureError) {
-                            errorMsg = "AuthFailureError";
-                        } else if (error instanceof ServerError) {
-                            errorMsg = "We are facing problem in connecting to server";
-                        } else if (error instanceof NetworkError) {
-                            errorMsg = "We are facing problem in connecting to network";
-                        } else if (error instanceof ParseError) {
-                            errorMsg = "ParseError";
-                        }
-                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("file", pack_id);
-                params.put("file_type", pack_type);
-                return params;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        requestQueue.add(stringRequest);
-    }*/
 
     public void getChatMsgs(final String chat_Id) {
 
@@ -577,7 +476,7 @@ public class ChatActivity extends AppCompatActivity {
 
                         chatList.clear();
                         cAdapter.notifyDataSetChanged();
-                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
+//                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
 
                         JSONObject jsonObject;
                         try {
@@ -590,22 +489,14 @@ public class ChatActivity extends AppCompatActivity {
                                     for (int i = 0; i < resultArray.length(); i++) {
                                         Message message = new Message();
                                         JSONObject chatJson = resultArray.getJSONObject(i);
-                                        String id = chatJson.getString("id");
-                                        message.setId(id);
-                                        String senderID = chatJson.getString("senderID");
-                                        String receiverID = chatJson.getString("receiverID");
-                                        SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
-                                        editor.putString("receiverId", senderID);
-                                        editor.putString("temp", receiverID);
-                                        editor.commit();
-                                        message.setSenderId(senderID);
-                                        String sendat = chatJson.getString("sendat");
-                                        message.setCreatedAt(sendat);
+                                        message.setId(chatJson.getString("id"));
+                                        message.setSenderId(chatJson.getString("senderID"));
+                                        message.setCreatedAt(chatJson.getString("sendat"));
                                         uname = chatJson.getString("receiver_name");
-                                        String messagef = chatJson.getString("message");
-                                        message.setMessage(messagef);
-                                        String profilePic = chatJson.getString("sender_pic");
-                                        message.setProfilePic(profilePic);
+                                        message.setMessage(chatJson.getString("message"));
+                                        SharedPreferences loginSharedPref = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+                                        String profilePic = loginSharedPref.getString("profilePic", null);
+                                        message.userProfileImage(profilePic);
                                         chatList.add(message);
                                     }
 
@@ -622,9 +513,9 @@ public class ChatActivity extends AppCompatActivity {
                                     }
 
                                 } else {
-                                    tvUserName.setText(receiverName);
-                                    tvRecieverName.setText(" " + receiverName);
-                                    Picasso.with(ivRecieverProfilePic.getContext()).load(receiverImage).into(ivRecieverProfilePic);
+                                    tvUserName.setText(recieverName);
+                                    tvRecieverName.setText(" " + recieverName);
+                                    Picasso.with(ivRecieverProfilePic.getContext()).load(recieverImage).into(ivRecieverProfilePic);
                                     rlNoMsg.setVisibility(View.VISIBLE);
                                     rlTxtContent.setVisibility(View.VISIBLE);
                                 }
@@ -663,7 +554,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(CHAT_ID_, chat_Id);
+                params.put(CHAT_ID, chat_Id);
                 return params;
             }
         };
@@ -671,17 +562,16 @@ public class ChatActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
-    public void sendMessage(final String message, final String user_Id/*, final String packAvailable*/) {
+    public void sendMessage(final String message, final String user_Id) {
 
         final StringRequest stringRequest = new StringRequest(Request.Method.POST, SEND_MESSAGE_URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
+                        cAdapter.notifyDataSetChanged();
                         getChatMsgs(chatId);
-
-//                        cAdapter.notifyDataSetChanged();
-//                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
+                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
                     }
                 },
                 new Response.ErrorListener() {
@@ -710,40 +600,18 @@ public class ChatActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
 
-                SharedPreferences userDetails = getSharedPreferences("ContactsData", MODE_PRIVATE);
-                String rcvrId = userDetails.getString("receiverId", "");
-//                String temp = userDetails.getString("temp","");
-
                 params.put(SENDER_ID, user_Id);
-                params.put(RECEIVER_ID, rcvrId);
+                params.put(RECEIVER_ID, recieverId);
                 params.put(CHAT_ID, chatId);
-                params.put(TITLE, "message");
+                params.put(TITLE, "");
                 params.put(MESSAGE, message);
-                params.put(IS_READ, "0");
+                params.put(IS_READ, "");
 
-                /*if (packAvailable.equals("True")) {
-                    params.put("file", packId);
-                    params.put("file_type", packType);
-                }*/
                 return params;
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
-    }
-
-    public String checkIt(String response) {
-        JSONObject jsonObject;
-        String value = "0";
-        try {
-            jsonObject = new JSONObject(response);
-            if (jsonObject.getString("success").equals("1")) {
-                value = "1";
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return value;
     }
 
     public void getGalleryImages() {
