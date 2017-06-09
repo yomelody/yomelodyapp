@@ -204,12 +204,6 @@ public class SocialActivity extends AppCompatActivity {
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
         Fabric.with(this, new TwitterCore(authConfig), new TweetComposer());
 
-        /*Bundle bundle = getIntent().getExtras().getBundle(SHARE_DATA);
-        String description = bundle.getString(SHARE_DESCRIPTION);
-        String title = bundle.getString(SHARE_TITLE);
-        String picture = bundle.getString(SHARE_PICTURE_LINK);
-        String link = bundle.getString(SHARE_LINK);*/
-
         TweetComposer.Builder builder = null;
 
 
