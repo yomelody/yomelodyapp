@@ -95,7 +95,7 @@ public class SignInActivity extends AppCompatActivity {
     String KEY_DOB = "dob";
     String KEY_DEVICE_TOKEN_SIGN_UP = "device_token";
     String KEY_DEVICE_TYPE = "device_type";
-    String KEY_PROFILE_PIC = "profile_pic";
+    String KEY_PROFILE_PIC = "profile_pic_url";
 
 
     String REGISTER_URL = "http://35.165.96.167/api/registration.php";
@@ -549,7 +549,7 @@ public class SignInActivity extends AppCompatActivity {
 
                         String successmsg = response.toString();
 //                        Toast.makeText(SignInActivity.this, ""+successmsg, Toast.LENGTH_SHORT).show();
-//                        Log.d("print", successmsg);
+                        Log.d("print", successmsg);
 
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
