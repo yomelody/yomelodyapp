@@ -106,6 +106,7 @@ public class SignInActivity extends AppCompatActivity {
     String KEY_EMAIL = "email";
     String KEY_PASSWORD = "password";
     String KEY_DEVICE_TOKEN = "devicetoken";
+    String KEY_DEVICE_TYPE = "device_type";
     static String TWITTER_CONSUMER_KEY = "HPEUPWqatYYqdX2BXXZCwhRa3";
     static String TWITTER_CONSUMER_SECRET = "INlgRJqcVyxZe8tzfDhBZ0kYONTlWBY5NO8akXcnzVhERWL67I";
     int temp = 0;
@@ -461,7 +462,6 @@ public class SignInActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
-
             }
         });
 
@@ -471,7 +471,6 @@ public class SignInActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
                 startActivity(intent);
-
             }
         });
 
@@ -480,12 +479,9 @@ public class SignInActivity extends AppCompatActivity {
             public void onClick(View view) {
                 LoginManager.getInstance().logInWithReadPermissions(SignInActivity.this, Arrays.asList("public_profile", "email", "user_birthday", "user_friends", "user_about_me"));
                /* LoginManager.getInstance().logOut();*/
-
             }
         });
-
     }
-
 
     private void initCustomLogin() {
         client = new TwitterAuthClient();
@@ -551,7 +547,9 @@ public class SignInActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         String successmsg = response.toString();
-                        //Toast.makeText(SignInActivity.this, "" + successmsg, Toast.LENGTH_SHORT).show();
+
+//                        Toast.makeText(SignInActivity.this, " Shubz" + successmsg, Toast.LENGTH_LONG).show();
+
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
                             flag = jsonObject.getString("flag");
@@ -624,6 +622,7 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY_EMAIL, email);
                 params.put(KEY_PASSWORD, password);
                 params.put(KEY_DEVICE_TOKEN, DeviceToken);
+                params.put(KEY_DEVICE_TYPE, "Android");
                 return params;
             }
         };
