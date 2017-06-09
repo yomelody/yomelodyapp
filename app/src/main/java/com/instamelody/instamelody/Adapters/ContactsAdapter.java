@@ -37,10 +37,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -54,13 +52,13 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
 
     Context context;
     ArrayList<Contacts> contactsList = new ArrayList<>();
-    ArrayList<String> rList = new ArrayList<String>();
     //    Set<String> recieverId = new HashSet<>();
     String USER_CHAT_ID = "http://35.165.96.167/api/user_chat_id.php";
     String recieverId = "";
     String recieverName = "";
     String receiverToken = "";
     String recieverImage = "";
+    String chatID = "";
 
     int Count = 0;
 
@@ -97,20 +95,6 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                         blue_circle.setVisibility(View.VISIBLE);
                         Count = Count + 1;
                         recieverId = contactsList.get(getAdapterPosition()).getUser_id();
-
-//                        rList.add(Count - 1, recieverId);
-
-                        /*List<String> groupNameList = Arrays.asList(rid.split(","));
-                        String listnames = "";
-                        if (groupNameList.size() == 1) {
-                            tvUserName.setText(groupNameList.get(0));
-                        } else {
-                            for (int i = 1; i < groupNameList.size(); i++) {
-                                listnames = listnames + ", " + groupNameList.get(i);
-                            }
-                            tvUserName.setText(listnames);
-                        }*/
-
                         String fname = contactsList.get(getAdapterPosition()).getfName();
                         String lname = contactsList.get(getAdapterPosition()).getlName();
                         recieverName = fname + " " + lname;
@@ -120,7 +104,11 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                             ContactsActivity.btnCancel.setVisibility(View.GONE);
                             ContactsActivity.btnOK.setVisibility(View.VISIBLE);
                         }
-                        getChatId(userId, recieverId);
+                        chatID = getChatId(userId, recieverId);
+
+                        SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                        editor.putString("chatId", chatID);
+                        editor.commit();
 
                     } else {
                         blue_circle.setVisibility(View.GONE);
@@ -131,7 +119,6 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                             ContactsActivity.btnOK.setVisibility(View.GONE);
                             ContactsActivity.btnCancel.setVisibility(View.VISIBLE);
                         }
-
                         SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                         editor.putString("chatId", "");
                         editor.commit();
@@ -139,18 +126,11 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
 
                     SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                     editor.putString("receiverId", recieverId);
-                    editor.putString("receiverName", recieverName);
-                    editor.putString("receiverImage", recieverImage);
+                    editor.putString("recieverName", recieverName);
+                    editor.putString("recieverImage", recieverImage);
                     editor.commit();
                 }
             });
-
-//            if (rList == null) {
-//                Toast.makeText(context, "null", Toast.LENGTH_SHORT).show();
-//            } else {
-//                Toast.makeText(context, rList.toString(), Toast.LENGTH_SHORT).show();
-//            }
-
         }
     }
 
@@ -176,27 +156,16 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
         return contactsList.size();
     }
 
-    private void getChatId(final String user_id, final String reciever_id) {
+    public String getChatId(final String user_id, final String reciever_id) {
         final StringRequest stringRequest = new StringRequest(Request.Method.POST, USER_CHAT_ID,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
-//                        Toast.makeText(context, " Shubz" + response, Toast.LENGTH_LONG).show();
-
                         JSONObject jsonObject;
                         try {
                             jsonObject = new JSONObject(response);
-                            String chat_Id = jsonObject.getString("chatID");
-
-                            if (chat_Id.equals("0")) {
-                                chat_Id = "";
-                            }
-
-                            SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
-                            editor.putString("chatId", chat_Id);
-                            editor.commit();
-
+                            chatID = String.valueOf(jsonObject.get("chatID"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -236,5 +205,6 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
         };
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         requestQueue.add(stringRequest);
+        return chatID;
     }
 }

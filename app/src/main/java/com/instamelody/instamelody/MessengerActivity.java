@@ -110,6 +110,16 @@ public class MessengerActivity extends AppCompatActivity {
             }
         });
 
+       /* message.setOnClickListener(new View.OnClickListener()
+
+        {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
+                startActivity(intent);
+            }
+        });*/
+
         profile.setOnClickListener(new View.OnClickListener()
 
         {
@@ -158,13 +168,11 @@ public class MessengerActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void getChats(final String user_Id) {
+    public void getChats(final String userId) {
         final StringRequest stringRequest = new StringRequest(Request.Method.POST, CONVERSATION_LIST_URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
-//                        Toast.makeText(MessengerActivity.this, " Shubz" + response, Toast.LENGTH_LONG).show();
 
                         chatList.clear();
                         adapter.notifyDataSetChanged();
@@ -180,18 +188,12 @@ public class MessengerActivity extends AppCompatActivity {
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     Chat chat = new Chat();
                                     JSONObject commentJson = jsonArray.getJSONObject(i);
-                                    chat.setId(commentJson.getString("id"));
-                                    chat.setSenderID(commentJson.getString("senderID"));
-                                    chat.setSenderName(commentJson.getString("sender_name"));
                                     chat.setReceiverID(commentJson.getString("receiverID"));
-                                    chat.setReceiverName(commentJson.getString("receiver_name"));
-                                    chat.setCoverPick(commentJson.getString("coverPick"));
-                                    chat.setUserProfileImage(commentJson.getString("profilePick"));
-                                    chat.setMessage(commentJson.getString("message"));
                                     chat.setChatID(commentJson.getString("chatID"));
-                                    chat.setIsRead(commentJson.getString("isread"));
+                                    chat.setReceiverName(commentJson.getString("receiver_name"));
+                                    chat.setMessage(commentJson.getString("message"));
                                     chat.setSendAt(commentJson.getString("sendat"));
-
+                                    chat.setUserProfileImage(commentJson.getString("profilePick"));
                                     chatList.add(chat);
                                 }
                             }
@@ -230,7 +232,7 @@ public class MessengerActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(USER_ID, user_Id);
+                params.put(USER_ID, userId);
                 return params;
             }
         };

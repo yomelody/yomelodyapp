@@ -47,6 +47,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.instamelody.instamelody.app.Config;
 import com.instamelody.instamelody.utils.AppHelper;
 import com.instamelody.instamelody.utils.DateValidator;
 import com.instamelody.instamelody.utils.VolleyMultipartRequest;
@@ -58,6 +60,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -93,6 +96,7 @@ public class SignUpActivity extends AppCompatActivity {
     String KEY_PHONE = "phone";
     String KEY_USER_TYPE = "usertype";
     String KEY_APPID = "appid";
+    String KEY_DEVICE_TOKEN_SIGN_UP = "device_token";
     String KEY_DEVICE_TYPE = "device_type";
     private int PICK_IMAGE_REQUEST = 1;
     private String UPLOAD_URL = "http://35.165.96.167/api/uploadfile.php";
@@ -104,6 +108,7 @@ public class SignUpActivity extends AppCompatActivity {
     private final int requestCode = 20;
 
     public String profilepic2;
+    String DeviceToken;
 
     String flag, id, username1, fname, lname, jemail, coverpic, followers, fans, records, dob1;
     EditText etfirstname, etlastname, etemail,
@@ -119,6 +124,8 @@ public class SignUpActivity extends AppCompatActivity {
     int statusFb, statusTwitter;
     String text = "";
     DatePickerDialog dpd;
+    String formatedDate;
+    String date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -191,6 +198,10 @@ public class SignUpActivity extends AppCompatActivity {
             Picasso.with(SignUpActivity.this).load(profilePic).into(userProfileImage);
         }
 
+        SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, MODE_PRIVATE);
+        DeviceToken = fcmPref.getString("regId", null);
+
+
         tvDob.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
@@ -223,6 +234,14 @@ public class SignUpActivity extends AppCompatActivity {
                                          etphone.setFocusableInTouchMode(true);
                                          etphone.requestFocus();
 //                                         alertDialog.show();
+
+                                         int day = dpd.getDatePicker().getDayOfMonth();
+                                         int month = dpd.getDatePicker().getMonth();
+                                         int year = dpd.getDatePicker().getYear();
+
+
+                                         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                                         formatedDate = sdf.format(new Date(year, month, day));
                                      }
                                  }
         );
@@ -581,64 +600,6 @@ public class SignUpActivity extends AppCompatActivity {
 
         );
 
-
-
-        /*userProfileImage.setOnClickListener(new View.OnClickListener()
-
-                                    {
-                                        @Override
-                                        public void onClick(View v) {
-
-
-
-
-
-                                            recyclerView = (RecyclerView)findViewById(R.id.recyclerViewDialogBox);
-                                            recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
-                                            recyclerView.setItemAnimator(new DefaultItemAnimator());
-
-                                            RelativeLayout rlBtnPhotoLibrary = (RelativeLayout) customView.findViewById(R.id.rlBtnPhotoLibrary);
-                                            RelativeLayout rlBtnTakePhotoOrVideo = (RelativeLayout) customView.findViewById(R.id.rlBtnTakeFromLibrary);
-                                            RelativeLayout rlBtnCancel = (RelativeLayout) customView.findViewById(R.id.rlBtnCancel);
-
-                                            final Dialog alertDialog = new Dialog(SignUpActivity.this);
-                                            alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                                            alertDialog.setContentView(customView);
-                                            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                                            WindowManager.LayoutParams wmlp = alertDialog.getWindow().getAttributes();
-                                            wmlp.width = android.view.WindowManager.LayoutParams.MATCH_PARENT;
-                                            wmlp.height = android.view.WindowManager.LayoutParams.WRAP_CONTENT;
-                                            alertDialog.show();
-
-                                            rlBtnPhotoLibrary.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View view) {
-                                                    Intent intent = new Intent();
-                                                    intent.setType("image");
-                                                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                                                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
-                                                    alertDialog.cancel();
-                                                }
-                                            });
-
-                                            rlBtnTakePhotoOrVideo.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View view) {
-                                                    Intent photoCaptureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                                    startActivityForResult(photoCaptureIntent, requestCode);
-                                                }
-                                            });
-
-                                            rlBtnCancel.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View view) {
-                                                    alertDialog.cancel();
-                                                }
-                                            });
-                                        }
-                                    }
-        );*/
-
         userProfileImage.buildDrawingCache();
         Bitmap bitmap = userProfileImage.getDrawingCache();
         Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
@@ -691,32 +652,6 @@ public class SignUpActivity extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
-    /*@Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        //Toast.makeText(this, "" + requestCode, Toast.LENGTH_SHORT).show();
-        if (this.requestCode == requestCode && resultCode == RESULT_OK) {
-            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-        }
-
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            Uri filePath = data.getData();
-            try {
-                //Getting the Bitmap from Gallery
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
-                //Setting the Bitmap to ImageView
-                userProfileImage.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }else {
-           *//* Bitmap bitmap = (Bitmap)data.getExtras().get("data");
-            userProfileImage.setImageBitmap(bitmap);*//*
-
-
-        }
-    }*/
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -738,14 +673,6 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-    /*public String getStringImage(Bitmap bmp){
-        bitmap = ((BitmapDrawable) userProfileImage.getDrawable()).getBitmap();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] imageBytes = baos.toByteArray();
-        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-        return encodedImage;
-    }*/
 
     private void uploadImage(final String n) {
         VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPLOAD_URL, new Response.Listener<NetworkResponse>() {
@@ -780,7 +707,7 @@ public class SignUpActivity extends AppCompatActivity {
                     editor.putString("jemail", jemail);
                     editor.putString("id", id);
                     editor.commit();
-                    startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
+//                    startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -812,6 +739,8 @@ public class SignUpActivity extends AppCompatActivity {
                 params.put(FILE1, new DataPart("img.jpg", AppHelper.getFileDataFromDrawable(getBaseContext(), userProfileImage.getDrawable()), "image/jpeg"));
                 return params;
             }
+
+
         };
         VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
     }
@@ -822,10 +751,17 @@ public class SignUpActivity extends AppCompatActivity {
         final String email = etemail.getText().toString().trim();
         final String username = etusername.getText().toString().trim();
         final String password = etpassword.getText().toString().trim();
+//        final String dob = tvDob.getText().toString().trim();
         final String dob = tvDob.getText().toString().trim();
         String a = dob.replaceAll(" ", "");
-        String b = a.substring(a.indexOf(":"),a.length());
-        final String date = b.replace(":","").replace("|","/");
+        try {
+            String b = a.substring(a.indexOf(":"), a.length());
+            date = b.replace(":", "").replace("|", "/");
+        } catch (StringIndexOutOfBoundsException siobe) {
+            System.out.println("invalid input");
+        }
+
+//        final String date = b.replace(":", "").replace("|", "/");
         final String phone = etphone.getText().toString().trim();
         final String usertype = "USER";
         StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER_URL,
@@ -834,14 +770,14 @@ public class SignUpActivity extends AppCompatActivity {
                     public void onResponse(String response) {
 
                         String successmsg = response;
-                        Toast.makeText(SignUpActivity.this, "Registeration Successful", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(SignUpActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
 
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
                             flag = jsonObject.getString("flag");
                             if (flag.equals("unsuccess")) {
                                 String msg = jsonObject.getString("msg");
-//                                Toast.makeText(SignUpActivity.this, "" + msg, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignUpActivity.this, "" + msg, Toast.LENGTH_SHORT).show();
                             }
                             JSONObject rspns = jsonObject.getJSONObject("response");
                             id = rspns.getString("id");
@@ -855,7 +791,6 @@ public class SignUpActivity extends AppCompatActivity {
                             fans = rspns.getString("fans");
                             records = rspns.getString("records");
                             dob1 = rspns.getString("dob");
-//                            deviceType = rspns.getString("device_type");
                             if (flag.equals("success")) {
                                 Toast.makeText(SignUpActivity.this, "Registration Success", Toast.LENGTH_SHORT).show();
                                 uploadImage(id);
@@ -877,7 +812,7 @@ public class SignUpActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(SignUpActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(SignUpActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
                         String errormsg = error.toString();
                         Log.d("Error", errormsg);
                     }
@@ -891,9 +826,9 @@ public class SignUpActivity extends AppCompatActivity {
                 params.put(KEY_EMAIL, email);
                 params.put(KEY_USERNAME, username);
                 params.put(KEY_PASSWORD, password);
-                params.put(KEY_DOB, dob);
-                params.put(KEY_PHONE, phone);
                 params.put(KEY_DOB, date);
+                params.put(KEY_PHONE, phone);
+                params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);
                 params.put(KEY_DEVICE_TYPE, "android");
                 params.put(KEY_USER_TYPE, "1");
                 return params;

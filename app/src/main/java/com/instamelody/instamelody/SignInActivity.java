@@ -94,19 +94,25 @@ public class SignInActivity extends AppCompatActivity {
     String KEY_GENDER = "gender";
     String KEY_DOB = "dob";
     String KEY_DEVICE_TOKEN_SIGN_UP = "device_token";
+    String KEY_DEVICE_TYPE = "device_type";
     String KEY_PROFILE_PIC = "profile_pic";
 
 
     String REGISTER_URL = "http://35.165.96.167/api/registration.php";
 
-    String DeviceToken, f_name, l_name, userId, dob,fbProfilePic;
+    String DeviceToken;
+    String f_name;
+    String l_name;
+    String userId;
+    String dob;
+    String fbProfilePic;
+    String FbProf1;
     TextView tvSettings, tvDone, tvSignUp, tvFirstName, tvUserName;
     String LOGIN_URL = "http://35.165.96.167/api/login.php";
     String KEY = "key";
     String KEY_EMAIL = "email";
     String KEY_PASSWORD = "password";
     String KEY_DEVICE_TOKEN = "devicetoken";
-    String KEY_DEVICE_TYPE = "device_type";
     static String TWITTER_CONSUMER_KEY = "HPEUPWqatYYqdX2BXXZCwhRa3";
     static String TWITTER_CONSUMER_SECRET = "INlgRJqcVyxZe8tzfDhBZ0kYONTlWBY5NO8akXcnzVhERWL67I";
     int temp = 0;
@@ -124,6 +130,8 @@ public class SignInActivity extends AppCompatActivity {
     String flag, user_id, First_name, Last_name, emailfinal, profilePic, coverPic, lastLogin, userName, fbId, fbEmail;
     HandelLogin obj = new HandelLogin();
     ProgressDialog progressDialog;
+    String photoUrlNormalSize;
+    Long TwitterId;
 
     private TwitterAuthClient client;
     private TwitterLoginButton twitterLoginButton;
@@ -156,24 +164,8 @@ public class SignInActivity extends AppCompatActivity {
                     username = userResult.data.screenName;
                     //tvUserName.setText("@" + username);
                     //tvUserName.invalidate();
-                    long id = userResult.data.id;
-                    String photoUrlNormalSize = userResult.data.profileImageUrl;
-                    // Picasso.with(SignInActivity.this).load(photoUrlNormalSize).into(ivuserimg);
-                    //String photoUrlBiggerSize   = userResult.data.profileImageUrl.replace("_normal", "_bigger");
-                    //String photoUrlMiniSize     = userResult.data.profileImageUrl.replace("_normal", "_mini");
-                    //String photoUrlOriginalSize = userResult.data.profileImageUrl.replace("_normal", "");
-
-                       /* Toast.makeText(SignInActivity.this, "" + id, Toast.LENGTH_LONG).show();
-                        Toast.makeText(SignInActivity.this, "" + name, Toast.LENGTH_LONG).show();
-                        Toast.makeText(SignInActivity.this, "" + email, Toast.LENGTH_LONG).show();
-                        Toast.makeText(SignInActivity.this, "" + username, Toast.LENGTH_LONG).show();
-                        Toast.makeText(SignInActivity.this, "" + photoUrlNormalSize, Toast.LENGTH_LONG).show();*/
-
-                    // _normal (48x48px) | _bigger (73x73px) | _mini (24x24px)
-
-//                        Toast.makeText(SignInActivity.this, ""+photoUrlNormalSize, Toast.LENGTH_LONG).show();
-//                        Toast.makeText(SignInActivity.this, ""+name, Toast.LENGTH_LONG).show();
-//                        Toast.makeText(SignInActivity.this, ""+username, Toast.LENGTH_LONG).show();
+                    TwitterId = userResult.data.id;
+                    photoUrlNormalSize = userResult.data.profileImageUrl;
 
                     SharedPreferences.Editor tEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
                     tEditor.putString("Name", name);
@@ -183,7 +175,7 @@ public class SignInActivity extends AppCompatActivity {
                     tEditor.putLong("ID", id);
                     tEditor.putInt("status", 1);
                     tEditor.commit();
-
+                    registrationSpecialTwitter();
                     startActivity(new Intent(SignInActivity.this, HomeActivity.class));
                 }
 
@@ -223,6 +215,12 @@ public class SignInActivity extends AppCompatActivity {
         btnfblogin = (RelativeLayout) findViewById(R.id.FbLogin);
         mcallbckmanager = CallbackManager.Factory.create();
         fbloginbtn = (LoginButton) findViewById(R.id.FbLoginReal);
+        SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, MODE_PRIVATE);
+        DeviceToken = fcmPref.getString("regId", null);
+//        Log.d("DeviceToken", DeviceToken);
+        SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+        FbProf1 = fbPref.getString("profilePicFB", null);
+
 
         etEmail.addTextChangedListener(new TextWatcher() {
             @Override
@@ -292,6 +290,8 @@ public class SignInActivity extends AppCompatActivity {
                                     String temp = object.getString("email");
                                     fbProfilePic = "https://graph.facebook.com/" + fbId + "/picture";
                                     username = temp.substring(0, temp.indexOf("@"));
+                                    String profilePicUrl = object.getJSONObject("picture").getJSONObject("data").getString("url");
+                                    Log.d("1", profilePicUrl);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -304,10 +304,11 @@ public class SignInActivity extends AppCompatActivity {
                                 fbEditor.putString("FbGender", gender);
                                 fbEditor.putString("Birthday", birthday);
                                 fbEditor.putString("UserName", username);
+                                fbEditor.putString("profilePicFB", fbProfilePic);
                                 fbEditor.putInt("status", 1);
                                 fbEditor.commit();
 
-                                registerSpecial();
+                                registerSpecialFB();
                                 Intent i = new Intent(SignInActivity.this, HomeActivity.class);
                                 startActivity(i);
 
@@ -333,84 +334,6 @@ public class SignInActivity extends AppCompatActivity {
                 Toast.makeText(SignInActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-
-
-
-       /* btnTwitterLogin.setCallback(new Callback<TwitterSession>() {
-            @Override
-            public void success(Result<TwitterSession> result) {
-                String output = "Status: " +
-                        "Your login was successful " +
-                        result.data.getUserName() +
-                        "Auth Token Received: " +
-                        result.data.getAuthToken().token;
-
-               *//* Toast.makeText(SignInActivity.this, "" + output, Toast.LENGTH_LONG).show();*//*
-                //loginTwitter(result);
-                TwitterSession session = result.data;
-                Twitter twitter = Twitter.getInstance();
-                TwitterApiClient api = twitter.core.getApiClient(session);
-                AccountService service = api.getAccountService();
-                Call<User> user = service.verifyCredentials(true, true);
-                user.enqueue(new Callback<User>() {
-                    @Override
-                    public void success(Result<User> userResult) {
-                        name = userResult.data.name;
-                        //tvFirstName.setText(name);
-                        //tvFirstName.invalidate();
-                        String email = userResult.data.email;
-                        username = userResult.data.screenName;
-                        //tvUserName.setText("@" + username);
-                        //tvUserName.invalidate();
-                        long id = userResult.data.id;
-                        String photoUrlNormalSize = userResult.data.profileImageUrl;
-                        // Picasso.with(SignInActivity.this).load(photoUrlNormalSize).into(ivuserimg);
-                        //String photoUrlBiggerSize   = userResult.data.profileImageUrl.replace("_normal", "_bigger");
-                        //String photoUrlMiniSize     = userResult.data.profileImageUrl.replace("_normal", "_mini");
-                        //String photoUrlOriginalSize = userResult.data.profileImageUrl.replace("_normal", "");
-
-                       *//* Toast.makeText(SignInActivity.this, "" + id, Toast.LENGTH_LONG).show();
-                        Toast.makeText(SignInActivity.this, "" + name, Toast.LENGTH_LONG).show();
-                        Toast.makeText(SignInActivity.this, "" + email, Toast.LENGTH_LONG).show();
-                        Toast.makeText(SignInActivity.this, "" + username, Toast.LENGTH_LONG).show();
-                        Toast.makeText(SignInActivity.this, "" + photoUrlNormalSize, Toast.LENGTH_LONG).show();*//*
-
-                        // _normal (48x48px) | _bigger (73x73px) | _mini (24x24px)
-
-//                        Toast.makeText(SignInActivity.this, ""+photoUrlNormalSize, Toast.LENGTH_LONG).show();
-//                        Toast.makeText(SignInActivity.this, ""+name, Toast.LENGTH_LONG).show();
-//                        Toast.makeText(SignInActivity.this, ""+username, Toast.LENGTH_LONG).show();
-
-                        SharedPreferences.Editor tEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
-                        tEditor.putString("Name", name);
-                        tEditor.putString("email", email);
-                        tEditor.putString("userName", username);
-                        tEditor.putString("ProfilePic", photoUrlNormalSize);
-                        tEditor.putLong("ID", id);
-                        tEditor.putInt("status", 1);
-                        tEditor.commit();
-
-                        startActivity(new Intent(SignInActivity.this, SignUpActivity.class));
-                    }
-
-                    @Override
-                    public void failure(TwitterException exc) {
-                        Log.d("TwitterKit", "Verify Credentials Failure", exc);
-                    }
-                });
-            }
-
-            @Override
-            public void failure(TwitterException exception) {
-                Log.d("Twitter Kit", "Login With Twitter", exception);
-            }
-        });
-*//*
-        if ((!etEmail.getText().toString().trim().equals("")) && (!etPassword.getText().toString().trim().equals(""))) {
-//                    Toast.makeText(SignInActivity.this, "Please enter your Email", Toast.LENGTH_SHORT).show();
-            emailRequired.setVisibility(View.VISIBLE);
-            emailRequired.setText("required");
-            btnLogIn.setEnabled(true);*/
 
 
         btnLogIn.setOnClickListener(new View.OnClickListener() {
@@ -462,6 +385,7 @@ public class SignInActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
+
             }
         });
 
@@ -471,6 +395,7 @@ public class SignInActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
                 startActivity(intent);
+
             }
         });
 
@@ -479,9 +404,12 @@ public class SignInActivity extends AppCompatActivity {
             public void onClick(View view) {
                 LoginManager.getInstance().logInWithReadPermissions(SignInActivity.this, Arrays.asList("public_profile", "email", "user_birthday", "user_friends", "user_about_me"));
                /* LoginManager.getInstance().logOut();*/
+
             }
         });
+
     }
+
 
     private void initCustomLogin() {
         client = new TwitterAuthClient();
@@ -496,27 +424,6 @@ public class SignInActivity extends AppCompatActivity {
         });
     }
 
-//    private void initTwitterLogin() {
-//        twitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
-//        twitterLoginButton.setCallback(authCallback);
-//        customButtonLogin = false;
-//    }
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        if (customButtonLogin) {
-//            client.onActivityResult(requestCode, resultCode, data);
-//            customButtonLogin = false;
-//        } else if(!customButtonLogin) {
-//            twitterLoginButton.onActivityResult(requestCode, resultCode, data);
-//            customButtonLogin = false;
-//        } else{
-//            if (mcallbckmanager.onActivityResult(requestCode, resultCode, data))
-//                return;
-//        }
-//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -534,12 +441,6 @@ public class SignInActivity extends AppCompatActivity {
 
         final String email = etEmail.getText().toString().trim();
         final String password = etPassword.getText().toString().trim();
-        DeviceToken = FirebaseInstanceId.getInstance().getToken();
-        SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, MODE_PRIVATE);
-        SharedPreferences.Editor editor = fcmPref.edit();
-        editor.putString("regId", DeviceToken);
-        editor.commit();
-
         Log.d("DeviceToken", DeviceToken);
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, LOGIN_URL,
@@ -547,9 +448,7 @@ public class SignInActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         String successmsg = response.toString();
-
-//                        Toast.makeText(SignInActivity.this, " Shubz" + successmsg, Toast.LENGTH_LONG).show();
-
+                        //Toast.makeText(SignInActivity.this, "" + successmsg, Toast.LENGTH_SHORT).show();
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
                             flag = jsonObject.getString("flag");
@@ -622,7 +521,6 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY_EMAIL, email);
                 params.put(KEY_PASSWORD, password);
                 params.put(KEY_DEVICE_TOKEN, DeviceToken);
-                params.put(KEY_DEVICE_TYPE, "Android");
                 return params;
             }
         };
@@ -643,38 +541,30 @@ public class SignInActivity extends AppCompatActivity {
     }
 
 
-    public void registerSpecial() {
+    public void registerSpecialFB() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER_URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
                         String successmsg = response.toString();
-                        Toast.makeText(SignInActivity.this, ""+successmsg, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(SignInActivity.this, ""+successmsg, Toast.LENGTH_SHORT).show();
+//                        Log.d("print", successmsg);
 
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
                             String flag = jsonObject.getString("flag");
+                            String response1 = jsonObject.getString("response");
                             JSONObject rspns = jsonObject.getJSONObject("response");
-                            userId = rspns.getString("id");
-                            username = rspns.getString("username");
-                            f_name = rspns.getString("f_name");
-                            l_name = rspns.getString("l_name");
-                            email = rspns.getString("email");
-//                            device_token = rspns.getString("device_token");
-//                            profilepic = rspns.getString("profilepic");
-//                            coverpic = rspns.getString("coverpic");
-                            dob = rspns.getString("dob");
+                            String userId = rspns.getString("id");
+                            String username = rspns.getString("username");
+                            String f_name = rspns.getString("f_name");
+                            String l_name = rspns.getString("l_name");
+                            String email = rspns.getString("email");
 
                             SharedPreferences.Editor fbEditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
-//                            fbEditor.putString("fbId", fbId);
-//                            fbEditor.putString("FbEmail", fbEmail);
-//                            fbEditor.putString("FbName", f_name);
-//                            fbEditor.putString("FbLastName", l_name);
-//                            fbEditor.putString("FbGender", gender);
-//                            fbEditor.putString("Birthday", dob);
-//                            fbEditor.putString("UserName", username);
                             fbEditor.putString("userId", userId);
+                            fbEditor.putInt("status", 1);
 //                            fbEditor.putInt("status", 1);
                             fbEditor.commit();
 
@@ -706,12 +596,78 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY_DOB, birthday);
                 params.put(KEY_USER_TYPE, "2");
                 params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);
-                params.put(KEY_PROFILE_PIC,fbProfilePic);
+                params.put(KEY_DEVICE_TYPE, "android");
+                params.put(KEY_PROFILE_PIC, fbProfilePic);
                 return params;
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
+    }
+
+    public void registrationSpecialTwitter() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        String successmsg = response.toString();
+//                        Toast.makeText(SignInActivity.this, ""+successmsg, Toast.LENGTH_SHORT).show();
+                        Log.d("print", successmsg);
+
+                        try {
+                            JSONObject jsonObject = new JSONObject(successmsg);
+                            String flag = jsonObject.getString("flag");
+                            JSONObject rspns = jsonObject.getJSONObject("response");
+                            String twitterId = rspns.getString("id");
+                            String username = rspns.getString("username");
+                            String f_name = rspns.getString("f_name");
+                            String l_name = rspns.getString("l_name");
+                            String email = rspns.getString("email");
+//                            device_token = rspns.getString("device_token");
+//                            profilepic = rspns.getString("profilepic");
+//                            coverpic = rspns.getString("coverpic");
+                            String dob = rspns.getString("dob");
+
+                            SharedPreferences.Editor twitterEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
+                            twitterEditor.putString("TwitterId", twitterId);
+                            twitterEditor.putInt("status", 1);
+                            twitterEditor.commit();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            String error = e.toString();
+                            Toast.makeText(SignInActivity.this, error, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(SignInActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
+                        String errormsg = error.toString();
+                        Log.d("Error", errormsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+
+                params.put(KEY_FNAME, name);
+                params.put(KEY_LNAME, name);
+                params.put(KEY_USERNAME, username);
+                params.put(KEY_EMAIL_SIGN_UP, "codingbrains17@gmail.com");
+                params.put(KEY_APP_ID, String.valueOf(TwitterId));
+                params.put(KEY_USER_TYPE, "3");
+                params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);
+                params.put(KEY_DEVICE_TYPE, "android");
+                params.put(KEY_PROFILE_PIC, photoUrlNormalSize);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+
     }
 }
 

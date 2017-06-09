@@ -3,7 +3,6 @@ package com.instamelody.instamelody.Adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
@@ -26,7 +25,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.CommentsActivity;
-import com.instamelody.instamelody.ContactsActivity;
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.UserDetails;
@@ -49,8 +47,7 @@ import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.instamelody.instamelody.Adapters.InstrumentListAdapter.audioUrl;
-
-
+import static com.instamelody.instamelody.R.id.melodySlider;
 
 /**
  * Created by Shubhansh Jaiswal on 11/26/2016.
@@ -89,16 +86,15 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvUserName, tvMelodyName, tvMelodyLength, tvBpmRate, tvInstrumentsUsed, tvMelodyGenre, tvMelodyDate, tv7, tv8, tv9;
-        TextView tvPlayCount, tvLikeCount, tvCommentCount, tvShareCount, tvSendAsMessage, tvCancel;
+        TextView tvPlayCount, tvLikeCount, tvCommentCount, tvShareCount;
         ImageView userProfileImage, ivMelodyCover, ivPlay, ivPause, ivLikeButton, ivDislikeButton, ivPlayButton;
-        Button btnMelodyAdd, btnMore;
+        Button btnMelodyAdd;
         SeekBar melodySlider;
-        RelativeLayout rlSeekbarTracer, rlLike, rlPlay, rlComment, rlMore, pop_up_more;
+        RelativeLayout rlSeekbarTracer, rlLike, rlPlay, rlComment;
 
         public MyViewHolder(final View itemView) {
             super(itemView);
 
-            pop_up_more = (RelativeLayout) itemView.findViewById(R.id.pop_up_more);
             userProfileImage = (ImageView) itemView.findViewById(R.id.userProfileImage);
             ivMelodyCover = (ImageView) itemView.findViewById(R.id.ivMelodyCover);
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
@@ -125,10 +121,6 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             rlLike = (RelativeLayout) itemView.findViewById(R.id.rlLike);
             rlPlay = (RelativeLayout) itemView.findViewById(R.id.rlPlay);
             rlComment = (RelativeLayout) itemView.findViewById(R.id.rlComment);
-            rlMore = (RelativeLayout) itemView.findViewById(R.id.rlMore);
-            tvSendAsMessage = (TextView) itemView.findViewById(R.id.tvSendAsMessage);
-            tvCancel = (TextView) itemView.findViewById(R.id.tvCancel);
-            btnMore = (Button) itemView.findViewById(R.id.btnMore);
 
             ivPlay.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -255,11 +247,13 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 }
             });
 
+
             rlComment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
                     String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID;
+
                     instruments = tvInstrumentsUsed.getText().toString().trim();
                     bpm = tvBpmRate.getText().toString().trim();
                     genre = tvMelodyGenre.getText().toString().trim();
@@ -341,35 +335,6 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 }
             });
 
-            rlMore.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    rlMore.setBackgroundColor(Color.parseColor("#EDEDED"));
-                    pop_up_more.setVisibility(VISIBLE);
-                }
-            });
-
-            tvSendAsMessage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String id = String.valueOf(getAdapterPosition() + 1);
-                    SharedPreferences.Editor editor = context.getSharedPreferences("PackData", MODE_PRIVATE).edit();
-                    editor.putString("PackId", mpid);
-                    editor.putString("PackType", "admin_melody");
-                    editor.commit();
-
-                    Intent intent = new Intent(context, ContactsActivity.class);
-                    context.startActivity(intent);
-                }
-            });
-
-            tvCancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    rlMore.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                    pop_up_more.setVisibility(GONE);
-                }
-            });
         }
 
         private void primarySeekBarProgressUpdater() {
