@@ -13,6 +13,10 @@ public class TestClasses extends AppCompatActivity {
     }
 
     public void rythm() {
+
+    }
+    public void getvalue(){
+
     }
 
 }

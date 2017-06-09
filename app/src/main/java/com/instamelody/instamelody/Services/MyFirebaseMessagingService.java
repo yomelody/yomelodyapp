@@ -5,17 +5,20 @@ import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
+
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.instamelody.instamelody.MainActivity;
+import com.instamelody.instamelody.ChatActivity;
 import com.instamelody.instamelody.app.Config;
 import com.instamelody.instamelody.utils.NotificationUtils;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
-    Context context = this;
+
     NotificationUtils notificationUtils;
+    String flagSoundPlayedAlready = "false";
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -26,8 +29,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d("fbs", "FCM Data Message: " + remoteMessage.getData());
         String chat_id = "";
 
-        if (remoteMessage.equals(null))
+        if (remoteMessage == null)
             return;
+
         if (remoteMessage.getNotification() != null) { // Check if message contains a notification payload.
             Log.e("fbs", "Notification Body: " + remoteMessage.getNotification().getBody());
             handleNotification(remoteMessage.getNotification().getBody());
@@ -43,14 +47,28 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
     }
 
-    private void handleNotification(String message) {
+    private void handleNotification(String result) {
         if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) {// app is in foreground, broadcast the push message
             Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
-            pushNotification.putExtra("message", message);
+//            String message = "";
+//            String senderName = "";
+            String chatId = "";
+            try {
+                JSONObject json = new JSONObject(result);
+//                message = json.getString("message");
+//                senderName = json.getString("sender_name");
+                chatId = json.getString("chat_id");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+//            pushNotification.putExtra("message", message);
+//            pushNotification.putExtra("senderName",senderName);
+            pushNotification.putExtra("chatId", chatId);
             LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-            // play notification sound
+//            play notification sound
             NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
             notificationUtils.playNotificationSound();
+            flagSoundPlayedAlready = "true";
         } else {
             // If the app is in background, firebase itself handles the notification
         }
@@ -59,34 +77,48 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private void handleDataMessage(JSONObject json) {
         Log.e("fbs", "push json: " + json.toString());
         try {
-            JSONObject data = json.getJSONObject("data");
-            String title = data.getString("title");
-            String message = data.getString("message");
-            boolean isBackground = data.getBoolean("is_background");
-            String imageUrl = data.getString("image");
-            String timestamp = data.getString("timestamp");
-            JSONObject payload = data.getJSONObject("payload");
-            Log.e("fbs", "title: " + title);
+//            JSONObject messageObj = json.getJSONObject("message");
+////            String file_id = messageObj.getString("file_id");
+//            String senderid = messageObj.getString("senderid");
+//            String sender_name = messageObj.getString("sender_name");
+//            String message = messageObj.getString("message");
+//            String chat_id = messageObj.getString("chat_id");
+//            String title = "One Message Received";
+//            String imageUrl = messageObj.getString("image");
+
+            String file_id = json.getString("file_id");
+            String senderid = json.getString("senderid");
+            String sender_name = json.getString("sender_name");
+            String message = json.getString("message");
+            String chat_id = json.getString("chat_id");
+            String title = "One Message Received";
+            String imageUrl = json.getString("image");
+
+//            Log.e("fbs", "file_id: " + file_id);
+            Log.e("fbs", "sender_name " + sender_name);
+            Log.e("fbs", "senderid: " + senderid);
             Log.e("fbs", "message: " + message);
-            Log.e("fbs", "isBackground: " + isBackground);
-            Log.e("fbs", "payload: " + payload.toString());
-            Log.e("fbs", "imageUrl: " + imageUrl);
-            Log.e("fbs", "timestamp: " + timestamp);
+            Log.e("fbs", "chat_id: " + chat_id);
+            Log.e("fbs", "image: " + imageUrl);
 
             if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) { // app is in foreground, broadcast the push message
                 Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
                 pushNotification.putExtra("message", message);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
                 // play notification sound
-                NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
-                notificationUtils.playNotificationSound();
+                if (flagSoundPlayedAlready.equals("false")) {
+                    NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
+                    notificationUtils.playNotificationSound();
+                }
             } else { // app is in background, show the notification in notification tray
-                Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
+                Intent resultIntent = new Intent(getApplicationContext(), ChatActivity.class);
+                resultIntent.putExtra("sender_name", sender_name);
                 resultIntent.putExtra("message", message);
+                resultIntent.putExtra("chat_id", chat_id);
                 if (TextUtils.isEmpty(imageUrl)) { // check for image attachment
-                    showNotificationMessage(getApplicationContext(), title, message, timestamp, resultIntent);
+                    showNotificationMessage(getApplicationContext(), title, senderid, sender_name, message, chat_id, /*file_id,*/ resultIntent);
                 } else { // image is present, show notification with image
-                    showNotificationMessageWithBigImage(getApplicationContext(), title, message, timestamp, resultIntent, imageUrl);
+                    showNotificationMessageWithBigImage(getApplicationContext(), title, senderid, sender_name, message, chat_id, /*file_id,*/ resultIntent, imageUrl);
                 }
             }
         } catch (JSONException e) {
@@ -96,20 +128,20 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
     }
 
-    private void showNotificationMessage(Context context, String title, String message, String timeStamp, Intent intent) { //Showing notification with text only
+    private void showNotificationMessage(Context context, String title, String senderId, String senderName, String message, String chatId, /*String fileId,*/ Intent intent) { //Showing notification with text only
         notificationUtils = new NotificationUtils(context);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        notificationUtils.showNotificationMessage(title, message, timeStamp, intent);
+        notificationUtils.showNotificationMessage(senderId, title, senderName, message, chatId, /*fileId,*/ intent);
     }
 
-    private void showNotificationMessageWithBigImage(Context context, String title, String message, String timeStamp, Intent intent, String imageUrl) { //Showing notification with text and image
+    private void showNotificationMessageWithBigImage(Context context, String title, String senderId, String senderName, String message, String chatId, /*String fileId,*/ Intent intent, String imageUrl) { //Showing notification with text and image
         notificationUtils = new NotificationUtils(context);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        notificationUtils.showNotificationMessage(title, message, timeStamp, intent, imageUrl);
+        notificationUtils.showNotificationMessage(senderId, title, senderName, message, chatId, /*fileId,*/ intent, imageUrl);
     }
 }
 
-  /* try
+/*   try
     {
         JSONObject json = new JSONObject(remoteMessage.getData().toString());
         JSONObject msgobj = json.getJSONObject("message");
@@ -153,7 +185,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 //            String str = remoteMessage.getData().toString();
 //            Log.d("FirebaseText",str);
 //        }
-}
-*/
+}*/
 
 
