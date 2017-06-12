@@ -23,7 +23,7 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/cover1"/>
+                android:background="@drawable/cover1" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -48,36 +48,36 @@
                         android:id="@+id/tvNameInProf"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@+id/userProfileImageInProf"
+                        android:layout_marginBottom="5dp"
                         android:text="Matt Jacob"
                         android:textAlignment="center"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textColor="#FFFFFF"
-                        android:layout_below="@+id/userProfileImageInProf"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_marginBottom="5dp"/>
+                        android:textColor="#FFFFFF" />
 
                     <TextView
                         android:id="@+id/tvUserNameInProf"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="sillyPoet"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textColor="#FFFFFF"
                         android:layout_alignParentBottom="true"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
-                        android:layout_marginBottom="5dp"/>
+                        android:layout_marginBottom="5dp"
+                        android:text="sillyPoet"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textColor="#FFFFFF" />
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/userProfileImageInProf"
                         android:layout_width="80dp"
                         android:layout_height="80dp"
-                        android:src="@drawable/profile2"
                         android:layout_alignParentTop="true"
                         android:layout_centerHorizontal="true"
-                        android:layout_marginTop="10dp" />
+                        android:layout_marginTop="10dp"
+                        android:src="@drawable/profile2" />
 
                 </RelativeLayout>
             </FrameLayout>
@@ -98,8 +98,8 @@
                     android:id="@+id/tv_records"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#FFFFFF"
                     android:layout_centerVertical="true"
+                    android:background="#FFFFFF"
                     android:text="Records:48"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
@@ -116,8 +116,8 @@
                     android:id="@+id/tv_fans"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#FFFFFF"
                     android:layout_centerVertical="true"
+                    android:background="#FFFFFF"
                     android:text="Fans:151"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
@@ -134,9 +134,9 @@
                     android:id="@+id/tv_following"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:background="#FFFFFF"
                     android:text="Following:25"
-                    android:layout_centerVertical="true"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textColor="#495C67" />
@@ -151,7 +151,7 @@
         android:layout_marginBottom="45dp">
 
         <RelativeLayout
-
+            android:id="@+id/rlSearch"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginTop="1dp"
@@ -190,28 +190,49 @@
                 android:background="#E4E4E4"
                 android:padding="10dp"
                 android:text="Bio"
-                android:textColor="#495C67"/>
+                android:textColor="#495C67" />
 
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
                 android:id="@+id/ivSound"
-                android:src="@drawable/search"
-                android:layout_marginRight="20dp"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true" />
-
-            <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_marginRight="15dp"
-                android:id="@+id/ivSounda"
-                android:src="@drawable/filter"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/ivSound"/>
+                android:layout_marginRight="20dp"
+                android:src="@drawable/search" />
+
+            <ImageView
+                android:id="@+id/ivSounda"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:layout_toLeftOf="@+id/ivSound"
+                android:src="@drawable/filter" />
 
         </RelativeLayout>
+
+        <android.support.v7.widget.SearchView
+            android:id="@+id/searchOnProf"
+            android:layout_width="300dp"
+            android:layout_height="40dp"
+            android:background="#FFFFFF"
+            android:visibility="gone"
+            app:iconifiedByDefault="false"
+            app:queryHint="@string/search_hint" />
+
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="90dp"
+            android:layout_height="41dp"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/searchOnProf"
+            android:background="#E4E4E4"
+            android:text="cancel"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textColor="#4575FC"
+            android:visibility="gone" />
 
         <RelativeLayout
             android:id="@+id/rlFragmentActivity"
@@ -302,7 +323,6 @@
                 </LinearLayout>
             </TabHost>
         </RelativeLayout>
-
 
 
     </RelativeLayout>

@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -30,6 +31,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Fragments.ActivityFragment;
+import com.instamelody.instamelody.Fragments.AudioFragment;
 import com.instamelody.instamelody.Fragments.BioFragment;
 import com.instamelody.instamelody.Fragments.ProfileActivityFragment;
 import com.instamelody.instamelody.Models.RecordingsData;
@@ -50,7 +52,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.instamelody.instamelody.R.id.bio_fragment;
 import static com.instamelody.instamelody.R.id.rlPartStation;
-import static com.instamelody.instamelody.R.id.tabHost;
 
 /**
  * Created by Saurabh Singh on 01/09/2017
@@ -70,14 +71,16 @@ public class ProfileActivity extends AppCompatActivity {
 
 
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
-    Button btnAudio, btnActivity, btnBio, appBarSidebtnMusicCircle;
-    RelativeLayout rlPartProfile, rlFragmentActivity, rlFragmentBio;
-    ImageView ivBackButton, ivHomeButton, ivAudio_feed, ivDiscover, ivMessage, ivProfile;
+    Button btnAudio, btnActivity, btnBio, appBarSidebtnMusicCircle, btnCancel;
+    RelativeLayout rlPartProfile, rlFragmentActivity, rlFragmentBio, rlSearch;
+    ImageView ivBackButton, ivHomeButton, ivAudio_feed, ivDiscover, ivMessage, ivProfile, ivSound;
     CircleImageView userProfileImageInProf;
     TextView tvNameInProf, tvUserNameInProf;
     String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId;
     String userId;
+    String userIdNormal, userIdFb, userIdTwitter;
     int statusNormal, statusFb, statusTwitter;
+    SearchView search1;
 
     TabHost host;
     private static RecyclerView.Adapter adapter;
@@ -96,12 +99,34 @@ public class ProfileActivity extends AppCompatActivity {
 
         SharedPreferences loginSharedPref1 = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userId = loginSharedPref1.getString("userId", null);
+        SharedPreferences loginFbSharedPref = this.getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+        userIdFb = loginFbSharedPref.getString("userId", null);
+        statusFb = loginFbSharedPref.getInt("status", 0);
+        SharedPreferences loginTwitterSharedPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        userIdTwitter = loginTwitterSharedPref.getString("TwitterId", null);
+        statusTwitter = loginTwitterSharedPref.getInt("status", 0);
+        search1 = (SearchView) findViewById(R.id.searchOnProf);
+
+
+        if (statusNormal == 1) {
+            userId = userIdNormal;
+        } else if (statusFb == 1) {
+            userId = userIdFb;
+        } else if (statusTwitter == 1) {
+            userId = userIdTwitter;
+        }
 
         adapter = new RecordingsCardAdapter(this, recordingList);
+
+
+
 
         btnAudio = (Button) findViewById(R.id.btnAudio);
         btnActivity = (Button) findViewById(R.id.btnActivity);
         btnBio = (Button) findViewById(R.id.btnBio);
+        rlSearch = (RelativeLayout) findViewById(R.id.rlSearch);
+        ivSound = (ImageView) findViewById(R.id.ivSound);
+        btnCancel = (Button) findViewById(R.id.btnCancel);
         appBarSidebtnMusicCircle = (Button) findViewById(R.id.appBarSidebtnMusicCircle);
         appBarSidebtnMusicCircle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -185,6 +210,26 @@ public class ProfileActivity extends AppCompatActivity {
             userProfileImageInProf.setVisibility(View.VISIBLE);
             Picasso.with(ProfileActivity.this).load("https://graph.facebook.com/" + fbId + "/picture").into(userProfileImageInProf);
         }
+
+
+        ivSound.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                searchMenuItem.setVisible(position == 0);
+                rlSearch.setVisibility(View.INVISIBLE);
+                search1.setVisibility(View.VISIBLE);
+                btnCancel.setVisibility(View.VISIBLE);
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rlSearch.setVisibility(View.VISIBLE);
+                search1.setVisibility(View.GONE);
+                btnCancel.setVisibility(View.GONE);
+            }
+        });
 
 
         btnAudio.setOnClickListener(new View.OnClickListener() {

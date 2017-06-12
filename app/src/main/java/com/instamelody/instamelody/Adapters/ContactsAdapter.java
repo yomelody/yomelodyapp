@@ -89,8 +89,18 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                 @Override
                 public void onClick(View view) {
 
+                    String userId = "";
                     SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-                    String userId = loginSharedPref.getString("userId", null);
+                    SharedPreferences fbPref = context.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+                    SharedPreferences twitterPref = context.getSharedPreferences("TwitterPref", MODE_PRIVATE);
+
+                    if (loginSharedPref.getString("userId", null) != null) {
+                        userId = loginSharedPref.getString("userId", null);
+                    } else if (fbPref.getString("userId", null) != null) {
+                        userId = fbPref.getString("userId", null);
+                    } else if (twitterPref.getString("userId", null) != null) {
+                        userId = twitterPref.getString("userId", null);
+                    }
 
                     if (grey_circle.getVisibility() == View.VISIBLE) {
                         grey_circle.setVisibility(View.GONE);
@@ -120,7 +130,11 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                             ContactsActivity.btnCancel.setVisibility(View.GONE);
                             ContactsActivity.btnOK.setVisibility(View.VISIBLE);
                         }
-                        getChatId(userId, recieverId);
+                        if (!userId.equals("")) {
+                            getChatId(userId, recieverId);
+                        } else {
+                            Toast.makeText(context, "Logged in user null id Error", Toast.LENGTH_SHORT).show();
+                        }
 
                     } else {
                         blue_circle.setVisibility(View.GONE);

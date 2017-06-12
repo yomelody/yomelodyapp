@@ -1,7 +1,6 @@
 package com.instamelody.instamelody;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.ArrayRes;
 import android.support.v7.app.AppCompatActivity;
@@ -48,15 +47,11 @@ public class ContactsActivity extends AppCompatActivity {
     String CONTACTS_LIST_URL = "http://35.165.96.167/api/userdetails.php";
     public static Button btnCancel , btnOK;
     ImageView discover, message, profile, audio_feed, ivBackButton, ivHomeButton;
-    String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
-
-        SharedPreferences loginSharedPref = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-        userId = loginSharedPref.getString("userId", null);
 
         getContacts();
 
@@ -151,6 +146,7 @@ public class ContactsActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
     }
 
     public void getContacts() {
@@ -158,8 +154,6 @@ public class ContactsActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
-//                        Toast.makeText(ContactsActivity.this, " Shubz" + response, Toast.LENGTH_LONG).show();
 
                         contactList.clear();
                         adapter.notifyDataSetChanged();
@@ -195,7 +189,6 @@ public class ContactsActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("key", "passed");
-                params.put("myid", userId);
                 return params;
             }
         };
