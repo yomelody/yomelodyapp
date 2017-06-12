@@ -86,7 +86,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 //            String title = "One Message Received";
 //            String imageUrl = messageObj.getString("image");
 
-            String file_id = json.getString("file_id");
+//            String file_id = json.getString("file_id");
             String senderid = json.getString("senderid");
             String sender_name = json.getString("sender_name");
             String message = json.getString("message");
