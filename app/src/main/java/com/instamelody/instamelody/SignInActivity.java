@@ -137,61 +137,6 @@ public class SignInActivity extends AppCompatActivity {
     private TwitterLoginButton twitterLoginButton;
     private boolean customButtonLogin;
 
-    //this callback is the same for default and custom login metods
-    private Callback<TwitterSession> authCallback = new Callback<TwitterSession>() {
-        @Override
-        public void success(Result<TwitterSession> result) {
-            String output = "Status: " +
-                    "Your login was successful " +
-                    result.data.getUserName() +
-                    "Auth Token Received: " +
-                    result.data.getAuthToken().token;
-
-               /* Toast.makeText(SignInActivity.this, "" + output, Toast.LENGTH_LONG).show();*/
-            //loginTwitter(result);
-            TwitterSession session = result.data;
-            Twitter twitter = Twitter.getInstance();
-            TwitterApiClient api = twitter.core.getApiClient(session);
-            AccountService service = api.getAccountService();
-            Call<User> user = service.verifyCredentials(true, true);
-            user.enqueue(new Callback<User>() {
-                @Override
-                public void success(Result<User> userResult) {
-                    name = userResult.data.name;
-                    //tvFirstName.setText(name);
-                    //tvFirstName.invalidate();
-                    String email = userResult.data.email;
-                    username = userResult.data.screenName;
-                    //tvUserName.setText("@" + username);
-                    //tvUserName.invalidate();
-                    TwitterId = userResult.data.id;
-                    photoUrlNormalSize = userResult.data.profileImageUrl;
-
-                    SharedPreferences.Editor tEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
-                    tEditor.putString("Name", name);
-                    tEditor.putString("email", email);
-                    tEditor.putString("userName", username);
-                    tEditor.putString("ProfilePic", photoUrlNormalSize);
-                    tEditor.putLong("ID", id);
-                    tEditor.putInt("status", 1);
-                    tEditor.commit();
-                    registrationSpecialTwitter();
-                    startActivity(new Intent(SignInActivity.this, HomeActivity.class));
-                }
-
-                @Override
-                public void failure(TwitterException exc) {
-                    Log.d("TwitterKit", "Verify Credentials Failure", exc);
-                }
-            });
-        }
-
-        @Override
-        public void failure(TwitterException exception) {
-            Log.d("Twitter Kit", "Login With Twitter", exception);
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -347,16 +292,13 @@ public class SignInActivity extends AppCompatActivity {
                 } else {
                     LogIn();
                 }
-
             }
         });
 
         btnClearEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 etEmail.getText().clear();
-
             }
         });
 
@@ -410,6 +352,60 @@ public class SignInActivity extends AppCompatActivity {
 
     }
 
+    //this callback is the same for default and custom login metods
+    private Callback<TwitterSession> authCallback = new Callback<TwitterSession>() {
+        @Override
+        public void success(Result<TwitterSession> result) {
+            String output = "Status: " +
+                    "Your login was successful " +
+                    result.data.getUserName() +
+                    "Auth Token Received: " +
+                    result.data.getAuthToken().token;
+
+               /* Toast.makeText(SignInActivity.this, "" + output, Toast.LENGTH_LONG).show();*/
+            //loginTwitter(result);
+            TwitterSession session = result.data;
+            Twitter twitter = Twitter.getInstance();
+            TwitterApiClient api = twitter.core.getApiClient(session);
+            AccountService service = api.getAccountService();
+            Call<User> user = service.verifyCredentials(true, true);
+            user.enqueue(new Callback<User>() {
+                @Override
+                public void success(Result<User> userResult) {
+                    name = userResult.data.name;
+                    //tvFirstName.setText(name);
+                    //tvFirstName.invalidate();
+                    String email = userResult.data.email;
+                    username = userResult.data.screenName;
+                    //tvUserName.setText("@" + username);
+                    //tvUserName.invalidate();
+                    TwitterId = userResult.data.id;
+                    photoUrlNormalSize = userResult.data.profileImageUrl;
+
+                    SharedPreferences.Editor tEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
+                    tEditor.putString("Name", name);
+                    tEditor.putString("email", email);
+                    tEditor.putString("userName", username);
+                    tEditor.putString("ProfilePic", photoUrlNormalSize);
+                    tEditor.putLong("ID", id);
+                    tEditor.putInt("status", 1);
+                    tEditor.commit();
+                    registrationSpecialTwitter();
+                    startActivity(new Intent(SignInActivity.this, HomeActivity.class));
+                }
+
+                @Override
+                public void failure(TwitterException exc) {
+                    Log.d("TwitterKit", "Verify Credentials Failure", exc);
+                }
+            });
+        }
+
+        @Override
+        public void failure(TwitterException exception) {
+            Log.d("Twitter Kit", "Login With Twitter", exception);
+        }
+    };
 
     private void initCustomLogin() {
         client = new TwitterAuthClient();
@@ -521,6 +517,7 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY_EMAIL, email);
                 params.put(KEY_PASSWORD, password);
                 params.put(KEY_DEVICE_TOKEN, DeviceToken);
+                params.put(KEY_DEVICE_TYPE, "Android");
                 return params;
             }
         };
