@@ -70,6 +70,8 @@ public class AudioFragment extends Fragment {
     private static ArrayList<RecordingsModel> data;
     ProgressDialog pDialog;
     String userId;
+    String userIdNormal, userIdFb, userIdTwitter;
+    int statusNormal, statusFb, statusTwitter;
 
     public AudioFragment() {
 
@@ -82,6 +84,21 @@ public class AudioFragment extends Fragment {
         fetchRecordings();
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userId = loginSharedPref.getString("userId", null);
+
+        SharedPreferences loginFbSharedPref = getActivity().getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+        userIdFb = loginFbSharedPref.getString("userId", null);
+        statusFb = loginFbSharedPref.getInt("status", 0);
+        SharedPreferences loginTwitterSharedPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        userIdTwitter = loginTwitterSharedPref.getString("TwitterId", null);
+        statusTwitter = loginTwitterSharedPref.getInt("status", 0);
+
+        if (statusNormal == 1) {
+            userId = userIdNormal;
+        } else if (statusFb == 1) {
+            userId = userIdFb;
+        } else if (statusTwitter == 1) {
+            userId = userIdTwitter;
+        }
 
         new DownloadFileFromURL();
         adapter = new RecordingsCardAdapter(getActivity(), recordingList);

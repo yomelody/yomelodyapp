@@ -35,7 +35,7 @@
         android:orientation="vertical">
 
         <TabHost
-            android:id="@+id/tabHost"
+            android:id="@+id/tabHostDiscover"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"

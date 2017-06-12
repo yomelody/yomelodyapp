@@ -84,7 +84,7 @@ public class HomeActivity extends AppCompatActivity {
     public static HomeActivity fa;
     TextView tvFirstName, tvUserName;
     String Name, userName, profilePic, fbEmail, profilepic2, fbFirstName, fbUserName, fbLastName, fbProfilePic, name2, userName2, galleryPrfPic, fbId;
-    String firstName, userNameLogin, profilePicLogin;
+    String firstName, lastName, userNameLogin, profilePicLogin;
     int statusNormal, statusFb, statusTwitter;
     CircleImageView userProfileImage;
 
@@ -132,6 +132,7 @@ public class HomeActivity extends AppCompatActivity {
 
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         firstName = loginSharedPref.getString("firstName", null);
+        lastName = loginSharedPref.getString("lastName",null);
         userNameLogin = loginSharedPref.getString("userName", null);
         profilePicLogin = loginSharedPref.getString("profilePic", null);
         statusNormal = loginSharedPref.getInt("status", 0);
@@ -139,8 +140,8 @@ public class HomeActivity extends AppCompatActivity {
         if (statusNormal == 1) {
             SignOut.setVisibility(View.VISIBLE);
             SignIn.setVisibility(View.INVISIBLE);
-            tvFirstName.setText(firstName);
-            tvUserName.setText(userNameLogin);
+            tvFirstName.setText(firstName+" "+lastName);
+            tvUserName.setText("@"+userNameLogin);
         }
 
         if (profilePicLogin != null) {
@@ -199,9 +200,9 @@ public class HomeActivity extends AppCompatActivity {
         if (statusFb == 1) {
             SignOut.setVisibility(View.VISIBLE);
             SignIn.setVisibility(View.INVISIBLE);
-            String fullName = fbFirstName+ "" +fbLastName;
+            String fullName = fbFirstName+ " " +fbLastName;
             tvFirstName.setText(fullName);
-            tvUserName.setText(fbUserName);
+            tvUserName.setText("@"+fbUserName);
         }
         if (fbId != null) {
             ivProfile.setVisibility(View.GONE);

@@ -3,6 +3,7 @@ package com.instamelody.instamelody;
 import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -23,6 +24,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SnapHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -139,8 +141,17 @@ public class ChatActivity extends AppCompatActivity {
         fileArray.clear();
         getGalleryImages();
 
-        SharedPreferences loginSharedPref = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-        userId = loginSharedPref.getString("userId", null);
+        SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+        SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
+        }
 
 //        SharedPreferences chatPrefs = getSharedPreferences("MessengerData", MODE_PRIVATE);
 //        id= chatPrefs.getString("id", null);
@@ -200,7 +211,8 @@ public class ChatActivity extends AppCompatActivity {
 
         recyclerViewChat = (RecyclerView) findViewById(R.id.recyclerViewChat);
         recyclerViewChat.setHasFixedSize(true);
-        RecyclerView.LayoutManager lm = new LinearLayoutManager(getApplicationContext());
+        LinearLayoutManager lm = new LinearLayoutManager(getApplicationContext());
+        lm.setStackFromEnd(true);
         recyclerViewChat.setLayoutManager(lm);
         recyclerViewChat.setHasFixedSize(true);
         recyclerViewChat.setItemViewCacheSize(10);
@@ -215,10 +227,10 @@ public class ChatActivity extends AppCompatActivity {
 
                 if (intent.getAction().equals(Config.PUSH_NOTIFICATION)) {
                     // new push notification is received
-                    String message = intent.getStringExtra("message");
+//                    String message = intent.getStringExtra("message");
                     String imageUrl = intent.getStringExtra("imageUrl");
-                    Toast.makeText(getApplicationContext(), "Push notification: " + message, Toast.LENGTH_LONG).show();
-                    tvMsgChat.setText(message);
+                    String chatId = intent.getStringExtra("chatId");
+                    getChatMsgs(chatId);
                     if (imageUrl != null && imageUrl.length() > 4 && Patterns.WEB_URL.matcher(imageUrl).matches()) {
                         Bitmap bitmap = getBitmapFromURL(imageUrl);
                         if (bitmap != null) {
@@ -577,7 +589,6 @@ public class ChatActivity extends AppCompatActivity {
 
                         chatList.clear();
                         cAdapter.notifyDataSetChanged();
-                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
 
                         JSONObject jsonObject;
                         try {

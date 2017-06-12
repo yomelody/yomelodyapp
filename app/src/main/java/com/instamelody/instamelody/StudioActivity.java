@@ -125,6 +125,7 @@ public class StudioActivity extends AppCompatActivity {
     long countUp, countUp_milli, timeElapsed;
     String asText;
     String value, value1;
+    String userIdNormal, userIdFb, userIdTwitter;
     String userId;
     String switchFlag = "0";
     String instrumentFile;
@@ -258,7 +259,22 @@ public class StudioActivity extends AppCompatActivity {
         userNameLogin = loginSharedPref.getString("userName", null);
         profilePicLogin = loginSharedPref.getString("profilePic", null);
         statusNormal = loginSharedPref.getInt("status", 0);
-        userId = loginSharedPref.getString("userId", null);
+        userIdNormal = loginSharedPref.getString("userId", null);
+        SharedPreferences loginFbSharedPref = this.getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+        userIdFb = loginFbSharedPref.getString("userId", null);
+        statusFb = loginFbSharedPref.getInt("status", 0);
+        SharedPreferences loginTwitterSharedPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        userIdTwitter = loginTwitterSharedPref.getString("TwitterId", null);
+        statusTwitter = loginTwitterSharedPref.getInt("status", 0);
+
+        if (statusNormal == 1) {
+            userId = userIdNormal;
+        } else if (statusFb == 1) {
+            userId = userIdFb;
+        } else if (statusTwitter == 1) {
+            userId = userIdTwitter;
+        }
+
         rlSetCover = (RelativeLayout) findViewById(R.id.rlSetCover);
         ivNewRecordCover = (ImageView) findViewById(R.id.ivNewRecordCover);
         chrono = (Chronometer) findViewById(R.id.chrono);
@@ -276,14 +292,11 @@ public class StudioActivity extends AppCompatActivity {
         frameSync = (FrameLayout) findViewById(R.id.frameSync);
         rlSync = (RelativeLayout) findViewById(R.id.rlSync);
         SharedPreferences loginSharedPref1 = this.getSharedPreferences("Url_recording", MODE_PRIVATE);
-        fetchRecordingUrl =loginSharedPref1.getString("Recording_url",null);
+        fetchRecordingUrl = loginSharedPref1.getString("Recording_url", null);
 
-//        instrumentFilePath = Environment.getExternalStorageDirectory().getAbsoluteFile() + "sdcard/InstaMelody/Downloads/Melodies/" + 0 + ".mp3";
-//        Log.d("File Path",instrumentFilePath);
 
         fetchGenreNames();
-        /*myTask = new LongOperation();
-        myTask.execute();*/
+
 
         int hours = (int) (timeElapsed / 3600000);
         int minutes = (int) (timeElapsed - hours * 3600000) / 60000;
@@ -324,35 +337,16 @@ public class StudioActivity extends AppCompatActivity {
                 }
 
 
-//                SharedPreferences melodyNamePref = this.getSharedPreferences("prefMelodyName", MODE_PRIVATE);
-//                melodyName = melodyNamePref.getString("melodyName", null);
-
-
-//                MelodyCard mc = new MelodyCard();
-//                melodyName = mc.getMelodyName();
-
                 ArrayList<MelodyCard> arrayMelody = new ArrayList<>();
-//                MelodyCardListAdapter obj= new MelodyCardListAdapter(arrayMelody,getApplicationContext());
-//                arrayMelody = obj.returnInstrumentsList();
+
                 arrayMelody = MelodyCardListAdapter.returnMelodyList();
                 melodyName = arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName();
-
-//                MelodyInstruments mi = new MelodyInstruments();
-////                instrumentName = mi.getInstrumentName();
-//                instrumentFile = mi.getInstrumentFile();
-//                ArrayList<MelodyInstruments> arrayInstruments = new ArrayList<>();
-                //    InstrumentListAdapter.returnInstrumentsList();
-                //              InstrumentListAdapter ila =new InstrumentListAdapter(arrayInstruments,getApplicationContext());
-//                int count = ila.getItemCount();
-////ArrayList List=new ArrayList();
-////                List=   ParseContents.getInstruments();
-//
 
 
                 for (int i = 0; i < instrumentList.size(); i++) {
                     MelodyInstruments instruments = instrumentList.get(i);
                     instrumentName = instruments.getInstrumentName();
-//                    array[i] = instrumentName;
+
                 }
 
                 LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
@@ -360,16 +354,6 @@ public class StudioActivity extends AppCompatActivity {
 
 //                String audioUrl = "http://35.165.96.167/api/uploads/melody/instruments/melody_cut.mp3";
                 String audioUrl = "http://35.165.96.167/api/uploads/melody/instruments/";
-
-                //   String filePath2 = getFilesDir() + "/InstaMelody/Downloads/Melodies/" + melodyName + "/" + instrumentName + ".mp3";
-//                audioUri = Uri.parse(filePath1);
-                //      audioUri = Uri.parse(instrumentFile);
-
-
-
-               /* ###This is where ur app is installed location###
-                String apploc = getApplicationInfo().dataDir;
-                Toast.makeText(StudioActivity.this, apploc, Toast.LENGTH_SHORT).show();*/
 
                 Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
                 if (isSDPresent) {
@@ -452,7 +436,7 @@ public class StudioActivity extends AppCompatActivity {
 
 
         if (statusNormal == 1) {
-            artist_name.setText(userNameLogin);
+            artist_name.setText("@" + userNameLogin);
         }
 
         if (profilePicLogin != null) {
@@ -469,7 +453,7 @@ public class StudioActivity extends AppCompatActivity {
         statusTwitter = twitterPref.getInt("status", 0);
 
         if (statusTwitter == 1) {
-            artist_name.setText(userName);
+            artist_name.setText("@" + userName);
         }
 
         if (profilePic != null) {
@@ -478,14 +462,20 @@ public class StudioActivity extends AppCompatActivity {
             Picasso.with(StudioActivity.this).load(profilePic).into(profile_image);
         }
 
-        SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+        /*SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
         fbName = fbPref.getString("FbName", null);
         fbUserName = fbPref.getString("userName", null);
         fbId = fbPref.getString("fbId", null);
+        statusFb = fbPref.getInt("status", 0);*/
+
+        SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+        fbId = fbPref.getString("fbId", null);
+        fbUserName = fbPref.getString("UserName", null);
         statusFb = fbPref.getInt("status", 0);
 
+
         if (statusFb == 1) {
-            artist_name.setText(fbName);
+            artist_name.setText("@" + fbUserName);
         }
 
         if (fbId != null) {
@@ -608,12 +598,9 @@ public class StudioActivity extends AppCompatActivity {
                         waveform_view.setVisibility(View.VISIBLE);
                         //mRecordingThread.recording();
                         recordAudio();
-                        try {
-                            playAudioRecycler();
+
+//                            playAudioRecycler();
 //                    primarySeekBarProgressUpdater();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
                         chrono.start();
                     } else {
                         setPermissions();
@@ -630,12 +617,9 @@ public class StudioActivity extends AppCompatActivity {
 
 
                         recordAudio();
-                        try {
-                            playAudioRecycler();
+
+//                            playAudioRecycler();
 //                    primarySeekBarProgressUpdater();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
 //                            external_audio();
                         chrono.start();
 
@@ -915,7 +899,6 @@ public class StudioActivity extends AppCompatActivity {
 
 
     }
-
 
 
     private void openDialog2() {
@@ -1414,9 +1397,35 @@ public class StudioActivity extends AppCompatActivity {
                             Public = (String) melodyData.get("public");
                             if (flag.equals("success")) {
                                 uploadRecordings(id);
-                                myTask = new LongOperation();
+                                /*myTask = new LongOperation();
                                 myTask.execute();
-                                frameSync.setVisibility(View.GONE);
+                                frameSync.setVisibility(View.GONE);*/
+                                android.app.AlertDialog.Builder builder1 = new android.app.AlertDialog.Builder(StudioActivity.this);
+                                builder1.setMessage("Wants to share InstaMelody music on Social Networks.....");
+                                builder1.setCancelable(true);
+
+                                builder1.setPositiveButton(
+                                        "Yes",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                Intent i = new Intent(StudioActivity.this, SocialActivity.class);
+                                                startActivity(i);
+                                            }
+                                        });
+
+                                builder1.setNegativeButton(
+                                        "No",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                dialog.cancel();
+                                                myTask = new LongOperation();
+                                                myTask.execute();
+                                                frameSync.setVisibility(View.GONE);
+                                            }
+                                        });
+
+                                android.app.AlertDialog alert11 = builder1.create();
+                                alert11.show();
                             } else {
                                 Toast.makeText(StudioActivity.this, response, Toast.LENGTH_SHORT).show();
                             }
@@ -1502,7 +1511,7 @@ public class StudioActivity extends AppCompatActivity {
 
                         SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("Url_recording", MODE_PRIVATE).edit();
                         editor.putString("Recording_url", urlRecording);
-                        editor.apply();
+                        editor.commit();
 
 
                     }
@@ -1871,15 +1880,5 @@ public class StudioActivity extends AppCompatActivity {
         }, mp.getDuration() + 100);
     }
 
-
-    public void FbShare() {
-        ShareDialog sd = new ShareDialog(StudioActivity.this);
-        ShareLinkContent linkContent = new ShareLinkContent.Builder()
-                .setContentTitle("title")
-                .setContentDescription(
-                        "Description")
-                .setContentUrl(Uri.parse(fetchRecordingUrl)).build();
-        shareDialog.show(linkContent);
-    }
 }
 

@@ -71,9 +71,18 @@ public class MessengerActivity extends AppCompatActivity {
         rlNoMsg.setVisibility(View.GONE);
 
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-        userId = loginSharedPref.getString("userId", null);
-        if (userId != null) {
+        SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
 
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
+        }
+
+        if (userId != null) {
             getChats(userId);
 
         } else {
@@ -110,9 +119,7 @@ public class MessengerActivity extends AppCompatActivity {
             }
         });
 
-        profile.setOnClickListener(new View.OnClickListener()
-
-        {
+        profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
@@ -130,8 +137,7 @@ public class MessengerActivity extends AppCompatActivity {
             }
         });
 
-        ivBackButton.setOnClickListener(new View.OnClickListener()
-        {
+        ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
@@ -191,11 +197,9 @@ public class MessengerActivity extends AppCompatActivity {
                                     chat.setChatID(commentJson.getString("chatID"));
                                     chat.setIsRead(commentJson.getString("isread"));
                                     chat.setSendAt(commentJson.getString("sendat"));
-
                                     chatList.add(chat);
                                 }
-                            }
-                            else{
+                            } else {
                                 rlNoMsg.setVisibility(View.VISIBLE);
                             }
                         } catch (JSONException e) {
@@ -239,15 +243,13 @@ public class MessengerActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
         getChats(userId);
     }
 
     @Override
-    public void onRestart()
-    {
+    public void onRestart() {
         super.onRestart();
         getChats(userId);
     }

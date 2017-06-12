@@ -283,7 +283,7 @@ public class ParseContents {
         return chatList;
     }
 
-    public ArrayList<Message> parseChats(String response, ArrayList<Message> chatList) {
+     public ArrayList<Message> parseChats(String response, ArrayList<Message> chatList) {
 
         JSONObject jsonObject;
         try {
