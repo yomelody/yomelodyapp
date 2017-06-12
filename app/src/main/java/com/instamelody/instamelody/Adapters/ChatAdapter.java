@@ -11,6 +11,10 @@ import android.widget.TextView;
 import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.R;
 import com.squareup.picasso.Picasso;
+<<<<<<< HEAD
+
+=======
+>>>>>>> 6f0ffb6db6c53495c8c7090ec0c691d21e683682
 import java.util.ArrayList;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -27,6 +31,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
     private static String TAG = ChatAdapter.class.getSimpleName();
     private String userId;
+    int flag = 0;
     private int SELF = 100;
     private int SELF_AUDIO = 101;
     private int OTHER = 102;
@@ -73,14 +78,33 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
         Message message = chatList.get(position);
         SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+<<<<<<< HEAD
+        SharedPreferences twitterPref = context.getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = context.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+            flag = 1;
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
+            flag = 2;
+        }
+=======
         userId = loginSharedPref.getString("userId", null);
+>>>>>>> 6f0ffb6db6c53495c8c7090ec0c691d21e683682
 
         if (message.getSenderId().equals(userId)) {
 
 //            if (isAudio.equals("True")) {
 //                return SELF_AUDIO;
 //            } else {
+<<<<<<< HEAD
+            return SELF;
+=======
                 return SELF;
+>>>>>>> 6f0ffb6db6c53495c8c7090ec0c691d21e683682
 //            }
         } else {
 //            if (isAudio.equals("True")) {
@@ -94,14 +118,54 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     public void onBindViewHolder(MyViewHolder holder, int position) {
 
         final int itemType = getItemViewType(position);
+<<<<<<< HEAD
+
+        if (itemType == SELF) {
+            Message message = chatList.get(position);
+            if (flag == 0) {
+                Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).into(holder.userProfileImage);
+            } else if (flag == 1) {
+                SharedPreferences fbPref = context.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+                String fbId = fbPref.getString("fbId", null);
+                if (fbId != null) {
+                    Picasso.with(holder.userProfileImage.getContext()).load("https://graph.facebook.com/" + fbId + "/picture").into(holder.userProfileImage);
+                }
+            } else if (flag == 2) {
+
+            }
+            holder.chatMessage.setText(message.getMessage());
+            holder.timeStamp.setText(message.getCreatedAt());
+        } else if (itemType == SELF_AUDIO) {
+            Message message = chatList.get(position);
+            if (flag == 0) {
+                Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).into(holder.userProfileImage);
+            } else if (flag == 1) {
+                SharedPreferences fbPref = context.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+                String fbId = fbPref.getString("fbId", null);
+                if (fbId != null) {
+                    Picasso.with(holder.userProfileImage.getContext()).load("https://graph.facebook.com/" + fbId + "/picture").into(holder.userProfileImage);
+                }
+            } else if (flag == 2) {
+
+            }
+            holder.timeStamp.setText(message.getCreatedAt());
+        } else if (itemType == OTHER) {
+            Message message = chatList.get(position);
+            Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).into(holder.userProfileImage);
+            holder.chatMessage.setText(message.getMessage());
+=======
         if (itemType == SELF_AUDIO || itemType == OTHER_AUDIO) {
             Message message = chatList.get(position);
             Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).into(holder.userProfileImage);
+>>>>>>> 6f0ffb6db6c53495c8c7090ec0c691d21e683682
             holder.timeStamp.setText(message.getCreatedAt());
         } else {
             Message message = chatList.get(position);
             Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).into(holder.userProfileImage);
+<<<<<<< HEAD
+=======
             holder.chatMessage.setText(message.getMessage());
+>>>>>>> 6f0ffb6db6c53495c8c7090ec0c691d21e683682
             holder.timeStamp.setText(message.getCreatedAt());
         }
     }

@@ -1,54 +1,46 @@
 package com.instamelody.instamelody;
 
 import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
 import com.android.volley.NetworkResponse;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.utils.AppHelper;
-import com.instamelody.instamelody.utils.DateValidator;
 import com.instamelody.instamelody.utils.VolleyMultipartRequest;
 import com.instamelody.instamelody.utils.VolleySingleton;
 import com.squareup.picasso.Picasso;
@@ -56,25 +48,14 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import retrofit2.http.Multipart;
-
-import static android.R.attr.id;
-import static android.R.attr.maxDate;
-import static android.R.attr.minDate;
-import static android.R.attr.negativeButtonText;
-import static com.facebook.internal.FacebookRequestErrorClassification.KEY_NAME;
 
 /**
  * Created by Saurabh Singh on 12/26/2016.
@@ -104,7 +85,6 @@ public class SignUpActivity extends AppCompatActivity {
     private final int requestCode = 20;
 
     public String profilepic2;
-
     String flag, id, username1, fname, lname, jemail, coverpic, followers, fans, records, dob1;
     EditText etfirstname, etlastname, etemail,
             etusername, etpassword, etphone, etConfirmPassWord, etDOB;
@@ -287,7 +267,6 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 errorPassword.setVisibility(View.GONE);
-
             }
 
             @Override
@@ -824,8 +803,8 @@ public class SignUpActivity extends AppCompatActivity {
         final String password = etpassword.getText().toString().trim();
         final String dob = tvDob.getText().toString().trim();
         String a = dob.replaceAll(" ", "");
-        String b = a.substring(a.indexOf(":"),a.length());
-        final String date = b.replace(":","").replace("|","/");
+        String b = a.substring(a.indexOf(":"), a.length());
+        final String date = b.replace(":", "").replace("|", "/");
         final String phone = etphone.getText().toString().trim();
         final String usertype = "USER";
         StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER_URL,
@@ -834,42 +813,55 @@ public class SignUpActivity extends AppCompatActivity {
                     public void onResponse(String response) {
 
                         String successmsg = response;
-                        Toast.makeText(SignUpActivity.this, "Registeration Successful", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(SignUpActivity.this, "Registeration Successful", Toast.LENGTH_SHORT).show();
 
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
                             flag = jsonObject.getString("flag");
-                            if (flag.equals("unsuccess")) {
-                                String msg = jsonObject.getString("msg");
-//                                Toast.makeText(SignUpActivity.this, "" + msg, Toast.LENGTH_SHORT).show();
-                            }
-                            JSONObject rspns = jsonObject.getJSONObject("response");
-                            id = rspns.getString("id");
-                            username1 = rspns.getString("username");
-                            fname = rspns.getString("f_name");
-                            lname = rspns.getString("l_name");
-                            jemail = rspns.getString("email");
-                            /*profilepic2 = rspns.getString("profilepic");*/
-                            coverpic = rspns.getString("coverpic");
-                            followers = rspns.getString("followers");
-                            fans = rspns.getString("fans");
-                            records = rspns.getString("records");
-                            dob1 = rspns.getString("dob");
+//                            if (flag.equals("unsuccess")) {
+//                            }
+//                            JSONObject rspns = jsonObject.getJSONObject("response");
+//                            id = rspns.getString("id");
+//                            username1 = rspns.getString("username");
+//                            fname = rspns.getString("f_name");
+//                            lname = rspns.getString("l_name");
+//                            jemail = rspns.getString("email");
+//                            /*profilepic2 = rspns.getString("profilepic");*/
+//                            coverpic = rspns.getString("coverpic");
+//                            followers = rspns.getString("followers");
+//                            fans = rspns.getString("fans");
+//                            records = rspns.getString("records");
+//                            dob1 = rspns.getString("dob");
 //                            deviceType = rspns.getString("device_type");
                             if (flag.equals("success")) {
-                                Toast.makeText(SignUpActivity.this, "Registration Success", Toast.LENGTH_SHORT).show();
+                                JSONObject rspns = jsonObject.getJSONObject("response");
+                                id = rspns.getString("id");
+                                username1 = rspns.getString("username");
+                                fname = rspns.getString("f_name");
+                                lname = rspns.getString("l_name");
+                                jemail = rspns.getString("email");
+                            /*profilepic2 = rspns.getString("profilepic");*/
+                                coverpic = rspns.getString("coverpic");
+                                followers = rspns.getString("followers");
+                                fans = rspns.getString("fans");
+                                records = rspns.getString("records");
+                                dob1 = rspns.getString("dob");
                                 uploadImage(id);
+                                Toast.makeText(SignUpActivity.this, "Registeration successful", Toast.LENGTH_SHORT).show();
                                 Intent i = new Intent(SignUpActivity.this, SignInActivity.class);
                                 startActivity(i);
                             } else {
-                                Toast.makeText(SignUpActivity.this, response, Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(SignUpActivity.this, response, Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(SignUpActivity.this, "Registeration unsuccessful", Toast.LENGTH_SHORT).show();
+                                String msg = jsonObject.getString("msg");
+                                Toast.makeText(SignUpActivity.this, msg, Toast.LENGTH_SHORT).show();
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                             String error = e.toString();
 //                            Toast.makeText(SignUpActivity.this, error, Toast.LENGTH_SHORT).show();
-
+                            Log.d("error", error);
                         }
 
                     }
@@ -877,9 +869,27 @@ public class SignUpActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(SignUpActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
-                        String errormsg = error.toString();
-                        Log.d("Error", errormsg);
+//                        Toast.makeText(SignUpActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
+//                        String errormsg = error.toString();
+//                        Log.d("Error", errormsg);
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+
                     }
                 }) {
             @Override
