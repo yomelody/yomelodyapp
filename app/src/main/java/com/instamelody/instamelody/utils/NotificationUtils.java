@@ -32,30 +32,35 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import static com.facebook.FacebookSdk.getApplicationContext;
+
 /**
  * Created by Shubhansh Jaiswal on 11/01/17.
  */
 
 public class NotificationUtils {
 
-    private static String TAG = NotificationUtils.class.getSimpleName();
     private Context mContext;
 
     public NotificationUtils(Context mContext) {
         this.mContext = mContext;
     }
 
-    public void showNotificationMessage(String title, String message, String timeStamp, Intent intent) {
-        showNotificationMessage(title, message, timeStamp, intent, null);
+    public void showNotificationMessage(String senderId, String title, String senderName, String message, String chatId, Intent intent) {
+        showNotificationMessage(senderId, title, senderName, message, chatId, intent, null);
     }
 
-    public void showNotificationMessage(final String title, final String message, final String timeStamp, Intent intent, String imageUrl) {
+    public void showNotificationMessage(final String senderId, String title, final String senderName, final String message, final String chatId, Intent intent, String imageUrl) {
+        // Check for empty sender's name
+        if (TextUtils.isEmpty(senderName))
+            return;
         // Check for empty push message
+
         if (TextUtils.isEmpty(message))
             return;
 
         // notification icon
-        final int icon = R.mipmap.ic_launcher;
+        final int icon = R.drawable.instamelody_logo;
 
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         final PendingIntent resultPendingIntent =
@@ -69,8 +74,7 @@ public class NotificationUtils {
         final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
                 mContext);
 
-        final Uri alarmSound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
-                + "://" + mContext.getPackageName() + "/raw/notification");
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         if (!TextUtils.isEmpty(imageUrl)) {
 
@@ -79,22 +83,20 @@ public class NotificationUtils {
                 Bitmap bitmap = getBitmapFromURL(imageUrl);
 
                 if (bitmap != null) {
-                    showBigNotification(bitmap, mBuilder, icon, title, message, timeStamp, resultPendingIntent, alarmSound);
+                    showBigNotification(bitmap, mBuilder, icon, title, message, resultPendingIntent, defaultSoundUri);
                 } else {
-                    showSmallNotification(mBuilder, icon, title, message, timeStamp, resultPendingIntent, alarmSound);
+                    showSmallNotification(mBuilder, icon, title, message, resultPendingIntent, defaultSoundUri);
                 }
             }
         } else {
-            showSmallNotification(mBuilder, icon, title, message, timeStamp, resultPendingIntent, alarmSound);
+            showSmallNotification(mBuilder, icon, title, message, resultPendingIntent, defaultSoundUri);
             playNotificationSound();
         }
     }
 
-
-    private void showSmallNotification(NotificationCompat.Builder mBuilder, int icon, String title, String message, String timeStamp, PendingIntent resultPendingIntent, Uri alarmSound) {
+    private void showSmallNotification(NotificationCompat.Builder mBuilder, int icon, String title, String message, PendingIntent resultPendingIntent, Uri alarmSound) {
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-
         inboxStyle.addLine(message);
 
         Notification notification;
@@ -104,7 +106,6 @@ public class NotificationUtils {
                 .setContentIntent(resultPendingIntent)
                 .setSound(alarmSound)
                 .setStyle(inboxStyle)
-                .setWhen(getTimeMilliSec(timeStamp))
                 .setSmallIcon(R.drawable.instamelody_logo)
                 .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), icon))
                 .setContentText(message)
@@ -114,7 +115,7 @@ public class NotificationUtils {
         notificationManager.notify(Config.NOTIFICATION_ID, notification);
     }
 
-    private void showBigNotification(Bitmap bitmap, NotificationCompat.Builder mBuilder, int icon, String title, String message, String timeStamp, PendingIntent resultPendingIntent, Uri alarmSound) {
+    private void showBigNotification(Bitmap bitmap, NotificationCompat.Builder mBuilder, int icon, String title, String message, PendingIntent resultPendingIntent, Uri alarmSound) {
         NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle();
         bigPictureStyle.setBigContentTitle(title);
         bigPictureStyle.setSummaryText(Html.fromHtml(message).toString());
@@ -126,7 +127,6 @@ public class NotificationUtils {
                 .setContentIntent(resultPendingIntent)
                 .setSound(alarmSound)
                 .setStyle(bigPictureStyle)
-                .setWhen(getTimeMilliSec(timeStamp))
                 .setSmallIcon(R.drawable.instamelody_logo)
                 .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), icon))
                 .setContentText(message)
@@ -158,9 +158,8 @@ public class NotificationUtils {
     // Playing notification sound
     public void playNotificationSound() {
         try {
-            Uri alarmSound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
-                    + "://" + mContext.getPackageName() + "/raw/notification");
-            Ringtone r = RingtoneManager.getRingtone(mContext, alarmSound);
+            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), defaultSoundUri);
             r.play();
         } catch (Exception e) {
             e.printStackTrace();
@@ -186,24 +185,22 @@ public class NotificationUtils {
         return true;
     }
 
-
     // Clears notification tray messages
     public static void clearNotifications(Context context) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
     }
 
-    public static long getTimeMilliSec(String timeStamp) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        try {
-            Date date = format.parse(timeStamp);
-            return date.getTime();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
+//    public static long getTimeMilliSec(String timeStamp) {
+//        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        try {
+//            Date date = format.parse(timeStamp);
+//            return date.getTime();
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//        return 0;
+//    }
 }
 
 

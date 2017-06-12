@@ -436,7 +436,7 @@ public class StudioActivity extends AppCompatActivity {
 
 
         if (statusNormal == 1) {
-            artist_name.setText("@"+userNameLogin);
+            artist_name.setText("@" + userNameLogin);
         }
 
         if (profilePicLogin != null) {
@@ -453,7 +453,7 @@ public class StudioActivity extends AppCompatActivity {
         statusTwitter = twitterPref.getInt("status", 0);
 
         if (statusTwitter == 1) {
-            artist_name.setText("@"+userName);
+            artist_name.setText("@" + userName);
         }
 
         if (profilePic != null) {
@@ -475,7 +475,7 @@ public class StudioActivity extends AppCompatActivity {
 
 
         if (statusFb == 1) {
-            artist_name.setText("@"+fbUserName);
+            artist_name.setText("@" + fbUserName);
         }
 
         if (fbId != null) {
@@ -598,12 +598,9 @@ public class StudioActivity extends AppCompatActivity {
                         waveform_view.setVisibility(View.VISIBLE);
                         //mRecordingThread.recording();
                         recordAudio();
-                        try {
-                            playAudioRecycler();
+
+//                            playAudioRecycler();
 //                    primarySeekBarProgressUpdater();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
                         chrono.start();
                     } else {
                         setPermissions();
@@ -620,12 +617,9 @@ public class StudioActivity extends AppCompatActivity {
 
 
                         recordAudio();
-                        try {
-                            playAudioRecycler();
+
+//                            playAudioRecycler();
 //                    primarySeekBarProgressUpdater();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
 //                            external_audio();
                         chrono.start();
 
