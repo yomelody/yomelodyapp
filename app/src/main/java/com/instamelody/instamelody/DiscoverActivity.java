@@ -61,15 +61,33 @@ public class DiscoverActivity extends Activity {
     String userId, userNameLogin;
     String strName;
     String titleString;
+    String userIdNormal, userIdFb, userIdTwitter;
+    int statusNormal, statusFb, statusTwitter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_discover);
         fetchGenreNames();
         fetchRecordings();
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userId = loginSharedPref.getString("userId", null);
+
+        SharedPreferences loginFbSharedPref = this.getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+        userIdFb = loginFbSharedPref.getString("userId", null);
+        statusFb = loginFbSharedPref.getInt("status", 0);
+        SharedPreferences loginTwitterSharedPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        userIdTwitter = loginTwitterSharedPref.getString("TwitterId", null);
+        statusTwitter = loginTwitterSharedPref.getInt("status", 0);
+
+        if (statusNormal == 1) {
+            userId = userIdNormal;
+        } else if (statusFb == 1) {
+            userId = userIdFb;
+        } else if (statusTwitter == 1) {
+            userId = userIdTwitter;
+        }
+
 
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
         ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
@@ -78,9 +96,9 @@ public class DiscoverActivity extends Activity {
         audio_feed = (ImageView) findViewById(R.id.audio_feed);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewDiscover);
 
-        adapter = new RecordingsCardAdapter(this, recordingList);
-        recyclerView.setAdapter(adapter);
-
+        adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList);
+//        recyclerView.setAdapter(adapter);
+        super.onCreate(savedInstanceState);
         discover.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
