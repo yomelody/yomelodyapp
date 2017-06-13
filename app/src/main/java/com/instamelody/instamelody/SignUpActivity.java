@@ -740,7 +740,6 @@ public class SignUpActivity extends AppCompatActivity {
                     String picObject = responseObject.getString("profilepic");
                     profilepic2 = picObject;
 
-
                     // JSONObject uploadImgRspns = new JSONObject(resultResponse);
                     //  String flag = uploadImgRspns.getString("flag");
                     //   JSONObject imgrespons = uploadImgRspns.getJSONObject("response");
@@ -759,7 +758,7 @@ public class SignUpActivity extends AppCompatActivity {
                     editor.putString("jemail", jemail);
                     editor.putString("id", id);
                     editor.commit();
-                    startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
+//                    startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -904,6 +903,7 @@ public class SignUpActivity extends AppCompatActivity {
                 params.put(KEY_DOB, dob);
                 params.put(KEY_PHONE, phone);
                 params.put(KEY_DOB, date);
+
                 params.put(KEY_DEVICE_TYPE, "android");
                 params.put(KEY_USER_TYPE, "1");
                 return params;
