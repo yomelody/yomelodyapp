@@ -291,6 +291,7 @@ public class SignInActivity extends AppCompatActivity {
                     passwordRequired.setText("required");
                 } else {
                     LogIn();
+                    btnLogIn.setEnabled(false);
                 }
             }
         });
