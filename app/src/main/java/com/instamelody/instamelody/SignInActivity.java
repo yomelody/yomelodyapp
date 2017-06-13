@@ -252,20 +252,17 @@ public class SignInActivity extends AppCompatActivity {
                                 fbEditor.putString("profilePicFB", fbProfilePic);
                                 fbEditor.putInt("status", 1);
                                 fbEditor.commit();
-
                                 registerSpecialFB();
                                 Intent i = new Intent(SignInActivity.this, HomeActivity.class);
                                 startActivity(i);
-
                             }
                         });
 
                 Bundle parameters = new Bundle();
-                parameters.putString("fields", "id, first_name, last_name, email,gender, birthday, location");
+                parameters.putString("fields", "id, first_name, last_name, email, gender, birthday, location");
                 request.setParameters(parameters);
                 //   Toast.makeText(SignInActivity.this,fbImg, Toast.LENGTH_SHORT).show();
                 request.executeAsync();
-
                 //   Toast.makeText(SignInActivity.this, ""+id, Toast.LENGTH_SHORT).show();
             }
 
