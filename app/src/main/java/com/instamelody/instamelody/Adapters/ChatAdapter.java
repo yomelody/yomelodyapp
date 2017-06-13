@@ -88,7 +88,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             userId = twitterPref.getString("userId", null);
             flag = 2;
         }
-
         if (message.getSenderId().equals(userId)) {
 
 //            if (isAudio.equals("True")) {
@@ -108,39 +107,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     public void onBindViewHolder(MyViewHolder holder, int position) {
 
         final int itemType = getItemViewType(position);
-        if (itemType == SELF) {
-            Message message = chatList.get(position);
-            if (flag == 0) {
-                Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).into(holder.userProfileImage);
-            } else if (flag == 1) {
-                SharedPreferences fbPref = context.getSharedPreferences("MyFbPref", MODE_PRIVATE);
-                String fbId = fbPref.getString("fbId", null);
-                if (fbId != null) {
-                    Picasso.with(holder.userProfileImage.getContext()).load("https://graph.facebook.com/" + fbId + "/picture").into(holder.userProfileImage);
-                }
-            } else if (flag == 2) {
-
-            }
-            holder.chatMessage.setText(message.getMessage());
-            holder.timeStamp.setText(message.getCreatedAt());
-        } else if (itemType == SELF_AUDIO) {
-            Message message = chatList.get(position);
-            if (flag == 0) {
-                Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).into(holder.userProfileImage);
-            } else if (flag == 1) {
-                SharedPreferences fbPref = context.getSharedPreferences("MyFbPref", MODE_PRIVATE);
-                String fbId = fbPref.getString("fbId", null);
-                if (fbId != null) {
-                    Picasso.with(holder.userProfileImage.getContext()).load("https://graph.facebook.com/" + fbId + "/picture").into(holder.userProfileImage);
-                }
-            } else if (flag == 2) {
-
-            }
-            holder.timeStamp.setText(message.getCreatedAt());
-        } else if (itemType == OTHER) {
+        if (itemType == SELF_AUDIO || itemType == OTHER_AUDIO) {
             Message message = chatList.get(position);
             Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).into(holder.userProfileImage);
-            holder.chatMessage.setText(message.getMessage());
+            holder.timeStamp.setText(message.getCreatedAt());
         } else {
             Message message = chatList.get(position);
             Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).into(holder.userProfileImage);
@@ -148,8 +118,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             holder.timeStamp.setText(message.getCreatedAt());
         }
     }
+
     @Override
     public int getItemCount() {
         return chatList.size();
     }
 }
+
+
+
+
