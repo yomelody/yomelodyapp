@@ -71,6 +71,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     String FILEID = "fileid";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";
+    String Topic ="topic";
 
     Context context;
     MediaPlayer mediaPlayer;
@@ -196,9 +197,10 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     String position, userId;
                     SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
                     userId = loginSharedPref.getString("userId", null);
-
+                    //String positions = mpids.get(getAdapterPosition() + 1);
                     if (userId != null) {
-                        position = Integer.toString(getAdapterPosition() + 1);
+//                        position = Integer.toString(getAdapterPosition() + 1);
+                        position = mpids.get(getAdapterPosition() + 1);
 
                         if (ivLikeButton.getVisibility() == VISIBLE) {
                             ivLikeButton.setVisibility(GONE);
@@ -405,10 +407,10 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(USER_TYPE, "admin");
+                params.put(Topic, "Testing");
                 params.put(USER_ID, userId);
                 params.put(FILE_ID, pos);
-                params.put(TYPE, "melody");
+                params.put(TYPE, "admin_melody");
                 params.put(LIKES, likeState);
                 return params;
             }
