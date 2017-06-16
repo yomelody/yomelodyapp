@@ -2,6 +2,7 @@ package com.instamelody.instamelody.Fragments;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,11 +30,18 @@ import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.StudioActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -72,6 +80,8 @@ public class AudioFragment extends Fragment {
     String userId;
     String userIdNormal, userIdFb, userIdTwitter;
     int statusNormal, statusFb, statusTwitter;
+    ProgressDialog progressDialog;
+    LongOperation myTask = null;
 
     public AudioFragment() {
 
@@ -89,7 +99,7 @@ public class AudioFragment extends Fragment {
         userIdFb = loginFbSharedPref.getString("userId", null);
         statusFb = loginFbSharedPref.getInt("status", 0);
         SharedPreferences loginTwitterSharedPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
-        userIdTwitter = loginTwitterSharedPref.getString("TwitterId", null);
+        userIdTwitter = loginTwitterSharedPref.getString("userId", null);
         statusTwitter = loginTwitterSharedPref.getInt("status", 0);
 
         if (statusNormal == 1) {
@@ -141,6 +151,8 @@ public class AudioFragment extends Fragment {
                         try {
                             jsonObject = new JSONObject(response);
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
+                                myTask = new LongOperation();
+                                myTask.execute();
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     genreJson = jsonArray.getJSONObject(i);
@@ -335,5 +347,67 @@ public class AudioFragment extends Fragment {
                 return rv;
             }
         };
+    }
+
+    private class LongOperation extends AsyncTask<String, Void, String> {
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setTitle("Processing...");
+            progressDialog.setMessage("Please wait...");
+            progressDialog.setCancelable(true);
+            progressDialog.show();
+        }
+
+        protected String doInBackground(String... params) {
+
+            try {
+                //Getting data from server
+
+                String filename = "myfile";
+                String outputString = "Hello world!";
+
+                URL aurl = new URL("http://35.165.96.167/api/recordings.php");
+
+                URLConnection connection = aurl.openConnection();
+                connection.connect();
+                // getting file length
+                int lengthOfFile = connection.getContentLength();
+
+                // input stream to read file - with 8k buffer
+                InputStream input = new BufferedInputStream(aurl.openStream(), 8192);
+
+                try {
+                    FileOutputStream outputStream = getActivity().openFileOutput(filename, Context.MODE_PRIVATE);
+                    outputStream.write(outputString.getBytes());
+                    outputStream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    FileInputStream inputStream = getActivity().openFileInput(filename);
+                    BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
+                    StringBuilder total = new StringBuilder();
+                    String line;
+                    while ((line = r.readLine()) != null) {
+                        total.append(line);
+                    }
+                    r.close();
+                    inputStream.close();
+                    Log.d("File", "File contents: " + total);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+
+            progressDialog.dismiss();
+        }
+
     }
 }

@@ -221,6 +221,7 @@ public class SignInActivity extends AppCompatActivity {
                             @Override
                             public void onCompleted(JSONObject object, GraphResponse response) {
                                 //Toast.makeText(SignInActivity.this, "" + object, Toast.LENGTH_LONG).show();
+                                Log.d("Check",""+object);
 
                                 try {
                                     fbId = object.getString("id");
@@ -402,6 +403,9 @@ public class SignInActivity extends AppCompatActivity {
         @Override
         public void failure(TwitterException exception) {
             Log.d("Twitter Kit", "Login With Twitter", exception);
+            if (exception.equals("com.twitter.sdk.android.core.TwitterAuthException: Failed to get request token")) {
+                Toast.makeText(SignInActivity.this, "Twitter Login failed : Device time may not be same as server time", Toast.LENGTH_SHORT).show();
+            }
         }
     };
 
@@ -566,7 +570,7 @@ public class SignInActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                             String error = e.toString();
-                            Toast.makeText(SignInActivity.this, error, Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(SignInActivity.this, error, Toast.LENGTH_SHORT).show();
                         }
                     }
                 },
@@ -584,15 +588,13 @@ public class SignInActivity extends AppCompatActivity {
 
                 params.put(KEY_FNAME, firstNamefb);
                 params.put(KEY_LNAME, lastNamefb);
-                params.put(KEY_USERNAME, username);
-                params.put(KEY_EMAIL_SIGN_UP, fbEmail);
+                params.put(KEY_USERNAME, firstNamefb+lastNamefb);
+                params.put(KEY_EMAIL_SIGN_UP, firstNamefb+"@gmail.com");
                 params.put(KEY_APP_ID, fbId);
-                params.put(KEY_GENDER, gender);
-                params.put(KEY_DOB, birthday);
                 params.put(KEY_USER_TYPE, "2");
                 params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);
                 params.put(KEY_DEVICE_TYPE, "android");
-                params.put(KEY_PROFILE_PIC, fbProfilePic);
+//                params.put(KEY_PROFILE_PIC, fbProfilePic);
                 return params;
             }
         };
@@ -625,7 +627,7 @@ public class SignInActivity extends AppCompatActivity {
                             String dob = rspns.getString("dob");
 
                             SharedPreferences.Editor twitterEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
-                            twitterEditor.putString("TwitterId", twitterId);
+                            twitterEditor.putString("userId", twitterId);
                             twitterEditor.putInt("status", 1);
                             twitterEditor.commit();
 
