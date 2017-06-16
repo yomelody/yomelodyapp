@@ -95,7 +95,7 @@ public class RecordingsFragment extends Fragment {
         userIdFb = loginFbSharedPref.getString("userId", null);
         statusFb = loginFbSharedPref.getInt("status", 0);
         SharedPreferences loginTwitterSharedPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
-        userIdTwitter = loginTwitterSharedPref.getString("TwitterId", null);
+        userIdTwitter = loginTwitterSharedPref.getString("userId", null);
         statusTwitter = loginTwitterSharedPref.getInt("status", 0);
 
         if (statusNormal == 1) {

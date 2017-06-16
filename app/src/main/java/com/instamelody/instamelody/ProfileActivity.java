@@ -114,7 +114,7 @@ public class ProfileActivity extends AppCompatActivity {
         userIdFb = loginFbSharedPref.getString("userId", null);
         statusFb = loginFbSharedPref.getInt("status", 0);
         SharedPreferences loginTwitterSharedPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
-        userIdTwitter = loginTwitterSharedPref.getString("TwitterId", null);
+        userIdTwitter = loginTwitterSharedPref.getString("userId", null);
         statusTwitter = loginTwitterSharedPref.getInt("status", 0);
         search1 = (SearchView) findViewById(R.id.searchOnProf);
 

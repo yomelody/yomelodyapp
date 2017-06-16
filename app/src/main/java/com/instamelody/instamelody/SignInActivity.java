@@ -627,7 +627,7 @@ public class SignInActivity extends AppCompatActivity {
                             String dob = rspns.getString("dob");
 
                             SharedPreferences.Editor twitterEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
-                            twitterEditor.putString("TwitterId", twitterId);
+                            twitterEditor.putString("userId", twitterId);
                             twitterEditor.putInt("status", 1);
                             twitterEditor.commit();
 
