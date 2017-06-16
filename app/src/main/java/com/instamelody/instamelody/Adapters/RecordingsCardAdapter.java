@@ -129,10 +129,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         }
     }
 
-    public RecordingsCardAdapter(ArrayList<RecordingsModel> recordingList) {
-        this.recordingList = recordingList;
-    }
-
     @Override
     public RecordingsCardAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())

@@ -316,7 +316,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     editor.putString("comments", comments);
                     editor.putString("shares", shares);
                     editor.putString("bitmapProfile", profile);
-                    editor.putString("bitmapCover", cover);
+//                    editor.putString("bitmapCover", cover);
                     editor.putString("melodyID", melodyID);
                     editor.putString("fileType", "admin_melody");
                     editor.commit();
@@ -398,6 +398,9 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         MelodyCard melody = melodyList.get(listPosition);
         profile = melody.getUserProfilePic();
         cover = melody.getMelodyCover();
+        SharedPreferences.Editor editor1 = context.getSharedPreferences("commentData1", MODE_PRIVATE).edit();
+        editor1.putString("cover",cover);
+        editor1.commit();
         mpid = melody.getMelodyPackId();
         mpids.add(mpid);
         Picasso.with(holder.ivMelodyCover.getContext()).load(melody.getMelodyCover()).into(holder.ivMelodyCover);
