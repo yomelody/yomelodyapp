@@ -127,6 +127,7 @@ public class ChatActivity extends AppCompatActivity {
     RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton;
     ImageView ivRecieverProfilePic;
     TextView tvRecieverName;
+    String username = "";
 
     @TargetApi(18)
     @Override
@@ -139,16 +140,20 @@ public class ChatActivity extends AppCompatActivity {
         fileArray.clear();
         getGalleryImages();
 
+
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
         SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
 
         if (loginSharedPref.getString("userId", null) != null) {
             userId = loginSharedPref.getString("userId", null);
+            username = loginSharedPref.getString("userName", null);
         } else if (fbPref.getString("userId", null) != null) {
             userId = fbPref.getString("userId", null);
+            username = fbPref.getString("UserName", null);
         } else if (twitterPref.getString("userId", null) != null) {
             userId = twitterPref.getString("userId", null);
+            username = twitterPref.getString("userName", null);
         }
 
 //        SharedPreferences chatPrefs = getSharedPreferences("MessengerData", MODE_PRIVATE);
@@ -585,6 +590,8 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
 
+                        String usrname = username;
+
                         chatList.clear();
                         cAdapter.notifyDataSetChanged();
 
@@ -595,6 +602,7 @@ public class ChatActivity extends AppCompatActivity {
                                 JSONObject result = jsonObject.getJSONObject("result");
                                 JSONArray resultArray = result.getJSONArray("message LIst");
                                 String uname = "";
+                                List<String> groupNameList = new ArrayList<>();
                                 if (resultArray.length() > 0) {
                                     for (int i = 0; i < resultArray.length(); i++) {
                                         Message message = new Message();
@@ -611,31 +619,32 @@ public class ChatActivity extends AppCompatActivity {
                                         String sendat = chatJson.getString("sendat");
                                         message.setCreatedAt(sendat);
                                         uname = chatJson.getString("receiver_name");
+                                        groupNameList.add(uname);
                                         String messagef = chatJson.getString("message");
                                         message.setMessage(messagef);
                                         String profilePic = chatJson.getString("sender_pic");
                                         message.setProfilePic(profilePic);
                                         chatList.add(message);
                                     }
-
-                                    List<String> groupNameList = Arrays.asList(uname.split(","));
-
-                                    String listnames = "";
-                                    if (groupNameList.size() == 1) {
-                                        tvUserName.setText(groupNameList.get(0));
-                                    } else {
-                                        for (int i = 1; i < groupNameList.size(); i++) {
-                                            listnames = listnames + ", " + groupNameList.get(i);
+//                                    String listnames = "";
+//                                    if (groupNameList.size() == 1) {
+//                                        tvUserName.setText(groupNameList.get(0));
+//                                    } else {
+                                    for (int i = 0; i < groupNameList.size(); i++) {
+                                        String temp = String.valueOf(groupNameList.get(i));
+                                        if (usrname.equals(temp)) {
+                                            tvUserName.setText(groupNameList.get(i));
                                         }
-                                        tvUserName.setText(listnames);
                                     }
+//                                        tvUserName.setText(listnames);
+//                                    }
 
-                                } else {
-                                    tvUserName.setText(receiverName);
-                                    tvRecieverName.setText(" " + receiverName);
-                                    Picasso.with(ivRecieverProfilePic.getContext()).load(receiverImage).into(ivRecieverProfilePic);
-                                    rlNoMsg.setVisibility(View.VISIBLE);
-                                    rlTxtContent.setVisibility(View.VISIBLE);
+//                                } else {
+//                                    tvUserName.setText(receiverName);
+//                                    tvRecieverName.setText(" " + receiverName);
+//                                    Picasso.with(ivRecieverProfilePic.getContext()).load(receiverImage).into(ivRecieverProfilePic);
+//                                    rlNoMsg.setVisibility(View.VISIBLE);
+//                                    rlTxtContent.setVisibility(View.VISIBLE);
                                 }
                             }
                         } catch (JSONException e) {
@@ -887,7 +896,8 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_READ_STORAGE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {

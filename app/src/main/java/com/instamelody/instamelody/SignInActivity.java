@@ -401,6 +401,9 @@ public class SignInActivity extends AppCompatActivity {
         @Override
         public void failure(TwitterException exception) {
             Log.d("Twitter Kit", "Login With Twitter", exception);
+            if (exception.equals("com.twitter.sdk.android.core.TwitterAuthException: Failed to get request token")) {
+                Toast.makeText(SignInActivity.this, "Twitter Login failed : Device time may not be same as server time", Toast.LENGTH_SHORT).show();
+            }
         }
     };
 
@@ -624,7 +627,7 @@ public class SignInActivity extends AppCompatActivity {
                             String dob = rspns.getString("dob");
 
                             SharedPreferences.Editor twitterEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
-                            twitterEditor.putString("TwitterId", twitterId);
+                            twitterEditor.putString("userId", twitterId);
                             twitterEditor.putInt("status", 1);
                             twitterEditor.commit();
 
