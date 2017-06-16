@@ -1,6 +1,7 @@
 package com.instamelody.instamelody;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.ArrayRes;
 import android.support.v7.app.AppCompatActivity;
@@ -45,13 +46,29 @@ public class ContactsActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ArrayList<Contacts> contactList = new ArrayList<>();
     String CONTACTS_LIST_URL = "http://35.165.96.167/api/userdetails.php";
-    public static Button btnCancel , btnOK;
+    public static Button btnCancel, btnOK;
     ImageView discover, message, profile, audio_feed, ivBackButton, ivHomeButton;
+    String userId = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
+
+        SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+        SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
+
+        }
 
         getContacts();
 
@@ -118,19 +135,15 @@ public class ContactsActivity extends AppCompatActivity {
             }
         });
 
-        ivBackButton.setOnClickListener(new View.OnClickListener()
-        {
+        ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
                 String caller = getIntent().getStringExtra("Previous");
                 Intent intent = new Intent();
-                if(caller == "chat")
-                {
-                     intent = new Intent(getApplicationContext(), ChatActivity.class);
-                }
-                else
-                {
+                if (caller == "chat") {
+                    intent = new Intent(getApplicationContext(), ChatActivity.class);
+                } else {
                     intent = new Intent(getApplicationContext(), MessengerActivity.class);
                 }
                 startActivity(intent);
@@ -188,7 +201,9 @@ public class ContactsActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+                params.put("myid", userId );
                 params.put("key", "passed");
+
                 return params;
             }
         };

@@ -253,20 +253,17 @@ public class SignInActivity extends AppCompatActivity {
                                 fbEditor.putString("profilePicFB", fbProfilePic);
                                 fbEditor.putInt("status", 1);
                                 fbEditor.commit();
-
                                 registerSpecialFB();
                                 Intent i = new Intent(SignInActivity.this, HomeActivity.class);
                                 startActivity(i);
-
                             }
                         });
 
                 Bundle parameters = new Bundle();
-                parameters.putString("fields", "id, first_name, last_name, email,gender, birthday, location");
+                parameters.putString("fields", "id, first_name, last_name, email, gender, birthday, location");
                 request.setParameters(parameters);
                 //   Toast.makeText(SignInActivity.this,fbImg, Toast.LENGTH_SHORT).show();
                 request.executeAsync();
-
                 //   Toast.makeText(SignInActivity.this, ""+id, Toast.LENGTH_SHORT).show();
             }
 
@@ -406,6 +403,9 @@ public class SignInActivity extends AppCompatActivity {
         @Override
         public void failure(TwitterException exception) {
             Log.d("Twitter Kit", "Login With Twitter", exception);
+            if (exception.equals("com.twitter.sdk.android.core.TwitterAuthException: Failed to get request token")) {
+                Toast.makeText(SignInActivity.this, "Twitter Login failed : Device time may not be same as server time", Toast.LENGTH_SHORT).show();
+            }
         }
     };
 
