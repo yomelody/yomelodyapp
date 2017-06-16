@@ -3,6 +3,10 @@ package com.instamelody.instamelody.Adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Movie;
+import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.AudioTrack;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
@@ -38,7 +42,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.io.SequenceInputStream;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,7 +58,9 @@ import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.instamelody.instamelody.Adapters.InstrumentListAdapter.audioUrl;
-import static com.instamelody.instamelody.R.id.melodySlider;
+/*import static com.instamelody.instamelody.R.id.melodySlider;
+import static com.instamelody.instamelody.R.id.rlShare;
+import static com.instamelody.instamelody.R.id.tab_host;*/
 
 /**
  * Created by Shubhansh Jaiswal on 11/26/2016.
@@ -91,7 +104,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         ImageView userProfileImage, ivMelodyCover, ivPlay, ivPause, ivLikeButton, ivDislikeButton, ivPlayButton;
         Button btnMelodyAdd;
         SeekBar melodySlider;
-        RelativeLayout rlSeekbarTracer, rlLike, rlPlay, rlComment;
+        RelativeLayout rlSeekbarTracer, rlLike, rlPlay, rlComment,rlshare;
 
         public MyViewHolder(final View itemView) {
             super(itemView);
@@ -122,6 +135,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             rlLike = (RelativeLayout) itemView.findViewById(R.id.rlLike);
             rlPlay = (RelativeLayout) itemView.findViewById(R.id.rlPlay);
             rlComment = (RelativeLayout) itemView.findViewById(R.id.rlComment);
+            rlshare=(RelativeLayout)itemView.findViewById(R.id.rlShare);
 
             ivPlay.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -225,6 +239,25 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         Intent intent = new Intent(context, SignInActivity.class);
                         context.startActivity(intent);
                     }
+                }
+            });
+
+            rlshare.setOnClickListener(new View.OnClickListener(){
+
+                @Override
+                public void onClick(View v) {
+                    /*Intent shareIntent = new Intent();
+                    shareIntent.setAction(Intent.ACTION_SEND);
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
+                    shareIntent.setType("image/jpeg");
+                    startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));*/
+
+                    Intent shareIntent = new Intent();
+                    shareIntent.setAction(Intent.ACTION_SEND);
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Testing");
+                    shareIntent.setType("image/jpeg");
+                    context.startActivity(Intent.createChooser(shareIntent, "Hello."));
                 }
             });
 
