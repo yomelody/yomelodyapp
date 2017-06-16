@@ -1,9 +1,12 @@
 package com.instamelody.instamelody;
 
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -43,6 +46,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,7 +92,8 @@ public class ProfileActivity extends AppCompatActivity {
     String userIdNormal, userIdFb, userIdTwitter;
     int statusNormal, statusFb, statusTwitter;
     SearchView search1;
-
+    ProgressDialog progressDialog;
+    LongOperation myTask = null;
     TabHost host;
     private static RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -93,7 +105,6 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
         fetchGenreNames();
         fetchRecordings();
 
@@ -117,9 +128,6 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         adapter = new RecordingsCardAdapter(this, recordingList);
-
-
-
 
         btnAudio = (Button) findViewById(R.id.btnAudio);
         btnActivity = (Button) findViewById(R.id.btnActivity);
@@ -166,7 +174,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         if (statusNormal == 1) {
             tvNameInProf.setText(firstName);
-            tvUserNameInProf.setText(userNameLogin);
+            tvUserNameInProf.setText("@" + userNameLogin);
         }
 
         if (profilePicLogin != null) {
@@ -184,7 +192,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         if (statusTwitter == 1) {
             tvNameInProf.setText(Name);
-            tvUserNameInProf.setText(userName);
+            tvUserNameInProf.setText("@" + userName);
         }
 
         if (profilePic != null) {
@@ -202,7 +210,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         if (statusFb == 1) {
             tvNameInProf.setText(fbName);
-            tvUserNameInProf.setText(fbUserName);
+            tvUserNameInProf.setText("@" + fbUserName);
         }
 
         if (fbId != null) {
@@ -332,8 +340,6 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
-
-
     }
 
     public void fetchGenreNames() {
@@ -352,6 +358,8 @@ public class ProfileActivity extends AppCompatActivity {
                         try {
                             jsonObject = new JSONObject(response);
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
+                                myTask = new LongOperation();
+                                myTask.execute();
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     genreJson = jsonArray.getJSONObject(i);
@@ -450,6 +458,68 @@ public class ProfileActivity extends AppCompatActivity {
                 return rv;
             }
         };
+    }
+
+    private class LongOperation extends AsyncTask<String, Void, String> {
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(ProfileActivity.this);
+            progressDialog.setTitle("Processing...");
+            progressDialog.setMessage("Please wait...");
+            progressDialog.setCancelable(true);
+            progressDialog.show();
+        }
+
+        protected String doInBackground(String... params) {
+
+            try {
+                //Getting data from server
+
+                String filename = "myfile";
+                String outputString = "Hello world!";
+
+                URL aurl = new URL("http://35.165.96.167/api/upload_cover_melody_file.php");
+
+                URLConnection connection = aurl.openConnection();
+                connection.connect();
+                // getting file length
+                int lengthOfFile = connection.getContentLength();
+
+                // input stream to read file - with 8k buffer
+                InputStream input = new BufferedInputStream(aurl.openStream(), 8192);
+
+                try {
+                    FileOutputStream outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+                    outputStream.write(outputString.getBytes());
+                    outputStream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    FileInputStream inputStream = openFileInput(filename);
+                    BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
+                    StringBuilder total = new StringBuilder();
+                    String line;
+                    while ((line = r.readLine()) != null) {
+                        total.append(line);
+                    }
+                    r.close();
+                    inputStream.close();
+                    Log.d("File", "File contents: " + total);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+
+            progressDialog.dismiss();
+        }
+
     }
 
 }
