@@ -6,6 +6,7 @@ import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ByteArrayPool;
 import com.android.volley.toolbox.HttpHeaderParser;
 
 import java.io.ByteArrayInputStream;
@@ -164,6 +165,8 @@ public class VolleyMultipartRequest extends Request<NetworkResponse> {
     public class DataPart {
         private String fileName;
         private byte[] content;
+        private ByteArrayPool content1;
+        private Class<ByteArrayPool> content2;
         private String type;
 
         public DataPart(String audioFilePath) {
@@ -177,6 +180,12 @@ public class VolleyMultipartRequest extends Request<NetworkResponse> {
         public DataPart(String name, byte[] data, String mimeType) {
             fileName = name;
             content = data;
+            type = mimeType;
+        }
+
+        public DataPart(String name, Class<ByteArrayPool> byteArrayPool, String mimeType) {
+            fileName = name;
+            content2 = byteArrayPool;
             type = mimeType;
         }
 

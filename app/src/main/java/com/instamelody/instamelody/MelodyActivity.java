@@ -29,6 +29,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.SequenceInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,7 +54,7 @@ public class MelodyActivity extends AppCompatActivity {
     String KEY_RESPONSE = "response";//JSONArray
     String resp = "";
 
-    ImageView discover, message, ivBackButton, ivHomeButton, ivProfile;
+    ImageView discover, message, ivBackButton, ivHomeButton, ivProfile,audio_feed;
     private static RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private static RecyclerView recyclerView;
@@ -67,6 +72,7 @@ public class MelodyActivity extends AppCompatActivity {
         discover = (ImageView) findViewById(R.id.discover);
         message = (ImageView) findViewById(R.id.message);
         ivProfile = (ImageView) findViewById(R.id.userProfileImage);
+        audio_feed = (ImageView) findViewById(R.id.audio_feed);
         //  tab1 = (LinearLayout) findViewById(R.id.tab1);
         // llFragSubs = (LinearLayout) findViewById(R.id.llFragSubs);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewMelody);
@@ -162,6 +168,14 @@ public class MelodyActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent i = new Intent(getApplicationContext(), ProfileActivity.class);
                 startActivity(i);
+            }
+        });
+
+        audio_feed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MelodyActivity.this,StationActivity.class);
+                startActivity(intent);
             }
         });
 

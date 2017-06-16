@@ -11,10 +11,13 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Path;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
+import android.media.MediaExtractor;
+import android.media.MediaFormat;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.media.SoundPool;
@@ -64,11 +67,13 @@ import com.android.volley.Response;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ByteArrayPool;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.FacebookSdk;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
+import com.fasterxml.jackson.core.util.ByteArrayBuilder;
 import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Models.Genres;
@@ -82,8 +87,10 @@ import com.squareup.picasso.Picasso;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -91,6 +98,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.ByteBuffer;
 import java.sql.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -223,6 +231,7 @@ public class StudioActivity extends AppCompatActivity {
     ShareDialog shareDialog;
     FacebookSdk.InitializeCallback i1;
     String fetchRecordingUrl;
+    byte[] bytes,soundBytes;
 
 
     @Override
@@ -264,7 +273,7 @@ public class StudioActivity extends AppCompatActivity {
         userIdFb = loginFbSharedPref.getString("userId", null);
         statusFb = loginFbSharedPref.getInt("status", 0);
         SharedPreferences loginTwitterSharedPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
-        userIdTwitter = loginTwitterSharedPref.getString("TwitterId", null);
+        userIdTwitter = loginTwitterSharedPref.getString("userId", null);
         statusTwitter = loginTwitterSharedPref.getInt("status", 0);
 
         if (statusNormal == 1) {
@@ -462,20 +471,20 @@ public class StudioActivity extends AppCompatActivity {
             Picasso.with(StudioActivity.this).load(profilePic).into(profile_image);
         }
 
-        /*SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+        SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
         fbName = fbPref.getString("FbName", null);
         fbUserName = fbPref.getString("userName", null);
         fbId = fbPref.getString("fbId", null);
-        statusFb = fbPref.getInt("status", 0);*/
+        statusFb = fbPref.getInt("status", 0);
 
-        SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+        /*SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
         fbId = fbPref.getString("fbId", null);
         fbUserName = fbPref.getString("UserName", null);
-        statusFb = fbPref.getInt("status", 0);
+        statusFb = fbPref.getInt("status", 0);*/
 
 
         if (statusFb == 1) {
-            artist_name.setText("@" + fbUserName);
+            artist_name.setText("@" +fbName);
         }
 
         if (fbId != null) {
@@ -561,7 +570,7 @@ public class StudioActivity extends AppCompatActivity {
         audio_feed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(StudioActivity.this, StudioActivity.class);
+                Intent i = new Intent(StudioActivity.this, StationActivity.class);
                 startActivity(i);
             }
         });
@@ -1160,6 +1169,21 @@ public class StudioActivity extends AppCompatActivity {
         recorder.setOutputFile(audioFilePath);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
+        /*File file = new File(audioFilePath);
+        int size = (int) file.length();*//*
+        bytes = File.ReadAllBytes(audioFilePath);
+        Log.d("Test",""+bytes);*/
+
+        try {
+            InputStream inputStream =
+                    getContentResolver().openInputStream(Uri.fromFile(new File(audioFilePath)));
+
+            soundBytes = new byte[inputStream.available()];
+            soundBytes = toByteArray(inputStream);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
         try {
             recorder.prepare();
         } catch (IOException e) {
@@ -1184,8 +1208,22 @@ public class StudioActivity extends AppCompatActivity {
         mediaPlayer.start();
         MediaPlayer mp = MediaPlayer.create(getApplicationContext(), Uri.parse(audioFilePath));
         duration = mp.getDuration();
+        MediaExtractor();
+        /*try {
+            InputStream inputStream =
+                    getContentResolver().openInputStream(Uri.fromFile(new File(audioFilePath)));
+
+            soundBytes = new byte[inputStream.available()];
+            soundBytes = toByteArray(inputStream);
+
+            Toast.makeText(this, "Recordin Finished"+ " " + soundBytes, Toast.LENGTH_LONG).show();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }*/
 
     }
+
+
 
     /*@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -1482,6 +1520,7 @@ public class StudioActivity extends AppCompatActivity {
                     JSONObject response1 = new JSONObject(resultResponse);
                     String flag = response1.getString("flag");
                     String flag2 = response1.getString("0");
+                    Log.d("Result", flag2);
                     JSONObject r1 = response1.getJSONObject("0");
                     urlRecording = r1.getString("recording");
                     if (flag.equals("success")) {
@@ -1608,9 +1647,9 @@ public class StudioActivity extends AppCompatActivity {
             protected Map<String, DataPart> getByteData() {
                 Map<String, DataPart> params = new HashMap<>();
 
-                params.put(FILE1, new DataPart("InstaMelody.mp3", audioFilePath.getBytes(), "audio/mpeg"));
-
-
+//                params.put(FILE1, new DataPart("InstaMelody.mp3", audioFilePath.getBytes(), "audio/mpeg"));
+//                params.put(FILE1,new DataPart("InstaMelody.mp3",MediaExtractor(),"audio/mpeg"));
+                params.put(FILE1, new DataPart("InstaMelody.mp3", soundBytes, "audio/mpeg"));
                 return params;
             }
 
@@ -1880,5 +1919,51 @@ public class StudioActivity extends AppCompatActivity {
         }, mp.getDuration() + 100);
     }
 
+    public Class<ByteArrayPool> MediaExtractor() {
+        File file = new File(audioFilePath);
+        int size = (int) file.length();
+        bytes = new byte[size];
+        try {
+            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+            buf.read(bytes, 0, bytes.length);
+            buf.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return ByteArrayPool.class;
+    }
+//
+//    public byte[] toByteArray(InputStream in) throws IOException {
+//        ByteArrayOutputStream out = new ByteArrayOutputStream();
+//        int read = 0;
+//        byte[] buffer = new byte[1024];
+//        while (read != -1) {
+//            read = in.read(buffer);
+//            if (read != -1)
+//                out.write(buffer,0,read);
+//        }
+//        out.close();
+//        return out.toByteArray();
+//    }
+
+    public byte[] toByteArray(InputStream in) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        int read;
+        byte[] buffer = new byte[8192];
+        while ((read = in.read(buffer)) > 0) {
+
+
+            out.write(buffer,0,read);
+        }
+        out.close();
+        return out.toByteArray();
+    }
 }
+
+
+
 

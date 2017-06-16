@@ -178,7 +178,7 @@ public class HomeActivity extends AppCompatActivity {
             SignOut.setVisibility(View.VISIBLE);
             SignIn.setVisibility(View.INVISIBLE);
             tvFirstName.setText(Name);
-            tvUserName.setText(userName);
+            tvUserName.setText("@"+userName);
         }
 
         if (profilePic != null) {
@@ -202,7 +202,7 @@ public class HomeActivity extends AppCompatActivity {
             SignIn.setVisibility(View.INVISIBLE);
             String fullName = fbFirstName+ " " +fbLastName;
             tvFirstName.setText(fullName);
-            tvUserName.setText("@"+fbUserName);
+            tvUserName.setText("@"+fbFirstName);
         }
         if (fbId != null) {
             ivProfile.setVisibility(View.GONE);
