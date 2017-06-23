@@ -606,12 +606,15 @@ public class StudioActivity extends AppCompatActivity {
                         rlMelodyButton.setVisibility(View.GONE);
                         ivRecord_stop.setVisibility(View.VISIBLE);
                         rlRecordingButton.setVisibility(View.VISIBLE);
-                        waveform_view.setVisibility(View.VISIBLE);
-                        //mRecordingThread.recording();
-                        recordAudio();
-//                            playAudioRecycler();
-//                    primarySeekBarProgressUpdater();
-                        chrono.start();
+              Log.d("mShouldRecording Value", "" + mShouldContinue);
++                        try {
++                            recordAudio();
++                            mRecordingThread.start();
++                            chrono.start();
++
++                        } catch (IllegalStateException e) {
++                            e.printStackTrace();
++                        }
                     } else {
                         setPermissions();
                     }
@@ -621,9 +624,10 @@ public class StudioActivity extends AppCompatActivity {
                     rlMelodyButton.setVisibility(View.GONE);
                     ivRecord_stop.setVisibility(View.VISIBLE);
                     rlRecordingButton.setVisibility(View.VISIBLE);
-                    waveform_view.setVisibility(View.VISIBLE);
+                
 
                     try {
+                        mRecordingThread.start();
                         recordAudio();
 //                    primarySeekBarProgressUpdater();
 //                            external_audio();
@@ -634,7 +638,7 @@ public class StudioActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-                    chrono.start();
+                
                 }
             }
         });
@@ -1119,43 +1123,7 @@ public class StudioActivity extends AppCompatActivity {
     }*/
 
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        mRecordingThread = new RecordingThread();
-        mRecordingThread.start();
-
-    }
-
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        if (mRecordingThread != null) {
-            mRecordingThread.stopRunning();
-            mRecordingThread = null;
-        }
-    }
-
-    /*@Override
-    protected void onStop() {
-        super.onStop();
-
-
-        mRecordingThread.stopRunning();
-
-    }*/
-
-   /* @Override
-    protected void onRestart() {
-        super.onRestart();
-
-        mRecordingThread.stopRunning();
-
-    }*/
-
+   
 
     public void recordAudio() {
 
