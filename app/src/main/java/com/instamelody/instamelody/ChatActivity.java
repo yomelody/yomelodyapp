@@ -128,6 +128,8 @@ public class ChatActivity extends AppCompatActivity {
     ImageView ivRecieverProfilePic;
     TextView tvRecieverName;
     String username = "";
+    String parent;
+    String senderId = "";
 
     @TargetApi(18)
     @Override
@@ -135,11 +137,10 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        tvUserName = (TextView) findViewById(R.id.tvUserName);
+        parent = getIntent().getStringExtra("from");
 
         fileArray.clear();
         getGalleryImages();
-
 
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
@@ -170,10 +171,14 @@ public class ChatActivity extends AppCompatActivity {
 //        sendAt = chatPrefs.getString("sendAt", null);
 
         SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
+        senderId = prefs.getString("senderId", null);
         receiverId = prefs.getString("receiverId", null);
         receiverName = prefs.getString("receiverName", null);
         receiverImage = prefs.getString("receiverImage", null);
         chatId = prefs.getString("chatId", null);
+
+        tvUserName = (TextView) findViewById(R.id.tvUserName);
+        tvUserName.setText(receiverName);
 
         Bundle bundle = getIntent().getExtras();
 
@@ -192,6 +197,7 @@ public class ChatActivity extends AppCompatActivity {
 //        final String temp = packPref.getString("PackPresent", null);
 
         getChatMsgs(chatId);
+
 //        if (temp.equals("true")) {
 //            sendMessage("hello", userId, temp);
 //        }
@@ -284,6 +290,7 @@ public class ChatActivity extends AppCompatActivity {
                 editor.putString("receiverId", "");
                 editor.putString("receiverName", "");
                 editor.putString("receiverImage", "");
+//                Log.d("rcvrimg", "receiverImage 2 has no value");
                 editor.putString("chatId", "");
                 editor.commit();
 
@@ -300,6 +307,7 @@ public class ChatActivity extends AppCompatActivity {
                 editor.putString("receiverId", "");
                 editor.putString("receiverName", "");
                 editor.putString("receiverImage", "");
+//                Log.d("rcvrimg", "receiverImage 3 has no value");
                 editor.putString("chatId", "");
                 editor.commit();
 
@@ -316,6 +324,7 @@ public class ChatActivity extends AppCompatActivity {
                 editor.putString("receiverId", "");
                 editor.putString("receiverName", "");
                 editor.putString("receiverImage", "");
+//                Log.d("rcvrimg", "receiverImage 4 has no value");
                 editor.putString("chatId", "");
                 editor.commit();
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
@@ -330,6 +339,7 @@ public class ChatActivity extends AppCompatActivity {
                 editor.putString("receiverId", "");
                 editor.putString("receiverName", "");
                 editor.putString("receiverImage", "");
+//                Log.d("rcvrimg", "receiverImage 5 has no value");
                 editor.putString("chatId", "");
                 editor.commit();
                 Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
@@ -587,64 +597,47 @@ public class ChatActivity extends AppCompatActivity {
 
         final StringRequest stringRequest = new StringRequest(Request.Method.POST, MESSAGES_LIST_URL,
                 new Response.Listener<String>() {
+
                     @Override
                     public void onResponse(String response) {
 
-                        String usrname = username;
-
                         chatList.clear();
                         cAdapter.notifyDataSetChanged();
-
                         JSONObject jsonObject;
+
                         try {
                             jsonObject = new JSONObject(response);
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
                                 JSONObject result = jsonObject.getJSONObject("result");
                                 JSONArray resultArray = result.getJSONArray("message LIst");
-                                String uname = "";
-                                List<String> groupNameList = new ArrayList<>();
                                 if (resultArray.length() > 0) {
                                     for (int i = 0; i < resultArray.length(); i++) {
                                         Message message = new Message();
                                         JSONObject chatJson = resultArray.getJSONObject(i);
                                         String id = chatJson.getString("id");
                                         message.setId(id);
+
                                         String senderID = chatJson.getString("senderID");
-                                        String receiverID = chatJson.getString("receiverID");
-                                        SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
-                                        editor.putString("receiverId", senderID);
-                                        editor.putString("temp", receiverID);
-                                        editor.commit();
+//                                        String receiverID = chatJson.getString("receiverID");
+//                                        SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+//                                        editor.putString("receiverId", senderID);
+//                                        editor.putString("temp", receiverID);
+//                                        editor.commit();
+
                                         message.setSenderId(senderID);
                                         String sendat = chatJson.getString("sendat");
                                         message.setCreatedAt(sendat);
-                                        uname = chatJson.getString("receiver_name");
-                                        groupNameList.add(uname);
                                         String messagef = chatJson.getString("message");
                                         message.setMessage(messagef);
                                         String profilePic = chatJson.getString("sender_pic");
                                         message.setProfilePic(profilePic);
                                         chatList.add(message);
                                     }
-//                                    String listnames = "";
-//                                    if (groupNameList.size() == 1) {
-//                                        tvUserName.setText(groupNameList.get(0));
-//                                    } else {
-                                    for (int i = 0; i < groupNameList.size(); i++) {
-                                        String temp = String.valueOf(groupNameList.get(i));
-                                        if (usrname.equals(temp)) {
-                                            tvUserName.setText(groupNameList.get(i));
-                                        }
-                                    }
-//                                        tvUserName.setText(listnames);
-//                                    }
-
-//                                } else {
-//                                    tvUserName.setText(receiverName);
-//                                    tvRecieverName.setText(" " + receiverName);
-//                                    Picasso.with(ivRecieverProfilePic.getContext()).load(receiverImage).into(ivRecieverProfilePic);
-//                                    rlNoMsg.setVisibility(View.VISIBLE);
-//                                    rlTxtContent.setVisibility(View.VISIBLE);
+                                } else {
+                                    tvRecieverName.setText(" " + receiverName);
+                                    Picasso.with(ivRecieverProfilePic.getContext()).load(receiverImage).into(ivRecieverProfilePic);
+                                    rlNoMsg.setVisibility(View.VISIBLE);
+                                    rlTxtContent.setVisibility(View.VISIBLE);
                                 }
                             }
                         } catch (JSONException e) {
@@ -728,12 +721,8 @@ public class ChatActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
 
-                SharedPreferences userDetails = getSharedPreferences("ContactsData", MODE_PRIVATE);
-                String rcvrId = userDetails.getString("receiverId", "");
-//                String temp = userDetails.getString("temp","");
-
                 params.put(SENDER_ID, user_Id);
-                params.put(RECEIVER_ID, rcvrId);
+                params.put(RECEIVER_ID, senderId);
                 params.put(CHAT_ID, chatId);
                 params.put(TITLE, "message");
                 params.put(MESSAGE, message);
