@@ -1118,16 +1118,6 @@ public class StudioActivity extends AppCompatActivity {
             });
         }
     }
-
-    /*@Override
-    protected void onStart() {
-        super.onStart();
-
-        mRecordingThread = new RecordingThread();
-        mRecordingThread.start();
-    }*/
-
-
    
 
     public void recordAudio() {
