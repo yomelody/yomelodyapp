@@ -1100,8 +1100,6 @@ public class StudioActivity extends AppCompatActivity {
         }
     }
 
-   
-
     public void recordAudio() {
 
         recorder = new MediaRecorder();
