@@ -23,6 +23,7 @@ import android.support.v4.util.Pools;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -235,7 +236,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         }
         Picasso.with(holder.userProfileImage.getContext()).load(instruments.getUserProfilePic()).into(holder.userProfileImage);
         holder.tvBpmRate.setText(instruments.getInstrumentBpm());
-        holder.tvUserName.setText(instruments.getUserName());
+        holder.tvUserName.setText("@"+ instruments.getUserName());
         holder.tvInstrumentName.setText(instruments.getInstrumentName());
 
         holder.tvInstrumentLength.setText(instruments.getInstrumentLength());
@@ -359,7 +360,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 //        killMediaPlayer();
         audioFilePath =
                 Environment.getExternalStorageDirectory().getAbsolutePath()
-                        + "/InstaMelody.mp3";
+                        + "/InstaMelody.amr";
         mp = new MediaPlayer();
         mp.setDataSource(audioFilePath);
 //        mp.setDataSource(instrumentFile);

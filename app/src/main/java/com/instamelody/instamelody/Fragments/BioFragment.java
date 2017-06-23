@@ -127,7 +127,7 @@ public class BioFragment extends Fragment {
 
         if (statusFb == 1){
             textViewName.setText(fbName);
-            tvStation.setText(fbUserName);
+            tvStation.setText("@"+fbName);
         }
 
         if (fbId != null) {

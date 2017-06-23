@@ -13,11 +13,13 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TabHost;
@@ -45,6 +47,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.instamelody.instamelody.Fragments.ActivityFragment;
+import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
 
 import org.json.JSONArray;
@@ -57,6 +60,7 @@ import java.util.Map;
 
 import static com.instamelody.instamelody.R.attr.position;
 import static com.instamelody.instamelody.R.id.tabHostRecordings;
+import static com.instamelody.instamelody.R.id.thing_proto;
 
 
 /**
@@ -68,6 +72,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     Button btnActivity, btnAudio, btnCancel;
     RelativeLayout rlFragmentActivity, rlPartStation, rlSearch;
     ImageView ivBackButton, ivHomeButton, discover, message, ivProfile, audio_feed, ivSound, ivSound1, ivFilter;
+    EditText subEtFilterName;
 
     TabHost host;
     private static RecyclerView.Adapter adapter;
@@ -82,6 +87,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     String[] values = new String[]{"Latest", "Trending", "Favourite", "Artist", "# of Instruments", "BPM"};
 
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
+    ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
     private String RECORDING_URL = "http://35.165.96.167/api/recordings.php";
     private String ID = "id";
     private String KEY = "key";
@@ -96,7 +102,9 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";//JSONArray
     String genreString = "1";
-    String userId,userNameLogin;
+    String userId, userNameLogin;
+    String userIdNormal, userIdFb, userIdTwitter;
+    int statusNormal, statusFb, statusTwitter;
     String strName;
     String titleString;
 
@@ -124,9 +132,24 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         search1 = (SearchView) findViewById(R.id.search1);
         btnCancel = (Button) findViewById(R.id.btnCancel);
         list = (ListView) findViewById(R.id.list);
-        SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-        userId = loginSharedPref.getString("userId", null);
+        SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userNameLogin = loginSharedPref.getString("userName", null);
+        statusNormal = loginSharedPref.getInt("status", 0);
+        userIdNormal = loginSharedPref.getString("userId", null);
+        SharedPreferences loginFbSharedPref = this.getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+        userIdFb = loginFbSharedPref.getString("userId", null);
+        statusFb = loginFbSharedPref.getInt("status", 0);
+        SharedPreferences loginTwitterSharedPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        userIdTwitter = loginTwitterSharedPref.getString("userId", null);
+        statusTwitter = loginTwitterSharedPref.getInt("status", 0);
+
+        if (statusNormal == 1) {
+            userId = userIdNormal;
+        } else if (statusFb == 1) {
+            userId = userIdFb;
+        } else if (statusTwitter == 1) {
+            userId = userIdTwitter;
+        }
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewAudio);
         recyclerView.setHasFixedSize(true);
@@ -284,15 +307,18 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         strName = arrayAdapter.getItem(which);
+                        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                        editorFilterString.putString("stringFilter", strName);
+                        editorFilterString.apply();
                         AlertDialog.Builder builderInner = new AlertDialog.Builder(StationActivity.this);
                         builderInner.setMessage(strName);
                         builderInner.setTitle("Your Selected Item is");
                         builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+//                                fetchGenreNames();
+//                                fetchRecordings();
                                 dialog.dismiss();
-                                fetchGenreNames();
-                                fetchRecordings();
                             }
                         });
                         builderInner.show();
@@ -341,10 +367,6 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                                     spec.setIndicator(titleString);
                                     spec.setContent(createTabContent());
                                     host.addTab(spec);
-
-
-
-
                                 }
                             }
                         } catch (JSONException e) {
@@ -395,7 +417,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
                         Log.d("ReturnData", response);
                         recordingList.clear();
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList,recordingsPools);
 
                     }
                 },
@@ -421,6 +443,14 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
+    }
+
+    @Override
+    protected void onDestroy() {
+        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+        editorFilterString.clear();
+        editorFilterString.apply();
+        super.onDestroy();
     }
 
     private TabHost.TabContentFactory createTabContent() {
@@ -466,4 +496,5 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     public boolean onQueryTextChange(String newText) {
         return false;
     }
+
 }

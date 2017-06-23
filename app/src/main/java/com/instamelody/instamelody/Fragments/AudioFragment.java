@@ -28,8 +28,10 @@ import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Models.AudioModel;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsModel;
+import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.StationActivity;
 import com.instamelody.instamelody.StudioActivity;
 
 import org.json.JSONArray;
@@ -49,6 +51,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.instamelody.instamelody.R.id.ivFilter;
 
 /**
  * Created by Saurabh Singh on 4/18/2017.
@@ -58,16 +61,22 @@ public class AudioFragment extends Fragment {
 
     ArrayList<AudioModel> audioList = new ArrayList<>();
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
+    ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
+    ArrayList<Genres> genresArrayList = new ArrayList<>();
     private String RECORDING_URL = "http://35.165.96.167/api/recordings.php";
     private String ID = "id";
     private String KEY = "key";
     private String STATION = "station";
     private String GENRE = "genere";
+    private String FILE_TYPE = "file_type";
+    private String FILTER_TYPE = "filter_type";
+    private String FILTER = "filter";
 
     String recordingId, addedBy, recordingTopic, userName, dateAdded, likeCount, playCount, commentCount, shareCount, profileUrl, coverUrl, genre, recordings;
 
     String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
     String KEY_GENRE_NAME = "name";
+    String KEY_GENRE_ID = "id";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";//JSONArray
     String genreString = "1";
@@ -82,6 +91,7 @@ public class AudioFragment extends Fragment {
     int statusNormal, statusFb, statusTwitter;
     ProgressDialog progressDialog;
     LongOperation myTask = null;
+    String strName;
 
     public AudioFragment() {
 
@@ -90,8 +100,15 @@ public class AudioFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
+        strName = filterPref.getString("stringFilter", null);
         fetchGenreNames();
-        fetchRecordings();
+        if (strName == null) {
+            fetchRecordings();
+        } else {
+            fetchRecordingsFilter();
+        }
+
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userId = loginSharedPref.getString("userId", null);
 
@@ -109,9 +126,7 @@ public class AudioFragment extends Fragment {
         } else if (statusTwitter == 1) {
             userId = userIdTwitter;
         }
-
-        new DownloadFileFromURL();
-        adapter = new RecordingsCardAdapter(getActivity(), recordingList);
+        adapter = new RecordingsCardAdapter(getActivity(), recordingList,recordingsPools);
         super.onCreate(savedInstanceState);
     }
 
@@ -120,17 +135,6 @@ public class AudioFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_audio, container, false);
-
-
-        /*recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewAudio);
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-
-//        adapter = new RecordingsCardAdapter(getActivity(), recordingList);
-        recyclerView.setAdapter(adapter);*/
-
         return view;
     }
 
@@ -155,15 +159,19 @@ public class AudioFragment extends Fragment {
                                 myTask.execute();
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                                 for (int i = 0; i < jsonArray.length(); i++) {
+                                    Genres genres = new Genres();
                                     genreJson = jsonArray.getJSONObject(i);
                                     titleString = genreJson.getString(KEY_GENRE_NAME);
+                                    genres.setName(titleString);
+                                    genres.setId(genreJson.getString(KEY_GENRE_ID));
+                                    genresArrayList.add(genres);
                                     spec = host.newTabSpec(titleString);
                                     spec.setIndicator(titleString);
                                     spec.setContent(createTabContent());
                                     host.addTab(spec);
 
                                     SharedPreferences.Editor editorGenre = getActivity().getSharedPreferences("prefGenreName", MODE_PRIVATE).edit();
-                                    editorGenre.putString("GenreName",titleString);
+                                    editorGenre.putString("GenreName", titleString);
                                     editorGenre.apply();
 
                                 }
@@ -179,9 +187,19 @@ public class AudioFragment extends Fragment {
                         host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
                             @Override
                             public void onTabChanged(String arg0) {
+                                genreString = arg0;
                                 int currentTab = host.getCurrentTab();
-                                genreString = String.valueOf(currentTab).trim();
-                                fetchRecordings();
+                                if (currentTab==0){
+                                    genreString= "";
+                                }else {
+                                    genreString = genresArrayList.get(currentTab).getId();
+                                }
+//                                fetchRecordings();
+                                if (strName == null) {
+                                    fetchRecordings();
+                                } else {
+                                    fetchRecordingsFilter();
+                                }
 //                                Toast.makeText(getActivity(), "beta: " + genreString, Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -217,7 +235,7 @@ public class AudioFragment extends Fragment {
 
                         Log.d("ReturnData", response);
                         recordingList.clear();
-                        new ParseContents(getActivity()).parseAudio(response, recordingList);
+                        new ParseContents(getActivity()).parseAudio(response, recordingList,recordingsPools);
                         adapter.notifyDataSetChanged();
                     }
                 },
@@ -232,9 +250,50 @@ public class AudioFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
+//                params.put(ID, userId);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(stringRequest);
+    }
+
+
+    public void fetchRecordingsFilter() {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDING_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
+
+                        Log.d("ReturnData", response);
+                        recordingList.clear();
+                        new ParseContents(getActivity()).parseAudio(response, recordingList,recordingsPools);
+                        adapter.notifyDataSetChanged();
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+                        String errorMsg = error.toString();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+//                params.put(ID, userId);
+                params.put(KEY, STATION);
+                params.put(GENRE, genreString);
+                params.put(FILE_TYPE, "user_recording");
+                params.put(FILTER_TYPE, strName);
+                params.put(FILTER, "extrafilter");
                 return params;
             }
         };
@@ -331,7 +390,6 @@ public class AudioFragment extends Fragment {
 
         }
 
-
     }
 
     private TabHost.TabContentFactory createTabContent() {
@@ -354,7 +412,7 @@ public class AudioFragment extends Fragment {
             progressDialog = new ProgressDialog(getActivity());
             progressDialog.setTitle("Processing...");
             progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(true);
+            progressDialog.setCancelable(false);
             progressDialog.show();
         }
 
@@ -408,6 +466,5 @@ public class AudioFragment extends Fragment {
 
             progressDialog.dismiss();
         }
-
     }
 }
