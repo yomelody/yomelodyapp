@@ -595,53 +595,7 @@ public class StudioActivity extends AppCompatActivity {
         });
 
 
-        ivRecord.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-
-                    if (checkPermissions()) {
-                        ivRecord.setVisibility(View.GONE);
-                        rlMelodyButton.setVisibility(View.GONE);
-                        ivRecord_stop.setVisibility(View.VISIBLE);
-                        rlRecordingButton.setVisibility(View.VISIBLE);
-              Log.d("mShouldRecording Value", "" + mShouldContinue);
-                        try {
-                           recordAudio();
-                           mRecordingThread.start();
-                           chrono.start();
-
-                       } catch (IllegalStateException e) {
-                           e.printStackTrace();
-                       }
-                    } else {
-                        setPermissions();
-                    }
-
-                } else {
-                    ivRecord.setVisibility(View.GONE);
-                    rlMelodyButton.setVisibility(View.GONE);
-                    ivRecord_stop.setVisibility(View.VISIBLE);
-                    rlRecordingButton.setVisibility(View.VISIBLE);
-                
-
-                    try {
-                        mRecordingThread.start();
-                        recordAudio();
-//                    primarySeekBarProgressUpdater();
-//                            external_audio();
-                        chrono.start();
-
-
-                    } catch (IllegalStateException e) {
-                        e.printStackTrace();
-                    }
-
-                
-                }
-            }
-        });
+        
 
         ivRecord_stop.setOnClickListener(new View.OnClickListener() {
             @Override
