@@ -1100,51 +1100,7 @@ public class StudioActivity extends AppCompatActivity {
         }
     }
 
-    /*@Override
-    protected void onStart() {
-        super.onStart();
-
-        mRecordingThread = new RecordingThread();
-        mRecordingThread.start();
-    }*/
-
-
-    //    @Override
-//    protected void onResume() {
-//        super.onResume();
-//
-//        mRecordingThread = new RecordingThread();
-//        mRecordingThread.start();
-//
-//
-//    }
-//
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//
-//        if (mRecordingThread != null) {
-//            mRecordingThread.stopRunning();
-//            mRecordingThread = null;
-//        }
-//    }
-
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//
-//        mRecordingThread.stopRecording();
-//
-//    }
-
-   /* @Override
-    protected void onRestart() {
-        super.onRestart();
-
-        mRecordingThread.stopRunning();
-
-    }*/
+   
 
     public void recordAudio() {
 
