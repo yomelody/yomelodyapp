@@ -1119,7 +1119,6 @@ public class StudioActivity extends AppCompatActivity {
         }
     }
    
-
     public void recordAudio() {
 
         isRecording = true;
