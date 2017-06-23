@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -364,7 +365,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         profile = melody.getUserProfilePic();
         cover = melody.getMelodyCover();
         SharedPreferences.Editor editor1 = context.getSharedPreferences("commentData1", MODE_PRIVATE).edit();
-        editor1.putString("cover",cover);
+        editor1.putString("cover", cover);
         editor1.commit();
         mpid = melody.getMelodyPackId();
         mpids.add(mpid);

@@ -37,6 +37,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -181,7 +182,7 @@ public class StudioActivity extends AppCompatActivity {
     Timer myTimer;
     Chronometer chrono;
     ImageView audio_feed, grey_circle, blue_circle;
-    TextView recording_time, tvPublic, tvDone, tvInfo, recording_date, melody_date;
+    TextView recording_time, tvPublic, tvDone, tvInfo, recording_date, melody_date, melody_detail;
     EditText subEtTopicName;
     Spinner sp;
     RadioGroup rgR;
@@ -205,7 +206,7 @@ public class StudioActivity extends AppCompatActivity {
     String KEY_RESPONSE = "response";//JSONArray
     String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
 
-    String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, melodyPackId;
+    String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, melodyPackId, instrumentCount;
     String selectedGenre;
     int statusNormal, statusFb, statusTwitter;
     String melodyName, instrumentName;
@@ -231,7 +232,7 @@ public class StudioActivity extends AppCompatActivity {
     ShareDialog shareDialog;
     FacebookSdk.InitializeCallback i1;
     String fetchRecordingUrl;
-    byte[] bytes,soundBytes;
+    byte[] bytes, soundBytes;
 
 
     @Override
@@ -263,6 +264,7 @@ public class StudioActivity extends AppCompatActivity {
         profile_image = (CircleImageView) findViewById(R.id.profile_image);
         artist_name = (TextView) findViewById(R.id.artist_name);
         recording_time = (TextView) findViewById(R.id.recording_time);
+        melody_detail = (TextView) findViewById(R.id.melody_detail);
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         firstName = loginSharedPref.getString("firstName", null);
         userNameLogin = loginSharedPref.getString("userName", null);
@@ -484,7 +486,7 @@ public class StudioActivity extends AppCompatActivity {
 
 
         if (statusFb == 1) {
-            artist_name.setText("@" +fbName);
+            artist_name.setText("@" + fbName);
         }
 
         if (fbId != null) {
@@ -503,7 +505,7 @@ public class StudioActivity extends AppCompatActivity {
 
         audioFilePath =
                 Environment.getExternalStorageDirectory().getAbsolutePath()
-                        + "/InstaMelody.mp3";
+                        + "/InstaMelody.amr";
 
 
         chrono.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
@@ -607,7 +609,6 @@ public class StudioActivity extends AppCompatActivity {
                         waveform_view.setVisibility(View.VISIBLE);
                         //mRecordingThread.recording();
                         recordAudio();
-
 //                            playAudioRecycler();
 //                    primarySeekBarProgressUpdater();
                         chrono.start();
@@ -623,11 +624,7 @@ public class StudioActivity extends AppCompatActivity {
                     waveform_view.setVisibility(View.VISIBLE);
 
                     try {
-
-
                         recordAudio();
-
-//                            playAudioRecycler();
 //                    primarySeekBarProgressUpdater();
 //                            external_audio();
                         chrono.start();
@@ -1129,7 +1126,6 @@ public class StudioActivity extends AppCompatActivity {
         mRecordingThread = new RecordingThread();
         mRecordingThread.start();
 
-
     }
 
 
@@ -1160,6 +1156,7 @@ public class StudioActivity extends AppCompatActivity {
 
     }*/
 
+
     public void recordAudio() {
 
         isRecording = true;
@@ -1180,7 +1177,7 @@ public class StudioActivity extends AppCompatActivity {
 
             soundBytes = new byte[inputStream.available()];
             soundBytes = toByteArray(inputStream);
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -1456,8 +1453,8 @@ public class StudioActivity extends AppCompatActivity {
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int id) {
                                                 dialog.cancel();
-                                                myTask = new LongOperation();
-                                                myTask.execute();
+//                                                myTask = new LongOperation();
+//                                                myTask.execute();
                                                 frameSync.setVisibility(View.GONE);
                                             }
                                         });
@@ -1558,8 +1555,8 @@ public class StudioActivity extends AppCompatActivity {
                         VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPLOAD_REC_URL, new Response.Listener<NetworkResponse>() {
                             @Override
                             public void onResponse(NetworkResponse response) {
-                                myTask = new LongOperation();
-                                myTask.execute();
+//                                myTask = new LongOperation();
+//                                myTask.execute();
                                 String resultResponse = new String(response.data);
                                 Toast.makeText(StudioActivity.this, "Cover also Uploaded", Toast.LENGTH_SHORT).show();
 //                                + resultResponse
@@ -1649,7 +1646,7 @@ public class StudioActivity extends AppCompatActivity {
 
 //                params.put(FILE1, new DataPart("InstaMelody.mp3", audioFilePath.getBytes(), "audio/mpeg"));
 //                params.put(FILE1,new DataPart("InstaMelody.mp3",MediaExtractor(),"audio/mpeg"));
-                params.put(FILE1, new DataPart("InstaMelody.mp3", soundBytes, "audio/mpeg"));
+                params.put(FILE1, new DataPart("InstaMelody.amr", soundBytes, "audio/amr"));
                 return params;
             }
 
@@ -1820,7 +1817,7 @@ public class StudioActivity extends AppCompatActivity {
             progressDialog = new ProgressDialog(StudioActivity.this);
             progressDialog.setTitle("Processing...");
             progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(true);
+            progressDialog.setCancelable(false);
             progressDialog.show();
         }
 
@@ -1890,6 +1887,7 @@ public class StudioActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         super.onDestroy();
     }
 
@@ -1957,11 +1955,12 @@ public class StudioActivity extends AppCompatActivity {
         while ((read = in.read(buffer)) > 0) {
 
 
-            out.write(buffer,0,read);
+            out.write(buffer, 0, read);
         }
         out.close();
         return out.toByteArray();
     }
+
 }
 
 
