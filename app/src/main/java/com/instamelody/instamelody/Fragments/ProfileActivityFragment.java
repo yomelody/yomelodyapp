@@ -51,14 +51,14 @@ public class ProfileActivityFragment extends Fragment {
         arraylist = new ArrayList<ActivityModel>();
 
         for (int i = 0; i < ActivityData.id_.length; i++) {
-            arraylist.add(new ActivityModel(
-                    ActivityData.id_[i],
-                    ActivityData.userProfileImage[i],
-                    ActivityData.UserNameArray1[i],
-                    ActivityData.Topic[i],
-                    ActivityData.Time[i]
-
-            ));
+//            arraylist.add(new ActivityModel(
+//                    ActivityData.id_[i],
+//                    ActivityData.userProfileImage[i],
+//                    ActivityData.UserNameArray1[i],
+//                    ActivityData.Topic[i],
+//                    ActivityData.Time[i]
+//
+//            ));
         }
 
         activityAdapter = new ActivityCardAdapter(arraylist);
