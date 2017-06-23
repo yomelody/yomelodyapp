@@ -64,10 +64,11 @@ public class CommentsActivity extends AppCompatActivity {
     String ADD_COMMENTS_URL = "http://35.165.96.167/api/comments.php";
     static ArrayList<Comments> commentList = new ArrayList<>();
 
-    String COMMENTS = "comment";
-    String FILETYPE = "file_type";
+    String COMMENT = "comment";
+    String FILE_TYPE = "file_type";
     String USER_ID = "user_id";
     String FILE_ID = "file_id";
+    String TOPIC = "topic";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";
 
@@ -255,7 +256,7 @@ public class CommentsActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
 
                 params.put(FILE_ID, melodyID);
-                params.put(FILETYPE, fileType);
+                params.put(FILE_TYPE, fileType);
                 return params;
             }
         };
@@ -304,9 +305,10 @@ public class CommentsActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
 
                 params.put(FILE_ID, melodyID);
-                params.put(COMMENTS, cmnt);
-                params.put(FILETYPE, fileType);
+                params.put(COMMENT, cmnt);
+                params.put(FILE_TYPE, fileType);
                 params.put(USER_ID, userId);
+                params.put(TOPIC, "vcbnvn");
 
                 return params;
             }

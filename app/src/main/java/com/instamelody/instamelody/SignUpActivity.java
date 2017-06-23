@@ -693,7 +693,6 @@ public class SignUpActivity extends AppCompatActivity {
                     String picObject = responseObject.getString("profilepic");
                     profilepic2 = picObject;
 
-
                     // JSONObject uploadImgRspns = new JSONObject(resultResponse);
                     //  String flag = uploadImgRspns.getString("flag");
                     //   JSONObject imgrespons = uploadImgRspns.getJSONObject("response");
