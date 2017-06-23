@@ -607,14 +607,14 @@ public class StudioActivity extends AppCompatActivity {
                         ivRecord_stop.setVisibility(View.VISIBLE);
                         rlRecordingButton.setVisibility(View.VISIBLE);
               Log.d("mShouldRecording Value", "" + mShouldContinue);
-+                        try {
-+                            recordAudio();
-+                            mRecordingThread.start();
-+                            chrono.start();
-+
-+                        } catch (IllegalStateException e) {
-+                            e.printStackTrace();
-+                        }
+                        try {
+                           recordAudio();
+                           mRecordingThread.start();
+                           chrono.start();
+
+                       } catch (IllegalStateException e) {
+                           e.printStackTrace();
+                       }
                     } else {
                         setPermissions();
                     }
