@@ -1,5 +1,6 @@
 package com.instamelody.instamelody;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -11,16 +12,11 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Path;
-import android.graphics.drawable.BitmapDrawable;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
-import android.media.MediaExtractor;
-import android.media.MediaFormat;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.media.SoundPool;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -29,12 +25,15 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.provider.MediaStore;
-import android.provider.Settings;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -55,36 +54,33 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.Manifest;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkError;
 import com.android.volley.NetworkResponse;
-import com.android.volley.NoConnectionError;
-import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.ServerError;
-import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ByteArrayPool;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.FacebookSdk;
-import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
-import com.fasterxml.jackson.core.util.ByteArrayBuilder;
+import com.instamelody.instamelody.Adapters.InstrumentListAdapter;
 import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
-import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Models.Genres;
+import com.instamelody.instamelody.Models.MelodyCard;
+import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.utils.AppHelper;
-import com.instamelody.instamelody.utils.SoundPoolManager;
+import com.instamelody.instamelody.utils.AudioDataReceivedListener;
 import com.instamelody.instamelody.utils.VolleyMultipartRequest;
 import com.instamelody.instamelody.utils.VolleySingleton;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -99,30 +95,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.ByteBuffer;
-import java.sql.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-
-import com.instamelody.instamelody.Adapters.InstrumentListAdapter;
-import com.instamelody.instamelody.Models.MelodyCard;
-import com.instamelody.instamelody.Models.MelodyInstruments;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import static android.provider.Contacts.SettingsColumns.KEY;
 
@@ -175,7 +156,7 @@ public class StudioActivity extends AppCompatActivity {
 
     private int mBufferSize;
     private short[] mAudioBuffer;
-    private String mDecibelFormat;
+    //private String mDecibelFormat;
     private View view;
     long elapsedMillis;
     MediaPlayer mPlayer;
@@ -190,13 +171,12 @@ public class StudioActivity extends AppCompatActivity {
     private TextView mDecibelView;
     com.instamelody.instamelody.utils.WaveformView waveform_view;
     RecordingThread mRecordingThread;
-    private static MediaRecorder recorder;
+    MediaRecorder recorder;
     private final int requestCode = 20;
     String MELODY_PACKS_URL = "http://35.165.96.167/api/melody.php";
     ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     public boolean isRecording = false;
-    private static MediaRecorder mediaRecorder;
-    private static MediaPlayer mediaPlayer;
+    MediaPlayer mediaPlayer;
     private static String audioFilePath;
     private static String instrumentFilePath;
     Uri audioUri;
@@ -234,7 +214,9 @@ public class StudioActivity extends AppCompatActivity {
     String fetchRecordingUrl;
     byte[] bytes, soundBytes;
 
+    private boolean mShouldContinue = true;
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -399,23 +381,6 @@ public class StudioActivity extends AppCompatActivity {
         }
 
 
-        SoundPoolManager.CreateInstance();
-        List<Integer> sounds = new ArrayList<>();
-        sounds.add(R.raw.notification);
-        sounds.add(R.raw.melody);
-        SoundPoolManager.getInstance().setSounds(sounds);
-        try {
-            SoundPoolManager.getInstance().InitializeSoundPool(this, new SoundPoolManager.ISoundPoolLoaded() {
-                @Override
-                public void onSuccess() {
-//                    Toast.makeText(StudioActivity.this, "play", Toast.LENGTH_SHORT).show();
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
         grey_circle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -494,13 +459,12 @@ public class StudioActivity extends AppCompatActivity {
             profile_image.setVisibility(View.VISIBLE);
             Picasso.with(StudioActivity.this).load("https://graph.facebook.com/" + fbId + "/picture").into(profile_image);
         }
-
-
+        mRecordingThread = new RecordingThread();
         mBufferSize = AudioRecord.getMinBufferSize(SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
-        mAudioBuffer = new short[mBufferSize / 2];
 
-        mDecibelFormat = getResources().getString(R.string.decibel_format);
+        mAudioBuffer = new short[mBufferSize / 2];
+        // mDecibelFormat = getResources().getString(R.string.decibel_format);
 
 
         audioFilePath =
@@ -659,8 +623,10 @@ public class StudioActivity extends AppCompatActivity {
                 tvPublic.setVisibility(View.VISIBLE);
                 switchPublic.setVisibility(View.VISIBLE);
 //                tvDone.setEnabled(true);
+                if (mRecordingThread != null) {
+                    mRecordingThread.stopRunning();
+                }
 
-                mRecordingThread.stopRunning();
 
                 if (isRecording) {
                     ivRecord.setEnabled(false);
@@ -704,7 +670,16 @@ public class StudioActivity extends AppCompatActivity {
                 rlRedoButton.setVisibility(View.GONE);
                 ivRecord_pause.setVisibility(View.VISIBLE);
                 rlListeningButton.setVisibility(View.VISIBLE);
-                onResume();
+                mShouldContinue = true;
+                if (mShouldContinue == true) {
+                    mRecordingThread = new RecordingThread();
+                    mRecordingThread.start();
+                } else {
+                    mRecordingThread = new RecordingThread();
+                    mRecordingThread.start();
+                }
+
+                //   onResume();
                 // mixFiles();
                 try {
                     playAudio();
@@ -733,7 +708,11 @@ public class StudioActivity extends AppCompatActivity {
                 rlListeningButton.setVisibility(View.INVISIBLE);
                 ivRecord_play.setVisibility(View.VISIBLE);
                 rlRedoButton.setVisibility(View.VISIBLE);
-                onPause();
+                if (mRecordingThread != null) {
+                    mRecordingThread.stopRunning();
+                    mRecordingThread = null;
+                }
+                //          onPause();
                 mediaPlayer.pause();
                 chrono.stop();
 
@@ -822,6 +801,12 @@ public class StudioActivity extends AppCompatActivity {
             }
         });
 
+
+        // To get preferred buffer size and sampling rate.
+        AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
+        String rate = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
+        String size = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
+        Log.d("Buffer Size and sample rate", "Size :" + size + " & Rate: " + rate);
 
     }
 
@@ -996,6 +981,7 @@ public class StudioActivity extends AppCompatActivity {
     @TargetApi(17)
     public boolean checkPermissions() {
         if ((ContextCompat.checkSelfPermission(StudioActivity.this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(StudioActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+
             return true;
         } else {
             return false;
@@ -1050,25 +1036,24 @@ public class StudioActivity extends AppCompatActivity {
 
     private class RecordingThread extends Thread {
 
-        private boolean mShouldContinue = true;
 
         @Override
         public void run() {
-            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
-            AudioRecord record = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLING_RATE,
+
+            //  android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
+            AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLING_RATE,
                     AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, mBufferSize);
             try {
 
-                record.startRecording();
-
-
+               recorder.startRecording();
+                Log.d("Recording issue", "SampleRate" + SAMPLING_RATE + "BufferSize" + mBufferSize + "AudioBuffer" + mAudioBuffer);
             } catch (IllegalStateException e) {
-                e.printStackTrace();
+                  Log.d("Recording issue", e.toString());
             }
 
 
             while (shouldContinue()) {
-                record.read(mAudioBuffer, 0, mBufferSize / 2);
+                recorder.read(mAudioBuffer, 0, mBufferSize / 2);
                 waveform_view.updateAudioData(mAudioBuffer);
                 updateDecibelLevel();
 
@@ -1076,7 +1061,7 @@ public class StudioActivity extends AppCompatActivity {
 
             try {
 
-                record.stop();
+                recorder.stop();
 
 
             } catch (IllegalStateException e) {
@@ -1084,7 +1069,7 @@ public class StudioActivity extends AppCompatActivity {
             }
 
 
-            record.release();
+            recorder.release();
         }
 
 
@@ -1120,8 +1105,8 @@ public class StudioActivity extends AppCompatActivity {
     }
     public void recordAudio() {
 
-        isRecording = true;
         recorder = new MediaRecorder();
+        //     recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         recorder.setOutputFile(audioFilePath);
@@ -1144,18 +1129,14 @@ public class StudioActivity extends AppCompatActivity {
 
         try {
             recorder.prepare();
+            recorder.start();
+
+            isRecording = true;
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        try {
 
-            recorder.start();
-
-
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        }
     }
 
     public void playAudio() throws IOException {
@@ -1471,6 +1452,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onResponse(NetworkResponse response) {
                 String resultResponse = new String(response.data);
+                Log.d("Server Data", resultResponse);
                 SharedPreferences loginSharedPref = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
                 String userName = loginSharedPref.getString("userName", null);
                 String recPic = loginSharedPref.getString("profilePic", null);
