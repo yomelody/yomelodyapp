@@ -1,5 +1,6 @@
 package com.instamelody.instamelody;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -11,13 +12,11 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.media.SoundPool;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -26,14 +25,18 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.provider.MediaStore;
-import android.provider.Settings;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -51,39 +54,40 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.Manifest;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkError;
 import com.android.volley.NetworkResponse;
-import com.android.volley.NoConnectionError;
-import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.ServerError;
-import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ByteArrayPool;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.FacebookSdk;
-import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
+import com.instamelody.instamelody.Adapters.InstrumentListAdapter;
 import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
-import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Models.Genres;
+import com.instamelody.instamelody.Models.MelodyCard;
+import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.utils.AppHelper;
-import com.instamelody.instamelody.utils.SoundPoolManager;
+import com.instamelody.instamelody.utils.AudioDataReceivedListener;
 import com.instamelody.instamelody.utils.VolleyMultipartRequest;
 import com.instamelody.instamelody.utils.VolleySingleton;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -91,29 +95,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.sql.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-
-import com.instamelody.instamelody.Adapters.InstrumentListAdapter;
-import com.instamelody.instamelody.Models.MelodyCard;
-import com.instamelody.instamelody.Models.MelodyInstruments;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import static android.provider.Contacts.SettingsColumns.KEY;
 
@@ -166,14 +156,14 @@ public class StudioActivity extends AppCompatActivity {
 
     private int mBufferSize;
     private short[] mAudioBuffer;
-    private String mDecibelFormat;
+    //private String mDecibelFormat;
     private View view;
     long elapsedMillis;
     MediaPlayer mPlayer;
     Timer myTimer;
     Chronometer chrono;
     ImageView audio_feed, grey_circle, blue_circle;
-    TextView recording_time, tvPublic, tvDone, tvInfo, recording_date, melody_date;
+    TextView recording_time, tvPublic, tvDone, tvInfo, recording_date, melody_date, melody_detail;
     EditText subEtTopicName;
     Spinner sp;
     RadioGroup rgR;
@@ -181,13 +171,12 @@ public class StudioActivity extends AppCompatActivity {
     private TextView mDecibelView;
     com.instamelody.instamelody.utils.WaveformView waveform_view;
     RecordingThread mRecordingThread;
-    private static MediaRecorder recorder;
+    MediaRecorder recorder;
     private final int requestCode = 20;
     String MELODY_PACKS_URL = "http://35.165.96.167/api/melody.php";
     ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     public boolean isRecording = false;
-    private static MediaRecorder mediaRecorder;
-    private static MediaPlayer mediaPlayer;
+    MediaPlayer mediaPlayer;
     private static String audioFilePath;
     private static String instrumentFilePath;
     Uri audioUri;
@@ -197,7 +186,7 @@ public class StudioActivity extends AppCompatActivity {
     String KEY_RESPONSE = "response";//JSONArray
     String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
 
-    String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, melodyPackId;
+    String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, melodyPackId, instrumentCount;
     String selectedGenre;
     int statusNormal, statusFb, statusTwitter;
     String melodyName, instrumentName;
@@ -223,8 +212,11 @@ public class StudioActivity extends AppCompatActivity {
     ShareDialog shareDialog;
     FacebookSdk.InitializeCallback i1;
     String fetchRecordingUrl;
+    byte[] bytes, soundBytes;
 
+    private boolean mShouldContinue = true;
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -254,6 +246,7 @@ public class StudioActivity extends AppCompatActivity {
         profile_image = (CircleImageView) findViewById(R.id.profile_image);
         artist_name = (TextView) findViewById(R.id.artist_name);
         recording_time = (TextView) findViewById(R.id.recording_time);
+        melody_detail = (TextView) findViewById(R.id.melody_detail);
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         firstName = loginSharedPref.getString("firstName", null);
         userNameLogin = loginSharedPref.getString("userName", null);
@@ -264,7 +257,7 @@ public class StudioActivity extends AppCompatActivity {
         userIdFb = loginFbSharedPref.getString("userId", null);
         statusFb = loginFbSharedPref.getInt("status", 0);
         SharedPreferences loginTwitterSharedPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
-        userIdTwitter = loginTwitterSharedPref.getString("TwitterId", null);
+        userIdTwitter = loginTwitterSharedPref.getString("userId", null);
         statusTwitter = loginTwitterSharedPref.getInt("status", 0);
 
         if (statusNormal == 1) {
@@ -388,23 +381,6 @@ public class StudioActivity extends AppCompatActivity {
         }
 
 
-        SoundPoolManager.CreateInstance();
-        List<Integer> sounds = new ArrayList<>();
-        sounds.add(R.raw.notification);
-        sounds.add(R.raw.melody);
-        SoundPoolManager.getInstance().setSounds(sounds);
-        try {
-            SoundPoolManager.getInstance().InitializeSoundPool(this, new SoundPoolManager.ISoundPoolLoaded() {
-                @Override
-                public void onSuccess() {
-//                    Toast.makeText(StudioActivity.this, "play", Toast.LENGTH_SHORT).show();
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
         grey_circle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -436,7 +412,7 @@ public class StudioActivity extends AppCompatActivity {
 
 
         if (statusNormal == 1) {
-            artist_name.setText("@"+userNameLogin);
+            artist_name.setText("@" + userNameLogin);
         }
 
         if (profilePicLogin != null) {
@@ -453,7 +429,7 @@ public class StudioActivity extends AppCompatActivity {
         statusTwitter = twitterPref.getInt("status", 0);
 
         if (statusTwitter == 1) {
-            artist_name.setText("@"+userName);
+            artist_name.setText("@" + userName);
         }
 
         if (profilePic != null) {
@@ -462,20 +438,20 @@ public class StudioActivity extends AppCompatActivity {
             Picasso.with(StudioActivity.this).load(profilePic).into(profile_image);
         }
 
-        /*SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+        SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
         fbName = fbPref.getString("FbName", null);
         fbUserName = fbPref.getString("userName", null);
         fbId = fbPref.getString("fbId", null);
-        statusFb = fbPref.getInt("status", 0);*/
+        statusFb = fbPref.getInt("status", 0);
 
-        SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+        /*SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
         fbId = fbPref.getString("fbId", null);
         fbUserName = fbPref.getString("UserName", null);
-        statusFb = fbPref.getInt("status", 0);
+        statusFb = fbPref.getInt("status", 0);*/
 
 
         if (statusFb == 1) {
-            artist_name.setText("@"+fbUserName);
+            artist_name.setText("@" + fbName);
         }
 
         if (fbId != null) {
@@ -483,18 +459,17 @@ public class StudioActivity extends AppCompatActivity {
             profile_image.setVisibility(View.VISIBLE);
             Picasso.with(StudioActivity.this).load("https://graph.facebook.com/" + fbId + "/picture").into(profile_image);
         }
-
-
+        mRecordingThread = new RecordingThread();
         mBufferSize = AudioRecord.getMinBufferSize(SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
-        mAudioBuffer = new short[mBufferSize / 2];
 
-        mDecibelFormat = getResources().getString(R.string.decibel_format);
+        mAudioBuffer = new short[mBufferSize / 2];
+        // mDecibelFormat = getResources().getString(R.string.decibel_format);
 
 
         audioFilePath =
                 Environment.getExternalStorageDirectory().getAbsolutePath()
-                        + "/InstaMelody.mp3";
+                        + "/InstaMelody.amr";
 
 
         chrono.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
@@ -561,7 +536,7 @@ public class StudioActivity extends AppCompatActivity {
         audio_feed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(StudioActivity.this, StudioActivity.class);
+                Intent i = new Intent(StudioActivity.this, StationActivity.class);
                 startActivity(i);
             }
         });
@@ -583,7 +558,7 @@ public class StudioActivity extends AppCompatActivity {
             }
         });
 
-
+    
         ivRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -595,16 +570,20 @@ public class StudioActivity extends AppCompatActivity {
                         rlMelodyButton.setVisibility(View.GONE);
                         ivRecord_stop.setVisibility(View.VISIBLE);
                         rlRecordingButton.setVisibility(View.VISIBLE);
-                        waveform_view.setVisibility(View.VISIBLE);
-                        //mRecordingThread.recording();
-                        recordAudio();
+                        Log.d("mShouldRecording Value", "" + mShouldContinue);
                         try {
-                            playAudioRecycler();
-//                    primarySeekBarProgressUpdater();
-                        } catch (IOException e) {
+                            recordAudio();
+                            mRecordingThread.start();
+                            chrono.start();
+
+                        } catch (IllegalStateException e) {
                             e.printStackTrace();
                         }
-                        chrono.start();
+
+                        //   mRecordingThread.start();
+//                            playAudioRecycler();
+//                    primarySeekBarProgressUpdater();
+                        //                 chrono.start();
                     } else {
                         setPermissions();
                     }
@@ -614,19 +593,11 @@ public class StudioActivity extends AppCompatActivity {
                     rlMelodyButton.setVisibility(View.GONE);
                     ivRecord_stop.setVisibility(View.VISIBLE);
                     rlRecordingButton.setVisibility(View.VISIBLE);
-                    waveform_view.setVisibility(View.VISIBLE);
 
                     try {
-
-
                         recordAudio();
-                        try {
-                            playAudioRecycler();
-//                    primarySeekBarProgressUpdater();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-//                            external_audio();
+                        mRecordingThread.start();
+
                         chrono.start();
 
 
@@ -634,10 +605,12 @@ public class StudioActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-                    chrono.start();
+                    //    chrono.start();
                 }
             }
         });
+
+        
 
         ivRecord_stop.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -650,8 +623,10 @@ public class StudioActivity extends AppCompatActivity {
                 tvPublic.setVisibility(View.VISIBLE);
                 switchPublic.setVisibility(View.VISIBLE);
 //                tvDone.setEnabled(true);
+                if (mRecordingThread != null) {
+                    mRecordingThread.stopRunning();
+                }
 
-                mRecordingThread.stopRunning();
 
                 if (isRecording) {
                     ivRecord.setEnabled(false);
@@ -695,7 +670,16 @@ public class StudioActivity extends AppCompatActivity {
                 rlRedoButton.setVisibility(View.GONE);
                 ivRecord_pause.setVisibility(View.VISIBLE);
                 rlListeningButton.setVisibility(View.VISIBLE);
-                onResume();
+                mShouldContinue = true;
+                if (mShouldContinue == true) {
+                    mRecordingThread = new RecordingThread();
+                    mRecordingThread.start();
+                } else {
+                    mRecordingThread = new RecordingThread();
+                    mRecordingThread.start();
+                }
+
+                //   onResume();
                 // mixFiles();
                 try {
                     playAudio();
@@ -724,7 +708,11 @@ public class StudioActivity extends AppCompatActivity {
                 rlListeningButton.setVisibility(View.INVISIBLE);
                 ivRecord_play.setVisibility(View.VISIBLE);
                 rlRedoButton.setVisibility(View.VISIBLE);
-                onPause();
+                if (mRecordingThread != null) {
+                    mRecordingThread.stopRunning();
+                    mRecordingThread = null;
+                }
+                //          onPause();
                 mediaPlayer.pause();
                 chrono.stop();
 
@@ -813,6 +801,12 @@ public class StudioActivity extends AppCompatActivity {
             }
         });
 
+
+        // To get preferred buffer size and sampling rate.
+        AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
+        String rate = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
+        String size = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
+        Log.d("Buffer Size and sample rate", "Size :" + size + " & Rate: " + rate);
 
     }
 
@@ -987,6 +981,7 @@ public class StudioActivity extends AppCompatActivity {
     @TargetApi(17)
     public boolean checkPermissions() {
         if ((ContextCompat.checkSelfPermission(StudioActivity.this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(StudioActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+
             return true;
         } else {
             return false;
@@ -1041,25 +1036,24 @@ public class StudioActivity extends AppCompatActivity {
 
     private class RecordingThread extends Thread {
 
-        private boolean mShouldContinue = true;
 
         @Override
         public void run() {
-            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
-            AudioRecord record = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLING_RATE,
+
+            //  android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
+            AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLING_RATE,
                     AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, mBufferSize);
             try {
 
-                record.startRecording();
-
-
+               recorder.startRecording();
+                Log.d("Recording issue", "SampleRate" + SAMPLING_RATE + "BufferSize" + mBufferSize + "AudioBuffer" + mAudioBuffer);
             } catch (IllegalStateException e) {
-                e.printStackTrace();
+                  Log.d("Recording issue", e.toString());
             }
 
 
             while (shouldContinue()) {
-                record.read(mAudioBuffer, 0, mBufferSize / 2);
+                recorder.read(mAudioBuffer, 0, mBufferSize / 2);
                 waveform_view.updateAudioData(mAudioBuffer);
                 updateDecibelLevel();
 
@@ -1067,7 +1061,7 @@ public class StudioActivity extends AppCompatActivity {
 
             try {
 
-                record.stop();
+                recorder.stop();
 
 
             } catch (IllegalStateException e) {
@@ -1075,7 +1069,7 @@ public class StudioActivity extends AppCompatActivity {
             }
 
 
-            record.release();
+            recorder.release();
         }
 
 
@@ -1109,77 +1103,40 @@ public class StudioActivity extends AppCompatActivity {
             });
         }
     }
-
-    /*@Override
-    protected void onStart() {
-        super.onStart();
-
-        mRecordingThread = new RecordingThread();
-        mRecordingThread.start();
-    }*/
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        mRecordingThread = new RecordingThread();
-        mRecordingThread.start();
-
-
-    }
-
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        if (mRecordingThread != null) {
-            mRecordingThread.stopRunning();
-            mRecordingThread = null;
-        }
-    }
-
-    /*@Override
-    protected void onStop() {
-        super.onStop();
-
-
-        mRecordingThread.stopRunning();
-
-    }*/
-
-   /* @Override
-    protected void onRestart() {
-        super.onRestart();
-
-        mRecordingThread.stopRunning();
-
-    }*/
-
     public void recordAudio() {
 
-        isRecording = true;
         recorder = new MediaRecorder();
+        //     recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         recorder.setOutputFile(audioFilePath);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
+        /*File file = new File(audioFilePath);
+        int size = (int) file.length();*//*
+        bytes = File.ReadAllBytes(audioFilePath);
+        Log.d("Test",""+bytes);*/
+
+        try {
+            InputStream inputStream =
+                    getContentResolver().openInputStream(Uri.fromFile(new File(audioFilePath)));
+
+            soundBytes = new byte[inputStream.available()];
+            soundBytes = toByteArray(inputStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         try {
             recorder.prepare();
+            recorder.start();
+
+            isRecording = true;
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        try {
 
-            recorder.start();
-
-
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        }
     }
 
     public void playAudio() throws IOException {
@@ -1190,8 +1147,22 @@ public class StudioActivity extends AppCompatActivity {
         mediaPlayer.start();
         MediaPlayer mp = MediaPlayer.create(getApplicationContext(), Uri.parse(audioFilePath));
         duration = mp.getDuration();
+        MediaExtractor();
+        /*try {
+            InputStream inputStream =
+                    getContentResolver().openInputStream(Uri.fromFile(new File(audioFilePath)));
+
+            soundBytes = new byte[inputStream.available()];
+            soundBytes = toByteArray(inputStream);
+
+            Toast.makeText(this, "Recordin Finished"+ " " + soundBytes, Toast.LENGTH_LONG).show();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }*/
 
     }
+
+
 
     /*@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -1424,8 +1395,8 @@ public class StudioActivity extends AppCompatActivity {
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int id) {
                                                 dialog.cancel();
-                                                myTask = new LongOperation();
-                                                myTask.execute();
+//                                                myTask = new LongOperation();
+//                                                myTask.execute();
                                                 frameSync.setVisibility(View.GONE);
                                             }
                                         });
@@ -1481,6 +1452,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onResponse(NetworkResponse response) {
                 String resultResponse = new String(response.data);
+                Log.d("Server Data", resultResponse);
                 SharedPreferences loginSharedPref = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
                 String userName = loginSharedPref.getString("userName", null);
                 String recPic = loginSharedPref.getString("profilePic", null);
@@ -1488,6 +1460,7 @@ public class StudioActivity extends AppCompatActivity {
                     JSONObject response1 = new JSONObject(resultResponse);
                     String flag = response1.getString("flag");
                     String flag2 = response1.getString("0");
+                    Log.d("Result", flag2);
                     JSONObject r1 = response1.getJSONObject("0");
                     urlRecording = r1.getString("recording");
                     if (flag.equals("success")) {
@@ -1525,8 +1498,8 @@ public class StudioActivity extends AppCompatActivity {
                         VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPLOAD_REC_URL, new Response.Listener<NetworkResponse>() {
                             @Override
                             public void onResponse(NetworkResponse response) {
-                                myTask = new LongOperation();
-                                myTask.execute();
+//                                myTask = new LongOperation();
+//                                myTask.execute();
                                 String resultResponse = new String(response.data);
                                 Toast.makeText(StudioActivity.this, "Cover also Uploaded", Toast.LENGTH_SHORT).show();
 //                                + resultResponse
@@ -1614,9 +1587,9 @@ public class StudioActivity extends AppCompatActivity {
             protected Map<String, DataPart> getByteData() {
                 Map<String, DataPart> params = new HashMap<>();
 
-                params.put(FILE1, new DataPart("InstaMelody.mp3", audioFilePath.getBytes(), "audio/mpeg"));
-
-
+//                params.put(FILE1, new DataPart("InstaMelody.mp3", audioFilePath.getBytes(), "audio/mpeg"));
+//                params.put(FILE1,new DataPart("InstaMelody.mp3",MediaExtractor(),"audio/mpeg"));
+                params.put(FILE1, new DataPart("InstaMelody.amr", soundBytes, "audio/amr"));
                 return params;
             }
 
@@ -1787,7 +1760,7 @@ public class StudioActivity extends AppCompatActivity {
             progressDialog = new ProgressDialog(StudioActivity.this);
             progressDialog.setTitle("Processing...");
             progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(true);
+            progressDialog.setCancelable(false);
             progressDialog.show();
         }
 
@@ -1857,6 +1830,7 @@ public class StudioActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         super.onDestroy();
     }
 
@@ -1886,5 +1860,52 @@ public class StudioActivity extends AppCompatActivity {
         }, mp.getDuration() + 100);
     }
 
+    public Class<ByteArrayPool> MediaExtractor() {
+        File file = new File(audioFilePath);
+        int size = (int) file.length();
+        bytes = new byte[size];
+        try {
+            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+            buf.read(bytes, 0, bytes.length);
+            buf.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return ByteArrayPool.class;
+    }
+//
+//    public byte[] toByteArray(InputStream in) throws IOException {
+//        ByteArrayOutputStream out = new ByteArrayOutputStream();
+//        int read = 0;
+//        byte[] buffer = new byte[1024];
+//        while (read != -1) {
+//            read = in.read(buffer);
+//            if (read != -1)
+//                out.write(buffer,0,read);
+//        }
+//        out.close();
+//        return out.toByteArray();
+//    }
+
+    public byte[] toByteArray(InputStream in) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        int read;
+        byte[] buffer = new byte[8192];
+        while ((read = in.read(buffer)) > 0) {
+
+
+            out.write(buffer, 0, read);
+        }
+        out.close();
+        return out.toByteArray();
+    }
+
 }
+
+
+
 

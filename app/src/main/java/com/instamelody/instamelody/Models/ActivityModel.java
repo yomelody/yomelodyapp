@@ -5,18 +5,23 @@ package com.instamelody.instamelody.Models;
  */
 
 public class ActivityModel {
-    int id_,userProfileImage;
-    String tvmsg,tvtopic,tvtime;
+    int id_;
+    String tvmsg, tvtopic, tvtime, UserImgURL;
 
-    public ActivityModel(int id_,int userProfileImage,String tvmsg,String tvtopic,String tvtime){
+    public ActivityModel(int id_, String tvmsg, String tvtopic, String tvtime, String ImageUrl) {
         this.tvmsg = tvmsg;
         this.tvtopic = tvtopic;
         this.tvtime = tvtime;
-        this.id_=id_;
-        this.userProfileImage = userProfileImage;
+        this.id_ = id_;
+        this.UserImgURL = ImageUrl;
     }
-    public int getUserProfileImage(){
-        return userProfileImage;
+
+    public String getUserImgURL() {
+        return UserImgURL;
+    }
+
+    public void setUserImgURL(String userImgURL) {
+        UserImgURL = userImgURL;
     }
 
     public int getId_() {

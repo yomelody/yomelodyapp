@@ -71,9 +71,18 @@ public class MessengerActivity extends AppCompatActivity {
         rlNoMsg.setVisibility(View.GONE);
 
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-        userId = loginSharedPref.getString("userId", null);
-        if (userId != null) {
+        SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
 
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
+        }
+
+        if (userId != null) {
             getChats(userId);
 
         } else {
@@ -110,19 +119,7 @@ public class MessengerActivity extends AppCompatActivity {
             }
         });
 
-       /* message.setOnClickListener(new View.OnClickListener()
-
-        {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
-                startActivity(intent);
-            }
-        });*/
-
-        profile.setOnClickListener(new View.OnClickListener()
-
-        {
+        profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
@@ -140,8 +137,7 @@ public class MessengerActivity extends AppCompatActivity {
             }
         });
 
-        ivBackButton.setOnClickListener(new View.OnClickListener()
-        {
+        ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
@@ -168,15 +164,23 @@ public class MessengerActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void getChats(final String userId) {
+    public void getChats(final String user_Id) {
         final StringRequest stringRequest = new StringRequest(Request.Method.POST, CONVERSATION_LIST_URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
+//                        Toast.makeText(MessengerActivity.this, " Shubz" + response, Toast.LENGTH_LONG).show();
+
                         chatList.clear();
                         adapter.notifyDataSetChanged();
                         recyclerView.smoothScrollToPosition(adapter.getItemCount());
+
+                        String recName = "";
+                        String profilePic = "";
+                        String chat_id = "";
+                        String rcvrId = "";
+                        String sndrId = "";
 
                         JSONObject jsonObject;
                         JSONArray jsonArray;
@@ -188,21 +192,33 @@ public class MessengerActivity extends AppCompatActivity {
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     Chat chat = new Chat();
                                     JSONObject commentJson = jsonArray.getJSONObject(i);
+                                    chat.setId(commentJson.getString("id"));
+                                    chat.setSenderID(commentJson.getString("senderID"));
+                                    chat.setSenderName(commentJson.getString("sender_name"));
                                     chat.setReceiverID(commentJson.getString("receiverID"));
-                                    chat.setChatID(commentJson.getString("chatID"));
                                     chat.setReceiverName(commentJson.getString("receiver_name"));
-                                    chat.setMessage(commentJson.getString("message"));
-                                    chat.setSendAt(commentJson.getString("sendat"));
+                                    chat.setCoverPick(commentJson.getString("coverPick"));
                                     chat.setUserProfileImage(commentJson.getString("profilePick"));
+                                    chat.setMessage(commentJson.getString("message"));
+                                    chat.setChatID(commentJson.getString("chatID"));
+                                    chat.setIsRead(commentJson.getString("isread"));
+                                    chat.setSendAt(commentJson.getString("sendat"));
                                     chatList.add(chat);
                                 }
-                            }
-                            else{
+                            } else {
                                 rlNoMsg.setVisibility(View.VISIBLE);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+
+//                        SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+//                        editor.putString("receiverName", recName);
+//                        editor.putString("senderId", sndrId);
+//                        editor.putString("receiverId", rcvrId);
+//                        editor.putString("chatId", chat_id);
+//                        editor.putString("receiverImage", profilePic);
+//                        editor.commit();
                     }
                 },
                 new Response.ErrorListener() {
@@ -232,7 +248,7 @@ public class MessengerActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(USER_ID, userId);
+                params.put(USER_ID, user_Id);
                 return params;
             }
         };
@@ -241,15 +257,13 @@ public class MessengerActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
         getChats(userId);
     }
 
     @Override
-    public void onRestart()
-    {
+    public void onRestart() {
         super.onRestart();
         getChats(userId);
     }

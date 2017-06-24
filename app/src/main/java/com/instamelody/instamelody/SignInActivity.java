@@ -137,61 +137,6 @@ public class SignInActivity extends AppCompatActivity {
     private TwitterLoginButton twitterLoginButton;
     private boolean customButtonLogin;
 
-    //this callback is the same for default and custom login metods
-    private Callback<TwitterSession> authCallback = new Callback<TwitterSession>() {
-        @Override
-        public void success(Result<TwitterSession> result) {
-            String output = "Status: " +
-                    "Your login was successful " +
-                    result.data.getUserName() +
-                    "Auth Token Received: " +
-                    result.data.getAuthToken().token;
-
-               /* Toast.makeText(SignInActivity.this, "" + output, Toast.LENGTH_LONG).show();*/
-            //loginTwitter(result);
-            TwitterSession session = result.data;
-            Twitter twitter = Twitter.getInstance();
-            TwitterApiClient api = twitter.core.getApiClient(session);
-            AccountService service = api.getAccountService();
-            Call<User> user = service.verifyCredentials(true, true);
-            user.enqueue(new Callback<User>() {
-                @Override
-                public void success(Result<User> userResult) {
-                    name = userResult.data.name;
-                    //tvFirstName.setText(name);
-                    //tvFirstName.invalidate();
-                    String email = userResult.data.email;
-                    username = userResult.data.screenName;
-                    //tvUserName.setText("@" + username);
-                    //tvUserName.invalidate();
-                    TwitterId = userResult.data.id;
-                    photoUrlNormalSize = userResult.data.profileImageUrl;
-
-                    SharedPreferences.Editor tEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
-                    tEditor.putString("Name", name);
-                    tEditor.putString("email", email);
-                    tEditor.putString("userName", username);
-                    tEditor.putString("ProfilePic", photoUrlNormalSize);
-                    tEditor.putLong("ID", id);
-                    tEditor.putInt("status", 1);
-                    tEditor.commit();
-                    registrationSpecialTwitter();
-                    startActivity(new Intent(SignInActivity.this, HomeActivity.class));
-                }
-
-                @Override
-                public void failure(TwitterException exc) {
-                    Log.d("TwitterKit", "Verify Credentials Failure", exc);
-                }
-            });
-        }
-
-        @Override
-        public void failure(TwitterException exception) {
-            Log.d("Twitter Kit", "Login With Twitter", exception);
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -218,8 +163,6 @@ public class SignInActivity extends AppCompatActivity {
         SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, MODE_PRIVATE);
         DeviceToken = fcmPref.getString("regId", null);
 //        Log.d("DeviceToken", DeviceToken);
-        SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
-        FbProf1 = fbPref.getString("profilePicFB", null);
 
 
         etEmail.addTextChangedListener(new TextWatcher() {
@@ -276,6 +219,7 @@ public class SignInActivity extends AppCompatActivity {
                             @Override
                             public void onCompleted(JSONObject object, GraphResponse response) {
                                 //Toast.makeText(SignInActivity.this, "" + object, Toast.LENGTH_LONG).show();
+                                Log.d("Check",""+object);
 
                                 try {
                                     fbId = object.getString("id");
@@ -307,20 +251,17 @@ public class SignInActivity extends AppCompatActivity {
                                 fbEditor.putString("profilePicFB", fbProfilePic);
                                 fbEditor.putInt("status", 1);
                                 fbEditor.commit();
-
                                 registerSpecialFB();
                                 Intent i = new Intent(SignInActivity.this, HomeActivity.class);
                                 startActivity(i);
-
                             }
                         });
 
                 Bundle parameters = new Bundle();
-                parameters.putString("fields", "id, first_name, last_name, email,gender, birthday, location");
+                parameters.putString("fields", "id, first_name, last_name, email, gender, birthday, location");
                 request.setParameters(parameters);
                 //   Toast.makeText(SignInActivity.this,fbImg, Toast.LENGTH_SHORT).show();
                 request.executeAsync();
-
                 //   Toast.makeText(SignInActivity.this, ""+id, Toast.LENGTH_SHORT).show();
             }
 
@@ -346,17 +287,15 @@ public class SignInActivity extends AppCompatActivity {
                     passwordRequired.setText("required");
                 } else {
                     LogIn();
+                    btnLogIn.setEnabled(false);
                 }
-
             }
         });
 
         btnClearEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 etEmail.getText().clear();
-
             }
         });
 
@@ -410,6 +349,63 @@ public class SignInActivity extends AppCompatActivity {
 
     }
 
+    //this callback is the same for default and custom login metods
+    private Callback<TwitterSession> authCallback = new Callback<TwitterSession>() {
+        @Override
+        public void success(Result<TwitterSession> result) {
+            String output = "Status: " +
+                    "Your login was successful " +
+                    result.data.getUserName() +
+                    "Auth Token Received: " +
+                    result.data.getAuthToken().token;
+
+               /* Toast.makeText(SignInActivity.this, "" + output, Toast.LENGTH_LONG).show();*/
+            //loginTwitter(result);
+            TwitterSession session = result.data;
+            Twitter twitter = Twitter.getInstance();
+            TwitterApiClient api = twitter.core.getApiClient(session);
+            AccountService service = api.getAccountService();
+            Call<User> user = service.verifyCredentials(true, true);
+            user.enqueue(new Callback<User>() {
+                @Override
+                public void success(Result<User> userResult) {
+                    name = userResult.data.name;
+                    //tvFirstName.setText(name);
+                    //tvFirstName.invalidate();
+                    String email = userResult.data.email;
+                    username = userResult.data.screenName;
+                    //tvUserName.setText("@" + username);
+                    //tvUserName.invalidate();
+                    TwitterId = userResult.data.id;
+                    photoUrlNormalSize = userResult.data.profileImageUrl;
+
+                    SharedPreferences.Editor tEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
+                    tEditor.putString("Name", name);
+                    tEditor.putString("email", email);
+                    tEditor.putString("userName", username);
+                    tEditor.putString("ProfilePic", photoUrlNormalSize);
+                    tEditor.putLong("ID", id);
+                    tEditor.putInt("status", 1);
+                    tEditor.commit();
+                    registrationSpecialTwitter();
+                    startActivity(new Intent(SignInActivity.this, HomeActivity.class));
+                }
+
+                @Override
+                public void failure(TwitterException exc) {
+                    Log.d("TwitterKit", "Verify Credentials Failure", exc);
+                }
+            });
+        }
+
+        @Override
+        public void failure(TwitterException exception) {
+            Log.d("Twitter Kit", "Login With Twitter", exception);
+            if (exception.equals("com.twitter.sdk.android.core.TwitterAuthException: Failed to get request token")) {
+                Toast.makeText(SignInActivity.this, "Twitter Login failed : Device time may not be same as server time", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
 
     private void initCustomLogin() {
         client = new TwitterAuthClient();
@@ -521,6 +517,7 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY_EMAIL, email);
                 params.put(KEY_PASSWORD, password);
                 params.put(KEY_DEVICE_TOKEN, DeviceToken);
+                params.put(KEY_DEVICE_TYPE, "Android");
                 return params;
             }
         };
@@ -542,6 +539,8 @@ public class SignInActivity extends AppCompatActivity {
 
 
     public void registerSpecialFB() {
+        SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+        FbProf1 = fbPref.getString("profilePicFB", null);
         StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER_URL,
                 new Response.Listener<String>() {
                     @Override
@@ -571,7 +570,7 @@ public class SignInActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                             String error = e.toString();
-                            Toast.makeText(SignInActivity.this, error, Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(SignInActivity.this, error, Toast.LENGTH_SHORT).show();
                         }
                     }
                 },
@@ -589,15 +588,13 @@ public class SignInActivity extends AppCompatActivity {
 
                 params.put(KEY_FNAME, firstNamefb);
                 params.put(KEY_LNAME, lastNamefb);
-                params.put(KEY_USERNAME, username);
+                params.put(KEY_USERNAME, firstNamefb+lastNamefb);
                 params.put(KEY_EMAIL_SIGN_UP, fbEmail);
                 params.put(KEY_APP_ID, fbId);
-                params.put(KEY_GENDER, gender);
-                params.put(KEY_DOB, birthday);
                 params.put(KEY_USER_TYPE, "2");
                 params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);
                 params.put(KEY_DEVICE_TYPE, "android");
-                params.put(KEY_PROFILE_PIC, fbProfilePic);
+//                params.put(KEY_PROFILE_PIC, FbProf1);
                 return params;
             }
         };
@@ -630,7 +627,7 @@ public class SignInActivity extends AppCompatActivity {
                             String dob = rspns.getString("dob");
 
                             SharedPreferences.Editor twitterEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
-                            twitterEditor.putString("TwitterId", twitterId);
+                            twitterEditor.putString("userId", twitterId);
                             twitterEditor.putInt("status", 1);
                             twitterEditor.commit();
 

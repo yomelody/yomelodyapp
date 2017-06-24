@@ -1,9 +1,12 @@
 package com.instamelody.instamelody;
 
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -34,8 +37,10 @@ import com.instamelody.instamelody.Fragments.ActivityFragment;
 import com.instamelody.instamelody.Fragments.AudioFragment;
 import com.instamelody.instamelody.Fragments.BioFragment;
 import com.instamelody.instamelody.Fragments.ProfileActivityFragment;
+import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsData;
 import com.instamelody.instamelody.Models.RecordingsModel;
+import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.squareup.picasso.Picasso;
 
@@ -43,6 +48,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,6 +73,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
     String KEY_GENRE_NAME = "name";
+    String KEY_GENRE_ID = "id";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";//JSONArray
     String genreString = "1";
@@ -71,6 +85,8 @@ public class ProfileActivity extends AppCompatActivity {
 
 
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
+    ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
+    ArrayList<Genres> genresArrayList = new ArrayList<>();
     Button btnAudio, btnActivity, btnBio, appBarSidebtnMusicCircle, btnCancel;
     RelativeLayout rlPartProfile, rlFragmentActivity, rlFragmentBio, rlSearch;
     ImageView ivBackButton, ivHomeButton, ivAudio_feed, ivDiscover, ivMessage, ivProfile, ivSound;
@@ -81,7 +97,8 @@ public class ProfileActivity extends AppCompatActivity {
     String userIdNormal, userIdFb, userIdTwitter;
     int statusNormal, statusFb, statusTwitter;
     SearchView search1;
-
+    ProgressDialog progressDialog;
+    LongOperation myTask = null;
     TabHost host;
     private static RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -93,7 +110,6 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
         fetchGenreNames();
         fetchRecordings();
 
@@ -103,7 +119,7 @@ public class ProfileActivity extends AppCompatActivity {
         userIdFb = loginFbSharedPref.getString("userId", null);
         statusFb = loginFbSharedPref.getInt("status", 0);
         SharedPreferences loginTwitterSharedPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
-        userIdTwitter = loginTwitterSharedPref.getString("TwitterId", null);
+        userIdTwitter = loginTwitterSharedPref.getString("userId", null);
         statusTwitter = loginTwitterSharedPref.getInt("status", 0);
         search1 = (SearchView) findViewById(R.id.searchOnProf);
 
@@ -116,10 +132,7 @@ public class ProfileActivity extends AppCompatActivity {
             userId = userIdTwitter;
         }
 
-        adapter = new RecordingsCardAdapter(this, recordingList);
-
-
-
+        adapter = new RecordingsCardAdapter(this, recordingList,recordingsPools);
 
         btnAudio = (Button) findViewById(R.id.btnAudio);
         btnActivity = (Button) findViewById(R.id.btnActivity);
@@ -166,7 +179,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         if (statusNormal == 1) {
             tvNameInProf.setText(firstName);
-            tvUserNameInProf.setText(userNameLogin);
+            tvUserNameInProf.setText("@" + userNameLogin);
         }
 
         if (profilePicLogin != null) {
@@ -184,7 +197,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         if (statusTwitter == 1) {
             tvNameInProf.setText(Name);
-            tvUserNameInProf.setText(userName);
+            tvUserNameInProf.setText("@" + userName);
         }
 
         if (profilePic != null) {
@@ -202,7 +215,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         if (statusFb == 1) {
             tvNameInProf.setText(fbName);
-            tvUserNameInProf.setText(fbUserName);
+            tvUserNameInProf.setText("@"+fbName);
         }
 
         if (fbId != null) {
@@ -332,8 +345,6 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
-
-
     }
 
     public void fetchGenreNames() {
@@ -352,10 +363,16 @@ public class ProfileActivity extends AppCompatActivity {
                         try {
                             jsonObject = new JSONObject(response);
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
+                                myTask = new LongOperation();
+                                myTask.execute();
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                                 for (int i = 0; i < jsonArray.length(); i++) {
+                                    Genres genres = new Genres();
                                     genreJson = jsonArray.getJSONObject(i);
                                     titleString = genreJson.getString(KEY_GENRE_NAME);
+                                    genres.setName(titleString);
+                                    genres.setId(genreJson.getString(KEY_GENRE_ID));
+                                    genresArrayList.add(genres);
                                     spec = host.newTabSpec(titleString);
                                     spec.setIndicator(titleString);
                                     spec.setContent(createTabContent());
@@ -374,8 +391,16 @@ public class ProfileActivity extends AppCompatActivity {
                         host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
                             @Override
                             public void onTabChanged(String arg0) {
+                                genreString = arg0;
                                 int currentTab = host.getCurrentTab();
-                                genreString = String.valueOf(currentTab).trim();
+                                if (currentTab==0){
+                                    genreString= "";
+                                }else {
+                                    genreString = genresArrayList.get(currentTab).getId();
+                                }
+//                                genreString = String.valueOf(currentTab).trim();
+                                fetchRecordings();
+
                                 fetchRecordings();
 //                                Toast.makeText(getActivity(), "beta: " + genreString, Toast.LENGTH_SHORT).show();
                             }
@@ -412,7 +437,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                         Log.d("ReturnData", response);
                         recordingList.clear();
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList,recordingsPools);
                         adapter.notifyDataSetChanged();
                     }
                 },
@@ -450,6 +475,68 @@ public class ProfileActivity extends AppCompatActivity {
                 return rv;
             }
         };
+    }
+
+    private class LongOperation extends AsyncTask<String, Void, String> {
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(ProfileActivity.this);
+            progressDialog.setTitle("Processing...");
+            progressDialog.setMessage("Please wait...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        protected String doInBackground(String... params) {
+
+            try {
+                //Getting data from server
+
+                String filename = "myfile";
+                String outputString = "Hello world!";
+
+                URL aurl = new URL("http://35.165.96.167/api/upload_cover_melody_file.php");
+
+                URLConnection connection = aurl.openConnection();
+                connection.connect();
+                // getting file length
+                int lengthOfFile = connection.getContentLength();
+
+                // input stream to read file - with 8k buffer
+                InputStream input = new BufferedInputStream(aurl.openStream(), 8192);
+
+                try {
+                    FileOutputStream outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+                    outputStream.write(outputString.getBytes());
+                    outputStream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    FileInputStream inputStream = openFileInput(filename);
+                    BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
+                    StringBuilder total = new StringBuilder();
+                    String line;
+                    while ((line = r.readLine()) != null) {
+                        total.append(line);
+                    }
+                    r.close();
+                    inputStream.close();
+                    Log.d("File", "File contents: " + total);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+
+            progressDialog.dismiss();
+        }
+
     }
 
 }

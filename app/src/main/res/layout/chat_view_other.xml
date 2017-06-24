@@ -47,7 +47,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_marginEnd="15dp"
                     android:layout_marginRight="15dp"
-                    android:text="Here check out the screen and are you crazy yes your no need to call me again after this instance i know whatyou are and what you can best"
+                    android:text=""
                     android:textColor="#425661"
                     android:textSize="16sp" />
 

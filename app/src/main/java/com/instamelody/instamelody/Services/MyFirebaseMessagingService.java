@@ -77,7 +77,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private void handleDataMessage(JSONObject json) {
         Log.e("fbs", "push json: " + json.toString());
         try {
-//            JSONObject messageObj = json.getJSONObject("message");
+            JSONObject bodyObj = json.getJSONObject("body");
 ////            String file_id = messageObj.getString("file_id");
 //            String senderid = messageObj.getString("senderid");
 //            String sender_name = messageObj.getString("sender_name");
@@ -85,14 +85,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 //            String chat_id = messageObj.getString("chat_id");
 //            String title = "One Message Received";
 //            String imageUrl = messageObj.getString("image");
+//            String file_id = json.getString("file_id");
 
-            String file_id = json.getString("file_id");
+//            String file_id = json.getString("file_id");
             String senderid = json.getString("senderid");
             String sender_name = json.getString("sender_name");
             String message = json.getString("message");
             String chat_id = json.getString("chat_id");
             String title = "One Message Received";
-            String imageUrl = json.getString("image");
+//            String imageUrl = json.getString("image");
+            String imageUrl = "https://vignette2.wikia.nocookie.net/kochikame/images/0/0a/Ryotsu_%28manga_-_colour%29.jpg/revision/latest?cb=20140814094000";
 
 //            Log.e("fbs", "file_id: " + file_id);
             Log.e("fbs", "sender_name " + sender_name);
