@@ -9,6 +9,7 @@ import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -90,7 +91,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     MediaPlayer mediaPlayer;
     int playerPos;
     int duration, length;
-    String mpid;
+    String mpid,MelodyName;
 
     public MelodyCardListAdapter(ArrayList<MelodyCard> melodyList, Context context) {
         this.melodyList = melodyList;
@@ -136,7 +137,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             rlPlay = (RelativeLayout) itemView.findViewById(R.id.rlPlay);
             rlComment = (RelativeLayout) itemView.findViewById(R.id.rlComment);
             rlshare=(RelativeLayout)itemView.findViewById(R.id.rlShare);
-
+            MelodyName=tvPlayCount.getText().toString().trim();
             ivPlay.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -399,7 +400,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         profile = melody.getUserProfilePic();
         cover = melody.getMelodyCover();
         SharedPreferences.Editor editor1 = context.getSharedPreferences("commentData1", MODE_PRIVATE).edit();
-        editor1.putString("cover",cover);
+        editor1.putString("cover", cover);
         editor1.commit();
         mpid = melody.getMelodyPackId();
         mpids.add(mpid);
@@ -443,7 +444,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(Topic, "Testing");
+                params.put(Topic, MelodyName);
                 params.put(USER_ID, userId);
                 params.put(FILE_ID, pos);
                 params.put(TYPE, "admin_melody");
@@ -490,7 +491,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 params.put(USER_TYPE, "admin");
                 params.put(USERID, userId);
                 params.put(FILEID, pos);
-                params.put(TYPE, "melody");
+                params.put(TYPE, "admin_melody");
                 return params;
             }
         };

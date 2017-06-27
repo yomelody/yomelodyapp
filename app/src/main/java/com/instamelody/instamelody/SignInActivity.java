@@ -163,8 +163,6 @@ public class SignInActivity extends AppCompatActivity {
         SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, MODE_PRIVATE);
         DeviceToken = fcmPref.getString("regId", null);
 //        Log.d("DeviceToken", DeviceToken);
-        SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
-        FbProf1 = fbPref.getString("profilePicFB", null);
 
 
         etEmail.addTextChangedListener(new TextWatcher() {
@@ -541,6 +539,8 @@ public class SignInActivity extends AppCompatActivity {
 
 
     public void registerSpecialFB() {
+        SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+        FbProf1 = fbPref.getString("profilePicFB", null);
         StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER_URL,
                 new Response.Listener<String>() {
                     @Override
@@ -589,12 +589,12 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY_FNAME, firstNamefb);
                 params.put(KEY_LNAME, lastNamefb);
                 params.put(KEY_USERNAME, firstNamefb+lastNamefb);
-                params.put(KEY_EMAIL_SIGN_UP, firstNamefb+"@gmail.com");
+                params.put(KEY_EMAIL_SIGN_UP, fbEmail);
                 params.put(KEY_APP_ID, fbId);
                 params.put(KEY_USER_TYPE, "2");
                 params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);
                 params.put(KEY_DEVICE_TYPE, "android");
-//                params.put(KEY_PROFILE_PIC, fbProfilePic);
+//                params.put(KEY_PROFILE_PIC, FbProf1);
                 return params;
             }
         };
