@@ -91,7 +91,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     MediaPlayer mediaPlayer;
     int playerPos;
     int duration, length;
-    String mpid;
+    String mpid,MelodyName;
 
     public MelodyCardListAdapter(ArrayList<MelodyCard> melodyList, Context context) {
         this.melodyList = melodyList;
@@ -137,7 +137,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             rlPlay = (RelativeLayout) itemView.findViewById(R.id.rlPlay);
             rlComment = (RelativeLayout) itemView.findViewById(R.id.rlComment);
             rlshare=(RelativeLayout)itemView.findViewById(R.id.rlShare);
-
+            MelodyName=tvPlayCount.getText().toString().trim();
             ivPlay.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -444,7 +444,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(Topic, "Testing");
+                params.put(Topic, MelodyName);
                 params.put(USER_ID, userId);
                 params.put(FILE_ID, pos);
                 params.put(TYPE, "admin_melody");
@@ -491,7 +491,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 params.put(USER_TYPE, "admin");
                 params.put(USERID, userId);
                 params.put(FILEID, pos);
-                params.put(TYPE, "melody");
+                params.put(TYPE, "admin_melody");
                 return params;
             }
         };
