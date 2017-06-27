@@ -6,8 +6,6 @@ package com.instamelody.instamelody.Models;
 
 public class RecordingsModel {
 
-    //Used for storing melody details.
-
     String recordingId;
     String addedBy;
     String recordingName;

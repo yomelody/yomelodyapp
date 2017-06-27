@@ -28,7 +28,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
 
     ArrayList<Chat> chatList = new ArrayList<>();
     Context context;
-    String receiverId = "", chatID = "";
+    String receiverId = "", chatID = "", receiverName = "", receiverImage = "", senderId = "";
 
     public MessengerAdapter(ArrayList<Chat> chatList, Context context) {
         this.chatList = chatList;
@@ -54,16 +54,23 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
                 @Override
                 public void onClick(View view) {
 
+                    senderId = chatList.get(getAdapterPosition()).getSenderID();
                     receiverId = chatList.get(getAdapterPosition()).getReceiverID();
+                    receiverName = chatList.get(getAdapterPosition()).getReceiverName();
+                    receiverImage = chatList.get(getAdapterPosition()).getUserProfileImage();
                     chatID = chatList.get(getAdapterPosition()).getChatID();
+
                     SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                    editor.putString("senderId", senderId);
                     editor.putString("receiverId", receiverId);
+                    editor.putString("receiverName", receiverName);
+                    editor.putString("receiverImage", receiverImage);
                     editor.putString("chatId", chatID);
                     editor.commit();
 
-//                    editor.putString("receiverId", chatList.get(getAdapterPosition()).getReceiverID());
                     Intent intent = new Intent(context, ChatActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra("from", "MessengerActivity");
                     context.startActivity(intent);
                 }
             });

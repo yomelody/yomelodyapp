@@ -11,7 +11,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="45dp"
+        android:layout_height="40dp"
         android:layout_marginTop="1dp"
         android:background="#E4E4E4">
 
@@ -25,21 +25,9 @@
             android:layout_toStartOf="@+id/rlInviteButton">
 
             <TextView
-                android:id="@+id/tvGroupName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Faadu Group"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                android:textColor="#425661"
-                android:textSize="18dp"
-                android:textStyle="normal|bold"
-                android:visibility="gone" />
-
-            <TextView
                 android:id="@+id/tvUserName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/tvGroupName"
                 android:layout_marginLeft="4dp"
                 android:ellipsize="end"
                 android:maxLines="1"
@@ -90,9 +78,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="46dp"
-        android:layout_marginTop="42dp">
+        android:layout_marginTop="40dp">
 
         <android.support.v7.widget.RecyclerView
+            android:layout_marginTop="2dp"
             android:id="@+id/recyclerViewChat"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
