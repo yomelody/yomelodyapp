@@ -176,6 +176,12 @@ public class MessengerActivity extends AppCompatActivity {
                         adapter.notifyDataSetChanged();
                         recyclerView.smoothScrollToPosition(adapter.getItemCount());
 
+                        String recName = "";
+                        String profilePic = "";
+                        String chat_id = "";
+                        String rcvrId = "";
+                        String sndrId = "";
+
                         JSONObject jsonObject;
                         JSONArray jsonArray;
                         try {
@@ -205,6 +211,14 @@ public class MessengerActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+
+//                        SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+//                        editor.putString("receiverName", recName);
+//                        editor.putString("senderId", sndrId);
+//                        editor.putString("receiverId", rcvrId);
+//                        editor.putString("chatId", chat_id);
+//                        editor.putString("receiverImage", profilePic);
+//                        editor.commit();
                     }
                 },
                 new Response.ErrorListener() {

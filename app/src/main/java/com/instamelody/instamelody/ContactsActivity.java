@@ -41,11 +41,11 @@ import java.util.Map;
 
 public class ContactsActivity extends AppCompatActivity {
 
-    //    ImageView discover, message,profile,audio_feed, ivBackButton, ivHomeButton, ivNewMessage;
+    //    ImageView discover, message, profile, audio_feed, ivBackButton, ivHomeButton, ivNewMessage;
     ContactsAdapter adapter;
     RecyclerView recyclerView;
     ArrayList<Contacts> contactList = new ArrayList<>();
-    String CONTACTS_LIST_URL = "http://35.165.96.167/api/userdetails.php";
+    String CONTACTS_LIST_URL = "http://35.165.96.167/api/contactList.php";
     public static Button btnCancel, btnOK;
     ImageView discover, message, profile, audio_feed, ivBackButton, ivHomeButton;
     String userId = "";
@@ -103,6 +103,7 @@ public class ContactsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+                intent.putExtra("from", "ContactsActivity");
                 startActivity(intent);
             }
         });

@@ -161,6 +161,7 @@ public class SocialActivity extends AppCompatActivity {
                         "No",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
+                                switchFb.setChecked(false);
                                 dialog.cancel();
                             }
                         });
@@ -171,9 +172,9 @@ public class SocialActivity extends AppCompatActivity {
             }
         });
 
-        switchTwitter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        switchTwitter.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            public void onClick(View v) {
                 AlertDialog.Builder builder1 = new AlertDialog.Builder(SocialActivity.this);
                 builder1.setMessage("Wants to share InstaMelody music on twitter??");
                 builder1.setCancelable(true);
@@ -191,6 +192,7 @@ public class SocialActivity extends AppCompatActivity {
                         "No",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
+                                switchTwitter.setChecked(false);
                                 dialog.cancel();
                             }
                         });
@@ -200,13 +202,13 @@ public class SocialActivity extends AppCompatActivity {
             }
         });
 
-        switchGoogle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        /*switchGoogle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 //                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
 //                startActivityForResult(signInIntent, RC_SIGN_IN);
 //                googleShare();
-                /*googleSignIn.setVisibility(View.VISIBLE);
+                *//*googleSignIn.setVisibility(View.VISIBLE);
                 googleSignIn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -214,7 +216,7 @@ public class SocialActivity extends AppCompatActivity {
                         signIn();
 
                     }
-                });*/
+                });*//*
 
                 plus_one_button.setVisibility(View.VISIBLE);
                 plus_one_button.setEnabled(true);
@@ -232,6 +234,26 @@ public class SocialActivity extends AppCompatActivity {
                 });
 
 
+            }
+        });*/
+
+        switchGoogle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                plus_one_button.setVisibility(View.VISIBLE);
+                plus_one_button.setEnabled(true);
+                plus_one_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent shareIntent = new PlusShare.Builder(SocialActivity.this)
+                                .setType("text/plain")
+                                .setText("Welcome to the Google+ platform.")
+                                .setContentUrl(Uri.parse(fetchRecordingUrl))
+                                .getIntent();
+
+                        startActivityForResult(shareIntent, 0);
+                    }
+                });
             }
         });
 
@@ -278,11 +300,15 @@ public class SocialActivity extends AppCompatActivity {
         if (requestCode == TwitterAuthConfig.DEFAULT_AUTH_REQUEST_CODE) {
             //  twitter related handling
             client.onActivityResult(requestCode, resultCode, data);
+            switchTwitter.setEnabled(false);
         } else if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleSignInResult(result);
+            plus_one_button.setVisibility(View.GONE);
+            switchGoogle.setChecked(false);
+//            handleSignInResult(result);
         } else {
             if (callbackManager.onActivityResult(requestCode, resultCode, data))
+                switchFb.setChecked(false);
                 return;
         }
     }

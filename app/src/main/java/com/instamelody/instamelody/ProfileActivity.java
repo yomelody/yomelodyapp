@@ -37,8 +37,10 @@ import com.instamelody.instamelody.Fragments.ActivityFragment;
 import com.instamelody.instamelody.Fragments.AudioFragment;
 import com.instamelody.instamelody.Fragments.BioFragment;
 import com.instamelody.instamelody.Fragments.ProfileActivityFragment;
+import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsData;
 import com.instamelody.instamelody.Models.RecordingsModel;
+import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.squareup.picasso.Picasso;
 
@@ -71,6 +73,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
     String KEY_GENRE_NAME = "name";
+    String KEY_GENRE_ID = "id";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";//JSONArray
     String genreString = "1";
@@ -82,6 +85,8 @@ public class ProfileActivity extends AppCompatActivity {
 
 
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
+    ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
+    ArrayList<Genres> genresArrayList = new ArrayList<>();
     Button btnAudio, btnActivity, btnBio, appBarSidebtnMusicCircle, btnCancel;
     RelativeLayout rlPartProfile, rlFragmentActivity, rlFragmentBio, rlSearch;
     ImageView ivBackButton, ivHomeButton, ivAudio_feed, ivDiscover, ivMessage, ivProfile, ivSound;
@@ -127,7 +132,7 @@ public class ProfileActivity extends AppCompatActivity {
             userId = userIdTwitter;
         }
 
-        adapter = new RecordingsCardAdapter(this, recordingList);
+        adapter = new RecordingsCardAdapter(this, recordingList,recordingsPools);
 
         btnAudio = (Button) findViewById(R.id.btnAudio);
         btnActivity = (Button) findViewById(R.id.btnActivity);
@@ -210,7 +215,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         if (statusFb == 1) {
             tvNameInProf.setText(fbName);
-            tvUserNameInProf.setText("@" + fbUserName);
+            tvUserNameInProf.setText("@"+fbName);
         }
 
         if (fbId != null) {
@@ -362,8 +367,12 @@ public class ProfileActivity extends AppCompatActivity {
                                 myTask.execute();
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                                 for (int i = 0; i < jsonArray.length(); i++) {
+                                    Genres genres = new Genres();
                                     genreJson = jsonArray.getJSONObject(i);
                                     titleString = genreJson.getString(KEY_GENRE_NAME);
+                                    genres.setName(titleString);
+                                    genres.setId(genreJson.getString(KEY_GENRE_ID));
+                                    genresArrayList.add(genres);
                                     spec = host.newTabSpec(titleString);
                                     spec.setIndicator(titleString);
                                     spec.setContent(createTabContent());
@@ -382,8 +391,16 @@ public class ProfileActivity extends AppCompatActivity {
                         host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
                             @Override
                             public void onTabChanged(String arg0) {
+                                genreString = arg0;
                                 int currentTab = host.getCurrentTab();
-                                genreString = String.valueOf(currentTab).trim();
+                                if (currentTab==0){
+                                    genreString= "";
+                                }else {
+                                    genreString = genresArrayList.get(currentTab).getId();
+                                }
+//                                genreString = String.valueOf(currentTab).trim();
+                                fetchRecordings();
+
                                 fetchRecordings();
 //                                Toast.makeText(getActivity(), "beta: " + genreString, Toast.LENGTH_SHORT).show();
                             }
@@ -420,7 +437,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                         Log.d("ReturnData", response);
                         recordingList.clear();
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList,recordingsPools);
                         adapter.notifyDataSetChanged();
                     }
                 },
@@ -465,7 +482,7 @@ public class ProfileActivity extends AppCompatActivity {
             progressDialog = new ProgressDialog(ProfileActivity.this);
             progressDialog.setTitle("Processing...");
             progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(true);
+            progressDialog.setCancelable(false);
             progressDialog.show();
         }
 

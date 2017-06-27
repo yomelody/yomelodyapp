@@ -68,7 +68,7 @@
                     android:layout_marginBottom="45dp">
 
                     <RelativeLayout
-                        android:id="@+id/tab1"
+                        android:id="@+id/rlProfileRcV"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:paddingBottom="2dp"

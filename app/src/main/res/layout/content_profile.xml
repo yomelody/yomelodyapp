@@ -25,16 +25,14 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/cover1" />
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
                 android:alpha="0.5"
                 android:background="@android:color/black">
 
-            </LinearLayout>
+            </RelativeLayout>
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -44,31 +42,72 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <TextView
-                        android:id="@+id/tvNameInProf"
-                        android:layout_width="match_parent"
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_below="@+id/userProfileImageInProf"
-                        android:layout_marginBottom="5dp"
-                        android:text="Matt Jacob"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textColor="#FFFFFF" />
+                        android:layout_centerHorizontal="true"
+                        android:layout_below="@+id/userProfileImageInProf">
 
-                    <TextView
-                        android:id="@+id/tvUserNameInProf"
+                        <TextView
+                            android:id="@+id/tvNameInProf"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Matt Jacob"
+                            android:textAlignment="center"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                            android:textColor="#FFFFFF" />
+
+                        <TextView
+                            android:id="@+id/tvUserNameInProf"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tvNameInProf"
+                            android:layout_centerHorizontal="true"
+                            android:text="sillyPoet"
+                            android:textAlignment="center"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                            android:textColor="#FFFFFF" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_marginBottom="5dp"
-                        android:text="sillyPoet"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textColor="#FFFFFF" />
+                        android:layout_height="50dp"
+                        android:layout_alignParentBottom="true">
+
+                        <RelativeLayout
+                            android:layout_width="100dp"
+                            android:layout_height="match_parent"
+                            android:padding="4dp">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/message_icon"/>
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="100dp"
+                            android:layout_height="match_parent"
+                            android:padding="4dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/follow"
+                                android:visibility="visible"/>
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/following"
+                                android:visibility="gone"/>
+
+                        </RelativeLayout>
+                    </RelativeLayout>
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/userProfileImageInProf"
