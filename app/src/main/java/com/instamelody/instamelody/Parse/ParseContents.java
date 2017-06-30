@@ -353,6 +353,7 @@ public class ParseContents {
                 for (int i = 0; i < jsonArray.length(); i++) {
                     RecordingsModel card = new RecordingsModel();
                     JSONObject cardJson = jsonArray.getJSONObject(i);
+                    card.setAddedBy(cardJson.getString("added_by"));
                     card.setRecordingCreated(cardJson.getString("date_added"));
                     card.setGenreId(cardJson.getString("genre"));
                     card.setRecordingName(cardJson.getString("recording_topic"));
