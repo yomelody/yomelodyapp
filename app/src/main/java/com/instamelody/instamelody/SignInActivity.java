@@ -682,7 +682,7 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY_USER_TYPE, "3");
                 params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);
                 params.put(KEY_DEVICE_TYPE, "android");
-                params.put(KEY_PROFILE_PIC, photoUrlNormalSize);
+//                params.put(KEY_PROFILE_PIC, photoUrlNormalSize);
                 return params;
             }
         };

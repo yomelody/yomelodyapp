@@ -202,41 +202,6 @@ public class SocialActivity extends AppCompatActivity {
             }
         });
 
-        /*switchGoogle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-//                startActivityForResult(signInIntent, RC_SIGN_IN);
-//                googleShare();
-                *//*googleSignIn.setVisibility(View.VISIBLE);
-                googleSignIn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        signIn();
-
-                    }
-                });*//*
-
-                plus_one_button.setVisibility(View.VISIBLE);
-                plus_one_button.setEnabled(true);
-                plus_one_button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent shareIntent = new PlusShare.Builder(SocialActivity.this)
-                                .setType("text/plain")
-                                .setText("Welcome to the Google+ platform.")
-                                .setContentUrl(Uri.parse(fetchRecordingUrl))
-                                .getIntent();
-
-                        startActivityForResult(shareIntent, 0);
-                    }
-                });
-
-
-            }
-        });*/
-
         switchGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

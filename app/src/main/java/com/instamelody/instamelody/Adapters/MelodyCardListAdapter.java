@@ -118,7 +118,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             rlPlay = (RelativeLayout) itemView.findViewById(R.id.rlPlay);
             rlComment = (RelativeLayout) itemView.findViewById(R.id.rlComment);
             rlshare=(RelativeLayout)itemView.findViewById(R.id.rlShare);
-            MelodyName=tvPlayCount.getText().toString().trim();
+           // MelodyName=tvMelodyName.getText().toString().trim();
             ivPlay.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -193,11 +193,13 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     String position, userId;
                     SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
                     userId = loginSharedPref.getString("userId", null);
+                    String MelodyName;
                     //String positions = mpids.get(getAdapterPosition() + 1);
                     if (userId != null) {
 //                        position = Integer.toString(getAdapterPosition() + 1);
                         position = mpids.get(getAdapterPosition() + 1);
-
+                        MelodyCard melody = melodyList.get(getAdapterPosition());
+                        MelodyName=melody.getMelodyName();
                         if (ivLikeButton.getVisibility() == VISIBLE) {
                             ivLikeButton.setVisibility(GONE);
                             ivDislikeButton.setVisibility(VISIBLE);
@@ -205,7 +207,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                             int likeValue = Integer.parseInt(like) + 1;
                             like = String.valueOf(likeValue);
                             tvLikeCount.setText(like);
-                            fetchLikeState(userId, position, "1");
+                            fetchLikeState(userId, position, "1",MelodyName);
 
                         } else if (ivLikeButton.getVisibility() == GONE) {
                             ivLikeButton.setVisibility(VISIBLE);
@@ -214,7 +216,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                             int likeValue = Integer.parseInt(like) - 1;
                             like = String.valueOf(likeValue);
                             tvLikeCount.setText(like);
-                            fetchLikeState(userId, position, "0");
+                            fetchLikeState(userId, position, "0",MelodyName);
                         }
                     } else {
                         Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
@@ -406,7 +408,8 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         return melodyList.size();
     }
 
-    public void fetchLikeState(final String userId, final String pos, final String likeState) {
+    public void fetchLikeState(final String userId, final String pos, final String likeState,String LikeMelodyName) {
+        MelodyName=LikeMelodyName;
         StringRequest stringRequest = new StringRequest(Request.Method.POST, LIKE_MELODY_URL,
                 new Response.Listener<String>() {
                     @Override
