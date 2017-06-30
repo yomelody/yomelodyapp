@@ -407,7 +407,6 @@ public class StudioActivity extends AppCompatActivity {
 
 
             }
-
         });
 
 
