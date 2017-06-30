@@ -66,6 +66,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         ImageView userProfileImage, ivRecordingCover;
         ImageView ivJoin, ivStationPlay,ivStationPause;
         SeekBar seekBarRecordings;
+        RelativeLayout rlProfilePic;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -87,6 +88,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             ivStationPlay = (ImageView) itemView.findViewById(R.id.ivStationPlay);
             ivStationPause = (ImageView) itemView.findViewById(R.id.ivStationPause);
             seekBarRecordings = (SeekBar) itemView.findViewById(R.id.seekBarRecordings);
+            rlProfilePic = (RelativeLayout) itemView.findViewById(R.id.rlProfilePic);
 
             SharedPreferences editorGenre = getApplicationContext().getSharedPreferences("prefGenreName", MODE_PRIVATE);
             genreName = editorGenre.getString("GenreName", null);
@@ -143,6 +145,16 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 }
             });
 
+ rlProfilePic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    String checkUserId = recordingList.get(getAdapterPosition()).getAddedBy();
+                    Intent intent = new Intent(view.getContext(), ProfileActivity.class);
+                    intent.putExtra("checkUserId", checkUserId);
+                    view.getContext().startActivity(intent);
+                }
+            });
 
             seekBarRecordings.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -266,6 +278,8 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 //        Picasso.with(holder.userProfileImage.getContext()).load(recordingsPools.get(listPosition).getProfileUrl()).into(holder.userProfileImage);
         Picasso.with(holder.userProfileImage.getContext()).load(recordingList.get(listPosition).getUserProfilePic()).into(holder.userProfileImage);
 //        tvRecordingGenres.setText(recordingList.get(listPosition).getGenreName());
+        //        tvRecordingGenres.setText(recordingList.get(listPosition).getGenreName());
+
         holder.tvUserName.setText(recordingList.get(listPosition).getUserName());
         holder.tvRecordingName.setText(recordingList.get(listPosition).getRecordingName());
         holder.tvRecordingGenres.setText("Genre:" + " " + recording.getGenreName());

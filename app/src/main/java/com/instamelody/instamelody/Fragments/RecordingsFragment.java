@@ -90,11 +90,11 @@ public class RecordingsFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         fetchGenreNames();
         fetchRecordings();
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userId = loginSharedPref.getString("userId", null);
-
 
         SharedPreferences loginFbSharedPref = getActivity().getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
         userIdFb = loginFbSharedPref.getString("userId", null);
@@ -112,8 +112,7 @@ public class RecordingsFragment extends Fragment {
         }
 
         new DownloadFileFromURL();
-        adapter = new RecordingsCardAdapter(getActivity(), recordingList,recordingsPools);
-        super.onCreate(savedInstanceState);
+        adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
     }
 
     @Nullable
@@ -122,19 +121,16 @@ public class RecordingsFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_recordings, container, false);
 
-
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewRecordings);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-
 //        adapter = new RecordingsCardAdapter(getActivity(), recordingList);
         recyclerView.setAdapter(adapter);
 
         return view;
     }
-
 
     public void fetchGenreNames() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, GENRE_NAMES_URL,
@@ -204,7 +200,6 @@ public class RecordingsFragment extends Fragment {
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         requestQueue.add(stringRequest);
     }
-
 
     public void fetchRecordings() {
 
@@ -327,8 +322,6 @@ public class RecordingsFragment extends Fragment {
             pDialog.dismiss();
 
         }
-
-
     }
 
     private TabHost.TabContentFactory createTabContent() {

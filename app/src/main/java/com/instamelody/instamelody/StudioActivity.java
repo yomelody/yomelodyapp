@@ -407,7 +407,6 @@ public class StudioActivity extends AppCompatActivity {
 
 
             }
-
         });
 
 
@@ -806,6 +805,7 @@ public class StudioActivity extends AppCompatActivity {
         AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
         String rate = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
         String size = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
+        Log.d("Buffer Size & sample rate", "Size :" + size + " & Rate: " + rate);
 
     }
 
