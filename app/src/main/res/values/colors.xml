@@ -10,5 +10,6 @@
     <color name="color_translucent_black">#000000</color>
     <color name="secondary_text">#FFFFFF</color>
     <color name="navy_blue">#3B6EFE</color>
+    <color name="colorSeekProgress">#0098fe</color>
 
 </resources>
