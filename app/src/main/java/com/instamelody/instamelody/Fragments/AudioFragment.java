@@ -16,14 +16,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TabHost;
 import android.widget.Toast;
-
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.instamelody.instamelody.Adapters.AudioCardAdapter;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Models.AudioModel;
 import com.instamelody.instamelody.Models.Genres;
@@ -31,13 +35,9 @@ import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
-import com.instamelody.instamelody.StationActivity;
-import com.instamelody.instamelody.StudioActivity;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -49,9 +49,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 import static android.content.Context.MODE_PRIVATE;
-import static com.instamelody.instamelody.R.id.ivFilter;
 
 /**
  * Created by Saurabh Singh on 4/18/2017.
@@ -97,9 +95,10 @@ public class AudioFragment extends Fragment {
 
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
         fetchGenreNames();
@@ -110,24 +109,18 @@ public class AudioFragment extends Fragment {
         }
 
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-        userId = loginSharedPref.getString("userId", null);
+        SharedPreferences twitterPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
 
-        SharedPreferences loginFbSharedPref = getActivity().getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
-        userIdFb = loginFbSharedPref.getString("userId", null);
-        statusFb = loginFbSharedPref.getInt("status", 0);
-        SharedPreferences loginTwitterSharedPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
-        userIdTwitter = loginTwitterSharedPref.getString("userId", null);
-        statusTwitter = loginTwitterSharedPref.getInt("status", 0);
-
-        if (statusNormal == 1) {
-            userId = userIdNormal;
-        } else if (statusFb == 1) {
-            userId = userIdFb;
-        } else if (statusTwitter == 1) {
-            userId = userIdTwitter;
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
         }
-        adapter = new RecordingsCardAdapter(getActivity(), recordingList,recordingsPools);
-        super.onCreate(savedInstanceState);
+
+        adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
     }
 
     @Nullable
@@ -208,6 +201,7 @@ public class AudioFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -256,8 +250,22 @@ public class AudioFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
-                        String errorMsg = error.toString();
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -294,8 +302,22 @@ public class AudioFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
-                        String errorMsg = error.toString();
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
