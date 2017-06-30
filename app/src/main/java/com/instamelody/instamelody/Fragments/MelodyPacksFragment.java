@@ -207,13 +207,13 @@ public class MelodyPacksFragment extends Fragment {
                         } else if (error instanceof NoConnectionError) {
                             errorMsg = "There is no connection";
                         } else if (error instanceof AuthFailureError) {
-//                            errorMsg = "AuthFailureError";
+                            errorMsg = "AuthFailureError";
                         } else if (error instanceof ServerError) {
                             errorMsg = "We are facing problem in connecting to server";
                         } else if (error instanceof NetworkError) {
                             errorMsg = "We are facing problem in connecting to network";
                         } else if (error instanceof ParseError) {
-//                            errorMsg = "ParseError";
+                            errorMsg = "ParseError";
                         }
                         Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
