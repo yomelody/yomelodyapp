@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.instamelody.instamelody.JoinActivity;
@@ -21,6 +22,7 @@ import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
+import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -61,6 +63,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         TextView tvViewCount, tvLikeCount, tvCommentCount, tvShareCount;
         ImageView userProfileImage, ivRecordingCover;
         ImageView ivJoin, ivStationPlay;
+        RelativeLayout rlProfilePic;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -80,6 +83,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             tvShareCount = (TextView) itemView.findViewById(R.id.tvShareCount);
             ivJoin = (ImageView) itemView.findViewById(R.id.ivJoin);
             ivStationPlay = (ImageView) itemView.findViewById(R.id.ivStationPlay);
+            rlProfilePic = (RelativeLayout) itemView.findViewById(R.id.rlProfilePic);
 
             SharedPreferences editorGenre = getApplicationContext().getSharedPreferences("prefGenreName", MODE_PRIVATE);
             genreName = editorGenre.getString("GenreName", null);
@@ -135,6 +139,17 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     context.startActivity(intent);
                 }
             });
+
+            rlProfilePic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    String checkUserId = recordingList.get(getAdapterPosition()).getAddedBy();
+                    Intent intent = new Intent(view.getContext(), ProfileActivity.class);
+                    intent.putExtra("checkUserId", checkUserId);
+                    view.getContext().startActivity(intent);
+                }
+            });
         }
     }
 
@@ -153,7 +168,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         RecordingsModel recording = recordingList.get(listPosition);
         /*final RecordingsPool recordingsPool = recordingsPools.get(listPosition);
         instrumentFile = recordingsPool.getRecordingUrl();*/
-
 
         final TextView tvRecordingGenres = holder.tvRecordingGenres;
         TextView tvUserName = holder.tvUserName;
@@ -210,10 +224,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 //            });
 //        }
 
-
         Picasso.with(holder.ivRecordingCover.getContext()).load(recordingsPools.get(listPosition).getCoverUrl()).into(holder.ivRecordingCover);
-        Picasso.with(holder.userProfileImage.getContext()).load(recordingsPools.get(listPosition).getProfileUrl()).into(holder.userProfileImage);
-//        tvRecordingGenres.setText(recordingList.get(listPosition).getGenreName());
+        Picasso.with(holder.userProfileImage.getContext()).load(recordingList.get(listPosition).getUserProfilePic()).into(holder.userProfileImage);
+        //        tvRecordingGenres.setText(recordingList.get(listPosition).getGenreName());
         holder.tvUserName.setText(recordingList.get(listPosition).getUserName());
         holder.tvRecordingName.setText(recordingList.get(listPosition).getRecordingName());
         holder.tvRecordingGenres.setText("Genre:" + " " + recording.getGenreName());

@@ -577,9 +577,21 @@ public class SignInActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(SignInActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
-                        String errormsg = error.toString();
-                        Log.d("Error", errormsg);
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            errorMsg = "There is either no connection or it timed out.";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "ServerError";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "Network Error";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(SignInActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
                     }
                 }) {
             @Override
@@ -641,9 +653,21 @@ public class SignInActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(SignInActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
-                        String errormsg = error.toString();
-                        Log.d("Error", errormsg);
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            errorMsg = "There is either no connection or it timed out.";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "ServerError";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "Network Error";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(SignInActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
                     }
                 }) {
             @Override

@@ -221,20 +221,16 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                     public void onErrorResponse(VolleyError error) {
 
                         String errorMsg = "";
-                        if (error instanceof TimeoutError) {
-                            errorMsg = "Internet connection timed out";
-                        } else if (error instanceof NoConnectionError) {
-                            errorMsg = "There is no connection";
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            errorMsg = "There is either no connection or it timed out.";
                         } else if (error instanceof AuthFailureError) {
                             errorMsg = "AuthFailureError";
                         } else if (error instanceof ServerError) {
-                            errorMsg = "We are facing problem in connecting to server";
+                            errorMsg = "ServerError";
                         } else if (error instanceof NetworkError) {
-                            errorMsg = "We are facing problem in connecting to network";
+                            errorMsg = "Network Error";
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
-                        } else {
-                            errorMsg = "something went wrong";
                         }
                         Toast.makeText(context, errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);

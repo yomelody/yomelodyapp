@@ -35,6 +35,7 @@
                         android:orientation="horizontal">
 
                         <RelativeLayout
+                            android:id="@+id/rlProfilePic"
                             android:layout_width="60dp"
                             android:layout_height="match_parent">
 

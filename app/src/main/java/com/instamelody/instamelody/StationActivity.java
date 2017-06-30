@@ -7,13 +7,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,44 +22,34 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.support.v7.widget.SearchView;
-
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.instamelody.instamelody.Adapters.AudioCardAdapter;
-import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Fragments.AudioFragment;
-import com.instamelody.instamelody.Models.AudioModel;
-import com.instamelody.instamelody.Models.Genres;
-import com.instamelody.instamelody.Models.RecordingsData;
 import com.instamelody.instamelody.Models.RecordingsModel;
-
-import android.app.FragmentTransaction;
 import android.graphics.Color;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
 import com.instamelody.instamelody.Fragments.ActivityFragment;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.instamelody.instamelody.R.attr.position;
-import static com.instamelody.instamelody.R.id.tabHostRecordings;
-import static com.instamelody.instamelody.R.id.thing_proto;
-
 
 /**
  * Created by Saurabh Singh on 1/13/2017.
@@ -391,8 +379,22 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
-                        String errorMsg = error.toString();
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -424,8 +426,22 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
-                        String errorMsg = error.toString();
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
