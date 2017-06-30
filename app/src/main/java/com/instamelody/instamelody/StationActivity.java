@@ -1,12 +1,14 @@
 package com.instamelody.instamelody;
 
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -115,6 +117,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         setContentView(R.layout.activity_station);
 
 
+
         message = (ImageView) findViewById(R.id.message);
         discover = (ImageView) findViewById(R.id.discover);
         ivProfile = (ImageView) findViewById(R.id.ivProfile);
@@ -166,7 +169,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
             @Override
             public boolean onQueryTextChange(String newText) {
                 // newText is text entered by user to SearchView
-                Toast.makeText(getApplicationContext(), newText, Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(), newText, Toast.LENGTH_LONG).show();
                 return false;
             }
         };
@@ -316,8 +319,9 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                         builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-//                                fetchGenreNames();
-//                                fetchRecordings();
+
+                                fetchGenreNames();
+                                fetchRecordings();
                                 dialog.dismiss();
                             }
                         });
@@ -417,7 +421,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
                         Log.d("ReturnData", response);
                         recordingList.clear();
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList,recordingsPools);
+                        recordingsPools.clear();
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
 
                     }
                 },

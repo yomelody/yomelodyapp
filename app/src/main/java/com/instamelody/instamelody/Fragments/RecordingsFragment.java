@@ -215,7 +215,7 @@ public class RecordingsFragment extends Fragment {
 
                         Log.d("ReturnData", response);
                         recordingList.clear();
-                        new ParseContents(getActivity()).parseRecordings(response, recordingList);
+                        new ParseContents(getActivity()).parseAudio(response, recordingList,recordingsPools);
                         adapter.notifyDataSetChanged();
                     }
                 },

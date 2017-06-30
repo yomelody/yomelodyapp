@@ -85,6 +85,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     static MediaPlayer mp;
     int length;
     String coverPicStudio;
+    int statusNormal, statusFb, statusTwitter;
+    String userName, profilePic;
+    String fbName, fbUserName, fbId;
     String instrumentName, melodyName;
     int rvLength;
     Context context;
@@ -161,6 +164,20 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             coverPicStudio = coverSharePref.getString("coverPicStudio", null);
 
 
+            SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+
+            userName = twitterPref.getString("userName", null);
+            profilePic = twitterPref.getString("ProfilePic", null);
+            statusTwitter = twitterPref.getInt("status", 0);
+
+
+            SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+            fbName = fbPref.getString("FbName", null);
+            fbUserName = fbPref.getString("userName", null);
+            fbId = fbPref.getString("fbId", null);
+            statusFb = fbPref.getInt("status", 0);
+
+
             melodySlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
                 @Override
@@ -234,9 +251,19 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         } else {
             Picasso.with(holder.ivInstrumentCover.getContext()).load(instruments.getInstrumentCover()).into(holder.ivInstrumentCover);
         }
-        Picasso.with(holder.userProfileImage.getContext()).load(instruments.getUserProfilePic()).into(holder.userProfileImage);
+        if (profilePic != null) {
+            Picasso.with(holder.userProfileImage.getContext()).load(profilePic).into(holder.userProfileImage);
+        } else if (fbId != null) {
+            Picasso.with(holder.userProfileImage.getContext()).load("https://graph.facebook.com/" + fbId + "/picture").into(holder.userProfileImage);
+        } else
+            Picasso.with(holder.userProfileImage.getContext()).load(instruments.getUserProfilePic()).into(holder.userProfileImage);
         holder.tvBpmRate.setText(instruments.getInstrumentBpm());
-        holder.tvUserName.setText("@"+ instruments.getUserName());
+        if (userName != null) {
+            holder.tvUserName.setText("@" + userName);
+        } else if (fbName != null) {
+            holder.tvUserName.setText("@" + fbName);
+        }else
+        holder.tvUserName.setText("@" + instruments.getUserName());
         holder.tvInstrumentName.setText(instruments.getInstrumentName());
 
         holder.tvInstrumentLength.setText(instruments.getInstrumentLength());

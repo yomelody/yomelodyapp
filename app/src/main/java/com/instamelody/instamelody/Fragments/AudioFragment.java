@@ -208,7 +208,7 @@ public class AudioFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
                         String errorMsg = error.toString();
                         Log.d("Error", errorMsg);
                     }
@@ -235,6 +235,7 @@ public class AudioFragment extends Fragment {
 
                         Log.d("ReturnData", response);
                         recordingList.clear();
+                        recordingsPools.clear();
                         new ParseContents(getActivity()).parseAudio(response, recordingList,recordingsPools);
                         adapter.notifyDataSetChanged();
                     }
