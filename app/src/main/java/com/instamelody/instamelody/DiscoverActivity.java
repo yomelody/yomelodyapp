@@ -24,8 +24,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
+import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsData;
 import com.instamelody.instamelody.Models.RecordingsModel;
+import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
 
 import org.json.JSONArray;
@@ -56,6 +58,8 @@ public class DiscoverActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private static RecyclerView recyclerView;
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
+    ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
+    ArrayList<Genres> genresArrayList = new ArrayList<>();
     private String RECORDING_URL = "http://35.165.96.167/api/recordings.php";
     private String ID = "id";
     private String KEY = "key";
@@ -67,6 +71,7 @@ public class DiscoverActivity extends AppCompatActivity {
 
     String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
     String KEY_GENRE_NAME = "name";
+    String KEY_GENRE_ID = "id";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";//JSONArray
     String genreString = "1";
@@ -110,7 +115,7 @@ public class DiscoverActivity extends AppCompatActivity {
         audio_feed = (ImageView) findViewById(R.id.audio_feed);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewDiscover);
 
-        adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList);
+        adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList,recordingsPools);
 //        recyclerView.setAdapter(adapter);
         super.onCreate(savedInstanceState);
         discover.setOnClickListener(new View.OnClickListener() {
@@ -173,8 +178,12 @@ public class DiscoverActivity extends AppCompatActivity {
                                 myTask.execute();
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                                 for (int i = 0; i < jsonArray.length(); i++) {
+                                    Genres genres = new Genres();
                                     genreJson = jsonArray.getJSONObject(i);
                                     titleString = genreJson.getString(KEY_GENRE_NAME);
+                                    genres.setName(titleString);
+                                    genres.setId(genreJson.getString(KEY_GENRE_ID));
+                                    genresArrayList.add(genres);
                                     spec = host.newTabSpec(titleString);
                                     spec.setIndicator(titleString);
                                     spec.setContent(createTabContent());
@@ -194,8 +203,13 @@ public class DiscoverActivity extends AppCompatActivity {
                         host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
                             @Override
                             public void onTabChanged(String arg0) {
+                                genreString = arg0;
                                 int currentTab = host.getCurrentTab();
-                                genreString = String.valueOf(currentTab).trim();
+                                if (currentTab==0){
+                                    genreString= "";
+                                }else {
+                                    genreString = genresArrayList.get(currentTab).getId();
+                                }
                                 fetchRecordings();
 //                                Toast.makeText(getActivity(), "beta: " + genreString, Toast.LENGTH_SHORT).show();
                             }
@@ -232,7 +246,8 @@ public class DiscoverActivity extends AppCompatActivity {
 
                         Log.d("ReturnData", response);
                         recordingList.clear();
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList);
+                        recordingsPools.clear();
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList,recordingsPools);
                         adapter.notifyDataSetChanged();
                     }
                 },
@@ -277,7 +292,7 @@ public class DiscoverActivity extends AppCompatActivity {
             progressDialog = new ProgressDialog(DiscoverActivity.this);
             progressDialog.setTitle("Processing...");
             progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(true);
+            progressDialog.setCancelable(false);
             progressDialog.show();
         }
 

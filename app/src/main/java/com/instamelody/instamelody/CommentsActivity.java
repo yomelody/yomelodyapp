@@ -308,7 +308,7 @@ public class CommentsActivity extends AppCompatActivity {
                 params.put(COMMENT, cmnt);
                 params.put(FILE_TYPE, fileType);
                 params.put(USER_ID, userId);
-                params.put(TOPIC, "vcbnvn");
+                params.put(TOPIC, melodyName);
 
                 return params;
             }

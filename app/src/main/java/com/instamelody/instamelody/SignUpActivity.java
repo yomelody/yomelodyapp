@@ -126,6 +126,7 @@ public class SignUpActivity extends AppCompatActivity {
     DatePickerDialog dpd;
     String formatedDate;
     String date;
+    int day,month,year;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -235,9 +236,9 @@ public class SignUpActivity extends AppCompatActivity {
                                          etphone.requestFocus();
 //                                         alertDialog.show();
 
-                                         int day = dpd.getDatePicker().getDayOfMonth();
-                                         int month = dpd.getDatePicker().getMonth();
-                                         int year = dpd.getDatePicker().getYear();
+                                          day = dpd.getDatePicker().getDayOfMonth();
+                                          month = dpd.getDatePicker().getMonth();
+                                          year = dpd.getDatePicker().getYear();
 
 
                                          SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
@@ -451,6 +452,10 @@ public class SignUpActivity extends AppCompatActivity {
                                                  errorDOB.setVisibility(View.VISIBLE);
                                                  errorDOB.setText("required");
 
+                                             }
+                                             if (String.valueOf (day)==("") && String.valueOf(month)==("")&&String.valueOf(year)==("")) {
+                                                 errorDOB.setVisibility(View.VISIBLE);
+                                                 errorDOB.setText("required");
                                              }
                                              if (etphone.getText().toString().trim().equals("")) {
                                                  errorPhone.setVisibility(View.VISIBLE);

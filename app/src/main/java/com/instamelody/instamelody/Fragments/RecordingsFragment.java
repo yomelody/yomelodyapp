@@ -27,8 +27,10 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
+import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsData;
 import com.instamelody.instamelody.Models.RecordingsModel;
+import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.StudioActivity;
@@ -58,6 +60,8 @@ import static android.provider.Contacts.SettingsColumns.KEY;
 public class RecordingsFragment extends Fragment {
 
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
+    ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
+    ArrayList<Genres> genresArrayList = new ArrayList<>();
     private String RECORDINGS_URL = "http://35.165.96.167/api/recordings.php";
     private String USER_ID = "id";
     String GENRE = "genere";
@@ -65,6 +69,7 @@ public class RecordingsFragment extends Fragment {
 
     String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
     String KEY_GENRE_NAME = "name";
+    String KEY_GENRE_ID = "id";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";//JSONArray
     String genreString = "1";
@@ -85,11 +90,11 @@ public class RecordingsFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         fetchGenreNames();
         fetchRecordings();
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userId = loginSharedPref.getString("userId", null);
-
 
         SharedPreferences loginFbSharedPref = getActivity().getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
         userIdFb = loginFbSharedPref.getString("userId", null);
@@ -107,8 +112,7 @@ public class RecordingsFragment extends Fragment {
         }
 
         new DownloadFileFromURL();
-        adapter = new RecordingsCardAdapter(getActivity(), recordingList);
-        super.onCreate(savedInstanceState);
+        adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
     }
 
     @Nullable
@@ -117,19 +121,16 @@ public class RecordingsFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_recordings, container, false);
 
-
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewRecordings);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-
 //        adapter = new RecordingsCardAdapter(getActivity(), recordingList);
         recyclerView.setAdapter(adapter);
 
         return view;
     }
-
 
     public void fetchGenreNames() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, GENRE_NAMES_URL,
@@ -139,7 +140,7 @@ public class RecordingsFragment extends Fragment {
 
                         JSONObject jsonObject, genreJson;
                         JSONArray jsonArray;
-                        String titleString;
+                        String titleString,genreId;
                         TabHost.TabSpec spec;
                         final TabHost host = (TabHost) getActivity().findViewById(R.id.tabHostRecordings);
                         host.setup();
@@ -149,8 +150,12 @@ public class RecordingsFragment extends Fragment {
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                                 for (int i = 0; i < jsonArray.length(); i++) {
+                                    Genres genres = new Genres();
                                     genreJson = jsonArray.getJSONObject(i);
                                     titleString = genreJson.getString(KEY_GENRE_NAME);
+                                    genres.setName(titleString);
+                                    genres.setId(genreJson.getString(KEY_GENRE_ID));
+                                    genresArrayList.add(genres);
                                     spec = host.newTabSpec(titleString);
                                     spec.setIndicator(titleString);
                                     spec.setContent(createTabContent());
@@ -164,10 +169,16 @@ public class RecordingsFragment extends Fragment {
                         host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
                             @Override
                             public void onTabChanged(String arg0) {
+                                genreString = arg0;
                                 int currentTab = host.getCurrentTab();
-                                genreString = String.valueOf(currentTab).trim();
+                                if (currentTab==0){
+                                    genreString= "";
+                                }else {
+                                  genreString = genresArrayList.get(currentTab).getId();
+                                }
+//                                genreString = String.valueOf(currentTab).trim();
                                 fetchRecordings();
-//                                Toast.makeText(getActivity(), "beta: " + genreString, Toast.LENGTH_SHORT).show();
+
                             }
                         });
                     }
@@ -190,7 +201,6 @@ public class RecordingsFragment extends Fragment {
         requestQueue.add(stringRequest);
     }
 
-
     public void fetchRecordings() {
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS_URL,
@@ -200,7 +210,7 @@ public class RecordingsFragment extends Fragment {
 
                         Log.d("ReturnData", response);
                         recordingList.clear();
-                        new ParseContents(getActivity()).parseRecordings(response, recordingList);
+                        new ParseContents(getActivity()).parseAudio(response, recordingList,recordingsPools);
                         adapter.notifyDataSetChanged();
                     }
                 },
@@ -312,8 +322,6 @@ public class RecordingsFragment extends Fragment {
             pDialog.dismiss();
 
         }
-
-
     }
 
     private TabHost.TabContentFactory createTabContent() {

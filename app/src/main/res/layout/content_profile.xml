@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.instamelody.instamelody.ProfileActivity"
+    android:background="#CBCBCB"
     tools:showIn="@layout/activity_profile">
 
     <LinearLayout
@@ -18,23 +19,22 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.80">
+            android:layout_weight="0.84">
 
             <ImageView
+                android:id="@+id/userCover"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/cover1" />
+                android:scaleType="fitXY"/>
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
                 android:alpha="0.5"
                 android:background="@android:color/black">
 
-            </LinearLayout>
+            </RelativeLayout>
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -44,31 +44,79 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <TextView
-                        android:id="@+id/tvNameInProf"
-                        android:layout_width="match_parent"
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_below="@+id/userProfileImageInProf"
-                        android:layout_marginBottom="5dp"
-                        android:text="Matt Jacob"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textColor="#FFFFFF" />
+                        android:layout_centerHorizontal="true"
+                        android:layout_below="@+id/userProfileImageInProf">
 
-                    <TextView
-                        android:id="@+id/tvUserNameInProf"
+                        <TextView
+                            android:id="@+id/tvNameInProf"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textAlignment="center"
+                            android:textSize="16dp"
+                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                            android:textColor="#FFFFFF" />
+
+                        <TextView
+                            android:id="@+id/tvUserNameInProf"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tvNameInProf"
+                            android:layout_centerHorizontal="true"
+                            android:text=""
+                            android:textSize="14sp"
+                            android:textAlignment="center"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                            android:textColor="#FFFFFF" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_marginBottom="5dp"
-                        android:text="sillyPoet"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textColor="#FFFFFF" />
+                        android:layout_height="50dp"
+                        android:layout_alignParentBottom="true">
+
+                        <RelativeLayout
+                            android:id="@+id/rlMessage"
+                            android:layout_width="100dp"
+                            android:layout_height="match_parent"
+                            android:padding="4dp">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/message_icon"/>
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/rlFollow"
+                            android:layout_width="100dp"
+                            android:layout_height="match_parent"
+                            android:padding="4dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true">
+
+                            <ImageView
+                                android:id="@+id/ivFollow"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/follow"
+                                android:visibility="visible"/>
+
+                            <ImageView
+                                android:id="@+id/ivUnfollow"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/following"
+                                android:visibility="gone"/>
+
+                        </RelativeLayout>
+                    </RelativeLayout>
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/userProfileImageInProf"
@@ -76,8 +124,7 @@
                         android:layout_height="80dp"
                         android:layout_alignParentTop="true"
                         android:layout_centerHorizontal="true"
-                        android:layout_marginTop="10dp"
-                        android:src="@drawable/profile2" />
+                        android:layout_marginTop="10dp" />
 
                 </RelativeLayout>
             </FrameLayout>
@@ -86,7 +133,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.20"
+            android:layout_weight="0.16"
             android:orientation="horizontal">
 
             <RelativeLayout
@@ -97,10 +144,11 @@
                 <TextView
                     android:id="@+id/tv_records"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_centerVertical="true"
                     android:background="#FFFFFF"
-                    android:text="Records:48"
+                    android:text=""
+                    android:gravity="center"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textColor="#495C67" />
@@ -115,10 +163,11 @@
                 <TextView
                     android:id="@+id/tv_fans"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_centerVertical="true"
                     android:background="#FFFFFF"
-                    android:text="Fans:151"
+                    android:text=""
+                    android:gravity="center"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textColor="#495C67" />
@@ -133,10 +182,11 @@
                 <TextView
                     android:id="@+id/tv_following"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_centerVertical="true"
                     android:background="#FFFFFF"
-                    android:text="Following:25"
+                    android:text=""
+                    android:gravity="center"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textColor="#495C67" />
@@ -148,6 +198,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/llTop"
+        android:layout_marginTop="1dp"
         android:layout_marginBottom="45dp">
 
         <RelativeLayout
@@ -307,10 +358,8 @@
                             android:id="@+id/tab1"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:paddingBottom="2dp"
                             android:paddingEnd="2dp"
-                            android:paddingStart="2dp"
-                            android:paddingTop="2dp">
+                            android:paddingStart="2dp">
 
                             <android.support.v7.widget.RecyclerView
                                 android:id="@+id/recyclerViewProfile"

@@ -36,6 +36,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -162,7 +163,7 @@ public class StudioActivity extends AppCompatActivity {
     Timer myTimer;
     Chronometer chrono;
     ImageView audio_feed, grey_circle, blue_circle;
-    TextView recording_time, tvPublic, tvDone, tvInfo, recording_date, melody_date;
+    TextView recording_time, tvPublic, tvDone, tvInfo, recording_date, melody_date, melody_detail;
     EditText subEtTopicName;
     Spinner sp;
     RadioGroup rgR;
@@ -185,7 +186,7 @@ public class StudioActivity extends AppCompatActivity {
     String KEY_RESPONSE = "response";//JSONArray
     String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
 
-    String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, melodyPackId;
+    String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, melodyPackId, instrumentCount;
     String selectedGenre;
     int statusNormal, statusFb, statusTwitter;
     String melodyName, instrumentName;
@@ -212,6 +213,7 @@ public class StudioActivity extends AppCompatActivity {
     FacebookSdk.InitializeCallback i1;
     String fetchRecordingUrl;
     byte[] bytes, soundBytes;
+    String idUpload;
 
     private boolean mShouldContinue = true;
 
@@ -245,6 +247,7 @@ public class StudioActivity extends AppCompatActivity {
         profile_image = (CircleImageView) findViewById(R.id.profile_image);
         artist_name = (TextView) findViewById(R.id.artist_name);
         recording_time = (TextView) findViewById(R.id.recording_time);
+        melody_detail = (TextView) findViewById(R.id.melody_detail);
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         firstName = loginSharedPref.getString("firstName", null);
         userNameLogin = loginSharedPref.getString("userName", null);
@@ -284,7 +287,6 @@ public class StudioActivity extends AppCompatActivity {
         rlSync = (RelativeLayout) findViewById(R.id.rlSync);
         SharedPreferences loginSharedPref1 = this.getSharedPreferences("Url_recording", MODE_PRIVATE);
         fetchRecordingUrl = loginSharedPref1.getString("Recording_url", null);
-
 
         fetchGenreNames();
 
@@ -405,7 +407,6 @@ public class StudioActivity extends AppCompatActivity {
 
 
             }
-
         });
 
 
@@ -568,7 +569,7 @@ public class StudioActivity extends AppCompatActivity {
                         rlMelodyButton.setVisibility(View.GONE);
                         ivRecord_stop.setVisibility(View.VISIBLE);
                         rlRecordingButton.setVisibility(View.VISIBLE);
-                        Log.d("mShouldRecording Value", "" + mShouldContinue);
+                        waveform_view.setVisibility(View.VISIBLE);
                         try {
                             recordAudio();
                             mRecordingThread.start();
@@ -591,6 +592,7 @@ public class StudioActivity extends AppCompatActivity {
                     rlMelodyButton.setVisibility(View.GONE);
                     ivRecord_stop.setVisibility(View.VISIBLE);
                     rlRecordingButton.setVisibility(View.VISIBLE);
+                    waveform_view.setVisibility(View.VISIBLE);
 
                     try {
                         recordAudio();
@@ -607,6 +609,7 @@ public class StudioActivity extends AppCompatActivity {
                 }
             }
         });
+
 
         ivRecord_stop.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -802,7 +805,7 @@ public class StudioActivity extends AppCompatActivity {
         AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
         String rate = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
         String size = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
-        Log.d("Buffer Size and sample rate", "Size :" + size + " & Rate: " + rate);
+        Log.d("Buffer Size & sample rate", "Size :" + size + " & Rate: " + rate);
 
     }
 
@@ -828,9 +831,6 @@ public class StudioActivity extends AppCompatActivity {
 
         subEtTopicName = (EditText) subView.findViewById(R.id.dialogEtTopicName);
         sp = (Spinner) subView.findViewById(R.id.spinnerGenre);
-        /*sp.setLayoutParams(new LinearLayout.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, ActionMenuView.LayoutParams.WRAP_CONTENT));
-        sp.setAdapter(adp);
-        sp.setOnItemSelectedListener(new OnSpinnerItemClicked());*/
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, genresName);
@@ -839,7 +839,6 @@ public class StudioActivity extends AppCompatActivity {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(StudioActivity.this);
         builder.setView(sp);
-        //builder.create().show();
         sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -949,14 +948,10 @@ public class StudioActivity extends AppCompatActivity {
         builder2.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
                 saveRecordings1();
+                myTask = new LongOperation();
+                myTask.execute();
                 getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-//                myTask = new LongOperation();
-//                myTask.execute();
-//                closeInput();
-//                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//                imm.hideSoftInputFromWindow(subEtTopicName.getWindowToken(), 0);
 
 
             }
@@ -966,8 +961,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
-//                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//                imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+
             }
         });
         builder2.show();
@@ -1041,10 +1035,10 @@ public class StudioActivity extends AppCompatActivity {
                     AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, mBufferSize);
             try {
 
-               recorder.startRecording();
+                recorder.startRecording();
                 Log.d("Recording issue", "SampleRate" + SAMPLING_RATE + "BufferSize" + mBufferSize + "AudioBuffer" + mAudioBuffer);
             } catch (IllegalStateException e) {
-                  Log.d("Recording issue", e.toString());
+                Log.d("Recording issue", e.toString());
             }
 
 
@@ -1100,52 +1094,6 @@ public class StudioActivity extends AppCompatActivity {
         }
     }
 
-    /*@Override
-    protected void onStart() {
-        super.onStart();
-
-        mRecordingThread = new RecordingThread();
-        mRecordingThread.start();
-    }*/
-
-
-    //    @Override
-//    protected void onResume() {
-//        super.onResume();
-//
-//        mRecordingThread = new RecordingThread();
-//        mRecordingThread.start();
-//
-//
-//    }
-//
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//
-//        if (mRecordingThread != null) {
-//            mRecordingThread.stopRunning();
-//            mRecordingThread = null;
-//        }
-//    }
-
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//
-//        mRecordingThread.stopRecording();
-//
-//    }
-
-   /* @Override
-    protected void onRestart() {
-        super.onRestart();
-
-        mRecordingThread.stopRunning();
-
-    }*/
-
     public void recordAudio() {
 
         recorder = new MediaRecorder();
@@ -1155,10 +1103,6 @@ public class StudioActivity extends AppCompatActivity {
         recorder.setOutputFile(audioFilePath);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
-        /*File file = new File(audioFilePath);
-        int size = (int) file.length();*//*
-        bytes = File.ReadAllBytes(audioFilePath);
-        Log.d("Test",""+bytes);*/
 
         try {
             InputStream inputStream =
@@ -1379,7 +1323,7 @@ public class StudioActivity extends AppCompatActivity {
                     public void onResponse(String response) {
 
                         String successmsg = response.toString();
-                        Toast.makeText(StudioActivity.this, value1 + "  " + "SAVE", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(StudioActivity.this, value1 + "  " + "SAVE", Toast.LENGTH_SHORT).show();
 
                         try {
                             JSONObject recordResponse = new JSONObject(successmsg);
@@ -1392,7 +1336,7 @@ public class StudioActivity extends AppCompatActivity {
 
                             JSONObject melodyData = recResponse.getJSONObject("melody_data");
 //
-                            String id = (String) melodyData.get("id");
+                            idUpload = (String) melodyData.get("id");
                             packName = (String) melodyData.get("packname");
                             addedByUser = (String) melodyData.get("added_by_user");
 //                            coverPick = (String) melodyData.get("cover_pick");
@@ -1416,11 +1360,10 @@ public class StudioActivity extends AppCompatActivity {
                             String isJoin = melodyData.getString("isJoin");*/
                             Public = (String) melodyData.get("public");
                             if (flag.equals("success")) {
-                                uploadRecordings(id);
+//                                uploadRecordings(idUpload);
                                 /*myTask = new LongOperation();
-                                myTask.execute();
-                                frameSync.setVisibility(View.GONE);*/
-                                android.app.AlertDialog.Builder builder1 = new android.app.AlertDialog.Builder(StudioActivity.this);
+                                myTask.execute();*/
+                                /*android.app.AlertDialog.Builder builder1 = new android.app.AlertDialog.Builder(StudioActivity.this);
                                 builder1.setMessage("Wants to share InstaMelody music on Social Networks.....");
                                 builder1.setCancelable(true);
 
@@ -1438,14 +1381,14 @@ public class StudioActivity extends AppCompatActivity {
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int id) {
                                                 dialog.cancel();
-                                                myTask = new LongOperation();
-                                                myTask.execute();
+//                                                myTask = new LongOperation();
+//                                                myTask.execute();
                                                 frameSync.setVisibility(View.GONE);
                                             }
                                         });
 
                                 android.app.AlertDialog alert11 = builder1.create();
-                                alert11.show();
+                                alert11.show();*/
                             } else {
                                 Toast.makeText(StudioActivity.this, response, Toast.LENGTH_SHORT).show();
                             }
@@ -1519,8 +1462,8 @@ public class StudioActivity extends AppCompatActivity {
 //                        melodyInstruments.setAudioType("recording");
                         instrumentList.add(melodyInstruments);
                         //adapter.notifyItemInserted(instrumentList.size()-1);
-                        adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
-                        adapter.notifyDataSetChanged();
+                        /*adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+                        adapter.notifyDataSetChanged();*/
 
                         InputMethodManager inputManager = (InputMethodManager)
                                 getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -1541,8 +1484,8 @@ public class StudioActivity extends AppCompatActivity {
                         VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPLOAD_REC_URL, new Response.Listener<NetworkResponse>() {
                             @Override
                             public void onResponse(NetworkResponse response) {
-                                myTask = new LongOperation();
-                                myTask.execute();
+//                                myTask = new LongOperation();
+//                                myTask.execute();
                                 String resultResponse = new String(response.data);
                                 Toast.makeText(StudioActivity.this, "Cover also Uploaded", Toast.LENGTH_SHORT).show();
 //                                + resultResponse
@@ -1569,7 +1512,7 @@ public class StudioActivity extends AppCompatActivity {
                             public void onErrorResponse(VolleyError error) {
                                 error.printStackTrace();
 
-                                Toast.makeText(getApplicationContext(), "Cover is not Uploaded", Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(getApplicationContext(), "Cover is not Uploaded", Toast.LENGTH_SHORT).show();
 
 //                                +error.toString();
                             }
@@ -1641,51 +1584,6 @@ public class StudioActivity extends AppCompatActivity {
         VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
     }
 
-
-
-    /*public void fetchGenreNames() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENRE_NAMES_URL,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        JSONObject jsonObject, genreJson;
-                        JSONArray jsonArray;
-                        String titleString;
-
-                        try {
-                            jsonObject = new JSONObject(response);
-                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
-                                jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    genreJson = jsonArray.getJSONObject(i);
-                                    titleString = genreJson.getString(KEY_GENRE_NAME);
-                                    genreList.add(titleString);
-                                }
-
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
-                        String errorMsg = error.toString();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                return params;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        requestQueue.add(stringRequest);
-    }*/
 
     public void fetchGenreNames() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, GENRE_NAMES_URL,
@@ -1787,6 +1685,13 @@ public class StudioActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent i = new Intent(this, HomeActivity.class);
+        startActivity(i);
+    }
+
     public static void closeInput(final View caller) {
         caller.postDelayed(new Runnable() {
             @Override
@@ -1803,58 +1708,20 @@ public class StudioActivity extends AppCompatActivity {
             progressDialog = new ProgressDialog(StudioActivity.this);
             progressDialog.setTitle("Processing...");
             progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(true);
+            progressDialog.setCancelable(false);
             progressDialog.show();
         }
 
         protected String doInBackground(String... params) {
-
-            try {
-                //Getting data from server
-
-                String filename = "myfile";
-                String outputString = "Hello world!";
-
-                URL aurl = new URL("http://35.165.96.167/api/upload_cover_melody_file.php");
-
-                URLConnection connection = aurl.openConnection();
-                connection.connect();
-                // getting file length
-                int lengthOfFile = connection.getContentLength();
-
-                // input stream to read file - with 8k buffer
-                InputStream input = new BufferedInputStream(aurl.openStream(), 8192);
-
-                try {
-                    FileOutputStream outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                    outputStream.write(outputString.getBytes());
-                    outputStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    FileInputStream inputStream = openFileInput(filename);
-                    BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
-                    StringBuilder total = new StringBuilder();
-                    String line;
-                    while ((line = r.readLine()) != null) {
-                        total.append(line);
-                    }
-                    r.close();
-                    inputStream.close();
-                    Log.d("File", "File contents: " + total);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            uploadRecordings(idUpload);
             return null;
         }
 
         protected void onPostExecute(String result) {
-
+            Toast.makeText(StudioActivity.this, value1 + "  " + "SAVE", Toast.LENGTH_SHORT).show();
+            adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+            adapter.notifyDataSetChanged();
+            frameSync.setVisibility(View.GONE);
             progressDialog.dismiss();
         }
 
@@ -1873,6 +1740,7 @@ public class StudioActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         super.onDestroy();
     }
 
@@ -1945,6 +1813,7 @@ public class StudioActivity extends AppCompatActivity {
         out.close();
         return out.toByteArray();
     }
+
 }
 
 

@@ -6,8 +6,6 @@ package com.instamelody.instamelody.Models;
 
 public class RecordingsModel {
 
-    //Used for storing melody details.
-
     String recordingId;
     String addedBy;
     String recordingName;
@@ -18,6 +16,7 @@ public class RecordingsModel {
     String recordingCover;
     String genreId;
     String genreName;
+
 
     public String getGenreName() {
         return genreName;
@@ -126,21 +125,4 @@ public class RecordingsModel {
         genreId = "Genre: " + genreId;
         this.genreId = genreId;
     }
-
-
-
-    /*    "recording_id": "739",
-            "added_by": "43",
-            "recording_topic": "neo4",
-            "user_name": "optimus prime",
-            "date_added": "2017-04-18 21:22:37",
-            "like_status": 0,
-            "like_count": "0",
-            "play_count": "0",
-            "comment_count": "0",
-            "share_count": "0",
-            "profile_url": "http://35.165.96.167/api/uploads/defaultpropik.jpg",
-            "cover_url": "http://35.165.96.167/api/uploads/cover.jpg",
-            "genre": "2",*/
-
 }
