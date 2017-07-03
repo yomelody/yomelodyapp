@@ -8,12 +8,15 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.instamelody.instamelody.JoinActivity;
@@ -21,7 +24,9 @@ import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
+import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -43,6 +48,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     static String instrumentFile;
     static MediaPlayer mp;
     static int duration1, currentPosition;
+    int length;
 
     private ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     private ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
@@ -60,7 +66,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         TextView tvUserName, tvRecordingName, tvContributeLength, tvRecordingDate, tvRecordingGenres, tvContributeDate, tvIncludedCount;
         TextView tvViewCount, tvLikeCount, tvCommentCount, tvShareCount;
         ImageView userProfileImage, ivRecordingCover;
-        ImageView ivJoin, ivStationPlay;
+        ImageView ivJoin, ivStationPlay, ivStationPause;
+        SeekBar seekBarRecordings;
+        RelativeLayout rlProfilePic;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -80,6 +88,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             tvShareCount = (TextView) itemView.findViewById(R.id.tvShareCount);
             ivJoin = (ImageView) itemView.findViewById(R.id.ivJoin);
             ivStationPlay = (ImageView) itemView.findViewById(R.id.ivStationPlay);
+            ivStationPause = (ImageView) itemView.findViewById(R.id.ivStationPause);
+            seekBarRecordings = (SeekBar) itemView.findViewById(R.id.seekBarRecordings);
+            rlProfilePic = (RelativeLayout) itemView.findViewById(R.id.rlProfilePic);
 
             SharedPreferences editorGenre = getApplicationContext().getSharedPreferences("prefGenreName", MODE_PRIVATE);
             genreName = editorGenre.getString("GenreName", null);
@@ -135,6 +146,60 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     context.startActivity(intent);
                 }
             });
+
+            rlProfilePic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    String checkUserId = recordingList.get(getAdapterPosition()).getAddedBy();
+                    Intent intent = new Intent(view.getContext(), ProfileActivity.class);
+                    intent.putExtra("checkUserId", checkUserId);
+                    view.getContext().startActivity(intent);
+                }
+            });
+
+            seekBarRecordings.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+                    int mCurrentPosition = currentPosition / 1000;
+                    int mDuration = duration1 / 1000;
+                    UtilsRecording utilRecording = new UtilsRecording();
+                    int progress1 = utilRecording.getProgressPercentage(mCurrentPosition, mDuration);
+
+                    if (mp != null && fromUser) {
+                        int playPositionInMilliseconds = duration1 / 100 * seekBarRecordings.getProgress();
+                        mp.seekTo(playPositionInMilliseconds);
+//                        seekBar.setProgress(progress);
+                    } else {
+                        // the event was fired from code and you shouldn't call player.seekTo()
+                    }
+
+//
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                }
+            });
+        }
+
+        private void primarySeekBarProgressUpdater() {
+            Handler mHandler1 = new Handler();
+            seekBarRecordings.setProgress((int) (((float) mp.getCurrentPosition() / duration1) * 100));// This math construction give a percentage of "was playing"/"song length"
+            if (mp.isPlaying()) {
+                Runnable notification = new Runnable() {
+                    public void run() {
+                        primarySeekBarProgressUpdater();
+                    }
+                };
+                mHandler1.postDelayed(notification, 100);
+            }
         }
     }
 
@@ -212,8 +277,11 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
 
         Picasso.with(holder.ivRecordingCover.getContext()).load(recordingsPools.get(listPosition).getCoverUrl()).into(holder.ivRecordingCover);
-        Picasso.with(holder.userProfileImage.getContext()).load(recordingsPools.get(listPosition).getProfileUrl()).into(holder.userProfileImage);
+//        Picasso.with(holder.userProfileImage.getContext()).load(recordingsPools.get(listPosition).getProfileUrl()).into(holder.userProfileImage);
+        Picasso.with(holder.userProfileImage.getContext()).load(recordingList.get(listPosition).getUserProfilePic()).into(holder.userProfileImage);
 //        tvRecordingGenres.setText(recordingList.get(listPosition).getGenreName());
+        //        tvRecordingGenres.setText(recordingList.get(listPosition).getGenreName());
+
         holder.tvUserName.setText(recordingList.get(listPosition).getUserName());
         holder.tvRecordingName.setText(recordingList.get(listPosition).getRecordingName());
         holder.tvRecordingGenres.setText("Genre:" + " " + recording.getGenreName());
@@ -231,6 +299,8 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         holder.ivStationPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                holder.seekBarRecordings.setVisibility(View.VISIBLE);
+                holder.ivStationPause.setVisibility(View.VISIBLE);
                 try {
                     RecordingsPool recordingsPool = recordingsPools.get(listPosition);
                     instrumentFile = recordingsPool.getRecordingUrl();
@@ -238,11 +308,34 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                     if (getItemCount() > s && instrumentFile != null) {
                         playAudio();
-//                        holder.primarySeekBarProgressUpdater();
+                        holder.primarySeekBarProgressUpdater();
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                mp.seekTo(length);
+                mp.start();
+
+                if (mp.equals(duration1)) {
+                    try {
+                        playAudio();
+                        holder.primarySeekBarProgressUpdater();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        holder.ivStationPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                holder.ivStationPlay.setVisibility(v.VISIBLE);
+                holder.ivStationPause.setVisibility(v.GONE);
+                mp.pause();
+                length = mp.getCurrentPosition();
+                holder.seekBarRecordings.setProgress(0);
             }
         });
 

@@ -3,13 +3,8 @@ package com.instamelody.instamelody.Adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Movie;
-import android.media.AudioFormat;
-import android.media.AudioManager;
-import android.media.AudioTrack;
 import android.media.MediaPlayer;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,10 +14,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -32,29 +25,17 @@ import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.CommentsActivity;
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
-import com.instamelody.instamelody.Models.UserDetails;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
 import com.instamelody.instamelody.StudioActivity;
 import com.squareup.picasso.Picasso;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.RandomAccessFile;
-import java.io.SequenceInputStream;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -137,7 +118,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             rlPlay = (RelativeLayout) itemView.findViewById(R.id.rlPlay);
             rlComment = (RelativeLayout) itemView.findViewById(R.id.rlComment);
             rlshare=(RelativeLayout)itemView.findViewById(R.id.rlShare);
-            MelodyName=tvPlayCount.getText().toString().trim();
+           // MelodyName=tvMelodyName.getText().toString().trim();
             ivPlay.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -212,11 +193,13 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     String position, userId;
                     SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
                     userId = loginSharedPref.getString("userId", null);
+                    String MelodyName;
                     //String positions = mpids.get(getAdapterPosition() + 1);
                     if (userId != null) {
 //                        position = Integer.toString(getAdapterPosition() + 1);
                         position = mpids.get(getAdapterPosition() + 1);
-
+                        MelodyCard melody = melodyList.get(getAdapterPosition());
+                        MelodyName=melody.getMelodyName();
                         if (ivLikeButton.getVisibility() == VISIBLE) {
                             ivLikeButton.setVisibility(GONE);
                             ivDislikeButton.setVisibility(VISIBLE);
@@ -224,7 +207,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                             int likeValue = Integer.parseInt(like) + 1;
                             like = String.valueOf(likeValue);
                             tvLikeCount.setText(like);
-                            fetchLikeState(userId, position, "1");
+                            fetchLikeState(userId, position, "1",MelodyName);
 
                         } else if (ivLikeButton.getVisibility() == GONE) {
                             ivLikeButton.setVisibility(VISIBLE);
@@ -233,7 +216,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                             int likeValue = Integer.parseInt(like) - 1;
                             like = String.valueOf(likeValue);
                             tvLikeCount.setText(like);
-                            fetchLikeState(userId, position, "0");
+                            fetchLikeState(userId, position, "0",MelodyName);
                         }
                     } else {
                         Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
@@ -425,7 +408,8 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         return melodyList.size();
     }
 
-    public void fetchLikeState(final String userId, final String pos, final String likeState) {
+    public void fetchLikeState(final String userId, final String pos, final String likeState,String LikeMelodyName) {
+        MelodyName=LikeMelodyName;
         StringRequest stringRequest = new StringRequest(Request.Method.POST, LIKE_MELODY_URL,
                 new Response.Listener<String>() {
                     @Override
