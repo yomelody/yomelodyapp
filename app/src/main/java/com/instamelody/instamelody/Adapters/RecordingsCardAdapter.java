@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -23,6 +24,7 @@ import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
+import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
@@ -64,7 +66,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         TextView tvUserName, tvRecordingName, tvContributeLength, tvRecordingDate, tvRecordingGenres, tvContributeDate, tvIncludedCount;
         TextView tvViewCount, tvLikeCount, tvCommentCount, tvShareCount;
         ImageView userProfileImage, ivRecordingCover;
-        ImageView ivJoin, ivStationPlay,ivStationPause;
+        ImageView ivJoin, ivStationPlay, ivStationPause;
         SeekBar seekBarRecordings;
         RelativeLayout rlProfilePic;
 
@@ -145,7 +147,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 }
             });
 
- rlProfilePic.setOnClickListener(new View.OnClickListener() {
+            rlProfilePic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
