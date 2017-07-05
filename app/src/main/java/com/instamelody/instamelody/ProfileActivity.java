@@ -673,7 +673,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         final String fid = follower_Id;
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, FOLLOW_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, USERS_BIO,,
                 new Response.Listener<String>() {
 
                     @Override
