@@ -73,13 +73,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.instamelody.instamelody.R.id.bio_fragment;
 import static com.instamelody.instamelody.R.id.rlPartStation;
+import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
+import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
+import static com.instamelody.instamelody.utils.Const.ServiceType.USERS_BIO;
 
 /**
  * Created by Saurabh Singh on 01/09/2017
  */
 public class ProfileActivity extends AppCompatActivity {
 
-  
     String KEY_GENRE_NAME = "name";
     String KEY_GENRE_ID = "id";
     String KEY_FLAG = "flag";
