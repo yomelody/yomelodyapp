@@ -47,7 +47,6 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.instamelody.instamelody.Models.HandelLogin;
-import com.instamelody.instamelody.app.Config;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
@@ -79,6 +78,9 @@ import retrofit2.Call;
 import static android.R.attr.id;
 import static android.R.attr.name;
 import static com.instamelody.instamelody.R.drawable.twitter;
+import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
+import static com.instamelody.instamelody.utils.Const.ServiceType.LOGIN;
+import static com.instamelody.instamelody.utils.Const.ServiceType.REGISTER;
 
 /**
  * Created by Saurabh Singh on 01/04/2017
@@ -97,9 +99,6 @@ public class SignInActivity extends AppCompatActivity {
     String KEY_DEVICE_TYPE = "device_type";
     String KEY_PROFILE_PIC = "profile_pic_url";
 
-
-    String REGISTER_URL = "http://35.165.96.167/api/registration.php";
-
     String DeviceToken;
     String f_name;
     String l_name;
@@ -108,7 +107,6 @@ public class SignInActivity extends AppCompatActivity {
     String fbProfilePic;
     String FbProf1;
     TextView tvSettings, tvDone, tvSignUp, tvFirstName, tvUserName;
-    String LOGIN_URL = "http://35.165.96.167/api/login.php";
     String KEY = "key";
     String KEY_EMAIL = "email";
     String KEY_PASSWORD = "password";
@@ -160,7 +158,7 @@ public class SignInActivity extends AppCompatActivity {
         btnfblogin = (RelativeLayout) findViewById(R.id.FbLogin);
         mcallbckmanager = CallbackManager.Factory.create();
         fbloginbtn = (LoginButton) findViewById(R.id.FbLoginReal);
-        SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, MODE_PRIVATE);
+        SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
         DeviceToken = fcmPref.getString("regId", null);
 //        Log.d("DeviceToken", DeviceToken);
 
@@ -439,7 +437,7 @@ public class SignInActivity extends AppCompatActivity {
         final String password = etPassword.getText().toString().trim();
         Log.d("DeviceToken", DeviceToken);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, LOGIN_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, LOGIN,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -541,7 +539,7 @@ public class SignInActivity extends AppCompatActivity {
     public void registerSpecialFB() {
         SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
         FbProf1 = fbPref.getString("profilePicFB", null);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -615,7 +613,7 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     public void registrationSpecialTwitter() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

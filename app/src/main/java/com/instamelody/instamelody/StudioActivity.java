@@ -106,7 +106,12 @@ import java.util.TimerTask;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.provider.Contacts.SettingsColumns.KEY;
+import static com.instamelody.instamelody.utils.Const.ServiceType.ADD_RECORDINGS;
+import static com.instamelody.instamelody.utils.Const.ServiceType.UPLOAD_COVER_MELODY_FILE;
 
+/**
+ * Created by Shubahansh Jaiswal on 11/29/2016.
+ */
 
 public class StudioActivity extends AppCompatActivity {
 
@@ -128,7 +133,6 @@ public class StudioActivity extends AppCompatActivity {
     private static final int SAMPLING_RATE = 44100;
     private int PICK_IMAGE_REQUEST = 1;
     private Bitmap bitmap;
-    private String ADD_RECORDING_URL = "http://35.165.96.167/api/Add_Recording.php";
     private String FILE_RECORDING = "";
     private String RECORDING_TYPE = "recording_type";
     private String USER_ID = "user_id";
@@ -140,7 +144,6 @@ public class StudioActivity extends AppCompatActivity {
     private String ADMIN_INSTRUMENT_ID = "admin_instruments_ids";
     private String USER_INSTRUMENT_ID = "user_instruments_ids";
 
-    private String UPLOAD_REC_URL = "http://35.165.96.167/api/upload_cover_melody_file.php";
     private String FILE_TYPE = "file_type";
     private String IS_MELODY = "isMelody";
     private String ID_MELODY_REC = "melodyOrRecordingID";
@@ -948,7 +951,7 @@ public class StudioActivity extends AppCompatActivity {
         builder2.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                saveRecordings1();
+//                saveRecordings1();
                 myTask = new LongOperation();
                 myTask.execute();
                 getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
@@ -1317,7 +1320,7 @@ public class StudioActivity extends AppCompatActivity {
         final int instrumentId = mi.getInstrumentId();
 
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, ADD_RECORDING_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, ADD_RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -1434,7 +1437,7 @@ public class StudioActivity extends AppCompatActivity {
     private void uploadRecordings(final String id) {
 
 
-        VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPLOAD_REC_URL, new Response.Listener<NetworkResponse>() {
+        VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPLOAD_COVER_MELODY_FILE, new Response.Listener<NetworkResponse>() {
             @Override
             public void onResponse(NetworkResponse response) {
                 String resultResponse = new String(response.data);
@@ -1481,7 +1484,7 @@ public class StudioActivity extends AppCompatActivity {
 
                     }
                     if (flag.equals("success")) {
-                        VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPLOAD_REC_URL, new Response.Listener<NetworkResponse>() {
+                        VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPLOAD_COVER_MELODY_FILE, new Response.Listener<NetworkResponse>() {
                             @Override
                             public void onResponse(NetworkResponse response) {
 //                                myTask = new LongOperation();
@@ -1713,6 +1716,7 @@ public class StudioActivity extends AppCompatActivity {
         }
 
         protected String doInBackground(String... params) {
+            saveRecordings1();
             uploadRecordings(idUpload);
             return null;
         }

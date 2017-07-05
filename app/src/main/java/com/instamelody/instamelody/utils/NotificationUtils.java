@@ -21,7 +21,6 @@ import android.text.TextUtils;
 import android.util.Patterns;
 
 import com.instamelody.instamelody.R;
-import com.instamelody.instamelody.app.Config;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +32,8 @@ import java.util.Date;
 import java.util.List;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
+import static com.instamelody.instamelody.utils.Const.NOTIFICATION_ID;
+import static com.instamelody.instamelody.utils.Const.NOTIFICATION_ID_BIG_IMAGE;
 
 /**
  * Created by Shubhansh Jaiswal on 11/01/17.
@@ -112,7 +113,7 @@ public class NotificationUtils {
                 .build();
 
         NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(Config.NOTIFICATION_ID, notification);
+        notificationManager.notify(NOTIFICATION_ID, notification);
     }
 
     private void showBigNotification(Bitmap bitmap, NotificationCompat.Builder mBuilder, int icon, String title, String message, PendingIntent resultPendingIntent, Uri alarmSound) {
@@ -133,7 +134,7 @@ public class NotificationUtils {
                 .build();
 
         NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(Config.NOTIFICATION_ID_BIG_IMAGE, notification);
+        notificationManager.notify(NOTIFICATION_ID_BIG_IMAGE, notification);
     }
 
     /**

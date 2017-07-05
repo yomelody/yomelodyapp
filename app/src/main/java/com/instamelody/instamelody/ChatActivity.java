@@ -54,7 +54,6 @@ import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.ChatAdapter;
 import com.instamelody.instamelody.Adapters.RecentImagesAdapter;
 import com.instamelody.instamelody.Models.Message;
-import com.instamelody.instamelody.app.Config;
 import com.instamelody.instamelody.utils.NotificationUtils;
 import com.squareup.picasso.Picasso;
 
@@ -75,6 +74,9 @@ import java.util.Map;
 
 import static android.os.Environment.isExternalStorageEmulated;
 import static android.os.Environment.isExternalStorageRemovable;
+import static com.instamelody.instamelody.utils.Const.PUSH_NOTIFICATION;
+import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
+import static com.instamelody.instamelody.utils.Const.ServiceType.CHAT;
 
 /**
  * Created by Shubhansh Jaiswal on 17/01/17.
@@ -90,7 +92,6 @@ public class ChatActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     ArrayList<Message> chatList = new ArrayList<>();// list of messages
-    String SEND_MESSAGE_URL = "http://35.165.96.167/api/chat.php";
     String MESSAGES_LIST_URL = "http://35.165.96.167/api/messageList.php";
     String CHECK_FILE_URL = "http://35.165.96.167/api/ShareAudioChat.php";
     String DEVICE_TYPE = "device_type";
@@ -234,7 +235,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
 
-                if (intent.getAction().equals(Config.PUSH_NOTIFICATION)) {
+                if (intent.getAction().equals(PUSH_NOTIFICATION)) {
                     // new push notification is received
 //                    String message = intent.getStringExtra("message");
                     String imageUrl = intent.getStringExtra("imageUrl");
@@ -252,7 +253,7 @@ public class ChatActivity extends AppCompatActivity {
             }
         };
 
-        SharedPreferences token = this.getSharedPreferences(Config.SHARED_PREF, MODE_PRIVATE);
+        SharedPreferences token = this.getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
         deviceToken = token.getString("regId", null);
         //if token is not null
 //        if (deviceToken != null) {
@@ -526,7 +527,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onResume();
         getChatMsgs(chatId);
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-                new IntentFilter(Config.PUSH_NOTIFICATION));
+                new IntentFilter(PUSH_NOTIFICATION));
         NotificationUtils.clearNotifications(getApplicationContext());
     }
 
@@ -684,7 +685,7 @@ public class ChatActivity extends AppCompatActivity {
 
     public void sendMessage(final String message, final String user_Id/*, final String packAvailable*/) {
 
-        final StringRequest stringRequest = new StringRequest(Request.Method.POST, SEND_MESSAGE_URL,
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, CHAT,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
