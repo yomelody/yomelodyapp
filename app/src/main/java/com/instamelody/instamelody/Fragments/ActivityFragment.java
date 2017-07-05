@@ -79,23 +79,8 @@ public class ActivityFragment extends Fragment {
         String position, userId;
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userId = loginSharedPref.getString("userId", null);
+        if(userId!=null)
         fetchActivityData(userId);
-
-
-
-       /* for (int i = 0; i < ActivityData.id_.length; i++) {
-            arraylist.add(new ActivityModel(
-                    ActivityData.id_[i],
-                    ActivityData.userProfileImage[i],
-                    ActivityData.UserNameArray1[i],
-                    ActivityData.Topic[i],
-                    ActivityData.Time[i]
-            ));
-        }*/
-
-        //activityAdapter = new ActivityCardAdapter(arraylist);
-
-        //recyclerView.setAdapter(activityAdapter);
 
         return view;
     }

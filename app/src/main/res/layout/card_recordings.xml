@@ -364,18 +364,33 @@
                         </RelativeLayout>
 
                         <RelativeLayout
+                            android:id="@+id/rlLike"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.20">
 
-                            <ImageView
-                                android:id="@+id/ivLikeButton"
-                                android:layout_width="25dp"
-                                android:layout_height="25dp"
-                                android:layout_alignParentTop="true"
-                                android:layout_gravity="center_horizontal"
+                            <RelativeLayout
+                                android:id="@+id/rlLikeContainer"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
                                 android:layout_marginLeft="5dp"
-                                app:srcCompat="@drawable/hand_outline" />
+                                android:layout_marginStart="5dp">
+
+                                <ImageView
+                                    android:id="@+id/ivLikeButton"
+                                    android:layout_width="25dp"
+                                    android:layout_height="25dp"
+                                    app:srcCompat="@drawable/hand_outline" />
+
+                                <ImageView
+                                    android:id="@+id/ivDislikeButton"
+                                    android:layout_width="25dp"
+                                    android:layout_height="25dp"
+                                    android:visibility="gone"
+                                    app:srcCompat="@drawable/hand_fill" />
+
+                            </RelativeLayout>
 
                             <TextView
                                 android:id="@+id/tvLikeCount"
@@ -383,8 +398,9 @@
                                 android:layout_height="wrap_content"
                                 android:layout_centerVertical="true"
                                 android:layout_marginLeft="5dp"
-                                android:layout_toEndOf="@+id/ivLikeButton"
-                                android:layout_toRightOf="@+id/ivLikeButton"
+                                android:layout_marginStart="5dp"
+                                android:layout_toEndOf="@+id/rlLikeContainer"
+                                android:layout_toRightOf="@+id/rlLikeContainer"
                                 android:text="999"
                                 android:textColor="@color/cardview_dark_background"
                                 android:textSize="12sp" />
