@@ -151,9 +151,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 @Override
                 public void onClick(View view) {
 
-                    String checkUserId = recordingList.get(getAdapterPosition()).getAddedBy();
+                    String showProfileUserId = recordingList.get(getAdapterPosition()).getAddedBy();
                     Intent intent = new Intent(view.getContext(), ProfileActivity.class);
-                    intent.putExtra("checkUserId", checkUserId);
+                    intent.putExtra("showProfileUserId", showProfileUserId);
                     view.getContext().startActivity(intent);
                 }
             });
@@ -175,8 +175,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     } else {
                         // the event was fired from code and you shouldn't call player.seekTo()
                     }
-
-//
                 }
 
                 @Override
@@ -304,7 +302,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 try {
                     RecordingsPool recordingsPool = recordingsPools.get(listPosition);
                     instrumentFile = recordingsPool.getRecordingUrl();
-                    Integer s = listPosition + 1;
+                    Integer s = listPosition;
 
                     if (getItemCount() > s && instrumentFile != null) {
                         playAudio();

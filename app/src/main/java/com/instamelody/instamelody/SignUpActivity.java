@@ -48,7 +48,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.instamelody.instamelody.app.Config;
 import com.instamelody.instamelody.utils.AppHelper;
 import com.instamelody.instamelody.utils.DateValidator;
 import com.instamelody.instamelody.utils.VolleyMultipartRequest;
@@ -78,6 +77,9 @@ import static android.R.attr.maxDate;
 import static android.R.attr.minDate;
 import static android.R.attr.negativeButtonText;
 import static com.facebook.internal.FacebookRequestErrorClassification.KEY_NAME;
+import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
+import static com.instamelody.instamelody.utils.Const.ServiceType.REGISTER;
+import static com.instamelody.instamelody.utils.Const.ServiceType.UPLOAD_FILE;
 
 /**
  * Created by Saurabh Singh on 12/26/2016.
@@ -85,7 +87,6 @@ import static com.facebook.internal.FacebookRequestErrorClassification.KEY_NAME;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    String REGISTER_URL = "http://35.165.96.167/api/registration.php";
     //String KEY = "key";
     String KEY_FNAME = "f_name";
     String KEY_LNAME = "l_name";
@@ -99,7 +100,6 @@ public class SignUpActivity extends AppCompatActivity {
     String KEY_DEVICE_TOKEN_SIGN_UP = "device_token";
     String KEY_DEVICE_TYPE = "device_type";
     private int PICK_IMAGE_REQUEST = 1;
-    private String UPLOAD_URL = "http://35.165.96.167/api/uploadfile.php";
     private String FILE_TYPE = "file_type";
     private String FILE1 = "file1";
     private String USER_ID = "user_id";
@@ -199,7 +199,7 @@ public class SignUpActivity extends AppCompatActivity {
             Picasso.with(SignUpActivity.this).load(profilePic).into(userProfileImage);
         }
 
-        SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, MODE_PRIVATE);
+        SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
         DeviceToken = fcmPref.getString("regId", null);
 
 
@@ -680,7 +680,7 @@ public class SignUpActivity extends AppCompatActivity {
 
 
     private void uploadImage(final String n) {
-        VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPLOAD_URL, new Response.Listener<NetworkResponse>() {
+        VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPLOAD_FILE, new Response.Listener<NetworkResponse>() {
             @Override
             public void onResponse(NetworkResponse response) {
                 String resultResponse = new String(response.data);
@@ -768,7 +768,7 @@ public class SignUpActivity extends AppCompatActivity {
 //        final String date = b.replace(":", "").replace("|", "/");
         final String phone = etphone.getText().toString().trim();
         final String usertype = "USER";
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
