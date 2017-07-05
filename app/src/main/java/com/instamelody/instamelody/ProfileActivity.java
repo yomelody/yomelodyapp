@@ -79,10 +79,7 @@ import static com.instamelody.instamelody.R.id.rlPartStation;
  */
 public class ProfileActivity extends AppCompatActivity {
 
-    String USER_BIO_URL = "http://35.165.96.167//api//users_bio.php";
-    String FOLLOW_URL = "http://35.165.96.167//api//followers.php";
-    String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
-    String RECORDING_URL = "http://35.165.96.167/api/recordings.php";
+  
     String KEY_GENRE_NAME = "name";
     String KEY_GENRE_ID = "id";
     String KEY_FLAG = "flag";
