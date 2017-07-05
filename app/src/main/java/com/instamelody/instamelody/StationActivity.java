@@ -2,11 +2,13 @@ package com.instamelody.instamelody;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -23,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.support.v7.widget.SearchView;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
@@ -35,22 +38,30 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Fragments.AudioFragment;
 import com.instamelody.instamelody.Models.RecordingsModel;
+
 import android.graphics.Color;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
 import com.instamelody.instamelody.Fragments.ActivityFragment;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
+import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
 /**
  * Created by Saurabh Singh on 1/13/2017.
@@ -59,7 +70,7 @@ import java.util.Map;
 public class StationActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     Button btnActivity, btnAudio, btnCancel;
-    RelativeLayout rlFragmentActivity, rlPartStation, rlSearch;
+    RelativeLayout rlFragmentActivity, rlPartStation, rlSearch, rlTafree;
     ImageView ivBackButton, ivHomeButton, discover, message, ivProfile, audio_feed, ivSound, ivSound1, ivFilter;
     EditText subEtFilterName;
 
@@ -77,7 +88,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
-    private String RECORDING_URL = "http://35.165.96.167/api/recordings.php";
+
     private String ID = "id";
     private String KEY = "key";
     private String STATION = "station";
@@ -85,8 +96,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     private String FILE_TYPE = "file_type";
     private String FILTER_TYPE = "filter_type";
     private String FILTER = "filter";
+    private String KEY_SEARCH = "search";
 
-    String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
     String KEY_GENRE_NAME = "name";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";//JSONArray
@@ -96,14 +107,14 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     int statusNormal, statusFb, statusTwitter;
     String strName;
     String titleString;
-
+    String searchGet;
+    ProgressDialog progressDialog;
+    LongOperation myTask = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_station);
-
-
 
         message = (ImageView) findViewById(R.id.message);
         discover = (ImageView) findViewById(R.id.discover);
@@ -120,6 +131,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         rlPartStation = (RelativeLayout) findViewById(R.id.rlPartStation);
         rlSearch = (RelativeLayout) findViewById(R.id.rlSearch);
         search1 = (SearchView) findViewById(R.id.search1);
+        rlTafree = (RelativeLayout) findViewById(R.id.rlTafree);
         btnCancel = (Button) findViewById(R.id.btnCancel);
         list = (ListView) findViewById(R.id.list);
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
@@ -297,18 +309,19 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         strName = arrayAdapter.getItem(which);
-                        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
-                        editorFilterString.putString("stringFilter", strName);
-                        editorFilterString.apply();
+//                        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+//                        editorFilterString.putString("stringFilter", strName);
+//                        editorFilterString.apply();
                         AlertDialog.Builder builderInner = new AlertDialog.Builder(StationActivity.this);
                         builderInner.setMessage(strName);
                         builderInner.setTitle("Your Selected Item is");
                         builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
-                                fetchGenreNames();
-                                fetchRecordings();
+                                myTask = new LongOperation();
+                                myTask.execute();
+//                                fetchGenreNames();
+//                                fetchRecordings();
                                 dialog.dismiss();
                             }
                         });
@@ -333,10 +346,18 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
             }
         });
+
+        rlTafree.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), JoinActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     public void fetchGenreNames() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENRE_NAMES_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -413,7 +434,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
     public void fetchRecordings() {
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDING_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -503,18 +524,88 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 getSearchableInfo(getComponentName()));
         searchView.setSubmitButtonEnabled(true);
         searchView.setOnQueryTextListener(this);
+        searchGet = (String) searchView.getQuery();
 
         return true;
     }
 
+    public void fetchSearchData() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Toast.makeText(getApplicationContext(), "" + response, Toast.LENGTH_SHORT).show();
+                        Log.d("ReturnDataS", response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(ID, userId);
+                params.put(KEY, STATION);
+                params.put(KEY_SEARCH, searchGet);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+    }
+
     @Override
     public boolean onQueryTextSubmit(String query) {
+//        fetchSearchData();
         return false;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
+        fetchSearchData();
         return false;
     }
 
+    private class LongOperation extends AsyncTask<String, Void, String> {
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(StationActivity.this);
+            progressDialog.setTitle("Processing...");
+            progressDialog.setMessage("Please wait...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        protected String doInBackground(String... params) {
+            AudioFragment aud_fag = new AudioFragment();
+            aud_fag.fetchRecordingsFilter(strName);
+            SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+            editorFilterString.putString("stringFilter", strName);
+            editorFilterString.apply();
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+            adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList, recordingsPools);
+            adapter.notifyDataSetChanged();
+            progressDialog.dismiss();
+        }
+    }
 }

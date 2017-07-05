@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.instamelody.instamelody.utils.Const.ServiceType.USER_CONVERSATION;
+
 /**
  * Created by Shubahansh Jaiswal on 12/29/2016.
  */
@@ -48,7 +50,6 @@ public class MessengerActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     RelativeLayout rlNoMsg;
     ArrayList<Chat> chatList = new ArrayList<>();
-    String CONVERSATION_LIST_URL = " http://35.165.96.167//api//UserConversation.php";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";//JSONArray
     String USER_ID = "userid";
@@ -165,7 +166,7 @@ public class MessengerActivity extends AppCompatActivity {
     }
 
     public void getChats(final String user_Id) {
-        final StringRequest stringRequest = new StringRequest(Request.Method.POST, CONVERSATION_LIST_URL,
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, USER_CONVERSATION,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

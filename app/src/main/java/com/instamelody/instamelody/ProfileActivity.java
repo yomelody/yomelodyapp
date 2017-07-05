@@ -73,15 +73,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.instamelody.instamelody.R.id.bio_fragment;
 import static com.instamelody.instamelody.R.id.rlPartStation;
+import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
+import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
+import static com.instamelody.instamelody.utils.Const.ServiceType.USERS_BIO;
 
 /**
  * Created by Saurabh Singh on 01/09/2017
  */
 public class ProfileActivity extends AppCompatActivity {
 
-    String USER_BIO_URL = "http://35.165.96.167//api//users_bio.php";
-    String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
-    String RECORDING_URL = "http://35.165.96.167/api/recordings.php";
     String KEY_GENRE_NAME = "name";
     String KEY_GENRE_ID = "id";
     String KEY_FLAG = "flag";
@@ -130,9 +130,9 @@ public class ProfileActivity extends AppCompatActivity {
         SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
 
         if (bundle != null) {
-            String checkUserId = bundle.getString("checkUserId");
-            if (checkUserId != null) {
-                userId = checkUserId;
+            String showProfileUserId = bundle.getString("showProfileUserId");
+            if (showProfileUserId != null) {
+                userId = showProfileUserId;
             }
             flag = "1";
         } else {
@@ -401,7 +401,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     public void fetchUserBio() {
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, USER_BIO_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, USERS_BIO,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -574,7 +574,7 @@ public class ProfileActivity extends AppCompatActivity {
 //    }
 
     public void fetchGenreNames() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENRE_NAMES_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -653,7 +653,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     public void fetchRecordings() {
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDING_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -691,7 +691,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         final String fid = follower_Id;
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, USER_BIO_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, USERS_BIO,
                 new Response.Listener<String>() {
 
                     @Override

@@ -8,9 +8,10 @@ import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
-import com.instamelody.instamelody.app.Config;
 
 import static android.content.ContentValues.TAG;
+import static com.instamelody.instamelody.utils.Const.REGISTRATION_COMPLETE;
+import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
 
 public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
 
@@ -30,7 +31,7 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
         sendRegistrationToServer(refreshedToken);
 
         //  Notify UI that registration has completed, so the progress indicator can be hidden.
-        Intent registrationComplete = new Intent(Config.REGISTRATION_COMPLETE);
+        Intent registrationComplete = new Intent(REGISTRATION_COMPLETE);
         registrationComplete.putExtra("token", refreshedToken);
         LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
     }
@@ -41,7 +42,7 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
     }
 
     private void storeRegIdInPref(String token) {
-        SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, MODE_PRIVATE);
+        SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
         SharedPreferences.Editor editor = fcmPref.edit();
         editor.putString("regId", token);
         editor.commit();

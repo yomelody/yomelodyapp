@@ -46,6 +46,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
+import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
+
 /**
  * Created by Saurabh Singh on 05/17/2016.
  */
@@ -60,7 +63,6 @@ public class DiscoverActivity extends AppCompatActivity {
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
     ArrayList<Genres> genresArrayList = new ArrayList<>();
-    private String RECORDING_URL = "http://35.165.96.167/api/recordings.php";
     private String ID = "id";
     private String KEY = "key";
     private String STATION = "station";
@@ -69,7 +71,6 @@ public class DiscoverActivity extends AppCompatActivity {
     private String FILTER_TYPE = "filter_type";
     private String FILTER = "filter";
 
-    String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
     String KEY_GENRE_NAME = "name";
     String KEY_GENRE_ID = "id";
     String KEY_FLAG = "flag";
@@ -160,7 +161,7 @@ public class DiscoverActivity extends AppCompatActivity {
     }
 
     public void fetchGenreNames() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENRE_NAMES_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -237,7 +238,7 @@ public class DiscoverActivity extends AppCompatActivity {
 
     public void fetchRecordings() {
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDING_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

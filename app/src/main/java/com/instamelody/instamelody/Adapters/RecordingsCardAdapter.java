@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -23,6 +24,7 @@ import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
+import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
@@ -149,9 +151,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 @Override
                 public void onClick(View view) {
 
-                    String checkUserId = recordingList.get(getAdapterPosition()).getAddedBy();
+                    String showProfileUserId = recordingList.get(getAdapterPosition()).getAddedBy();
                     Intent intent = new Intent(view.getContext(), ProfileActivity.class);
-                    intent.putExtra("checkUserId", checkUserId);
+                    intent.putExtra("showProfileUserId", showProfileUserId);
                     view.getContext().startActivity(intent);
                 }
             });
@@ -173,8 +175,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     } else {
                         // the event was fired from code and you shouldn't call player.seekTo()
                     }
-
-//
                 }
 
                 @Override
@@ -302,7 +302,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 try {
                     RecordingsPool recordingsPool = recordingsPools.get(listPosition);
                     instrumentFile = recordingsPool.getRecordingUrl();
-                    Integer s = listPosition + 1;
+                    Integer s = listPosition;
 
                     if (getItemCount() > s && instrumentFile != null) {
                         playAudio();

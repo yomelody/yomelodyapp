@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.instamelody.instamelody.utils.Const.ServiceType.ACTIVITY;
 
 /**
  * Created by Saurabh Singh on 12/16/2016.
@@ -54,7 +55,6 @@ public class ActivityFragment extends Fragment {
     String KEY_RESPONSE = "responce";
     String id = "id";
     private static ArrayList<ActivityModel> arraylist;
-    String Activity_MELODY_URL = "http://35.165.96.167//api//activity.php";
 
     public ActivityFragment() {
     }
@@ -101,7 +101,7 @@ public class ActivityFragment extends Fragment {
     }
 
     public void fetchActivityData(final String userId) {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Activity_MELODY_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, ACTIVITY,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
