@@ -15,23 +15,39 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.instamelody.instamelody.CommentsActivity;
 import com.instamelody.instamelody.JoinActivity;
 import com.instamelody.instamelody.Models.Genres;
+import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
+import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.SignInActivity;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
@@ -42,15 +58,25 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAdapter.MyViewHolder> {
 
-    String genreName;
+    String genreName,mpid,MelodyName,profile;
     static String instrumentFile;
     static MediaPlayer mp;
     static int duration1, currentPosition;
     int length;
-
+    ArrayList<String> mpids = new ArrayList<>();
     private ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     private ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
-
+    String LIKE_MELODY_URL = "http://35.165.96.167/api/likes.php";
+    String USER_TYPE = "user_type";
+    String USER_ID = "user_id";
+    String FILE_ID = "file_id";
+    String LIKES = "likes";
+    String TYPE = "type";
+    String USERID = "userid";
+    String FILEID = "fileid";
+    String KEY_FLAG = "flag";
+    String KEY_RESPONSE = "response";
+    String Topic ="topic";
     Context context;
 
     public RecordingsCardAdapter(Context context, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools) {
@@ -61,12 +87,13 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
+
         TextView tvUserName, tvRecordingName, tvContributeLength, tvRecordingDate, tvRecordingGenres, tvContributeDate, tvIncludedCount;
         TextView tvViewCount, tvLikeCount, tvCommentCount, tvShareCount;
-        ImageView userProfileImage, ivRecordingCover;
+        ImageView userProfileImage, ivRecordingCover,ivLikeButton,ivCommentButton,ivShareButton,ivDislikeButton;
         ImageView ivJoin, ivStationPlay,ivStationPause;
         SeekBar seekBarRecordings;
-        RelativeLayout rlProfilePic;
+        RelativeLayout rlProfilePic,rlLike;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -89,6 +116,11 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             ivStationPause = (ImageView) itemView.findViewById(R.id.ivStationPause);
             seekBarRecordings = (SeekBar) itemView.findViewById(R.id.seekBarRecordings);
             rlProfilePic = (RelativeLayout) itemView.findViewById(R.id.rlProfilePic);
+            ivLikeButton = (ImageView) itemView.findViewById(R.id.ivLikeButton);
+            ivDislikeButton = (ImageView) itemView.findViewById(R.id.ivDislikeButton);
+            ivCommentButton=(ImageView)itemView.findViewById(R.id.ivCommentButton);
+            ivShareButton = (ImageView) itemView.findViewById(R.id.ivShareButton);
+            rlLike = (RelativeLayout) itemView.findViewById(R.id.rlLike);
 
             SharedPreferences editorGenre = getApplicationContext().getSharedPreferences("prefGenreName", MODE_PRIVATE);
             genreName = editorGenre.getString("GenreName", null);
@@ -142,6 +174,108 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                     Intent intent = new Intent(context, JoinActivity.class);
                     context.startActivity(intent);
+                }
+            });
+            rlLike.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String position, userId;
+                    SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+                    userId = loginSharedPref.getString("userId", null);
+                    String MelodyName;
+                    if (userId != null) {
+                        //Toast.makeText(context, "like", Toast.LENGTH_SHORT).show();
+                        //position = mpids.get(getAdapterPosition() + 1);
+
+                        RecordingsModel recording = recordingList.get(getAdapterPosition());
+                        MelodyName=recording.getRecordingName();
+                        position =recording.getRecordingId();
+
+                        if (ivLikeButton.getVisibility() == VISIBLE) {
+                            ivLikeButton.setVisibility(GONE);
+                            ivDislikeButton.setVisibility(VISIBLE);
+                            String like = tvLikeCount.getText().toString().trim();
+                            int likeValue = Integer.parseInt(like) + 1;
+                            like = String.valueOf(likeValue);
+                            tvLikeCount.setText(like);
+                            fetchLikeState(userId, position, "1",MelodyName);
+
+                        } else if (ivLikeButton.getVisibility() == GONE) {
+                            ivLikeButton.setVisibility(VISIBLE);
+                            ivDislikeButton.setVisibility(GONE);
+                            String like = tvLikeCount.getText().toString().trim();
+                            int likeValue = Integer.parseInt(like) - 1;
+                            like = String.valueOf(likeValue);
+                            tvLikeCount.setText(like);
+                            fetchLikeState(userId, position, "0",MelodyName);
+                        }
+                    } else {
+                        Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(context, SignInActivity.class);
+                        context.startActivity(intent);
+                    }
+                }
+            });
+
+            ivShareButton.setOnClickListener(new View.OnClickListener(){
+
+                @Override
+                public void onClick(View v) {
+                    /*Intent shareIntent = new Intent();
+                    shareIntent.setAction(Intent.ACTION_SEND);
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
+                    shareIntent.setType("image/jpeg");
+                    startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));*/
+
+                    Intent shareIntent = new Intent();
+                    shareIntent.setAction(Intent.ACTION_SEND);
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Testing");
+                    shareIntent.setType("image/jpeg");
+                    context.startActivity(Intent.createChooser(shareIntent, "Hello."));
+                }
+            });
+            ivCommentButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(context, "comment", Toast.LENGTH_SHORT).show();
+                    String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID;
+
+                    //instruments = tvInstrumentsUsed.getText().toString().trim();
+                    //bpm = tvBpmRate.getText().toString().trim();
+                    genre = tvRecordingGenres.getText().toString().trim();
+                    melodyName = tvRecordingName.getText().toString().trim();
+                    userName = tvUserName.getText().toString().trim();
+                    duration = tvContributeLength.getText().toString().trim();
+                    date = tvRecordingDate.getText().toString().trim();
+                    plays = tvViewCount.getText().toString().trim();
+                    likes = tvLikeCount.getText().toString().trim();
+                    comments = tvCommentCount.getText().toString().trim();
+                    shares = tvShareCount.getText().toString().trim();
+                    int pos = getAdapterPosition();
+                    melodyID = mpids.get(pos);
+
+                    SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
+                    editor.putString("instruments", "0");
+                    editor.putString("bpm", "0");
+                    editor.putString("genre", genre);
+                    editor.putString("melodyName", melodyName);
+                    editor.putString("userName", userName);
+                    editor.putString("duration", duration);
+                    editor.putString("date", date);
+                    editor.putString("plays", plays);
+                    editor.putString("likes", likes);
+                    editor.putString("comments", comments);
+                    editor.putString("shares", shares);
+                    editor.putString("bitmapProfile", profile);
+//                    editor.putString("bitmapCover", cover);
+                    editor.putString("melodyID", melodyID);
+                    editor.putString("fileType", "user_recording");
+                    editor.commit();
+
+                    Intent intent = new Intent(context, CommentsActivity.class);
+                    context.startActivity(intent);
+
                 }
             });
 
@@ -230,6 +364,11 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         TextView tvIncludedCount = holder.tvIncludedCount;
         TextView tvContributeDate = holder.tvContributeDate;
 
+
+//        profile = melody.getUserProfilePic();
+//        cover = melody.getMelodyCover();
+        mpid = recording.getRecordingId();
+        mpids.add(mpid);
 //        if (recording.getRecordingCover().equals("")) {
 ////            Picasso.with(holder.ivRecordingCover.getContext()).load(R.drawable.cover3).into(holder.ivRecordingCover);
 //        } else {
@@ -356,5 +495,36 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         mp.start();
         duration1 = mp.getDuration();
         currentPosition = mp.getCurrentPosition();
+    }
+    public void fetchLikeState(final String userId, final String pos, final String likeState,String LikeMelodyName) {
+        MelodyName=LikeMelodyName;
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, LIKE_MELODY_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
+                        String errorMsg = error.toString();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(Topic, MelodyName);
+                params.put(USER_ID, userId);
+                params.put(FILE_ID, pos);
+                params.put(TYPE, "user_recording");
+                params.put(LIKES, likeState);
+                return params;
+            }
+        };
+        RequestQueue requestQueue1 = Volley.newRequestQueue(context);
+        requestQueue1.add(stringRequest);
     }
 }
