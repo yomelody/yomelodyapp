@@ -65,8 +65,8 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
         TextView tvUserName, tvRecordingName, tvContributeLength, tvRecordingDate, tvRecordingGenres, tvContributeDate, tvIncludedCount;
         TextView tvViewCount, tvLikeCount, tvCommentCount, tvShareCount;
-        ImageView userProfileImage, ivRecordingCover;
-        ImageView ivJoin, ivStationPlay, ivStationPause;
+       ImageView userProfileImage, ivRecordingCover,ivLikeButton,ivCommentButton,ivShareButton,ivDislikeButton;
+        ImageView ivJoin, ivStationPlay,ivStationPause;
         SeekBar seekBarRecordings;
         RelativeLayout rlProfilePic;
 
