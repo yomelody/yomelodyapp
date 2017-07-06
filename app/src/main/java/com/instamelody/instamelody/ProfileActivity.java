@@ -1,8 +1,10 @@
 package com.instamelody.instamelody;
 
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -19,6 +21,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -73,15 +76,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.instamelody.instamelody.R.id.bio_fragment;
 import static com.instamelody.instamelody.R.id.rlPartStation;
+import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
+import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
+import static com.instamelody.instamelody.utils.Const.ServiceType.USERS_BIO;
 
 /**
  * Created by Saurabh Singh on 01/09/2017
  */
 public class ProfileActivity extends AppCompatActivity {
 
-    String USER_BIO_URL = "http://35.165.96.167//api//users_bio.php";
-    String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
-    String RECORDING_URL = "http://35.165.96.167/api/recordings.php";
     String KEY_GENRE_NAME = "name";
     String KEY_GENRE_ID = "id";
     String KEY_FLAG = "flag";
@@ -102,12 +105,13 @@ public class ProfileActivity extends AppCompatActivity {
     ArrayList<Genres> genresArrayList = new ArrayList<>();
     Button btnAudio, btnActivity, btnBio, btnCancel;
     RelativeLayout rlPartProfile, rlFragmentActivity, rlFragmentBio, rlSearch, rlFollow;
-    ImageView ivBackButton, ivHomeButton, ivAudio_feed, ivDiscover, ivMessage, ivProfile, ivSound, userCover, ivToMelody;
+    ImageView ivBackButton, ivHomeButton, ivAudio_feed, ivDiscover, ivMessage, ivProfile, ivSearchProfile, userCover, ivToMelody, ivFilterProfile;
     ImageView ivFollow, ivUnfollow;
     CircleImageView userProfileImageInProf;
     TextView tvNameInProf, tvUserNameInProf, tv_records, tv_fans, tv_following;
     String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, coverPic;
     String userId, records, fans, followers, followerId;
+    String strName;
     String userIdNormal, userIdFb, userIdTwitter;
     int statusNormal, statusFb, statusTwitter;
     SearchView search1;
@@ -170,7 +174,8 @@ public class ProfileActivity extends AppCompatActivity {
         btnActivity = (Button) findViewById(R.id.btnActivity);
         btnBio = (Button) findViewById(R.id.btnBio);
         rlSearch = (RelativeLayout) findViewById(R.id.rlSearch);
-        ivSound = (ImageView) findViewById(R.id.ivSound);
+        ivSearchProfile = (ImageView) findViewById(R.id.ivSearchProfile);
+        ivFilterProfile = (ImageView) findViewById(R.id.ivFilterProfile);
         btnCancel = (Button) findViewById(R.id.btnCancel);
         ivToMelody = (ImageView) findViewById(R.id.ivToMelody);
 
@@ -264,13 +269,62 @@ public class ProfileActivity extends AppCompatActivity {
 //        }
 
 
-        ivSound.setOnClickListener(new View.OnClickListener() {
+        ivSearchProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                searchMenuItem.setVisible(position == 0);
                 rlSearch.setVisibility(View.INVISIBLE);
                 search1.setVisibility(View.VISIBLE);
                 btnCancel.setVisibility(View.VISIBLE);
+            }
+        });
+
+
+        ivFilterProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builderSingle = new AlertDialog.Builder(ProfileActivity.this);
+//                builderSingle.setIcon(R.drawable.ic_launcher);
+                builderSingle.setTitle("Filter Audio");
+
+                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(ProfileActivity.this, android.R.layout.select_dialog_singlechoice);
+                arrayAdapter.add("Latest");
+                arrayAdapter.add("Trending");
+                arrayAdapter.add("Favorites");
+                arrayAdapter.add("Artist");
+                arrayAdapter.add("# of Instruments");
+                arrayAdapter.add("BPM");
+
+
+                builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        strName = arrayAdapter.getItem(which);
+                        AlertDialog.Builder builderInner = new AlertDialog.Builder(ProfileActivity.this);
+                        builderInner.setMessage(strName);
+                        builderInner.setTitle("Your Selected Item is");
+                        builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                myTask = new LongOperation();
+                                myTask.execute();
+//                                fetchGenreNames();
+//                                fetchRecordings();
+
+                                dialog.dismiss();
+                            }
+                        });
+                        builderInner.show();
+                    }
+                });
+                builderSingle.show();
             }
         });
 
@@ -401,7 +455,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     public void fetchUserBio() {
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, USER_BIO_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, USERS_BIO,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -574,7 +628,7 @@ public class ProfileActivity extends AppCompatActivity {
 //    }
 
     public void fetchGenreNames() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENRE_NAMES_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -653,7 +707,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     public void fetchRecordings() {
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDING_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -691,7 +745,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         final String fid = follower_Id;
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, USER_BIO_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, USERS_BIO,
                 new Response.Listener<String>() {
 
                     @Override

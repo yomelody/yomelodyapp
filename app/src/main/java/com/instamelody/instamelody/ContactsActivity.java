@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.instamelody.instamelody.utils.Const.ServiceType.CONTACT_LIST;
+
 /**
  * Created by Shubhansh Jaiswal on 04/05/17.
  */
@@ -45,7 +47,6 @@ public class ContactsActivity extends AppCompatActivity {
     ContactsAdapter adapter;
     RecyclerView recyclerView;
     ArrayList<Contacts> contactList = new ArrayList<>();
-    String CONTACTS_LIST_URL = "http://35.165.96.167/api/contactList.php";
     public static Button btnCancel, btnOK;
     ImageView discover, message, profile, audio_feed, ivBackButton, ivHomeButton;
     String userId = "";
@@ -164,7 +165,7 @@ public class ContactsActivity extends AppCompatActivity {
     }
 
     public void getContacts() {
-        final StringRequest stringRequest = new StringRequest(Request.Method.POST, CONTACTS_LIST_URL,
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, CONTACT_LIST,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

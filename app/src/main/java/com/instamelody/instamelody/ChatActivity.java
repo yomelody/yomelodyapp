@@ -75,6 +75,8 @@ import java.util.Map;
 
 import static android.os.Environment.isExternalStorageEmulated;
 import static android.os.Environment.isExternalStorageRemovable;
+import static com.instamelody.instamelody.utils.Const.ServiceType.CHAT;
+import static com.instamelody.instamelody.utils.Const.ServiceType.MESSAGE_LIST;
 
 /**
  * Created by Shubhansh Jaiswal on 17/01/17.
@@ -90,8 +92,6 @@ public class ChatActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     ArrayList<Message> chatList = new ArrayList<>();// list of messages
-    String SEND_MESSAGE_URL = "http://35.165.96.167/api/chat.php";
-    String MESSAGES_LIST_URL = "http://35.165.96.167/api/messageList.php";
     String CHECK_FILE_URL = "http://35.165.96.167/api/ShareAudioChat.php";
     String DEVICE_TYPE = "device_type";
     String SENDER_ID = "senderID";
@@ -595,7 +595,7 @@ public class ChatActivity extends AppCompatActivity {
 
     public void getChatMsgs(final String chat_Id) {
 
-        final StringRequest stringRequest = new StringRequest(Request.Method.POST, MESSAGES_LIST_URL,
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, MESSAGE_LIST,
                 new Response.Listener<String>() {
 
                     @Override
@@ -684,7 +684,7 @@ public class ChatActivity extends AppCompatActivity {
 
     public void sendMessage(final String message, final String user_Id/*, final String packAvailable*/) {
 
-        final StringRequest stringRequest = new StringRequest(Request.Method.POST, SEND_MESSAGE_URL,
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, CHAT,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

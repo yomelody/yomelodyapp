@@ -302,7 +302,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
 
                 try {
-                    Integer s = listPosition + 1;
+                    Integer s = listPosition +1;
 
                     if (getItemCount() > s && instrumentFile != null) {
                         playAudio();

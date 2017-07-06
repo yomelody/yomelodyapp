@@ -40,6 +40,7 @@ import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.instamelody.instamelody.Adapters.InstrumentListAdapter.audioUrl;
+import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
 /*import static com.instamelody.instamelody.R.id.melodySlider;
 import static com.instamelody.instamelody.R.id.rlShare;
 import static com.instamelody.instamelody.R.id.tab_host;*/
@@ -55,8 +56,6 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     ArrayList<String> mpids = new ArrayList<>();
     private static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     String melodyName;
-    String LIKE_MELODY_URL = "http://35.165.96.167/api/likes.php";
-    String PLAY_MELODY_URL = "http://35.165.96.167/api/playcount.php";
     String USER_TYPE = "user_type";
     String USER_ID = "user_id";
     String FILE_ID = "file_id";
@@ -410,7 +409,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 
     public void fetchLikeState(final String userId, final String pos, final String likeState,String LikeMelodyName) {
         MelodyName=LikeMelodyName;
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, LIKE_MELODY_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, LIKES,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -442,7 +441,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 
     public void fetchViewCount(final String userId, final String pos) {
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, PLAY_MELODY_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, PLAY_COUNT,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
