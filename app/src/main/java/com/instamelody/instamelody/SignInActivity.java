@@ -47,7 +47,6 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.instamelody.instamelody.Models.HandelLogin;
-import com.instamelody.instamelody.app.Config;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
@@ -79,6 +78,7 @@ import retrofit2.Call;
 import static android.R.attr.id;
 import static android.R.attr.name;
 import static com.instamelody.instamelody.R.drawable.twitter;
+import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LOGIN;
 import static com.instamelody.instamelody.utils.Const.ServiceType.REGISTER;
 
@@ -160,7 +160,7 @@ public class SignInActivity extends AppCompatActivity {
         btnfblogin = (RelativeLayout) findViewById(R.id.FbLogin);
         mcallbckmanager = CallbackManager.Factory.create();
         fbloginbtn = (LoginButton) findViewById(R.id.FbLoginReal);
-        SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, MODE_PRIVATE);
+        SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
         DeviceToken = fcmPref.getString("regId", null);
 //        Log.d("DeviceToken", DeviceToken);
 
