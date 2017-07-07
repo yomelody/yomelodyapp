@@ -46,7 +46,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
 
 /**
- * Created by Shubahansh Jaiswal on 11/29/2016.
+ * Created by Shubhansh Jaiswal on 11/29/2016.
  */
 
 public class MelodyPacksFragment extends Fragment {

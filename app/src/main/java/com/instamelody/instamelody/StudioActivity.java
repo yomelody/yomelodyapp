@@ -112,7 +112,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
 import static com.instamelody.instamelody.utils.Const.ServiceType.UPLOAD_COVER_MELODY_FILE;
 
 /**
- * Created by Shubahansh Jaiswal on 11/29/2016.
+ * Created by Shubhansh Jaiswal on 11/29/2016.
  */
 
 public class StudioActivity extends AppCompatActivity {

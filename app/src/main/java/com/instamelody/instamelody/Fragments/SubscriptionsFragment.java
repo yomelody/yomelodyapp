@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import com.instamelody.instamelody.R;
 
 /**
- * Created by Shubahansh Jaiswal on 11/29/2016.
+ * Created by Shubhansh Jaiswal on 11/29/2016.
  */
 
 public class SubscriptionsFragment extends Fragment {
