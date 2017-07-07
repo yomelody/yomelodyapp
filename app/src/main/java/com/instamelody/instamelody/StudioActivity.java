@@ -55,6 +55,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -107,10 +108,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.provider.Contacts.SettingsColumns.KEY;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ADD_RECORDINGS;
+import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
 import static com.instamelody.instamelody.utils.Const.ServiceType.UPLOAD_COVER_MELODY_FILE;
 
 /**
- * Created by Shubahansh Jaiswal on 11/29/2016.
+ * Created by Shubhansh Jaiswal on 11/29/2016.
  */
 
 public class StudioActivity extends AppCompatActivity {
@@ -131,6 +133,7 @@ public class StudioActivity extends AppCompatActivity {
     public static final int MY_PERMISSIONS_REQUEST_MICROPHONE = 200;
     public static final int MY_PERMISSIONS_REQUEST_STORAGE = 201;
     private static final int SAMPLING_RATE = 44100;
+    int MY_SOCKET_TIMEOUT_MS = 30000;
     private int PICK_IMAGE_REQUEST = 1;
     private Bitmap bitmap;
     private String FILE_RECORDING = "";
@@ -176,7 +179,6 @@ public class StudioActivity extends AppCompatActivity {
     RecordingThread mRecordingThread;
     MediaRecorder recorder;
     private final int requestCode = 20;
-    String MELODY_PACKS_URL = "http://35.165.96.167/api/melody.php";
     ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     public boolean isRecording = false;
     MediaPlayer mediaPlayer;
@@ -187,7 +189,6 @@ public class StudioActivity extends AppCompatActivity {
     String KEY_GENRE_NAME = "name";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";//JSONArray
-    String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
 
     String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, melodyPackId, instrumentCount;
     String selectedGenre;
@@ -291,9 +292,6 @@ public class StudioActivity extends AppCompatActivity {
         SharedPreferences loginSharedPref1 = this.getSharedPreferences("Url_recording", MODE_PRIVATE);
         fetchRecordingUrl = loginSharedPref1.getString("Recording_url", null);
 
-        fetchGenreNames();
-
-
         int hours = (int) (timeElapsed / 3600000);
         int minutes = (int) (timeElapsed - hours * 3600000) / 60000;
         int seconds = (int) (timeElapsed - hours * 3600000 - minutes * 60000) / 1000;
@@ -347,9 +345,7 @@ public class StudioActivity extends AppCompatActivity {
 
                 LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
 
-
-//                String audioUrl = "http://35.165.96.167/api/uploads/melody/instruments/melody_cut.mp3";
-                String audioUrl = "http://35.165.96.167/api/uploads/melody/instruments/";
+                String audioUrl = "http://52.41.33.64/api/uploads/melody/instruments/";
 
                 Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
                 if (isSDPresent) {
@@ -1183,7 +1179,7 @@ public class StudioActivity extends AppCompatActivity {
 
     public void fetchInstruments(String melodyPackId) {
         final String mpid = melodyPackId;
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY_PACKS_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -1239,7 +1235,7 @@ public class StudioActivity extends AppCompatActivity {
             int count;
             try {
 
-                URL aurl = new URL("http://35.165.96.167/api/melody.php");
+                URL aurl = new URL(MELODY);
 
                 URLConnection connection = aurl.openConnection();
                 connection.connect();
@@ -1587,8 +1583,7 @@ public class StudioActivity extends AppCompatActivity {
         VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
     }
 
-
-    public void fetchGenreNames() {
+ public void fetchGenreNames() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, GENRE_NAMES_URL,
                 new Response.Listener<String>() {
                     @Override
@@ -1621,7 +1616,7 @@ public class StudioActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Please check your internet connection", Toast.LENGTH_SHORT).show();
                         String errorMsg = error.toString();
                         Log.d("Error", errorMsg);
                     }

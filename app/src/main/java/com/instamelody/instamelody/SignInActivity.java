@@ -47,6 +47,7 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.instamelody.instamelody.Models.HandelLogin;
+import com.instamelody.instamelody.app.Config;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
@@ -78,7 +79,6 @@ import retrofit2.Call;
 import static android.R.attr.id;
 import static android.R.attr.name;
 import static com.instamelody.instamelody.R.drawable.twitter;
-import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LOGIN;
 import static com.instamelody.instamelody.utils.Const.ServiceType.REGISTER;
 
@@ -98,6 +98,8 @@ public class SignInActivity extends AppCompatActivity {
     String KEY_DEVICE_TOKEN_SIGN_UP = "device_token";
     String KEY_DEVICE_TYPE = "device_type";
     String KEY_PROFILE_PIC = "profile_pic_url";
+
+
 
     String DeviceToken;
     String f_name;
@@ -158,7 +160,7 @@ public class SignInActivity extends AppCompatActivity {
         btnfblogin = (RelativeLayout) findViewById(R.id.FbLogin);
         mcallbckmanager = CallbackManager.Factory.create();
         fbloginbtn = (LoginButton) findViewById(R.id.FbLoginReal);
-        SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
+        SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, MODE_PRIVATE);
         DeviceToken = fcmPref.getString("regId", null);
 //        Log.d("DeviceToken", DeviceToken);
 
@@ -604,7 +606,7 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY_USER_TYPE, "2");
                 params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);
                 params.put(KEY_DEVICE_TYPE, "android");
-//                params.put(KEY_PROFILE_PIC, FbProf1);
+                params.put(KEY_PROFILE_PIC, FbProf1);
                 return params;
             }
         };
@@ -680,7 +682,7 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY_USER_TYPE, "3");
                 params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);
                 params.put(KEY_DEVICE_TYPE, "android");
-//                params.put(KEY_PROFILE_PIC, photoUrlNormalSize);
+                params.put(KEY_PROFILE_PIC, photoUrlNormalSize);
                 return params;
             }
         };

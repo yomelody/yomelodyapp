@@ -104,7 +104,6 @@ public class MelodyActivity extends AppCompatActivity {
                 btnRecordings.setBackgroundColor(Color.parseColor("#FFFFFF"));
                 btnSubscriptions.setBackgroundColor(Color.parseColor("#E4E4E4"));
 
-
                 RecordingsFragment rf = new RecordingsFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_melody, rf).commit();
             }

@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TabHost;
 import android.widget.Toast;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
@@ -35,9 +36,11 @@ import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -49,6 +52,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 import static android.content.Context.MODE_PRIVATE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
@@ -63,7 +67,6 @@ public class AudioFragment extends Fragment {
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
     ArrayList<Genres> genresArrayList = new ArrayList<>();
-
     private String ID = "id";
     private String KEY = "key";
     private String STATION = "station";
@@ -73,6 +76,7 @@ public class AudioFragment extends Fragment {
     private String FILTER = "filter";
 
     String recordingId, addedBy, recordingTopic, userName, dateAdded, likeCount, playCount, commentCount, shareCount, profileUrl, coverUrl, genre, recordings;
+
     String KEY_GENRE_NAME = "name";
     String KEY_GENRE_ID = "id";
     String KEY_FLAG = "flag";
@@ -149,8 +153,8 @@ public class AudioFragment extends Fragment {
                         try {
                             jsonObject = new JSONObject(response);
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
-//                                myTask = new LongOperation();
-//                                myTask.execute();
+                                myTask = new LongOperation();
+                                myTask.execute();
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     Genres genres = new Genres();
@@ -183,16 +187,16 @@ public class AudioFragment extends Fragment {
                             public void onTabChanged(String arg0) {
                                 genreString = arg0;
                                 int currentTab = host.getCurrentTab();
-                                if (currentTab==0){
-                                    genreString= "";
-                                }else {
+                                if (currentTab == 0) {
+                                    genreString = "";
+                                } else {
                                     genreString = genresArrayList.get(currentTab).getId();
                                 }
 //                                fetchRecordings();
 //                                if (strName == null) {
 //                                    fetchRecordings();
 //                                } else {
-//                                    fetchRecordingsFilter(strName);
+//                                    fetchRecordingsFilter(strname);
 //                                }
 //                                Toast.makeText(getActivity(), "beta: " + genreString, Toast.LENGTH_SHORT).show();
                             }
@@ -244,7 +248,7 @@ public class AudioFragment extends Fragment {
                         Log.d("ReturnData", response);
                         recordingList.clear();
                         recordingsPools.clear();
-                        new ParseContents(getActivity()).parseAudio(response, recordingList,recordingsPools);
+                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                     }
                 },
@@ -284,7 +288,7 @@ public class AudioFragment extends Fragment {
     }
 
 
-    public void fetchRecordingsFilter(final String strName) {
+    public void fetchRecordingsFilter(final String strname) {
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {
@@ -296,7 +300,7 @@ public class AudioFragment extends Fragment {
                         Log.d("ReturnData", response);
                         recordingList.clear();
                         recordingsPools.clear();
-                        new ParseContents(getActivity()).parseAudio(response, recordingList,recordingsPools);
+                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
 
                     }
@@ -330,7 +334,7 @@ public class AudioFragment extends Fragment {
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
-                params.put(FILTER_TYPE, strName);
+                params.put(FILTER_TYPE, strname);
                 params.put(FILTER, "extrafilter");
                 return params;
             }
@@ -338,6 +342,7 @@ public class AudioFragment extends Fragment {
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         requestQueue.add(stringRequest);
     }
+
 
     private TabHost.TabContentFactory createTabContent() {
         return new TabHost.TabContentFactory() {
