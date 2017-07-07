@@ -40,6 +40,7 @@ import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.instamelody.instamelody.Adapters.InstrumentListAdapter.audioUrl;
+import static com.instamelody.instamelody.utils.Const.ServiceType.LIKES;
 import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
 /*import static com.instamelody.instamelody.R.id.melodySlider;
 import static com.instamelody.instamelody.R.id.rlShare;
@@ -56,6 +57,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     ArrayList<String> mpids = new ArrayList<>();
     private static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     String melodyName;
+
     String USER_TYPE = "user_type";
     String USER_ID = "user_id";
     String FILE_ID = "file_id";
@@ -407,7 +409,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         return melodyList.size();
     }
 
-    public void fetchLikeState(final String userId, final String pos, final String likeState,String LikeMelodyName) {
+    public void fetchLikeState(final String userId, final String pos, final String likeState, String LikeMelodyName) {
         MelodyName=LikeMelodyName;
         StringRequest stringRequest = new StringRequest(Request.Method.POST, LIKES,
                 new Response.Listener<String>() {
