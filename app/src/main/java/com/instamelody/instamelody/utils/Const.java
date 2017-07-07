@@ -8,7 +8,7 @@ public class Const {
 
     // web services
     public class ServiceType {
-        private static final String HOST_URL = "http://52.37.189.202/";
+        private static final String HOST_URL = "http://52.41.33.64/";
         private static final String BASE_URL = HOST_URL + "api/";
 
         public static final String LOGIN = BASE_URL + "login.php";
@@ -24,7 +24,6 @@ public class Const {
         public static final String UPLOAD_FILE = BASE_URL + "uploadfile.php";
         public static final String SHARE_AUDIO_CHAT = BASE_URL + "ShareAudioChat.php";
         public static final String ACTIVITY = BASE_URL + "activity.php";
-
         public static final String COMMENT_LIST = BASE_URL + "commentlist.php";
         public static final String CONTACT_LIST = BASE_URL + "contactList.php";
         public static final String FOLLOWER_LIST = BASE_URL + "followerlist.php";
@@ -35,6 +34,7 @@ public class Const {
         public static final String USER_CHAT_ID = BASE_URL + "user_chat_id.php";
         public static final String FOLLOWERS = BASE_URL + "followers.php";
         public static final String USERS_BIO = BASE_URL + "users_bio.php";
+//        public static final String USERS_BIO = BASE_URL + "uploads/melody/instruments/";
     }
 
     // global topic to receive app wide push notifications

@@ -302,7 +302,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 try {
                     RecordingsPool recordingsPool = recordingsPools.get(listPosition);
                     instrumentFile = recordingsPool.getRecordingUrl();
-                    Integer s = listPosition;
+                    Integer s = listPosition + 1;
 
                     if (getItemCount() > s && instrumentFile != null) {
                         playAudio();

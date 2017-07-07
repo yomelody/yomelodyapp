@@ -13,6 +13,10 @@ import static android.content.ContentValues.TAG;
 import static com.instamelody.instamelody.utils.Const.REGISTRATION_COMPLETE;
 import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
 
+/**
+ * Created by Shubahansh Jaiswal on 11/29/2016.
+ */
+
 public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
 
     @Override
