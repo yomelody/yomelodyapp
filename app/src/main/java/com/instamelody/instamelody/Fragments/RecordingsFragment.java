@@ -62,12 +62,12 @@ public class RecordingsFragment extends Fragment {
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
     ArrayList<Genres> genresArrayList = new ArrayList<>();
-    private String RECORDINGS_URL = "http://35.165.96.167/api/recordings.php";
+    private String RECORDINGS_URL = "http://52.41.33.64/api/recordings.php";
     private String USER_ID = "id";
     String GENRE = "genere";
     String recordingId, addedBy, recordingTopic, userName, dateAdded, likeCount, playCount, commentCount, shareCount, profileUrl, coverUrl, genre, recordings;
 
-    String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
+    String GENRE_NAMES_URL = "http://52.41.33.64/api/genere.php";
     String KEY_GENRE_NAME = "name";
     String KEY_GENRE_ID = "id";
     String KEY_FLAG = "flag";
@@ -186,7 +186,8 @@ public class RecordingsFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+                        //Abhishek comment this code
+                    //    Toast.makeText(getActivity(), "Please check your internet connection", Toast.LENGTH_SHORT).show();
                         String errorMsg = error.toString();
                         Log.d("Error", errorMsg);
                     }
@@ -217,7 +218,7 @@ public class RecordingsFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+                        // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).show();
                         String errorMsg = error.toString();
                         Log.d("Error", errorMsg);
                     }

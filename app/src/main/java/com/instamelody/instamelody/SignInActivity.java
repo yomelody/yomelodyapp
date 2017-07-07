@@ -98,7 +98,7 @@ public class SignInActivity extends AppCompatActivity {
     String KEY_PROFILE_PIC = "profile_pic_url";
 
 
-    String REGISTER_URL = "http://35.165.96.167/api/registration.php";
+    String REGISTER_URL = "http://52.41.33.64/api/registration.php";
 
     String DeviceToken;
     String f_name;
@@ -108,7 +108,7 @@ public class SignInActivity extends AppCompatActivity {
     String fbProfilePic;
     String FbProf1;
     TextView tvSettings, tvDone, tvSignUp, tvFirstName, tvUserName;
-    String LOGIN_URL = "http://35.165.96.167/api/login.php";
+    String LOGIN_URL = "http://52.41.33.64/api/login.php";
     String KEY = "key";
     String KEY_EMAIL = "email";
     String KEY_PASSWORD = "password";
@@ -218,7 +218,7 @@ public class SignInActivity extends AppCompatActivity {
                         new GraphRequest.GraphJSONObjectCallback() {
                             @Override
                             public void onCompleted(JSONObject object, GraphResponse response) {
-                                //Toast.makeText(SignInActivity.this, "" + object, Toast.LENGTH_LONG).show();
+                                //Toast.makeText(SignInActivity.this, "" + object, Toast.LENGTH_SHORT).show();
                                 Log.d("Check",""+object);
 
                                 try {
@@ -359,7 +359,7 @@ public class SignInActivity extends AppCompatActivity {
                     "Auth Token Received: " +
                     result.data.getAuthToken().token;
 
-               /* Toast.makeText(SignInActivity.this, "" + output, Toast.LENGTH_LONG).show();*/
+               /* Toast.makeText(SignInActivity.this, "" + output, Toast.LENGTH_SHORT).show();*/
             //loginTwitter(result);
             TwitterSession session = result.data;
             Twitter twitter = Twitter.getInstance();

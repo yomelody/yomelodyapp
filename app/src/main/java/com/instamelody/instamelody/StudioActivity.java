@@ -128,7 +128,7 @@ public class StudioActivity extends AppCompatActivity {
     private static final int SAMPLING_RATE = 44100;
     private int PICK_IMAGE_REQUEST = 1;
     private Bitmap bitmap;
-    private String ADD_RECORDING_URL = "http://35.165.96.167/api/Add_Recording.php";
+    private String ADD_RECORDING_URL = "http://52.41.33.64/api/Add_Recording.php";
     private String FILE_RECORDING = "";
     private String RECORDING_TYPE = "recording_type";
     private String USER_ID = "user_id";
@@ -140,7 +140,7 @@ public class StudioActivity extends AppCompatActivity {
     private String ADMIN_INSTRUMENT_ID = "admin_instruments_ids";
     private String USER_INSTRUMENT_ID = "user_instruments_ids";
 
-    private String UPLOAD_REC_URL = "http://35.165.96.167/api/upload_cover_melody_file.php";
+    private String UPLOAD_REC_URL = "http://52.41.33.64/api/upload_cover_melody_file.php";
     private String FILE_TYPE = "file_type";
     private String IS_MELODY = "isMelody";
     private String ID_MELODY_REC = "melodyOrRecordingID";
@@ -173,7 +173,7 @@ public class StudioActivity extends AppCompatActivity {
     RecordingThread mRecordingThread;
     MediaRecorder recorder;
     private final int requestCode = 20;
-    String MELODY_PACKS_URL = "http://35.165.96.167/api/melody.php";
+    String MELODY_PACKS_URL = "http://52.41.33.64/api/melody.php";
     ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     public boolean isRecording = false;
     MediaPlayer mediaPlayer;
@@ -184,7 +184,7 @@ public class StudioActivity extends AppCompatActivity {
     String KEY_GENRE_NAME = "name";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";//JSONArray
-    String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
+    String GENRE_NAMES_URL = "http://52.41.33.64/api/genere.php";
 
     String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, melodyPackId, instrumentCount;
     String selectedGenre;
@@ -345,8 +345,8 @@ public class StudioActivity extends AppCompatActivity {
                 LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
 
 
-//                String audioUrl = "http://35.165.96.167/api/uploads/melody/instruments/melody_cut.mp3";
-                String audioUrl = "http://35.165.96.167/api/uploads/melody/instruments/";
+//                String audioUrl = "http://52.41.33.64/api/uploads/melody/instruments/melody_cut.mp3";
+                String audioUrl = "http://52.41.33.64/api/uploads/melody/instruments/";
 
                 Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
                 if (isSDPresent) {
@@ -365,8 +365,6 @@ public class StudioActivity extends AppCompatActivity {
                 } else {
                     // No, SD-card is not present
                     File main = new File("InstaMelody/Downloads/Melodies/" + melodyName + "/");
-//                    File main = new File(Environment.getExternalStorageDirectory() +
-//                            File.separator + "InstaMelody/Downloads/Melodies/" + melodyName + "/");
                     boolean success = true;
                     if (!main.exists()) {
                         success = main.mkdirs();
@@ -386,13 +384,6 @@ public class StudioActivity extends AppCompatActivity {
             public void onClick(View v) {
                 grey_circle.setVisibility(View.GONE);
                 blue_circle.setVisibility(View.VISIBLE);
-                /*try {
-                    playAudioRecycler();
-//                    primarySeekBarProgressUpdater();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }*/
-
 
             }
         });
@@ -402,10 +393,6 @@ public class StudioActivity extends AppCompatActivity {
             public void onClick(View v) {
                 blue_circle.setVisibility(View.GONE);
                 grey_circle.setVisibility(View.VISIBLE);
-//                mp.stop();
-//                mp.release();
-
-
             }
         });
 
@@ -419,7 +406,6 @@ public class StudioActivity extends AppCompatActivity {
             profile_image.setVisibility(View.VISIBLE);
             Picasso.with(StudioActivity.this).load(profilePicLogin).into(profile_image);
         }
-
 
         SharedPreferences twitterPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
         Name = twitterPref.getString("Name", null);
@@ -443,29 +429,20 @@ public class StudioActivity extends AppCompatActivity {
         fbId = fbPref.getString("fbId", null);
         statusFb = fbPref.getInt("status", 0);
 
-        /*SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
-        fbId = fbPref.getString("fbId", null);
-        fbUserName = fbPref.getString("UserName", null);
-        statusFb = fbPref.getInt("status", 0);*/
-
-
         if (statusFb == 1) {
             artist_name.setText("@" + fbName);
         }
 
         if (fbId != null) {
-            //ivProfile.setVisibility(View.GONE);
             profile_image.setVisibility(View.VISIBLE);
             Picasso.with(StudioActivity.this).load("https://graph.facebook.com/" + fbId + "/picture").into(profile_image);
         }
+        recorder = new MediaRecorder();
         mRecordingThread = new RecordingThread();
         mBufferSize = AudioRecord.getMinBufferSize(SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
 
         mAudioBuffer = new short[mBufferSize / 2];
-        // mDecibelFormat = getResources().getString(R.string.decibel_format);
-
-
         audioFilePath =
                 Environment.getExternalStorageDirectory().getAbsolutePath()
                         + "/InstaMelody.amr";
@@ -480,7 +457,6 @@ public class StudioActivity extends AppCompatActivity {
                 recording_time.setText(asText);
             }
         });
-
 
         rlMelodyButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -540,7 +516,6 @@ public class StudioActivity extends AppCompatActivity {
             }
         });
 
-
         tvDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -553,11 +528,10 @@ public class StudioActivity extends AppCompatActivity {
                 } else if (melodyPackId == null) {
                     Toast.makeText(StudioActivity.this, "Add Melody Packs to save recording", Toast.LENGTH_SHORT).show();
                 }
-                // openDialog();
             }
         });
 
-
+// Abhishek modified the functionality of Recording start from here
         ivRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -572,6 +546,11 @@ public class StudioActivity extends AppCompatActivity {
                         waveform_view.setVisibility(View.VISIBLE);
                         try {
                             recordAudio();
+                            try {
+                                playAudioRecycler();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                             mRecordingThread.start();
                             chrono.start();
 
@@ -579,10 +558,6 @@ public class StudioActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
 
-                        //   mRecordingThread.start();
-//                            playAudioRecycler();
-//                    primarySeekBarProgressUpdater();
-                        //                 chrono.start();
                     } else {
                         setPermissions();
                     }
@@ -593,23 +568,18 @@ public class StudioActivity extends AppCompatActivity {
                     ivRecord_stop.setVisibility(View.VISIBLE);
                     rlRecordingButton.setVisibility(View.VISIBLE);
                     waveform_view.setVisibility(View.VISIBLE);
-
                     try {
                         recordAudio();
                         mRecordingThread.start();
 
                         chrono.start();
 
-
                     } catch (IllegalStateException e) {
                         e.printStackTrace();
                     }
-
-                    //    chrono.start();
                 }
             }
         });
-
 
         ivRecord_stop.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -628,28 +598,28 @@ public class StudioActivity extends AppCompatActivity {
 
 
                 if (isRecording) {
-                    ivRecord.setEnabled(false);
-                    if (mPlayer != null) {
-                        mPlayer.stop();
-                        mp.stop();
-                        mp.release();
-                    }
+//                    ivRecord.setEnabled(false);
+//                    if (mPlayer != null) {
+//                        mPlayer.stop();
+//                        mp.stop();
+//                        mp.release();
+//                    }
 //                    recorder.stop();
                     if (recorder != null) {
                         try {
                             recorder.stop();
-                            mp.stop();
-                            mp.release();
+                        //    mp.stop();
+                          //  mp.release();
                         } catch (RuntimeException ex) {
                             //Ignore
                         }
                     }
                     recorder.release();
-                    recorder = null;
+               //     recorder = null;
                     isRecording = false;
                 } else {
-                    mediaPlayer.release();
-                    mediaPlayer = null;
+                //    mediaPlayer.release();
+                  //  mediaPlayer = null;
                     rlRecordingButton.setEnabled(true);
                 }
                 tvDone.setEnabled(true);
@@ -718,6 +688,8 @@ public class StudioActivity extends AppCompatActivity {
 
             }
         });
+
+        // Abhishek code end here
 
         rlRedoButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1094,9 +1066,11 @@ public class StudioActivity extends AppCompatActivity {
         }
     }
 
+    // Abhishek modified recordAudio functionality
+
     public void recordAudio() {
 
-        recorder = new MediaRecorder();
+
         //     recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
@@ -1125,6 +1099,7 @@ public class StudioActivity extends AppCompatActivity {
 
 
     }
+// end here
 
     public void playAudio() throws IOException {
 
@@ -1142,7 +1117,7 @@ public class StudioActivity extends AppCompatActivity {
             soundBytes = new byte[inputStream.available()];
             soundBytes = toByteArray(inputStream);
 
-            Toast.makeText(this, "Recordin Finished"+ " " + soundBytes, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Recordin Finished"+ " " + soundBytes, Toast.LENGTH_SHORT).show();
         } catch(Exception e) {
             e.printStackTrace();
         }*/
@@ -1192,7 +1167,7 @@ public class StudioActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
                         String errorMsg = error.toString();
                         Log.d("Error", errorMsg);
                     }
@@ -1236,7 +1211,7 @@ public class StudioActivity extends AppCompatActivity {
             int count;
             try {
 
-                URL aurl = new URL("http://35.165.96.167/api/melody.php");
+                URL aurl = new URL("http://52.41.33.64/api/melody.php");
 
                 URLConnection connection = aurl.openConnection();
                 connection.connect();
@@ -1430,9 +1405,8 @@ public class StudioActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
-
+// Abhishek modified this uploadRecordings functionality
     private void uploadRecordings(final String id) {
-
 
         VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPLOAD_REC_URL, new Response.Listener<NetworkResponse>() {
             @Override
@@ -1545,7 +1519,7 @@ public class StudioActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-//                Toast.makeText(getApplicationContext(), resultResponse, Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(), resultResponse, Toast.LENGTH_SHORT).show();
                 Log.d("return message", resultResponse);
             }
         }, new Response.ErrorListener() {
@@ -1584,7 +1558,7 @@ public class StudioActivity extends AppCompatActivity {
         VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
     }
 
-
+// end here
     public void fetchGenreNames() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, GENRE_NAMES_URL,
                 new Response.Listener<String>() {
@@ -1618,7 +1592,7 @@ public class StudioActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Please check your internet connection", Toast.LENGTH_SHORT).show();
                         String errorMsg = error.toString();
                         Log.d("Error", errorMsg);
                     }

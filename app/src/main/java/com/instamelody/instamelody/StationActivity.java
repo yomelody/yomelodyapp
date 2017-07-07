@@ -77,7 +77,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
-    private String RECORDING_URL = "http://35.165.96.167/api/recordings.php";
+    private String RECORDING_URL = "http://52.41.33.64/api/recordings.php";
     private String ID = "id";
     private String KEY = "key";
     private String STATION = "station";
@@ -86,7 +86,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     private String FILTER_TYPE = "filter_type";
     private String FILTER = "filter";
 
-    String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
+    String GENRE_NAMES_URL = "http://52.41.33.64/api/genere.php";
     String KEY_GENRE_NAME = "name";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";//JSONArray
@@ -156,7 +156,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
             @Override
             public boolean onQueryTextChange(String newText) {
                 // newText is text entered by user to SearchView
-//                Toast.makeText(getApplicationContext(), newText, Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(), newText, Toast.LENGTH_SHORT).show();
                 return false;
             }
         };

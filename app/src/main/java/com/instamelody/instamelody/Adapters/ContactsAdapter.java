@@ -56,7 +56,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
     ArrayList<Contacts> contactsList = new ArrayList<>();
     ArrayList<String> rList = new ArrayList<String>();
     //    Set<String> recieverId = new HashSet<>();
-    String USER_CHAT_ID = "http://35.165.96.167/api/user_chat_id.php";
+    String USER_CHAT_ID = "http://52.41.33.64/api/user_chat_id.php";
     String recieverId = "";
     String recieverName = "";
     String receiverToken = "";
@@ -196,7 +196,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                     @Override
                     public void onResponse(String response) {
 
-//                        Toast.makeText(context, " Shubz" + response, Toast.LENGTH_LONG).show();
+//                        Toast.makeText(context, " Shubz" + response, Toast.LENGTH_SHORT).show();
 
                         JSONObject jsonObject;
                         try {

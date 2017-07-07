@@ -60,8 +60,8 @@ public class CommentsActivity extends AppCompatActivity {
     EditText etComment;
 
     String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, profilePic, cover, melodyID, fileType;
-    String COMMENTS_LIST_URL = "http://35.165.96.167/api/commentlist.php";
-    String ADD_COMMENTS_URL = "http://35.165.96.167/api/comments.php";
+    String COMMENTS_LIST_URL = "http://52.41.33.64/api/commentlist.php";
+    String ADD_COMMENTS_URL = "http://52.41.33.64/api/comments.php";
     static ArrayList<Comments> commentList = new ArrayList<>();
 
     String COMMENT = "comment";

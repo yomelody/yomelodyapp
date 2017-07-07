@@ -55,8 +55,8 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     ArrayList<String> mpids = new ArrayList<>();
     private static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     String melodyName;
-    String LIKE_MELODY_URL = "http://35.165.96.167/api/likes.php";
-    String PLAY_MELODY_URL = "http://35.165.96.167/api/playcount.php";
+    String LIKE_MELODY_URL = "http://52.41.33.64/api/likes.php";
+    String PLAY_MELODY_URL = "http://52.41.33.64/api/playcount.php";
     String USER_TYPE = "user_type";
     String USER_ID = "user_id";
     String FILE_ID = "file_id";
@@ -420,7 +420,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show();
                         String errorMsg = error.toString();
                         Log.d("Error", errorMsg);
                     }
@@ -464,7 +464,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show();
                         String errorMsg = error.toString();
                         Log.d("Error", errorMsg);
                     }

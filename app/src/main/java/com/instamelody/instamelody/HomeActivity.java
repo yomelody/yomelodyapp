@@ -71,7 +71,7 @@ public class HomeActivity extends AppCompatActivity {
     String KEY_APP_ID = "appid";
     String KEY_DEVICE_TOKEN = "device_token";
 
-    String REGISTER_URL = "http://35.165.96.167/api/registration.php";
+    String REGISTER_URL = "http://52.41.33.64/api/registration.php";
 
     SignUpActivity obj = new SignUpActivity();
     Button Settings, SignIn, SignOut;
@@ -120,7 +120,7 @@ public class HomeActivity extends AppCompatActivity {
         });
 
 //        Bitmap bitmap = getIntent().getParcelableExtra("BitmapImage");
-//        Toast.makeText(this, ""+bitmap, Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, ""+bitmap, Toast.LENGTH_SHORT).show();
 //        ivProfile.setImageBitmap(bitmap);
 
 //        SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin",MODE_PRIVATE);
@@ -150,7 +150,7 @@ public class HomeActivity extends AppCompatActivity {
             Picasso.with(HomeActivity.this).load(profilePicLogin).into(userProfileImage);
         }
 
-        //Toast.makeText(this, "" + firstName, Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, "" + firstName, Toast.LENGTH_SHORT).show();
         //Toast.makeText(this, "" + userNameLogin, Toast.LENGTH_SHORT).show();
         //tvFirstName.invalidate();
         //tvUserName.invalidate();
@@ -289,7 +289,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void displayExceptionMessage(String msg) {
-        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
 //    public void registerSpecial(String firstName, String lastName, String userName, String email, String appId, String userType) {

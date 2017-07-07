@@ -61,7 +61,7 @@ public class AudioFragment extends Fragment {
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
     ArrayList<Genres> genresArrayList = new ArrayList<>();
-    private String RECORDING_URL = "http://35.165.96.167/api/recordings.php";
+    private String RECORDING_URL = "http://52.41.33.64/api/recordings.php";
     private String ID = "id";
     private String KEY = "key";
     private String STATION = "station";
@@ -72,7 +72,7 @@ public class AudioFragment extends Fragment {
 
     String recordingId, addedBy, recordingTopic, userName, dateAdded, likeCount, playCount, commentCount, shareCount, profileUrl, coverUrl, genre, recordings;
 
-    String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
+    String GENRE_NAMES_URL = "http://52.41.33.64/api/genere.php";
     String KEY_GENRE_NAME = "name";
     String KEY_GENRE_ID = "id";
     String KEY_FLAG = "flag";
@@ -460,7 +460,7 @@ public class AudioFragment extends Fragment {
                 String filename = "myfile";
                 String outputString = "Hello world!";
 
-                URL aurl = new URL("http://35.165.96.167/api/recordings.php");
+                URL aurl = new URL("http://52.41.33.64/api/recordings.php");
 
                 URLConnection connection = aurl.openConnection();
                 connection.connect();

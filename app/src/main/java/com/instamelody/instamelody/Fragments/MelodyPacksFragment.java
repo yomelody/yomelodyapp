@@ -55,8 +55,8 @@ public class MelodyPacksFragment extends Fragment {
     String KEY_FLAG = "flag";
     String KEY_GENRE_ID = "id";
     String KEY_RESPONSE = "response";//JSONArray
-    String MELODY_PACKS_URL = "http://35.165.96.167/api/melody.php";
-    String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
+    String MELODY_PACKS_URL = "http://52.41.33.64/api/melody.php";
+    String GENRE_NAMES_URL = "http://52.41.33.64/api/genere.php";
     String KEY = "key";
     String GENRE = "genere";
     //    String genreString = "1";
@@ -149,7 +149,7 @@ public class MelodyPacksFragment extends Fragment {
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
                         } else if (error instanceof NoConnectionError) {
-                            errorMsg = "There is no connection";
+                            errorMsg = "Please check your internet connection";
                         } else if (error instanceof AuthFailureError) {
 //                            errorMsg = "AuthFailureError";
                         } else if (error instanceof ServerError) {
@@ -205,7 +205,7 @@ public class MelodyPacksFragment extends Fragment {
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
                         } else if (error instanceof NoConnectionError) {
-                            errorMsg = "There is no connection";
+                            errorMsg = "Please check your internet connection";
                         } else if (error instanceof AuthFailureError) {
                             errorMsg = "AuthFailureError";
                         } else if (error instanceof ServerError) {
@@ -215,7 +215,8 @@ public class MelodyPacksFragment extends Fragment {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+                        //Abhishek commented this code
+               //         Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {

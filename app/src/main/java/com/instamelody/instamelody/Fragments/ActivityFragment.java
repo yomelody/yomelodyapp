@@ -54,7 +54,7 @@ public class ActivityFragment extends Fragment {
     String KEY_RESPONSE = "responce";
     String id = "id";
     private static ArrayList<ActivityModel> arraylist;
-    String Activity_MELODY_URL = "http://35.165.96.167//api//activity.php";
+    String Activity_MELODY_URL = "http://52.41.33.64//api//activity.php";
 
     public ActivityFragment() {
     }

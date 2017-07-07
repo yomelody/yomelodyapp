@@ -48,7 +48,7 @@ public class MessengerActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     RelativeLayout rlNoMsg;
     ArrayList<Chat> chatList = new ArrayList<>();
-    String CONVERSATION_LIST_URL = " http://35.165.96.167//api//UserConversation.php";
+    String CONVERSATION_LIST_URL = " http://52.41.33.64//api//UserConversation.php";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";//JSONArray
     String USER_ID = "userid";
@@ -170,7 +170,7 @@ public class MessengerActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
 
-//                        Toast.makeText(MessengerActivity.this, " Shubz" + response, Toast.LENGTH_LONG).show();
+//                        Toast.makeText(MessengerActivity.this, " Shubz" + response, Toast.LENGTH_SHORT).show();
 
                         chatList.clear();
                         adapter.notifyDataSetChanged();

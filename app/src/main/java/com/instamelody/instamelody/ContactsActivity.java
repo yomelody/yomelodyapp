@@ -45,7 +45,7 @@ public class ContactsActivity extends AppCompatActivity {
     ContactsAdapter adapter;
     RecyclerView recyclerView;
     ArrayList<Contacts> contactList = new ArrayList<>();
-    String CONTACTS_LIST_URL = "http://35.165.96.167/api/contactList.php";
+    String CONTACTS_LIST_URL = "http://52.41.33.64/api/contactList.php";
     public static Button btnCancel, btnOK;
     ImageView discover, message, profile, audio_feed, ivBackButton, ivHomeButton;
     String userId = "";

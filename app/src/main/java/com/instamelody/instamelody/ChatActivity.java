@@ -90,9 +90,9 @@ public class ChatActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     ArrayList<Message> chatList = new ArrayList<>();// list of messages
-    String SEND_MESSAGE_URL = "http://35.165.96.167/api/chat.php";
-    String MESSAGES_LIST_URL = "http://35.165.96.167/api/messageList.php";
-    String CHECK_FILE_URL = "http://35.165.96.167/api/ShareAudioChat.php";
+    String SEND_MESSAGE_URL = "http://52.41.33.64/api/chat.php";
+    String MESSAGES_LIST_URL = "http://52.41.33.64/api/messageList.php";
+    String CHECK_FILE_URL = "http://52.41.33.64/api/ShareAudioChat.php";
     String DEVICE_TYPE = "device_type";
     String SENDER_ID = "senderID";
     String RECEIVER_ID = "receiverID";
@@ -245,7 +245,7 @@ public class ChatActivity extends AppCompatActivity {
                         if (bitmap != null) {
                             tvImgChat.setImageBitmap(bitmap);
                         } else {
-                            Toast.makeText(getApplicationContext(), "No Image!!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "No Image!!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -504,14 +504,14 @@ public class ChatActivity extends AppCompatActivity {
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && null != data) {
             Uri selectedImageUri = data.getData();
             String selectedImagePath = selectedImageUri.getPath();
-            Toast.makeText(getApplicationContext(), selectedImagePath, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), selectedImagePath, Toast.LENGTH_SHORT).show();
 
             String ExternalStorageDirectoryPath = Environment
                     .getExternalStorageDirectory()
                     .getAbsolutePath();
 
             String targetPath = ExternalStorageDirectoryPath + "/Pictures";
-            Toast.makeText(getApplicationContext(), ExternalStorageDirectoryPath, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), ExternalStorageDirectoryPath, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -780,7 +780,7 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 }
             } else {
-                Toast.makeText(getApplicationContext(), "Failed to read External storage", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Failed to read External storage", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -811,7 +811,7 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 }
             } else {
-                Toast.makeText(getApplicationContext(), "Failed to read Internal storage", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Failed to read Internal storage", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -825,7 +825,7 @@ public class ChatActivity extends AppCompatActivity {
 //                    .getExternalStorageDirectory()
 //                    .getAbsolutePath();
 //            String targetPath = ExternalStorageDirectoryPath + "/DCIM/Camera/";
-////            Toast.makeText(getApplicationContext(), targetPath, Toast.LENGTH_LONG).show();
+////            Toast.makeText(getApplicationContext(), targetPath, Toast.LENGTH_SHORT).show();
 //            File targetDirector = new File(targetPath);
 //
 //            if (targetDirector.listFiles() != null) {
@@ -848,7 +848,7 @@ public class ChatActivity extends AppCompatActivity {
 //
 //            String targetPath = InternalStorageDirectoryPath + "/DCIM/Camera/";
 //
-//            Toast.makeText(getApplicationContext(), targetPath, Toast.LENGTH_LONG).show();
+//            Toast.makeText(getApplicationContext(), targetPath, Toast.LENGTH_SHORT).show();
 //            File targetDirector = new File(targetPath);
 //
 //            if (targetDirector.listFiles() != null) {

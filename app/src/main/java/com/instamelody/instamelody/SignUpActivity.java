@@ -85,7 +85,7 @@ import static com.facebook.internal.FacebookRequestErrorClassification.KEY_NAME;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    String REGISTER_URL = "http://35.165.96.167/api/registration.php";
+    String REGISTER_URL = "http://52.41.33.64/api/registration.php";
     //String KEY = "key";
     String KEY_FNAME = "f_name";
     String KEY_LNAME = "l_name";
@@ -99,7 +99,7 @@ public class SignUpActivity extends AppCompatActivity {
     String KEY_DEVICE_TOKEN_SIGN_UP = "device_token";
     String KEY_DEVICE_TYPE = "device_type";
     private int PICK_IMAGE_REQUEST = 1;
-    private String UPLOAD_URL = "http://35.165.96.167/api/uploadfile.php";
+    private String UPLOAD_URL = "http://52.41.33.64/api/uploadfile.php";
     private String FILE_TYPE = "file_type";
     private String FILE1 = "file1";
     private String USER_ID = "user_id";
@@ -684,7 +684,7 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onResponse(NetworkResponse response) {
                 String resultResponse = new String(response.data);
-//                Toast.makeText(getApplicationContext(), resultResponse, Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(), resultResponse, Toast.LENGTH_SHORT).show();
                 try {
 
                     JSONObject uploadImgRspns = new JSONObject(resultResponse);
