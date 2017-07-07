@@ -46,6 +46,10 @@ import java.util.Map;
 import static com.instamelody.instamelody.utils.Const.ServiceType.COMMENTS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.COMMENT_LIST;
 
+/**
+ * Created by Shubahansh Jaiswal on 11/29/2016.
+ */
+
 public class CommentsActivity extends AppCompatActivity {
 
     TextView tvUserName, tvMelodyName, tvMelodyLength, tvBpmRate, tvInstrumentsUsed, tvMelodyGenre, tvMelodyDate, tv7, tv8, tv9;
@@ -64,7 +68,6 @@ public class CommentsActivity extends AppCompatActivity {
 
     String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, profilePic, cover, melodyID, fileType;
     static ArrayList<Comments> commentList = new ArrayList<>();
-
     String COMMENT = "comment";
     String FILE_TYPE = "file_type";
     String USER_ID = "user_id";
