@@ -159,8 +159,16 @@ public class MelodyPacksFragment extends Fragment {
                         } else if (error instanceof ParseError) {
 //                            errorMsg = "ParseError";
                         }
-                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
+                        //Abhishek put it on try catch code start's from here
+                        try{
+                            Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+                            Log.d("Error", errorMsg);
+                        }
+                        catch (NullPointerException e){
+                            Log.d("Error","Something went wrong here");
+                        }
+                        //end here
+
                     }
                 }) {
             @Override
