@@ -40,7 +40,7 @@ import java.util.Map;
 import static com.instamelody.instamelody.utils.Const.ServiceType.USER_CONVERSATION;
 
 /**
- * Created by Shubahansh Jaiswal on 12/29/2016.
+ * Created by Shubhansh Jaiswal on 12/29/2016.
  */
 
 public class MessengerActivity extends AppCompatActivity {

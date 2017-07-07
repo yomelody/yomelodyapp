@@ -10,7 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 /**
- * Created by Shubahansh Jaiswal on 11/29/2016.
+ * Created by Shubhansh Jaiswal on 11/29/2016.
  */
 
 public class SettingsActivity extends AppCompatActivity {
