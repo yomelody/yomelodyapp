@@ -40,7 +40,6 @@ import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.instamelody.instamelody.Adapters.InstrumentListAdapter.audioUrl;
-import static com.instamelody.instamelody.utils.Const.ServiceType.LIKES;
 import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
 /*import static com.instamelody.instamelody.R.id.melodySlider;
 import static com.instamelody.instamelody.R.id.rlShare;
