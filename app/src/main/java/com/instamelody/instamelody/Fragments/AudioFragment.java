@@ -1,21 +1,27 @@
-package com.instamelody.instamelody.Fragments;
+package com.instamelody.instamelody;
 
-import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TabHost;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
@@ -28,390 +34,290 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
-import com.instamelody.instamelody.Models.AudioModel;
-import com.instamelody.instamelody.Models.Genres;
-import com.instamelody.instamelody.Models.RecordingsModel;
-import com.instamelody.instamelody.Models.RecordingsPool;
+import com.instamelody.instamelody.Adapters.CommentsAdapter;
+import com.instamelody.instamelody.Models.Comments;
 import com.instamelody.instamelody.Parse.ParseContents;
-import com.instamelody.instamelody.R;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import static android.content.Context.MODE_PRIVATE;
-import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
-import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
+
+import static com.instamelody.instamelody.utils.Const.ServiceType.COMMENTS;
+import static com.instamelody.instamelody.utils.Const.ServiceType.COMMENT_LIST;
 
 /**
- * Created by Saurabh Singh on 4/18/2017.
+ * Created by Shubahansh Jaiswal on 11/29/2016.
  */
 
-public class AudioFragment extends Fragment {
+public class CommentsActivity extends AppCompatActivity {
 
-    ArrayList<AudioModel> audioList = new ArrayList<>();
-    ArrayList<RecordingsModel> recordingList = new ArrayList<>();
-    ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
-    ArrayList<Genres> genresArrayList = new ArrayList<>();
+    TextView tvUserName, tvMelodyName, tvMelodyLength, tvBpmRate, tvInstrumentsUsed, tvMelodyGenre, tvMelodyDate, tv7, tv8, tv9;
+    TextView tvPlayCount, tvLikeCount, tvCommentCount, tvShareCount;
+    ImageView userProfileImage, ivMelodyCover, ivPlay, ivPause, ivLikeButton, ivDislikeButton, ivPlayButton;
+    Button btnMelodyAdd;
+    SeekBar melodySlider;
+    RelativeLayout rlSeekbarTracer, rlLike, rlPlay, rlComment;
 
-    private String ID = "id";
-    private String KEY = "key";
-    private String STATION = "station";
-    private String GENRE = "genere";
-    private String FILE_TYPE = "file_type";
-    private String FILTER_TYPE = "filter_type";
-    private String FILTER = "filter";
+    CommentsAdapter adapter;
+    ImageView ivBackButton, ivHomeButton, ivCamera, tvImgChat;
+    TextView tvCancel, tvSend, tvRegId, tvMsgChat;
+    RecyclerView recyclerView;
+    RelativeLayout rlCommentSend;
+    EditText etComment;
 
-    String recordingId, addedBy, recordingTopic, userName, dateAdded, likeCount, playCount, commentCount, shareCount, profileUrl, coverUrl, genre, recordings;
-    String KEY_GENRE_NAME = "name";
-    String KEY_GENRE_ID = "id";
+    String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, profilePic, cover, melodyID, fileType;
+    static ArrayList<Comments> commentList = new ArrayList<>();
+    String COMMENT = "comment";
+    String FILE_TYPE = "file_type";
+    String USER_ID = "user_id";
+    String FILE_ID = "file_id";
+    String TOPIC = "topic";
     String KEY_FLAG = "flag";
-    String KEY_RESPONSE = "response";//JSONArray
-    String genreString = "1";
-
-    RecyclerView.Adapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
-    private static RecyclerView recyclerView;
-    private static ArrayList<RecordingsModel> data;
-    ProgressDialog pDialog;
-    String userId;
-    String userIdNormal, userIdFb, userIdTwitter;
-    int statusNormal, statusFb, statusTwitter;
-    ProgressDialog progressDialog;
-    LongOperation myTask = null;
-    String strName;
-
-    public AudioFragment() {
-
-    }
+    String KEY_RESPONSE = "response";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_comments);
 
-        SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
-        strName = filterPref.getString("stringFilter", null);
-        fetchGenreNames();
-        fetchRecordings();
-//        if (strName == null) {
-//            fetchRecordings();
-//        } else {
-//            fetchRecordingsFilter();
-//        }
+        tvInstrumentsUsed = (TextView) findViewById(R.id.tvInstrumentsUsed);
+        tvBpmRate = (TextView) findViewById(R.id.tvBpmRate);
+        tvMelodyGenre = (TextView) findViewById(R.id.tvMelodyGenre);
+        tvMelodyName = (TextView) findViewById(R.id.tvMelodyName);
+        tvUserName = (TextView) findViewById(R.id.tvUserName);
+        tvMelodyLength = (TextView) findViewById(R.id.tvMelodyLength);
+        tvMelodyDate = (TextView) findViewById(R.id.tvMelodyDate);
+        tvPlayCount = (TextView) findViewById(R.id.tvPlayCount);
+        tvLikeCount = (TextView) findViewById(R.id.tvLikeCount);
+        tvCommentCount = (TextView) findViewById(R.id.tvCommentCount);
+        tvShareCount = (TextView) findViewById(R.id.tvShareCount);
+        ivMelodyCover = (ImageView) findViewById(R.id.ivMelodyCover);
+        userProfileImage = (ImageView) findViewById(R.id.userProfileImage);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerViewComment);
+        ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
+        ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
 
-        SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-        SharedPreferences twitterPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
-        SharedPreferences fbPref = getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("commentData", MODE_PRIVATE);
+        instruments = prefs.getString("instruments", null);
+        bpm = prefs.getString("bpm", null);
+        genre = prefs.getString("genre", null);
+        melodyName = prefs.getString("melodyName", null);
+        userName = prefs.getString("userName", null);
+        duration = prefs.getString("duration", null);
+        date = prefs.getString("date", null);
+        plays = prefs.getString("plays", null);
+        likes = prefs.getString("likes", null);
+        comments = prefs.getString("comments", null);
+        shares = prefs.getString("shares", null);
+        profilePic = prefs.getString("bitmapProfile", null);
+        cover = prefs.getString("bitmapCover", null);
+        melodyID = prefs.getString("melodyID", null);
+        fileType = prefs.getString("fileType", null);
 
-        if (loginSharedPref.getString("userId", null) != null) {
-            userId = loginSharedPref.getString("userId", null);
-        } else if (fbPref.getString("userId", null) != null) {
-            userId = fbPref.getString("userId", null);
-        } else if (twitterPref.getString("userId", null) != null) {
-            userId = twitterPref.getString("userId", null);
-        }
+        getComments();
 
-        adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
-    }
+        tvInstrumentsUsed.setText(instruments);
+        tvBpmRate.setText(bpm);
+        tvMelodyGenre.setText(genre);
+        tvMelodyName.setText(melodyName);
+        tvUserName.setText(userName);
+        tvMelodyLength.setText(duration);
+        tvMelodyDate.setText(date);
+        tvPlayCount.setText(plays);
+        tvLikeCount.setText(likes);
+        tvCommentCount.setText(comments);
+        tvShareCount.setText(shares);
+        Picasso.with(ivMelodyCover.getContext()).load(cover).into(ivMelodyCover);
+        Picasso.with(userProfileImage.getContext()).load(profilePic).into(userProfileImage);
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        recyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager lm = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(lm);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setItemViewCacheSize(10);
+        recyclerView.setDrawingCacheEnabled(true);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        adapter = new CommentsAdapter(getApplicationContext(), commentList);
+        recyclerView.setAdapter(adapter);
 
-        View view = inflater.inflate(R.layout.fragment_audio, container, false);
-        return view;
-    }
+        rlCommentSend = (RelativeLayout) findViewById(R.id.rlComment);
+        etComment = (EditText) findViewById(R.id.etComment);
+        etComment.setHintTextColor(Color.parseColor("#7B888F"));
+        tvCancel = (TextView) findViewById(R.id.tvCancel);
+        tvSend = (TextView) findViewById(R.id.tvSend);
 
 
-    public void fetchGenreNames() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        JSONObject jsonObject, genreJson;
-                        JSONArray jsonArray;
-                        String titleString;
-                        TabHost.TabSpec spec;
-                        final TabHost host = (TabHost) getActivity().findViewById(R.id.tabHostAudio);
-                        host.setup();
-
-                        try {
-                            jsonObject = new JSONObject(response);
-                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
-//                                myTask = new LongOperation();
-//                                myTask.execute();
-                                jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    Genres genres = new Genres();
-                                    genreJson = jsonArray.getJSONObject(i);
-                                    titleString = genreJson.getString(KEY_GENRE_NAME);
-                                    genres.setName(titleString);
-                                    genres.setId(genreJson.getString(KEY_GENRE_ID));
-                                    genresArrayList.add(genres);
-                                    spec = host.newTabSpec(titleString);
-                                    spec.setIndicator(titleString);
-                                    spec.setContent(createTabContent());
-                                    host.addTab(spec);
-
-                                    SharedPreferences.Editor editorGenre = getActivity().getSharedPreferences("prefGenreName", MODE_PRIVATE).edit();
-                                    editorGenre.putString("GenreName", titleString);
-                                    editorGenre.apply();
-
-                                }
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        if (host.getCurrentTab() == 0) {
-//                            Toast.makeText(getActivity(), "All " + host.getCurrentTab(), Toast.LENGTH_SHORT).show();
-                        }
-
-                        host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-                            @Override
-                            public void onTabChanged(String arg0) {
-                                genreString = arg0;
-                                int currentTab = host.getCurrentTab();
-                                if (currentTab==0){
-                                    genreString= "";
-                                }else {
-                                    genreString = genresArrayList.get(currentTab).getId();
-                                }
-//                                fetchRecordings();
-//                                if (strName == null) {
-//                                    fetchRecordings();
-//                                } else {
-//                                    fetchRecordingsFilter(strName);
-//                                }
-//                                Toast.makeText(getActivity(), "beta: " + genreString, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        String errorMsg = "";
-                        if (error instanceof TimeoutError) {
-                            errorMsg = "Internet connection timed out";
-                        } else if (error instanceof NoConnectionError) {
-                            errorMsg = "There is no connection";
-                        } else if (error instanceof AuthFailureError) {
-                            errorMsg = "AuthFailureError";
-                        } else if (error instanceof ServerError) {
-                            errorMsg = "We are facing problem in connecting to server";
-                        } else if (error instanceof NetworkError) {
-                            errorMsg = "We are facing problem in connecting to network";
-                        } else if (error instanceof ParseError) {
-                            errorMsg = "ParseError";
-                        }
-                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
+        etComment.addTextChangedListener(new TextWatcher() {
             @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                return params;
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        requestQueue.add(stringRequest);
-    }
 
-
-    public void fetchRecordings() {
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-//                        Toast.makeText(getActivity(), ""+response, Toast.LENGTH_SHORT).show();
-
-                        Log.d("ReturnData", response);
-                        recordingList.clear();
-                        recordingsPools.clear();
-                        new ParseContents(getActivity()).parseAudio(response, recordingList,recordingsPools);
-                        adapter.notifyDataSetChanged();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        String errorMsg = "";
-                        if (error instanceof TimeoutError) {
-                            errorMsg = "Internet connection timed out";
-                        } else if (error instanceof NoConnectionError) {
-                            errorMsg = "There is no connection";
-                        } else if (error instanceof AuthFailureError) {
-                            errorMsg = "AuthFailureError";
-                        } else if (error instanceof ServerError) {
-                            errorMsg = "We are facing problem in connecting to server";
-                        } else if (error instanceof NetworkError) {
-                            errorMsg = "We are facing problem in connecting to network";
-                        } else if (error instanceof ParseError) {
-                            errorMsg = "ParseError";
-                        }
-                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
             @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-//                params.put(ID, userId);
-                params.put(KEY, STATION);
-                params.put(GENRE, genreString);
-                return params;
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                tvCancel.setVisibility(View.GONE);
+                tvSend.setVisibility(View.VISIBLE);
             }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        requestQueue.add(stringRequest);
-    }
 
-
-    public void fetchRecordingsFilter(final String strName) {
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
-
-                        Log.d("ReturnData", response);
-                        recordingList.clear();
-                        recordingsPools.clear();
-                        new ParseContents(getActivity()).parseAudio(response, recordingList,recordingsPools);
-                        adapter.notifyDataSetChanged();
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        String errorMsg = "";
-                        if (error instanceof TimeoutError) {
-                            errorMsg = "Internet connection timed out";
-                        } else if (error instanceof NoConnectionError) {
-                            errorMsg = "There is no connection";
-                        } else if (error instanceof AuthFailureError) {
-                            errorMsg = "AuthFailureError";
-                        } else if (error instanceof ServerError) {
-                            errorMsg = "We are facing problem in connecting to server";
-                        } else if (error instanceof NetworkError) {
-                            errorMsg = "We are facing problem in connecting to network";
-                        } else if (error instanceof ParseError) {
-                            errorMsg = "ParseError";
-                        }
-                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
             @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-//                params.put(ID, userId);
-                params.put(KEY, STATION);
-                params.put(GENRE, genreString);
-                params.put(FILE_TYPE, "user_recording");
-                params.put(FILTER_TYPE, strName);
-                params.put(FILTER, "extrafilter");
-                return params;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        requestQueue.add(stringRequest);
-    }
-
-    private TabHost.TabContentFactory createTabContent() {
-        return new TabHost.TabContentFactory() {
-            @Override
-            public View createTabContent(String tag) {
-                RecyclerView rv = new RecyclerView(getActivity());
-                rv.setHasFixedSize(true);
-                RecyclerView.LayoutManager lm = new LinearLayoutManager(getActivity());
-                rv.setLayoutManager(lm);
-                rv.setItemAnimator(new DefaultItemAnimator());
-                rv.setAdapter(adapter);
-                return rv;
-            }
-        };
-    }
-
-    private class LongOperation extends AsyncTask<String, Void, String> {
-        protected void onPreExecute() {
-            progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setTitle("Processing...");
-            progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-
-        protected String doInBackground(String... params) {
-
-            try {
-                //Getting data from server
-
-                String filename = "myfile";
-                String outputString = "Hello world!";
-
-                URL aurl = new URL("http://35.165.96.167/api/recordings.php");
-
-                URLConnection connection = aurl.openConnection();
-                connection.connect();
-                // getting file length
-                int lengthOfFile = connection.getContentLength();
-
-                // input stream to read file - with 8k buffer
-                InputStream input = new BufferedInputStream(aurl.openStream(), 8192);
-
-                try {
-                    FileOutputStream outputStream = getActivity().openFileOutput(filename, Context.MODE_PRIVATE);
-                    outputStream.write(outputString.getBytes());
-                    outputStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
+            public void afterTextChanged(Editable s) {
+                if (etComment.getText().toString().length() == 0) {
+                    tvCancel.setVisibility(View.VISIBLE);
+                    tvSend.setVisibility(View.GONE);
                 }
-
-                try {
-                    FileInputStream inputStream = getActivity().openFileInput(filename);
-                    BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
-                    StringBuilder total = new StringBuilder();
-                    String line;
-                    while ((line = r.readLine()) != null) {
-                        total.append(line);
-                    }
-                    r.close();
-                    inputStream.close();
-                    Log.d("File", "File contents: " + total);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-            return null;
-        }
+        });
 
-        protected void onPostExecute(String result) {
+        ivBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
-            progressDialog.dismiss();
-        }
+        ivHomeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        tvSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+                String userId = loginSharedPref.getString("userId", null);
+                if (userId != null) {
+
+                    tvCancel.setVisibility(View.VISIBLE);
+                    tvSend.setVisibility(View.GONE);
+                    String comment = etComment.getText().toString().trim();
+                    etComment.getText().clear();
+                    sendComment(comment, userId);
+                    int commentCount = Integer.parseInt(tvCommentCount.getText().toString().trim()) + 1;
+                    tvCommentCount.setText(String.valueOf(commentCount));
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "Log in to comment", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    getApplicationContext().startActivity(intent);
+                }
+            }
+        });
+
+        tvCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                etComment.getText().clear();
+
+                InputMethodManager inputManager = (InputMethodManager)
+                        getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
+            }
+        });
+    }
+
+    public void getComments() {
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, COMMENT_LIST,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        commentList.clear();
+                        adapter.notifyDataSetChanged();
+                        recyclerView.smoothScrollToPosition(adapter.getItemCount());
+                        new ParseContents(getApplicationContext()).parseComments(response, commentList);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+//                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+//                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+
+                params.put(FILE_ID, melodyID);
+                params.put(FILE_TYPE, fileType);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+    }
+
+    public void sendComment(final String cmnt, final String userId) {
+
+
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, COMMENTS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        adapter.notifyDataSetChanged();
+                        getComments();
+                        recyclerView.smoothScrollToPosition(adapter.getItemCount());
+//                        new ParseContents(getApplicationContext()).parseComments(response, commentList);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+//                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+//                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+
+                params.put(FILE_ID, melodyID);
+                params.put(COMMENT, cmnt);
+                params.put(FILE_TYPE, fileType);
+                params.put(USER_ID, userId);
+                params.put(TOPIC, melodyName);
+
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
     }
 }
