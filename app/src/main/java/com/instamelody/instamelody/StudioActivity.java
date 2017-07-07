@@ -186,6 +186,10 @@ public class StudioActivity extends AppCompatActivity {
     private static String instrumentFilePath;
     Uri audioUri;
 
+    String KEY_GENRE_NAME = "name";
+    String KEY_FLAG = "flag";
+    String KEY_RESPONSE = "response";//JSONArray
+
     String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, melodyPackId, instrumentCount;
     String selectedGenre;
     int statusNormal, statusFb, statusTwitter;
@@ -341,7 +345,7 @@ public class StudioActivity extends AppCompatActivity {
 
                 LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
 
-                String audioUrl = "http://wwww.instamelody.com";
+                String audioUrl = "http://52.41.33.64/api/uploads/melody/instruments/";
 
                 Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
                 if (isSDPresent) {
@@ -1579,54 +1583,53 @@ public class StudioActivity extends AppCompatActivity {
         VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
     }
 
+ public void fetchGenreNames() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENRE_NAMES_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
 
-//    public void fetchGenreNames() {
-//        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENRE_NAMES_URL,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-//
-//                        JSONObject jsonObject, genreJson;
-//                        JSONArray jsonArray;
-//                        String titleString;
-//
-//                        try {
-//                            jsonObject = new JSONObject(response);
-//                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
-//                                jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
-//                                for (int i = 0; i < jsonArray.length(); i++) {
-//                                    Genres genres = new Genres();
-//                                    genreJson = jsonArray.getJSONObject(i);
-//                                    titleString = genreJson.getString(KEY_GENRE_NAME);
-//                                    genres.setName(titleString);
-//                                    genres.setId(genreJson.getString(KEY_GENRE_ID));
-//                                    genresArrayList.add(genres);
-//                                    genresName.add(i, genresArrayList.get(i).getName());
-//                                    genresId.add(i, genresArrayList.get(i).getId());
-//                                }
-//                            }
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
-//                        String errorMsg = error.toString();
-//                        Log.d("Error", errorMsg);
-//                    }
-//                }) {
-//            @Override
-//            protected Map<String, String> getParams() {
-//                Map<String, String> params = new HashMap<String, String>();
-//                return params;
-//            }
-//        };
-//        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-//        requestQueue.add(stringRequest);
-//    }
+                        JSONObject jsonObject, genreJson;
+                        JSONArray jsonArray;
+                        String titleString;
+
+                        try {
+                            jsonObject = new JSONObject(response);
+                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
+                                jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    Genres genres = new Genres();
+                                    genreJson = jsonArray.getJSONObject(i);
+                                    titleString = genreJson.getString(KEY_GENRE_NAME);
+                                    genres.setName(titleString);
+                                    genres.setId(genreJson.getString(KEY_GENRE_ID));
+                                    genresArrayList.add(genres);
+                                    genresName.add(i, genresArrayList.get(i).getName());
+                                    genresId.add(i, genresArrayList.get(i).getId());
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getApplicationContext(), "Please check your internet connection", Toast.LENGTH_SHORT).show();
+                        String errorMsg = error.toString();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+    }
 
     private void showFileChooser() {
         Intent intent = new Intent();
