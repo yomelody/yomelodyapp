@@ -244,7 +244,7 @@
                 android:textColor="#495C67" />
 
             <ImageView
-                android:id="@+id/ivSound"
+                android:id="@+id/ivSearchProfile"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_alignParentEnd="true"
@@ -254,12 +254,12 @@
                 android:src="@drawable/search" />
 
             <ImageView
-                android:id="@+id/ivSounda"
+                android:id="@+id/ivFilterProfile"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="15dp"
-                android:layout_toLeftOf="@+id/ivSound"
+                android:layout_toLeftOf="@+id/ivSearchProfile"
                 android:src="@drawable/filter" />
 
         </RelativeLayout>
