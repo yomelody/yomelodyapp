@@ -49,6 +49,7 @@ import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.facebook.FacebookSdk.getApplicationContext;
+import static com.instamelody.instamelody.utils.Const.ServiceType.LIKESAPI;
 
 /**
  * Created by Saurabh Singh on 12//2016.
@@ -66,7 +67,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     ArrayList<String> mpids = new ArrayList<>();
     private ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     private ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
-    String LIKE_MELODY_URL = "http://35.165.96.167/api/likes.php";
+    //String LIKE_MELODY_URL = "http://35.165.96.167/api/likes.php";
     String USER_TYPE = "user_type";
     String USER_ID = "user_id";
     String FILE_ID = "file_id";
@@ -279,7 +280,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 }
             });
 
- rlProfilePic.setOnClickListener(new View.OnClickListener() {
+            rlProfilePic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
@@ -497,34 +498,42 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         currentPosition = mp.getCurrentPosition();
     }
     public void fetchLikeState(final String userId, final String pos, final String likeState,String LikeMelodyName) {
-        MelodyName=LikeMelodyName;
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, LIKE_MELODY_URL,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
-                        String errorMsg = error.toString();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put(Topic, MelodyName);
-                params.put(USER_ID, userId);
-                params.put(FILE_ID, pos);
-                params.put(TYPE, "user_recording");
-                params.put(LIKES, likeState);
-                return params;
-            }
-        };
-        RequestQueue requestQueue1 = Volley.newRequestQueue(context);
-        requestQueue1.add(stringRequest);
+
+        try{
+            MelodyName=LikeMelodyName;
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, LIKESAPI,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
+                            String errorMsg = error.toString();
+                            Log.d("Error", errorMsg);
+                        }
+                    }) {
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put(Topic, MelodyName);
+                    params.put(USER_ID, userId);
+                    params.put(FILE_ID, pos);
+                    params.put(TYPE, "user_recording");
+                    params.put(LIKES, likeState);
+                    return params;
+                }
+            };
+            RequestQueue requestQueue1 = Volley.newRequestQueue(context);
+            requestQueue1.add(stringRequest);
+        }
+        catch (Exception ex)
+        {
+
+        }
+
     }
 }

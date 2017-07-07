@@ -319,9 +319,9 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 myTask = new LongOperation();
-                                myTask.execute();
+//                                myTask.execute();
 //                                fetchGenreNames();
-//                                fetchRecordings();
+                                fetchRecordings();
                                 dialog.dismiss();
                             }
                         });
@@ -439,7 +439,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                     @Override
                     public void onResponse(String response) {
 
-//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
 
                         Log.d("ReturnData", response);
                         recordingList.clear();
