@@ -362,6 +362,14 @@
                                 android:layout_gravity="center_horizontal"
                                 android:layout_marginLeft="5dp"
                                 app:srcCompat="@drawable/hand_outline" />
+                            <ImageView
+                                android:id="@+id/ivDislikeButton"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_alignParentTop="true"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginLeft="5dp"
+                                app:srcCompat="@drawable/hand_outline" />
 
                             <TextView
                                 android:id="@+id/tvLikeCount"

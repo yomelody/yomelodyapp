@@ -35,6 +35,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.login.LoginManager;
 import com.instamelody.instamelody.Models.HandelLogin;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
@@ -48,6 +49,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.fabric.sdk.android.Fabric;
@@ -72,7 +74,6 @@ public class HomeActivity extends AppCompatActivity {
     String KEY_USER_TYPE = "usertype";
     String KEY_APP_ID = "appid";
     String KEY_DEVICE_TOKEN = "device_token";
-
     String REGISTER_URL = "http://35.165.96.167/api/registration.php";
 
     SignUpActivity obj = new SignUpActivity();
@@ -134,7 +135,7 @@ public class HomeActivity extends AppCompatActivity {
 
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         firstName = loginSharedPref.getString("firstName", null);
-        lastName = loginSharedPref.getString("lastName",null);
+        lastName = loginSharedPref.getString("lastName", null);
         userNameLogin = loginSharedPref.getString("userName", null);
         profilePicLogin = loginSharedPref.getString("profilePic", null);
         statusNormal = loginSharedPref.getInt("status", 0);
@@ -142,14 +143,37 @@ public class HomeActivity extends AppCompatActivity {
         if (statusNormal == 1) {
             SignOut.setVisibility(View.VISIBLE);
             SignIn.setVisibility(View.INVISIBLE);
-            tvFirstName.setText(firstName+" "+lastName);
-            tvUserName.setText("@"+userNameLogin);
+            tvFirstName.setText(firstName + " " + lastName);
+            tvUserName.setText("@" + userNameLogin);
         }
 
         if (profilePicLogin != null) {
             ivProfile.setVisibility(View.GONE);
             userProfileImage.setVisibility(View.VISIBLE);
+            userProfileImage.setDrawingCacheEnabled(true);
+            final AtomicBoolean loaded = new AtomicBoolean();
             Picasso.with(HomeActivity.this).load(profilePicLogin).into(userProfileImage);
+//            Picasso.with(HomeActivity.this)
+//                    .load(profilePicLogin)
+//                  .placeholder(Your Drawable Resource)   this is optional the image to display while the url image is downloading
+//                  .error(Your Drawable Resource)         this is also optional if some error has occurred in downloading the image this image would be displayed
+//                    .into(userProfileImage, new Callback.EmptyCallback() {
+//                        @Override
+//                        public void onSuccess() {
+//                            loaded.set(true);
+//                        }
+//
+//                        @Override
+//                        public void onError() {
+//                            super.onError();
+//                        }
+//                    });
+//            if (loaded.get()) {
+            // The image was immediately available.
+//                userProfileImage.buildDrawingCache();
+//                Bitmap bitmap = userProfileImage.getDrawingCache();
+//                userProfileImage.setImageBitmap(bitmap);
+//            }
         }
 
         //Toast.makeText(this, "" + firstName, Toast.LENGTH_LONG).show();
@@ -180,7 +204,7 @@ public class HomeActivity extends AppCompatActivity {
             SignOut.setVisibility(View.VISIBLE);
             SignIn.setVisibility(View.INVISIBLE);
             tvFirstName.setText(Name);
-            tvUserName.setText("@"+userName);
+            tvUserName.setText("@" + userName);
         }
 
         if (profilePic != null) {
@@ -202,9 +226,9 @@ public class HomeActivity extends AppCompatActivity {
         if (statusFb == 1) {
             SignOut.setVisibility(View.VISIBLE);
             SignIn.setVisibility(View.INVISIBLE);
-            String fullName = fbFirstName+ " " +fbLastName;
+            String fullName = fbFirstName + " " + fbLastName;
             tvFirstName.setText(fullName);
-            tvUserName.setText("@"+fbFirstName);
+            tvUserName.setText("@" + fbFirstName);
         }
         if (fbId != null) {
             ivProfile.setVisibility(View.GONE);
