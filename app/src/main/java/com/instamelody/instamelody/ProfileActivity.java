@@ -78,6 +78,7 @@ import static com.instamelody.instamelody.R.id.bio_fragment;
 import static com.instamelody.instamelody.R.id.rlPartStation;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
+import static com.instamelody.instamelody.utils.Const.ServiceType.UPLOAD_COVER_MELODY_FILE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.USERS_BIO;
 
 /**
@@ -853,7 +854,7 @@ public class ProfileActivity extends AppCompatActivity {
                 String filename = "myfile";
                 String outputString = "Hello world!";
 
-                URL aurl = new URL("http://35.165.96.167/api/upload_cover_melody_file.php");
+                URL aurl = new URL(UPLOAD_COVER_MELODY_FILE);
 
                 URLConnection connection = aurl.openConnection();
                 connection.connect();
