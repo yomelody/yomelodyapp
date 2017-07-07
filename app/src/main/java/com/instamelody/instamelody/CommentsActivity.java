@@ -43,6 +43,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.instamelody.instamelody.utils.Const.ServiceType.COMMENTS;
+import static com.instamelody.instamelody.utils.Const.ServiceType.COMMENT_LIST;
+
+/**
+ * Created by Shubahansh Jaiswal on 11/29/2016.
+ */
+
 public class CommentsActivity extends AppCompatActivity {
 
     TextView tvUserName, tvMelodyName, tvMelodyLength, tvBpmRate, tvInstrumentsUsed, tvMelodyGenre, tvMelodyDate, tv7, tv8, tv9;
@@ -60,10 +67,7 @@ public class CommentsActivity extends AppCompatActivity {
     EditText etComment;
 
     String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, profilePic, cover, melodyID, fileType;
-    String COMMENTS_LIST_URL = "http://52.41.33.64/api/commentlist.php";
-    String ADD_COMMENTS_URL = "http://52.41.33.64/api/comments.php";
     static ArrayList<Comments> commentList = new ArrayList<>();
-
     String COMMENT = "comment";
     String FILE_TYPE = "file_type";
     String USER_ID = "user_id";
@@ -218,7 +222,7 @@ public class CommentsActivity extends AppCompatActivity {
     }
 
     public void getComments() {
-        final StringRequest stringRequest = new StringRequest(Request.Method.POST, COMMENTS_LIST_URL,
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, COMMENT_LIST,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -267,7 +271,7 @@ public class CommentsActivity extends AppCompatActivity {
     public void sendComment(final String cmnt, final String userId) {
 
 
-        final StringRequest stringRequest = new StringRequest(Request.Method.POST, ADD_COMMENTS_URL,
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, COMMENTS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

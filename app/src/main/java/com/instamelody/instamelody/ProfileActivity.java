@@ -1,8 +1,10 @@
 package com.instamelody.instamelody;
 
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -19,6 +21,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -73,16 +76,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.instamelody.instamelody.R.id.bio_fragment;
 import static com.instamelody.instamelody.R.id.rlPartStation;
+import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
+import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
+import static com.instamelody.instamelody.utils.Const.ServiceType.USERS_BIO;
 
 /**
  * Created by Saurabh Singh on 01/09/2017
  */
 public class ProfileActivity extends AppCompatActivity {
 
-    String USER_BIO_URL = "http://52.41.33.64//api//users_bio.php";
-    String FOLLOW_URL = "http://52.41.33.64//api//followers.php";
-    String GENRE_NAMES_URL = "http://52.41.33.64/api/genere.php";
-    String RECORDING_URL = "http://52.41.33.64/api/recordings.php";
     String KEY_GENRE_NAME = "name";
     String KEY_GENRE_ID = "id";
     String KEY_FLAG = "flag";
@@ -102,15 +104,16 @@ public class ProfileActivity extends AppCompatActivity {
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
     ArrayList<Genres> genresArrayList = new ArrayList<>();
     Button btnAudio, btnActivity, btnBio, btnCancel;
-    RelativeLayout rlPartProfile, rlFragmentActivity, rlFragmentBio, rlSearch, rlFollow, rlMessage;
-    ImageView ivBackButton, ivHomeButton, ivAudio_feed, ivDiscover, ivMessage, ivProfile, ivSound, userCover, ivToMelody;
+    RelativeLayout rlPartProfile, rlFragmentActivity, rlFragmentBio, rlSearch, rlFollow;
+    ImageView ivBackButton, ivHomeButton, ivAudio_feed, ivDiscover, ivMessage, ivProfile, ivSearchProfile, userCover, ivToMelody, ivFilterProfile;
     ImageView ivFollow, ivUnfollow;
     CircleImageView userProfileImageInProf;
     TextView tvNameInProf, tvUserNameInProf, tv_records, tv_fans, tv_following;
     String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, coverPic;
     String userId, records, fans, followers, followerId;
+    String strName;
     String userIdNormal, userIdFb, userIdTwitter;
-    int statusNormal, statusFb, statusTwitter, status;
+    int statusNormal, statusFb, statusTwitter;
     SearchView search1;
     ProgressDialog progressDialog;
     LongOperation myTask = null;
@@ -131,26 +134,19 @@ public class ProfileActivity extends AppCompatActivity {
         SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
 
         if (bundle != null) {
-            String checkUserId = bundle.getString("checkUserId");
-            if (checkUserId != null) {
-                userId = checkUserId;
+            String showProfileUserId = bundle.getString("showProfileUserId");
+            if (showProfileUserId != null) {
+                userId = showProfileUserId;
             }
-//            rlFollow.setVisibility(View.VISIBLE);
-//            rlMessage.setVisibility(View.VISIBLE);
             flag = "1";
         } else {
             if (loginSharedPref.getString("userId", null) != null) {
                 userId = loginSharedPref.getString("userId", null);
-                status = 1;
             } else if (fbPref.getString("userId", null) != null) {
                 userId = fbPref.getString("userId", null);
-                status = 2;
             } else if (twitterPref.getString("userId", null) != null) {
                 userId = twitterPref.getString("userId", null);
-                status = 3;
             }
-//            rlFollow.setVisibility(View.VISIBLE);
-//            rlMessage.setVisibility(View.VISIBLE);
             flag = "2";
         }
 
@@ -158,10 +154,9 @@ public class ProfileActivity extends AppCompatActivity {
             if (flag.equals("1")) {
                 fetchUserBio();
             }
-            if (flag.equals("2")) {
-//                fetchUserFromPrefs(status);
-                fetchUserFromPrefs(Integer.parseInt(userId));
-            }
+//            if (flag.equals("2")) {
+//                fetchUserFromPrefs();
+//            }
             fetchGenreNames();
             fetchRecordings();
 
@@ -179,7 +174,8 @@ public class ProfileActivity extends AppCompatActivity {
         btnActivity = (Button) findViewById(R.id.btnActivity);
         btnBio = (Button) findViewById(R.id.btnBio);
         rlSearch = (RelativeLayout) findViewById(R.id.rlSearch);
-        ivSound = (ImageView) findViewById(R.id.ivSound);
+        ivSearchProfile = (ImageView) findViewById(R.id.ivSearchProfile);
+        ivFilterProfile = (ImageView) findViewById(R.id.ivFilterProfile);
         btnCancel = (Button) findViewById(R.id.btnCancel);
         ivToMelody = (ImageView) findViewById(R.id.ivToMelody);
 
@@ -187,7 +183,6 @@ public class ProfileActivity extends AppCompatActivity {
         rlFragmentActivity = (RelativeLayout) findViewById(R.id.rlFragmentActivity);
         rlFragmentBio = (RelativeLayout) findViewById(R.id.rlFragmentBio);
         rlFollow = (RelativeLayout) findViewById(R.id.rlFollow);
-        rlMessage = (RelativeLayout) findViewById(R.id.rlMessage);
         ivUnfollow = (ImageView) findViewById(R.id.ivUnfollow);
         ivFollow = (ImageView) findViewById(R.id.ivFollow);
 
@@ -220,13 +215,116 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        ivSound.setOnClickListener(new View.OnClickListener() {
+//        SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+//        firstName = loginSharedPref.getString("firstName", null);
+//        userNameLogin = loginSharedPref.getString("userName", null);
+//        profilePicLogin = loginSharedPref.getString("profilePic", null);
+//        statusNormal = loginSharedPref.getInt("status", 0);
+//
+//        if (statusNormal == 1) {
+//            tvNameInProf.setText(firstName);
+//            tvUserNameInProf.setText("@" + userNameLogin);
+//        }
+//
+//        if (profilePicLogin != null) {
+//            //ivProfile.setVisibility(View.GONE);
+//            userProfileImageInProf.setVisibility(View.VISIBLE);
+//            Picasso.with(ProfileActivity.this).load(profilePicLogin).into(userProfileImageInProf);
+//        }
+//
+//
+//        SharedPreferences twitterPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
+//        Name = twitterPref.getString("Name", null);
+//        userName = twitterPref.getString("userName", null);
+//        profilePic = twitterPref.getString("ProfilePic", null);
+//        statusTwitter = twitterPref.getInt("status", 0);
+//
+//        if (statusTwitter == 1) {
+//            tvNameInProf.setText(Name);
+//            tvUserNameInProf.setText("@" + userName);
+//        }
+//
+//        if (profilePic != null) {
+//            //ivProfile.setVisibility(View.GONE);
+//            userProfileImageInProf.setVisibility(View.VISIBLE);
+//            Picasso.with(ProfileActivity.this).load(profilePic).into(userProfileImageInProf);
+//        }
+//
+//
+//        SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+//        fbName = fbPref.getString("FbName", null);
+//        fbUserName = fbPref.getString("userName", null);
+//        fbId = fbPref.getString("fbId", null);
+//        statusFb = fbPref.getInt("status", 0);
+//
+//        if (statusFb == 1) {
+//            tvNameInProf.setText(fbName);
+//            tvUserNameInProf.setText("@"+fbName);
+//        }
+//
+//        if (fbId != null) {
+//            //ivProfile.setVisibility(View.GONE);
+//            userProfileImageInProf.setVisibility(View.VISIBLE);
+//            Picasso.with(ProfileActivity.this).load("https://graph.facebook.com/" + fbId + "/picture").into(userProfileImageInProf);
+//        }
+
+
+        ivSearchProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                searchMenuItem.setVisible(position == 0);
                 rlSearch.setVisibility(View.INVISIBLE);
                 search1.setVisibility(View.VISIBLE);
                 btnCancel.setVisibility(View.VISIBLE);
+            }
+        });
+
+
+        ivFilterProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builderSingle = new AlertDialog.Builder(ProfileActivity.this);
+//                builderSingle.setIcon(R.drawable.ic_launcher);
+                builderSingle.setTitle("Filter Audio");
+
+                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(ProfileActivity.this, android.R.layout.select_dialog_singlechoice);
+                arrayAdapter.add("Latest");
+                arrayAdapter.add("Trending");
+                arrayAdapter.add("Favorites");
+                arrayAdapter.add("Artist");
+                arrayAdapter.add("# of Instruments");
+                arrayAdapter.add("BPM");
+
+
+                builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        strName = arrayAdapter.getItem(which);
+                        AlertDialog.Builder builderInner = new AlertDialog.Builder(ProfileActivity.this);
+                        builderInner.setMessage(strName);
+                        builderInner.setTitle("Your Selected Item is");
+                        builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                myTask = new LongOperation();
+                                myTask.execute();
+//                                fetchGenreNames();
+//                                fetchRecordings();
+
+                                dialog.dismiss();
+                            }
+                        });
+                        builderInner.show();
+                    }
+                });
+                builderSingle.show();
             }
         });
 
@@ -339,28 +437,25 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        ivFollow.setOnClickListener(new View.OnClickListener() {
+        rlFollow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ivFollow.setVisibility(View.GONE);
-                ivUnfollow.setVisibility(View.VISIBLE);
-                Follow(followerId);
-            }
-        });
-
-        ivUnfollow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ivUnfollow.setVisibility(View.GONE);
-                ivFollow.setVisibility(View.VISIBLE);
-                Follow(followerId);
+                if (ivFollow.getVisibility() == View.VISIBLE) {
+                    ivFollow.setVisibility(View.GONE);
+                    ivUnfollow.setVisibility(View.VISIBLE);
+                    Follow(followerId);
+                } else {
+                    ivUnfollow.setVisibility(View.GONE);
+                    ivFollow.setVisibility(View.VISIBLE);
+                    Follow(followerId);
+                }
             }
         });
     }
 
     public void fetchUserBio() {
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, USER_BIO_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, USERS_BIO,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -404,6 +499,38 @@ public class ProfileActivity extends AppCompatActivity {
                                     Picasso.with(ProfileActivity.this).load(profilePic).into(userProfileImageInProf);
                                     coverPic = userJson.getString("coverpic");
                                     Picasso.with(ProfileActivity.this).load(coverPic).into(userCover);
+
+                                    userDetails.setId(userJson.getString("id"));
+                                    userDetails.setUsername(userJson.getString("username"));
+                                    userDetails.setFname(userJson.getString("fname"));
+                                    userDetails.setLname(userJson.getString("lname"));
+                                    userDetails.setEmail(userJson.getString("email"));
+                                    userDetails.setMobile(userJson.getString("mobile"));
+                                    userDetails.setDob(userJson.getString("dob"));
+                                    userDetails.setLogintype(userJson.getString("logintype"));
+                                    userDetails.setLogin_with(userJson.getString("login_with"));
+                                    userDetails.setProfilepic(userJson.getString("profilepic"));
+                                    userDetails.setCoverpic(userJson.getString("coverpic"));
+                                    userDetails.setRegisterdate(userJson.getString("registerdate"));
+                                    userDetails.setFollowers(userJson.getString("followers"));
+                                    userDetails.setFans(userJson.getString("fans"));
+                                    userDetails.setRecords(userJson.getString("records"));
+                                    userDetails.setDevicetoken(userJson.getString("devicetoken"));
+                                    userDetails.setDiscrisption(userJson.getString("discrisption"));
+
+//                                    if (userJson.getString("id") == userId) {
+//                                        SharedPreferences prefUserDetails = getApplicationContext().getSharedPreferences("prefUserDetails", MODE_PRIVATE);
+//                                        SharedPreferences.Editor prefsEditor = prefUserDetails.edit();
+//                                        Gson gson = new Gson();
+//                                        String json = gson.toJson(userDetails); // myObject - instance of MyObject
+//                                        prefsEditor.putString("UserDetails", json);
+//                                        prefsEditor.commit();
+
+//                                        to use it use this
+//                                        Gson gson = new Gson();
+//                                        String json = mPrefs.getString("MyObject", "");
+//                                        MyObject obj = gson.fromJson(json, MyObject.class);
+//                                    }
                                 }
                             }
                         } catch (JSONException e) {
@@ -445,119 +572,63 @@ public class ProfileActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
-    public void fetchUserFromPrefs(final int stats) {
-
-//        if (stats == 1) {
-//            SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-//            Name = loginSharedPref.getString("firstName", null);
-//            userName = loginSharedPref.getString("userName", null);
-//            profilePic = loginSharedPref.getString("profilePic", null);
+//    public void fetchUserFromPrefs() {
+//        SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+//        firstName = loginSharedPref.getString("firstName", null);
+//        userNameLogin = loginSharedPref.getString("userName", null);
+//        profilePicLogin = loginSharedPref.getString("profilePic", null);
+//        statusNormal = loginSharedPref.getInt("status", 0);
 //
-//        } else if (stats == 2) {
-//            SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
-//            Name = fbPref.getString("FbName", null);
-//            userName = fbPref.getString("userName", null);
-//            fbId = fbPref.getString("fbId", null);
-//            profilePic = "https://graph.facebook.com/" + fbId + "/picture";
-//
-//        } else if (stats == 3) {
-//            SharedPreferences twitterPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
-//            Name = twitterPref.getString("Name", null);
-//            userName = twitterPref.getString("userName", null);
-//            profilePic = twitterPref.getString("ProfilePic", null);
-//
+//        if (statusNormal == 1) {
+//            tvNameInProf.setText(firstName);
+//            tvUserNameInProf.setText("@" + userNameLogin);
 //        }
-
-//        tvNameInProf.setText(Name);
-//        tvUserNameInProf.setText("@" + userName);
-//        userProfileImageInProf.setVisibility(View.VISIBLE);
-//        Picasso.with(ProfileActivity.this).load(profilePic).into(userProfileImageInProf);
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, USER_BIO_URL,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        JSONObject jsonObject;
-                        JSONArray jsonArray;
-
-                        try {
-                            jsonObject = new JSONObject(response);
-                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
-                                jsonArray = jsonObject.getJSONArray(KEY_RESULT);
-                                for (int i = 0; i < jsonArray.length(); i++) {
-//                                    UserDetails userDetails = new UserDetails();
-                                    JSONObject userJson = jsonArray.getJSONObject(i);
-
-                                    followerId = userJson.getString("id");
-                                    Name = userJson.getString("fname") + " " + userJson.getString("lname");
-                                    if (!Name.equals("")) {
-                                        tvNameInProf.setText(Name);
-                                    }
-                                    userName = userJson.getString("username");
-                                    if (!userName.equals("")) {
-                                        tvUserNameInProf.setText("@" + userName);
-                                    }
-                                    records = userJson.getString("records");
-                                    if (!records.equals("")) {
-                                        tv_records.setText("Records: " + records);
-                                    }
-                                    fans = userJson.getString("fans");
-                                    if (!fans.equals("")) {
-                                        tv_fans.setText("Fans: " + fans);
-                                    }
-                                    followers = userJson.getString("followers");
-                                    if (!followers.equals("")) {
-                                        tv_following.setText("Following: " + followers);
-                                    }
-                                    profilePic = userJson.getString("profilepic");
-                                    userProfileImageInProf.setVisibility(View.VISIBLE);
-                                    Picasso.with(ProfileActivity.this).load(profilePic).into(userProfileImageInProf);
-                                    coverPic = userJson.getString("coverpic");
-                                    Picasso.with(ProfileActivity.this).load(coverPic).into(userCover);
-                                }
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        String errorMsg = "";
-                        if (error instanceof TimeoutError) {
-                            errorMsg = "Internet connection timed out";
-                        } else if (error instanceof NoConnectionError) {
-                            errorMsg = "There is no connection";
-                        } else if (error instanceof AuthFailureError) {
-                            errorMsg = "AuthFailureError";
-                        } else if (error instanceof ServerError) {
-                            errorMsg = "We are facing problem in connecting to server";
-                        } else if (error instanceof NetworkError) {
-                            errorMsg = "We are facing problem in connecting to network";
-                        } else if (error instanceof ParseError) {
-                            errorMsg = "ParseError";
-                        }
-                        Toast.makeText(getApplicationContext(), errorMsg + " dumbo", Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put(KEY, "passed");
-                params.put(USER_ID, String.valueOf(stats));
-                return params;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        requestQueue.add(stringRequest);
-    }
+//
+//        if (profilePicLogin != null) {
+//            //ivProfile.setVisibility(View.GONE);
+//            userProfileImageInProf.setVisibility(View.VISIBLE);
+//            Picasso.with(ProfileActivity.this).load(profilePicLogin).into(userProfileImageInProf);
+//        }
+//
+//
+//        SharedPreferences twitterPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
+//        Name = twitterPref.getString("Name", null);
+//        userName = twitterPref.getString("userName", null);
+//        profilePic = twitterPref.getString("ProfilePic", null);
+//        statusTwitter = twitterPref.getInt("status", 0);
+//
+//        if (statusTwitter == 1) {
+//            tvNameInProf.setText(Name);
+//            tvUserNameInProf.setText("@" + userName);
+//        }
+//
+//        if (profilePic != null) {
+//            //ivProfile.setVisibility(View.GONE);
+//            userProfileImageInProf.setVisibility(View.VISIBLE);
+//            Picasso.with(ProfileActivity.this).load(profilePic).into(userProfileImageInProf);
+//        }
+//
+//
+//        SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+//        fbName = fbPref.getString("FbName", null);
+//        fbUserName = fbPref.getString("userName", null);
+//        fbId = fbPref.getString("fbId", null);
+//        statusFb = fbPref.getInt("status", 0);
+//
+//        if (statusFb == 1) {
+//            tvNameInProf.setText(fbName);
+//            tvUserNameInProf.setText("@" + fbName);
+//        }
+//
+//        if (fbId != null) {
+//            //ivProfile.setVisibility(View.GONE);
+//            userProfileImageInProf.setVisibility(View.VISIBLE);
+//            Picasso.with(ProfileActivity.this).load("https://graph.facebook.com/" + fbId + "/picture").into(userProfileImageInProf);
+//        }
+//    }
 
     public void fetchGenreNames() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENRE_NAMES_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -619,7 +690,7 @@ public class ProfileActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(ProfileActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ProfileActivity.this, error.toString(), Toast.LENGTH_LONG).show();
                         String errorMsg = error.toString();
                         Log.d("Error", errorMsg);
                     }
@@ -636,7 +707,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     public void fetchRecordings() {
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDING_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -652,7 +723,7 @@ public class ProfileActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).show();
+                        // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
                         String errorMsg = error.toString();
                         Log.d("Error", errorMsg);
                     }
@@ -674,7 +745,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         final String fid = follower_Id;
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, FOLLOW_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, USERS_BIO,
                 new Response.Listener<String>() {
 
                     @Override
@@ -684,17 +755,29 @@ public class ProfileActivity extends AppCompatActivity {
 //                        Toast.makeText(getApplicationContext(), "" + rsp, Toast.LENGTH_SHORT).show();
 //                        Log.d("ReturnData", response);
 
-                        JSONObject jsonObject, jsobj;
+                        JSONObject jsonObject;
+                        JSONArray jsonArray;
 
                         try {
                             jsonObject = new JSONObject(response);
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
-                                jsobj = jsonObject.getJSONObject("response");
-                                String msg = jsobj.getString("msg");
-                                Toast.makeText(ProfileActivity.this, msg, Toast.LENGTH_SHORT).show();
-                                String followers = jsobj.getString("follow_count");
-                                if (!followers.equals("")) {
-                                    tv_following.setText("Following: " + followers);
+                                jsonArray = jsonObject.getJSONArray(KEY_RESULT);
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    UserDetails userDetails = new UserDetails();
+                                    JSONObject userJson = jsonArray.getJSONObject(i);
+
+                                    records = userJson.getString("records");
+                                    if (!records.equals("")) {
+                                        tv_records.setText("Records: " + records);
+                                    }
+                                    fans = userJson.getString("fans");
+                                    if (!fans.equals("")) {
+                                        tv_fans.setText("Fans: " + fans);
+                                    }
+                                    followers = userJson.getString("follow_count");
+                                    if (!followers.equals("")) {
+                                        tv_following.setText("Following: " + followers);
+                                    }
                                 }
                             }
                         } catch (JSONException e) {
@@ -770,7 +853,7 @@ public class ProfileActivity extends AppCompatActivity {
                 String filename = "myfile";
                 String outputString = "Hello world!";
 
-                URL aurl = new URL("http://52.41.33.64/api/upload_cover_melody_file.php");
+                URL aurl = new URL("http://35.165.96.167/api/upload_cover_melody_file.php");
 
                 URLConnection connection = aurl.openConnection();
                 connection.connect();

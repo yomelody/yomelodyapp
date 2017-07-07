@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.instamelody.instamelody.utils.Const.ServiceType.CONTACT_LIST;
+
 /**
  * Created by Shubhansh Jaiswal on 04/05/17.
  */
@@ -45,10 +47,10 @@ public class ContactsActivity extends AppCompatActivity {
     ContactsAdapter adapter;
     RecyclerView recyclerView;
     ArrayList<Contacts> contactList = new ArrayList<>();
-    String CONTACTS_LIST_URL = "http://52.41.33.64/api/contactList.php";
     public static Button btnCancel, btnOK;
     ImageView discover, message, profile, audio_feed, ivBackButton, ivHomeButton;
     String userId = "";
+    public static RelativeLayout rlNoContacts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +83,7 @@ public class ContactsActivity extends AppCompatActivity {
         message = (ImageView) findViewById(R.id.message);
         profile = (ImageView) findViewById(R.id.profile);
         audio_feed = (ImageView) findViewById(R.id.audio_feed);
+        rlNoContacts = (RelativeLayout) findViewById(R.id.rlNoContacts);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewContacts);
         recyclerView.setHasFixedSize(true);
@@ -164,7 +167,7 @@ public class ContactsActivity extends AppCompatActivity {
     }
 
     public void getContacts() {
-        final StringRequest stringRequest = new StringRequest(Request.Method.POST, CONTACTS_LIST_URL,
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, CONTACT_LIST,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -202,7 +205,7 @@ public class ContactsActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("myid", userId );
+                params.put("myid", userId);
                 params.put("key", "passed");
 
                 return params;

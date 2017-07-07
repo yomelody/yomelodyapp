@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.instamelody.instamelody.utils.Const.ServiceType.USER_CHAT_ID;
 
 /**
  * Created by Shubhansh Jaiswal on 04/05/17.
@@ -56,7 +57,6 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
     ArrayList<Contacts> contactsList = new ArrayList<>();
     ArrayList<String> rList = new ArrayList<String>();
     //    Set<String> recieverId = new HashSet<>();
-    String USER_CHAT_ID = "http://52.41.33.64/api/user_chat_id.php";
     String recieverId = "";
     String recieverName = "";
     String receiverToken = "";
@@ -196,7 +196,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                     @Override
                     public void onResponse(String response) {
 
-//                        Toast.makeText(context, " Shubz" + response, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context, " Shubz" + response, Toast.LENGTH_LONG).show();
 
                         JSONObject jsonObject;
                         try {

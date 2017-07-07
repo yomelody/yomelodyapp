@@ -99,7 +99,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     ArrayList instrument_url_count = new ArrayList();
     ArrayList<String> fetch_url_arrayList = new ArrayList<>();
     static int duration1, currentPosition;
-    int audio_count_play = 0;
 
     public InstrumentListAdapter(ArrayList<MelodyInstruments> instrumentList, Context context) {
         this.instrumentList = instrumentList;
@@ -196,6 +195,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     } else {
                         // the event was fired from code and you shouldn't call player.seekTo()
                     }
+
 //
                 }
 
@@ -239,7 +239,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
-
         final MelodyInstruments instruments = instrumentList.get(listPosition);
         String abc = instrumentList.get(listPosition).getInstrumentFile();
 //        Toast.makeText(context, "" + abc, Toast.LENGTH_SHORT).show();
@@ -263,8 +262,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             holder.tvUserName.setText("@" + userName);
         } else if (fbName != null) {
             holder.tvUserName.setText("@" + fbName);
-        } else
-            holder.tvUserName.setText("@" + instruments.getUserName());
+        }else
+        holder.tvUserName.setText("@" + instruments.getUserName());
         holder.tvInstrumentName.setText(instruments.getInstrumentName());
 
         holder.tvInstrumentLength.setText(instruments.getInstrumentLength());
@@ -278,16 +277,13 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
 
         audioValue = instruments.getAudioType();
-        if(audio_count_play==0) {
-
-
-            holder.ivPlay.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    holder.ivPlay.setVisibility(v.GONE);
-                    holder.ivPause.setVisibility(v.VISIBLE);
-                    instruments_url.add(instrumentFile);
-                    instrumentFile = instruments.getInstrumentFile();
+        holder.ivPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                holder.ivPlay.setVisibility(v.GONE);
+                holder.ivPause.setVisibility(v.VISIBLE);
+                instruments_url.add(instrumentFile);
+                instrumentFile = instruments.getInstrumentFile();
                 /*for (int i = 0; i < instrument_url_count.size(); i++) {
                     Iterator iter = instrument_url_count.iterator();
                     while (iter.hasNext()) {
@@ -298,50 +294,50 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 }*/
 
 
-                    //   Log.d("instruments_url", instrumentFile);
-                    instrumentName = instruments.getInstrumentName();
+                //   Log.d("instruments_url", instrumentFile);
+                instrumentName = instruments.getInstrumentName();
 //                Intent i = new Intent("fetchingInstruments");
 //                i.putExtra("instruments", instrumentFile);
 //                LocalBroadcastManager.getInstance(context).sendBroadcast(i);
 
 
-                    try {
-                        Integer s = listPosition + 1;
+                try {
+                    Integer s = listPosition +1;
 
-                        if (getItemCount() > s && instrumentFile != null) {
+                    if (getItemCount() > s && instrumentFile != null) {
+                        playAudio();
+                        holder.primarySeekBarProgressUpdater();
+                    } else if (getItemCount() + 1 > s) {
+                        if (getItemCount() == 1 || getItemCount() == 2) {
                             playAudio();
                             holder.primarySeekBarProgressUpdater();
-                        } else if (getItemCount() + 1 > s) {
-                            if (getItemCount() == 1 || getItemCount() == 2) {
-                                playAudio();
-                                holder.primarySeekBarProgressUpdater();
-                            } else
-                                playAudio1();
-                            holder.primarySeekBarProgressUpdater();
-                        } else {
-                            playAudio();
-                            holder.primarySeekBarProgressUpdater();
-                        }
+                        } else
+                            playAudio1();
+                        holder.primarySeekBarProgressUpdater();
+                    } else {
+                        playAudio();
+                        holder.primarySeekBarProgressUpdater();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+                mp.seekTo(length);
+                mp.start();
+                if (mp.equals(duration1)) {
+                    try {
+                        playAudio();
+                        playAudio1();
+                        holder.primarySeekBarProgressUpdater();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-
-
-                    mp.seekTo(length);
-                    mp.start();
-                    if (mp.equals(duration1)) {
-                        try {
-                            playAudio();
-                            playAudio1();
-                            holder.primarySeekBarProgressUpdater();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
                 }
-            });
-        }
+
+            }
+        });
+
         holder.ivPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

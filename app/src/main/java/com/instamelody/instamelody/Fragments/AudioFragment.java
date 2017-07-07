@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TabHost;
 import android.widget.Toast;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
@@ -35,9 +36,11 @@ import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -49,7 +52,10 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 import static android.content.Context.MODE_PRIVATE;
+import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
+import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
 /**
  * Created by Saurabh Singh on 4/18/2017.
@@ -61,7 +67,6 @@ public class AudioFragment extends Fragment {
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
     ArrayList<Genres> genresArrayList = new ArrayList<>();
-    private String RECORDING_URL = "http://52.41.33.64/api/recordings.php";
     private String ID = "id";
     private String KEY = "key";
     private String STATION = "station";
@@ -72,7 +77,6 @@ public class AudioFragment extends Fragment {
 
     String recordingId, addedBy, recordingTopic, userName, dateAdded, likeCount, playCount, commentCount, shareCount, profileUrl, coverUrl, genre, recordings;
 
-    String GENRE_NAMES_URL = "http://52.41.33.64/api/genere.php";
     String KEY_GENRE_NAME = "name";
     String KEY_GENRE_ID = "id";
     String KEY_FLAG = "flag";
@@ -102,11 +106,12 @@ public class AudioFragment extends Fragment {
         SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
         fetchGenreNames();
-        if (strName == null) {
-            fetchRecordings();
-        } else {
-            fetchRecordingsFilter();
-        }
+        fetchRecordings();
+//        if (strName == null) {
+//            fetchRecordings();
+//        } else {
+//            fetchRecordingsFilter();
+//        }
 
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
@@ -133,7 +138,7 @@ public class AudioFragment extends Fragment {
 
 
     public void fetchGenreNames() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENRE_NAMES_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -182,17 +187,17 @@ public class AudioFragment extends Fragment {
                             public void onTabChanged(String arg0) {
                                 genreString = arg0;
                                 int currentTab = host.getCurrentTab();
-                                if (currentTab==0){
-                                    genreString= "";
-                                }else {
+                                if (currentTab == 0) {
+                                    genreString = "";
+                                } else {
                                     genreString = genresArrayList.get(currentTab).getId();
                                 }
 //                                fetchRecordings();
-                                if (strName == null) {
-                                    fetchRecordings();
-                                } else {
-                                    fetchRecordingsFilter();
-                                }
+//                                if (strName == null) {
+//                                    fetchRecordings();
+//                                } else {
+//                                    fetchRecordingsFilter(strname);
+//                                }
 //                                Toast.makeText(getActivity(), "beta: " + genreString, Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -233,7 +238,7 @@ public class AudioFragment extends Fragment {
 
     public void fetchRecordings() {
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDING_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -243,7 +248,7 @@ public class AudioFragment extends Fragment {
                         Log.d("ReturnData", response);
                         recordingList.clear();
                         recordingsPools.clear();
-                        new ParseContents(getActivity()).parseAudio(response, recordingList,recordingsPools);
+                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                     }
                 },
@@ -283,9 +288,9 @@ public class AudioFragment extends Fragment {
     }
 
 
-    public void fetchRecordingsFilter() {
+    public void fetchRecordingsFilter(final String strname) {
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDING_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -294,7 +299,8 @@ public class AudioFragment extends Fragment {
 
                         Log.d("ReturnData", response);
                         recordingList.clear();
-                        new ParseContents(getActivity()).parseAudio(response, recordingList,recordingsPools);
+                        recordingsPools.clear();
+                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
 
                     }
@@ -328,7 +334,7 @@ public class AudioFragment extends Fragment {
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
-                params.put(FILTER_TYPE, strName);
+                params.put(FILTER_TYPE, strname);
                 params.put(FILTER, "extrafilter");
                 return params;
             }
@@ -337,96 +343,6 @@ public class AudioFragment extends Fragment {
         requestQueue.add(stringRequest);
     }
 
-
-    class DownloadFileFromURL extends AsyncTask<String, String, String> {
-        public DownloadFileFromURL() {
-
-        }
-
-        /**
-         * Before starting background thread
-         */
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            System.out.println("Starting download");
-
-            pDialog = new ProgressDialog(getActivity());
-            pDialog.setMessage("Loading melody pack...");
-            pDialog.setIndeterminate(false);
-            pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            pDialog.setCancelable(false);
-            pDialog.show();
-
-        }
-
-        /**
-         * Downloading file in background thread
-         */
-        @Override
-        protected String doInBackground(String... url) {
-            int count;
-            try {
-
-                URL aurl = new URL(url[0]);
-
-                URLConnection connection = aurl.openConnection();
-                connection.connect();
-               /* // getting file length
-                int lengthOfFile = connection.getContentLength();
-
-                // input stream to read file - with 8k buffer
-                InputStream input = new BufferedInputStream(aurl.openStream(), 8192);
-
-                Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
-
-                OutputStream output;
-                if (isSDPresent) {
-                    // yes SD-card is present
-                    output = new FileOutputStream("sdcard/InstaMelody/Downloads/Melodies/" + melodyName + "/" + instrumentName + ".mp3");
-                } else {
-                    // Sorry
-                    output = new FileOutputStream(getFilesDir() + "/InstaMelody/Downloads/Melodies/" + melodyName + "/" + instrumentName + ".mp3");
-                }
-
-                // Output stream to write file
-
-                byte data[] = new byte[1024];
-
-                long total = 0;
-                while ((count = input.read(data)) != -1) {
-                    total += count;
-
-//                    publishProgress(""+(int)((total*100)/lengthOfFile));
-
-                    // writing data to file
-                    output.write(data, 0, count);
-                }
-
-                // flushing output
-                output.flush();
-
-                // closing streams
-                output.close();
-                input.close();*/
-
-            } catch (Exception e) {
-                Log.e("Error: ", e.getMessage());
-            }
-            return null;
-        }
-
-        /**
-         * After completing background task
-         **/
-        @Override
-        protected void onPostExecute(String file_url) {
-            System.out.println("Downloaded");
-            pDialog.dismiss();
-
-        }
-
-    }
 
     private TabHost.TabContentFactory createTabContent() {
         return new TabHost.TabContentFactory() {
@@ -460,7 +376,7 @@ public class AudioFragment extends Fragment {
                 String filename = "myfile";
                 String outputString = "Hello world!";
 
-                URL aurl = new URL("http://52.41.33.64/api/recordings.php");
+                URL aurl = new URL("http://35.165.96.167/api/recordings.php");
 
                 URLConnection connection = aurl.openConnection();
                 connection.connect();

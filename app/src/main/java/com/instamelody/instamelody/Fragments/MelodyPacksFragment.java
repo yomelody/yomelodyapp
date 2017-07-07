@@ -42,9 +42,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
+import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
 
 /**
- * Created by Shubhansh on 12/15/2016.
+ * Created by Shubhansh Jaiswal on 11/29/2016.
  */
 
 public class MelodyPacksFragment extends Fragment {
@@ -55,8 +57,7 @@ public class MelodyPacksFragment extends Fragment {
     String KEY_FLAG = "flag";
     String KEY_GENRE_ID = "id";
     String KEY_RESPONSE = "response";//JSONArray
-    String MELODY_PACKS_URL = "http://52.41.33.64/api/melody.php";
-    String GENRE_NAMES_URL = "http://52.41.33.64/api/genere.php";
+
     String KEY = "key";
     String GENRE = "genere";
     //    String genreString = "1";
@@ -93,7 +94,7 @@ public class MelodyPacksFragment extends Fragment {
     }
 
     public void fetchGenreNames() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENRE_NAMES_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -149,7 +150,7 @@ public class MelodyPacksFragment extends Fragment {
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
                         } else if (error instanceof NoConnectionError) {
-                            errorMsg = "Please check your internet connection";
+                            errorMsg = "There is no connection";
                         } else if (error instanceof AuthFailureError) {
 //                            errorMsg = "AuthFailureError";
                         } else if (error instanceof ServerError) {
@@ -159,16 +160,8 @@ public class MelodyPacksFragment extends Fragment {
                         } else if (error instanceof ParseError) {
 //                            errorMsg = "ParseError";
                         }
-                        //Abhishek put it on try catch code start's from here
-                        try{
-                            Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
-                            Log.d("Error", errorMsg);
-                        }
-                        catch (NullPointerException e){
-                            Log.d("Error","Something went wrong here");
-                        }
-                        //end here
-
+                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
                     }
                 }) {
             @Override
@@ -182,7 +175,7 @@ public class MelodyPacksFragment extends Fragment {
     }
 
     public void fetchMelodyPacks() {
-        final StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY_PACKS_URL,
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -213,7 +206,7 @@ public class MelodyPacksFragment extends Fragment {
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
                         } else if (error instanceof NoConnectionError) {
-                            errorMsg = "Please check your internet connection";
+                            errorMsg = "There is no connection";
                         } else if (error instanceof AuthFailureError) {
                             errorMsg = "AuthFailureError";
                         } else if (error instanceof ServerError) {
@@ -223,8 +216,7 @@ public class MelodyPacksFragment extends Fragment {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        //Abhishek commented this code
-               //         Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {

@@ -79,6 +79,8 @@ import retrofit2.Call;
 import static android.R.attr.id;
 import static android.R.attr.name;
 import static com.instamelody.instamelody.R.drawable.twitter;
+import static com.instamelody.instamelody.utils.Const.ServiceType.LOGIN;
+import static com.instamelody.instamelody.utils.Const.ServiceType.REGISTER;
 
 /**
  * Created by Saurabh Singh on 01/04/2017
@@ -98,7 +100,6 @@ public class SignInActivity extends AppCompatActivity {
     String KEY_PROFILE_PIC = "profile_pic_url";
 
 
-    String REGISTER_URL = "http://52.41.33.64/api/registration.php";
 
     String DeviceToken;
     String f_name;
@@ -108,7 +109,6 @@ public class SignInActivity extends AppCompatActivity {
     String fbProfilePic;
     String FbProf1;
     TextView tvSettings, tvDone, tvSignUp, tvFirstName, tvUserName;
-    String LOGIN_URL = "http://52.41.33.64/api/login.php";
     String KEY = "key";
     String KEY_EMAIL = "email";
     String KEY_PASSWORD = "password";
@@ -218,7 +218,7 @@ public class SignInActivity extends AppCompatActivity {
                         new GraphRequest.GraphJSONObjectCallback() {
                             @Override
                             public void onCompleted(JSONObject object, GraphResponse response) {
-                                //Toast.makeText(SignInActivity.this, "" + object, Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(SignInActivity.this, "" + object, Toast.LENGTH_LONG).show();
                                 Log.d("Check",""+object);
 
                                 try {
@@ -359,7 +359,7 @@ public class SignInActivity extends AppCompatActivity {
                     "Auth Token Received: " +
                     result.data.getAuthToken().token;
 
-               /* Toast.makeText(SignInActivity.this, "" + output, Toast.LENGTH_SHORT).show();*/
+               /* Toast.makeText(SignInActivity.this, "" + output, Toast.LENGTH_LONG).show();*/
             //loginTwitter(result);
             TwitterSession session = result.data;
             Twitter twitter = Twitter.getInstance();
@@ -439,7 +439,7 @@ public class SignInActivity extends AppCompatActivity {
         final String password = etPassword.getText().toString().trim();
         Log.d("DeviceToken", DeviceToken);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, LOGIN_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, LOGIN,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -541,7 +541,7 @@ public class SignInActivity extends AppCompatActivity {
     public void registerSpecialFB() {
         SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
         FbProf1 = fbPref.getString("profilePicFB", null);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -606,7 +606,7 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY_USER_TYPE, "2");
                 params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);
                 params.put(KEY_DEVICE_TYPE, "android");
-//                params.put(KEY_PROFILE_PIC, FbProf1);
+                params.put(KEY_PROFILE_PIC, FbProf1);
                 return params;
             }
         };
@@ -615,7 +615,7 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     public void registrationSpecialTwitter() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -682,7 +682,7 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY_USER_TYPE, "3");
                 params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);
                 params.put(KEY_DEVICE_TYPE, "android");
-//                params.put(KEY_PROFILE_PIC, photoUrlNormalSize);
+                params.put(KEY_PROFILE_PIC, photoUrlNormalSize);
                 return params;
             }
         };

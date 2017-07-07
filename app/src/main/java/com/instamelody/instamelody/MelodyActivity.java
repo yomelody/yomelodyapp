@@ -47,7 +47,7 @@ public class MelodyActivity extends AppCompatActivity {
 
     public Button btnMelodyPacks, btnRecordings, btnSubscriptions, btnAppBarSearchButton;
     ArrayList<Genres> genresArrayList = new ArrayList<>();
-    String GENRE_NAMES_URL = "http://52.41.33.64/api/genere.php";
+    String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
     String KEY_GENRE_NAME = "name";
     String KEY_GENRE_ID = "id";
     String KEY_FLAG = "flag";
@@ -103,7 +103,6 @@ public class MelodyActivity extends AppCompatActivity {
                 btnMelodyPacks.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnRecordings.setBackgroundColor(Color.parseColor("#FFFFFF"));
                 btnSubscriptions.setBackgroundColor(Color.parseColor("#E4E4E4"));
-
 
                 RecordingsFragment rf = new RecordingsFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_melody, rf).commit();

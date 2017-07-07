@@ -62,7 +62,6 @@
 
     </RelativeLayout>
 
-
     <android.support.v7.widget.SearchView
         android:id="@+id/search1"
         android:layout_width="300dp"
@@ -75,11 +74,11 @@
     <Button
         android:id="@+id/btnCancel"
         android:layout_width="90dp"
-        android:layout_height="41dp"
+        android:layout_height="40dp"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/search1"
         android:background="#E4E4E4"
-        android:text="cancel"
+        android:text="Cancel"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         android:textColor="#4575FC"
         android:visibility="gone" />
@@ -109,6 +108,4 @@
         android:background="#FFF7FB"
         android:visibility="gone">
     </ListView>
-
-
 </RelativeLayout>

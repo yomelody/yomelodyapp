@@ -29,7 +29,6 @@
             android:src="@drawable/left_arrow" />
 
         <RelativeLayout
-            android:id="@+id/rlTafree"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
