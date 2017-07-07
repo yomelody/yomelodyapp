@@ -449,6 +449,7 @@ public class SignInActivity extends AppCompatActivity {
                             JSONObject jsonObject = new JSONObject(successmsg);
                             flag = jsonObject.getString("flag");
                             if (flag.equals("unsuccess")) {
+                                btnLogIn.setEnabled(true);
                                 Toast.makeText(SignInActivity.this, "Invalid Email or Password", Toast.LENGTH_SHORT).show();
                             }
                             JSONObject rspns = jsonObject.getJSONObject("response");
