@@ -46,7 +46,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
 
 /**
- * Created by Shubahansh Jaiswal on 11/29/2016.
+ * Created by Shubhansh on 12/15/2016.
  */
 
 public class MelodyPacksFragment extends Fragment {
@@ -57,7 +57,6 @@ public class MelodyPacksFragment extends Fragment {
     String KEY_FLAG = "flag";
     String KEY_GENRE_ID = "id";
     String KEY_RESPONSE = "response";//JSONArray
-
     String KEY = "key";
     String GENRE = "genere";
     //    String genreString = "1";
