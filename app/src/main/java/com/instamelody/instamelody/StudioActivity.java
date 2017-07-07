@@ -55,6 +55,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -107,10 +108,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.provider.Contacts.SettingsColumns.KEY;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ADD_RECORDINGS;
-import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
 import static com.instamelody.instamelody.utils.Const.ServiceType.UPLOAD_COVER_MELODY_FILE;
 
+/**
+ * Created by Shubhansh Jaiswal on 11/29/2016.
+ */
 
 public class StudioActivity extends AppCompatActivity {
 
@@ -130,6 +133,7 @@ public class StudioActivity extends AppCompatActivity {
     public static final int MY_PERMISSIONS_REQUEST_MICROPHONE = 200;
     public static final int MY_PERMISSIONS_REQUEST_STORAGE = 201;
     private static final int SAMPLING_RATE = 44100;
+    int MY_SOCKET_TIMEOUT_MS = 30000;
     private int PICK_IMAGE_REQUEST = 1;
     private Bitmap bitmap;
     private String FILE_RECORDING = "";
@@ -181,10 +185,6 @@ public class StudioActivity extends AppCompatActivity {
     private static String audioFilePath;
     private static String instrumentFilePath;
     Uri audioUri;
-
-    String KEY_GENRE_NAME = "name";
-    String KEY_FLAG = "flag";
-    String KEY_RESPONSE = "response";//JSONArray
 
     String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, melodyPackId, instrumentCount;
     String selectedGenre;
@@ -288,9 +288,6 @@ public class StudioActivity extends AppCompatActivity {
         SharedPreferences loginSharedPref1 = this.getSharedPreferences("Url_recording", MODE_PRIVATE);
         fetchRecordingUrl = loginSharedPref1.getString("Recording_url", null);
 
-        fetchGenreNames();
-
-
         int hours = (int) (timeElapsed / 3600000);
         int minutes = (int) (timeElapsed - hours * 3600000) / 60000;
         int seconds = (int) (timeElapsed - hours * 3600000 - minutes * 60000) / 1000;
@@ -344,9 +341,7 @@ public class StudioActivity extends AppCompatActivity {
 
                 LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
 
-
-//                String audioUrl = "http://35.165.96.167/api/uploads/melody/instruments/melody_cut.mp3";
-                String audioUrl = "http://35.165.96.167/api/uploads/melody/instruments/";
+                String audioUrl = "http://wwww.instamelody.com";
 
                 Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
                 if (isSDPresent) {
@@ -1058,6 +1053,7 @@ public class StudioActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
+
             recorder.release();
         }
 
@@ -1235,7 +1231,7 @@ public class StudioActivity extends AppCompatActivity {
             int count;
             try {
 
-                URL aurl = new URL("http://35.165.96.167/api/melody.php");
+                URL aurl = new URL(MELODY);
 
                 URLConnection connection = aurl.openConnection();
                 connection.connect();
@@ -1461,8 +1457,8 @@ public class StudioActivity extends AppCompatActivity {
 //                        melodyInstruments.setAudioType("recording");
                         instrumentList.add(melodyInstruments);
                         //adapter.notifyItemInserted(instrumentList.size()-1);
-                        adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
-                        adapter.notifyDataSetChanged();
+                        /*adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+                        adapter.notifyDataSetChanged();*/
 
                         InputMethodManager inputManager = (InputMethodManager)
                                 getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -1584,53 +1580,53 @@ public class StudioActivity extends AppCompatActivity {
     }
 
 
-    public void fetchGenreNames() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        JSONObject jsonObject, genreJson;
-                        JSONArray jsonArray;
-                        String titleString;
-
-                        try {
-                            jsonObject = new JSONObject(response);
-                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
-                                jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    Genres genres = new Genres();
-                                    genreJson = jsonArray.getJSONObject(i);
-                                    titleString = genreJson.getString(KEY_GENRE_NAME);
-                                    genres.setName(titleString);
-                                    genres.setId(genreJson.getString(KEY_GENRE_ID));
-                                    genresArrayList.add(genres);
-                                    genresName.add(i, genresArrayList.get(i).getName());
-                                    genresId.add(i, genresArrayList.get(i).getId());
-                                }
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
-                        String errorMsg = error.toString();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                return params;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        requestQueue.add(stringRequest);
-    }
+//    public void fetchGenreNames() {
+//        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENRE_NAMES_URL,
+//                new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//
+//                        JSONObject jsonObject, genreJson;
+//                        JSONArray jsonArray;
+//                        String titleString;
+//
+//                        try {
+//                            jsonObject = new JSONObject(response);
+//                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
+//                                jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
+//                                for (int i = 0; i < jsonArray.length(); i++) {
+//                                    Genres genres = new Genres();
+//                                    genreJson = jsonArray.getJSONObject(i);
+//                                    titleString = genreJson.getString(KEY_GENRE_NAME);
+//                                    genres.setName(titleString);
+//                                    genres.setId(genreJson.getString(KEY_GENRE_ID));
+//                                    genresArrayList.add(genres);
+//                                    genresName.add(i, genresArrayList.get(i).getName());
+//                                    genresId.add(i, genresArrayList.get(i).getId());
+//                                }
+//                            }
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
+//                        String errorMsg = error.toString();
+//                        Log.d("Error", errorMsg);
+//                    }
+//                }) {
+//            @Override
+//            protected Map<String, String> getParams() {
+//                Map<String, String> params = new HashMap<String, String>();
+//                return params;
+//            }
+//        };
+//        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+//        requestQueue.add(stringRequest);
+//    }
 
     private void showFileChooser() {
         Intent intent = new Intent();
@@ -1719,8 +1715,8 @@ public class StudioActivity extends AppCompatActivity {
 
         protected void onPostExecute(String result) {
             Toast.makeText(StudioActivity.this, value1 + "  " + "SAVE", Toast.LENGTH_SHORT).show();
-            /*adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
-            adapter.notifyDataSetChanged();*/
+            adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+            adapter.notifyDataSetChanged();
             frameSync.setVisibility(View.GONE);
             progressDialog.dismiss();
         }
