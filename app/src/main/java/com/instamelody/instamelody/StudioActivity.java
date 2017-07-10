@@ -292,13 +292,8 @@ public class StudioActivity extends AppCompatActivity {
         SharedPreferences loginSharedPref1 = this.getSharedPreferences("Url_recording", MODE_PRIVATE);
         fetchRecordingUrl = loginSharedPref1.getString("Recording_url", null);
 
-<<<<<<< HEAD
-
         fetchGenreNames();
 
-
-=======
->>>>>>> 0da75bc2a3e29a862e6ddc124bb9c1fbd12965d3
         int hours = (int) (timeElapsed / 3600000);
         int minutes = (int) (timeElapsed - hours * 3600000) / 60000;
         int seconds = (int) (timeElapsed - hours * 3600000 - minutes * 60000) / 1000;
