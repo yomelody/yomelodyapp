@@ -60,6 +60,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
+import static com.instamelody.instamelody.R.id.bio_fragment;
+import static com.instamelody.instamelody.R.id.rlPartStation;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.UPLOAD_COVER_MELODY_FILE;
@@ -107,7 +109,6 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
         search1 = (SearchView) findViewById(R.id.searchOnProf);
         btnAudio = (Button) findViewById(R.id.btnAudio);
         btnActivity = (Button) findViewById(R.id.btnActivity);
@@ -124,6 +125,7 @@ public class ProfileActivity extends AppCompatActivity {
         rlFollow = (RelativeLayout) findViewById(R.id.rlFollow);
         ivUnfollow = (ImageView) findViewById(R.id.ivUnfollow);
         ivFollow = (ImageView) findViewById(R.id.ivFollow);
+        tab1 = (RelativeLayout) findViewById(R.id.tab1);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewProfile);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
