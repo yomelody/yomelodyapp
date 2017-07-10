@@ -54,11 +54,9 @@ import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Models.UserDetails;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.squareup.picasso.Picasso;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -71,9 +69,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import de.hdodenhof.circleimageview.CircleImageView;
-
 import static com.instamelody.instamelody.R.id.bio_fragment;
 import static com.instamelody.instamelody.R.id.rlPartStation;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
@@ -94,7 +90,6 @@ public class ProfileActivity extends AppCompatActivity {
     String genreString = "1";
     String USER_ID = "user_id";
     String FOLLOWER_ID = "followerID";
-
     private String ID = "id";
     private String KEY = "key";
     private String GENRE = "genere";
@@ -102,7 +97,6 @@ public class ProfileActivity extends AppCompatActivity {
     private String FILE_TYPE = "file_type";
     private String FILTER_TYPE = "filter_type";
     private String FILTER = "filter";
-
     String flag;
 
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
@@ -133,7 +127,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         
-         search1 = (SearchView) findViewById(R.id.searchOnProf);
+        search1 = (SearchView) findViewById(R.id.searchOnProf);
         btnAudio = (Button) findViewById(R.id.btnAudio);
         btnActivity = (Button) findViewById(R.id.btnActivity);
         btnBio = (Button) findViewById(R.id.btnBio);
@@ -142,7 +136,6 @@ public class ProfileActivity extends AppCompatActivity {
         ivFilterProfile = (ImageView) findViewById(R.id.ivFilterProfile);
         btnCancel = (Button) findViewById(R.id.btnCancel);
         ivToMelody = (ImageView) findViewById(R.id.ivToMelody);
-
         rlPartProfile = (RelativeLayout) findViewById(R.id.rlPartProfile);
         rlFragmentActivity = (RelativeLayout) findViewById(R.id.rlFragmentActivity);
         rlFragmentBio = (RelativeLayout) findViewById(R.id.rlFragmentBio);
@@ -150,20 +143,17 @@ public class ProfileActivity extends AppCompatActivity {
         ivUnfollow = (ImageView) findViewById(R.id.ivUnfollow);
         ivFollow = (ImageView) findViewById(R.id.ivFollow);
         tab1 = (RelativeLayout) findViewById(R.id.tab1);
-
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewProfile);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
         ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
         ivAudio_feed = (ImageView) findViewById(R.id.audio_feed);
         ivDiscover = (ImageView) findViewById(R.id.discover);
         ivMessage = (ImageView) findViewById(R.id.message);
         ivProfile = (ImageView) findViewById(R.id.profile);
-
         userProfileImageInProf = (CircleImageView) findViewById(R.id.userProfileImageInProf);
         userCover = (ImageView) findViewById(R.id.userCover);
         tvNameInProf = (TextView) findViewById(R.id.tvNameInProf);
@@ -179,47 +169,56 @@ public class ProfileActivity extends AppCompatActivity {
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
         SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
 
-        if (bundle != null) {
-            String showProfileUserId = bundle.getString("showProfileUserId");
-            if (showProfileUserId != null) {
-                userId = showProfileUserId;
-            }
-            flag = "1";
-        } else {
-            if (loginSharedPref.getString("userId", null) != null) {
-                userId = loginSharedPref.getString("userId", null);
-            } else if (fbPref.getString("userId", null) != null) {
-                userId = fbPref.getString("userId", null);
-            } else if (twitterPref.getString("userId", null) != null) {
-                userId = twitterPref.getString("userId", null);
-            }
-            flag = "2";
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
         }
 
-        if (userId != null) {
-            if (flag.equals("1")) {
-                fetchUserBio();
-            }
-//            if (flag.equals("2")) {
-//                fetchUserFromPrefs();
+        if (bundle != null) {
+            showProfileUserId = bundle.getString("showProfileUserId");
+//            if (showProfileUserId != null) {
+//                userId = showProfileUserId;
 //            }
-            /*fetchGenreNames();
-            fetchRecordings();*/
-            fetchGenreNames();
-            if (strName == null) {
-                fetchRecordings();
-            } else {
-                fetchRecordingsFilter();
+        } else {
+            if (loginSharedPref.getString("userId", null) != null) {
+                showProfileUserId = loginSharedPref.getString("userId", null);
+            } else if (fbPref.getString("userId", null) != null) {
+                showProfileUserId = fbPref.getString("userId", null);
+            } else if (twitterPref.getString("userId", null) != null) {
+                showProfileUserId = twitterPref.getString("userId", null);
             }
+        }
+
+        if (showProfileUserId.equals(userId)) {
+            if (rlFollow.getVisibility() == View.VISIBLE) {
+                rlFollow.setVisibility(View.GONE);
+            }
+            if (rlMessage.getVisibility() == View.VISIBLE) {
+                rlMessage.setVisibility(View.GONE);
+            }
+        } else {
+            if (rlFollow.getVisibility() == View.GONE) {
+                rlFollow.setVisibility(View.VISIBLE);
+            }
+            if (rlMessage.getVisibility() == View.GONE) {
+                rlMessage.setVisibility(View.VISIBLE);
+            }
+        }
+
+        if (showProfileUserId != null) {
+            fetchUserBio();
+            fetchGenreNames();
+            fetchRecordings();
 
         } else {
             Toast.makeText(getApplicationContext(), "Log in to view your Profile", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             getApplicationContext().startActivity(intent);
-        }
-
-       
+        }       
 
         ivToMelody.setOnClickListener(new View.OnClickListener() {
             @Override
