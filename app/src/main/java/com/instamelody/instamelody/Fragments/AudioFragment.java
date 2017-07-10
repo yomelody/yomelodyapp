@@ -110,7 +110,7 @@ public class AudioFragment extends Fragment {
         if (strName == null) {
             fetchRecordings();
         } else {
-            fetchRecordingsFilter("");
+            fetchRecordingsFilter();
         }
 
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
@@ -288,7 +288,7 @@ public class AudioFragment extends Fragment {
     }
 
 
-    public void fetchRecordingsFilter(final String strname) {
+    public void fetchRecordingsFilter() {
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {
@@ -297,7 +297,7 @@ public class AudioFragment extends Fragment {
 
 //                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
 
-                        Log.d("ReturnData", response);
+                        Log.d("ReturnData1", response);
                         recordingList.clear();
                         recordingsPools.clear();
                         new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
@@ -330,11 +330,11 @@ public class AudioFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-//                params.put(ID, userId);
+                params.put(ID, userId);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
-                params.put(FILTER_TYPE, strname);
+                params.put(FILTER_TYPE, strName);
                 params.put(FILTER, "extrafilter");
                 return params;
             }
