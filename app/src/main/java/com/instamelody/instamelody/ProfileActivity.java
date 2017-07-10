@@ -86,7 +86,7 @@ public class ProfileActivity extends AppCompatActivity {
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
     ArrayList<Genres> genresArrayList = new ArrayList<>();
     Button btnAudio, btnActivity, btnBio, btnCancel;
-    RelativeLayout rlPartProfile, rlFragmentActivity, rlFragmentBio, rlSearch, rlFollow, rlMessage;
+    RelativeLayout rlPartProfile, rlFragmentActivity, rlFragmentBio, rlSearch, rlFollow, tab1, rlMessage;
     ImageView ivBackButton, ivHomeButton, ivAudio_feed, ivDiscover, ivMessage, ivProfile, ivSearchProfile, userCover, ivToMelody, ivFilterProfile;
     ImageView ivFollow, ivUnfollow;
     CircleImageView userProfileImageInProf;
