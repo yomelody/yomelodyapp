@@ -227,60 +227,6 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-//        SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-//        firstName = loginSharedPref.getString("firstName", null);
-//        userNameLogin = loginSharedPref.getString("userName", null);
-//        profilePicLogin = loginSharedPref.getString("profilePic", null);
-//        statusNormal = loginSharedPref.getInt("status", 0);
-//
-//        if (statusNormal == 1) {
-//            tvNameInProf.setText(firstName);
-//            tvUserNameInProf.setText("@" + userNameLogin);
-//        }
-//
-//        if (profilePicLogin != null) {
-//            //ivProfile.setVisibility(View.GONE);
-//            userProfileImageInProf.setVisibility(View.VISIBLE);
-//            Picasso.with(ProfileActivity.this).load(profilePicLogin).into(userProfileImageInProf);
-//        }
-//
-//
-//        SharedPreferences twitterPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
-//        Name = twitterPref.getString("Name", null);
-//        userName = twitterPref.getString("userName", null);
-//        profilePic = twitterPref.getString("ProfilePic", null);
-//        statusTwitter = twitterPref.getInt("status", 0);
-//
-//        if (statusTwitter == 1) {
-//            tvNameInProf.setText(Name);
-//            tvUserNameInProf.setText("@" + userName);
-//        }
-//
-//        if (profilePic != null) {
-//            //ivProfile.setVisibility(View.GONE);
-//            userProfileImageInProf.setVisibility(View.VISIBLE);
-//            Picasso.with(ProfileActivity.this).load(profilePic).into(userProfileImageInProf);
-//        }
-//
-//
-//        SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
-//        fbName = fbPref.getString("FbName", null);
-//        fbUserName = fbPref.getString("userName", null);
-//        fbId = fbPref.getString("fbId", null);
-//        statusFb = fbPref.getInt("status", 0);
-//
-//        if (statusFb == 1) {
-//            tvNameInProf.setText(fbName);
-//            tvUserNameInProf.setText("@"+fbName);
-//        }
-//
-//        if (fbId != null) {
-//            //ivProfile.setVisibility(View.GONE);
-//            userProfileImageInProf.setVisibility(View.VISIBLE);
-//            Picasso.with(ProfileActivity.this).load("https://graph.facebook.com/" + fbId + "/picture").into(userProfileImageInProf);
-//        }
-
-
         ivSearchProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -290,7 +236,6 @@ public class ProfileActivity extends AppCompatActivity {
                 btnCancel.setVisibility(View.VISIBLE);
             }
         });
-
 
         ivFilterProfile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -306,7 +251,6 @@ public class ProfileActivity extends AppCompatActivity {
                 arrayAdapter.add("Artist");
                 arrayAdapter.add("# of Instruments");
                 arrayAdapter.add("BPM");
-
 
                 builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
                     @Override
@@ -587,61 +531,6 @@ public class ProfileActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
-//    public void fetchUserFromPrefs() {
-//        SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-//        firstName = loginSharedPref.getString("firstName", null);
-//        userNameLogin = loginSharedPref.getString("userName", null);
-//        profilePicLogin = loginSharedPref.getString("profilePic", null);
-//        statusNormal = loginSharedPref.getInt("status", 0);
-//
-//        if (statusNormal == 1) {
-//            tvNameInProf.setText(firstName);
-//            tvUserNameInProf.setText("@" + userNameLogin);
-//        }
-//
-//        if (profilePicLogin != null) {
-//            //ivProfile.setVisibility(View.GONE);
-//            userProfileImageInProf.setVisibility(View.VISIBLE);
-//            Picasso.with(ProfileActivity.this).load(profilePicLogin).into(userProfileImageInProf);
-//        }
-//
-//
-//        SharedPreferences twitterPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
-//        Name = twitterPref.getString("Name", null);
-//        userName = twitterPref.getString("userName", null);
-//        profilePic = twitterPref.getString("ProfilePic", null);
-//        statusTwitter = twitterPref.getInt("status", 0);
-//
-//        if (statusTwitter == 1) {
-//            tvNameInProf.setText(Name);
-//            tvUserNameInProf.setText("@" + userName);
-//        }
-//
-//        if (profilePic != null) {
-//            //ivProfile.setVisibility(View.GONE);
-//            userProfileImageInProf.setVisibility(View.VISIBLE);
-//            Picasso.with(ProfileActivity.this).load(profilePic).into(userProfileImageInProf);
-//        }
-//
-//
-//        SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
-//        fbName = fbPref.getString("FbName", null);
-//        fbUserName = fbPref.getString("userName", null);
-//        fbId = fbPref.getString("fbId", null);
-//        statusFb = fbPref.getInt("status", 0);
-//
-//        if (statusFb == 1) {
-//            tvNameInProf.setText(fbName);
-//            tvUserNameInProf.setText("@" + fbName);
-//        }
-//
-//        if (fbId != null) {
-//            //ivProfile.setVisibility(View.GONE);
-//            userProfileImageInProf.setVisibility(View.VISIBLE);
-//            Picasso.with(ProfileActivity.this).load("https://graph.facebook.com/" + fbId + "/picture").into(userProfileImageInProf);
-//        }
-//    }
-
     public void fetchGenreNames() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
                 new Response.Listener<String>() {
@@ -672,7 +561,6 @@ public class ProfileActivity extends AppCompatActivity {
                                     spec.setIndicator(titleString);
                                     spec.setContent(createTabContent());
                                     host.addTab(spec);
-
                                 }
                             }
                         } catch (JSONException e) {
