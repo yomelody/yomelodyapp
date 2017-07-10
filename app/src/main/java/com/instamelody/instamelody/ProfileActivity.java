@@ -10,15 +10,11 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -28,7 +24,6 @@ import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
@@ -41,14 +36,10 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
-import com.instamelody.instamelody.Fragments.ActivityFragment;
-import com.instamelody.instamelody.Fragments.AudioFragment;
 import com.instamelody.instamelody.Fragments.BioFragment;
 import com.instamelody.instamelody.Fragments.ProfileActivityFragment;
 import com.instamelody.instamelody.Models.Genres;
-import com.instamelody.instamelody.Models.RecordingsData;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Models.UserDetails;
@@ -67,7 +58,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 import static com.instamelody.instamelody.R.id.bio_fragment;
@@ -103,11 +93,9 @@ public class ProfileActivity extends AppCompatActivity {
     ImageView ivFollow, ivUnfollow;
     CircleImageView userProfileImageInProf;
     TextView tvNameInProf, tvUserNameInProf, tv_records, tv_fans, tv_following;
-    String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, coverPic;
-    String userId, records, fans, followers, followerId;
+    String Name, userName, profilePic, coverPic;
+    String userId, showProfileUserId, records, fans, followers, followerId;
     String strName;
-    String userIdNormal, userIdFb, userIdTwitter;
-    int statusNormal, statusFb, statusTwitter;
     SearchView search1;
     ProgressDialog progressDialog;
     LongOperation myTask = null;
@@ -134,6 +122,7 @@ public class ProfileActivity extends AppCompatActivity {
         rlPartProfile = (RelativeLayout) findViewById(R.id.rlPartProfile);
         rlFragmentActivity = (RelativeLayout) findViewById(R.id.rlFragmentActivity);
         rlFragmentBio = (RelativeLayout) findViewById(R.id.rlFragmentBio);
+        rlMessage = (RelativeLayout) findViewById(R.id.rlMessage);
         rlFollow = (RelativeLayout) findViewById(R.id.rlFollow);
         ivUnfollow = (ImageView) findViewById(R.id.ivUnfollow);
         ivFollow = (ImageView) findViewById(R.id.ivFollow);
@@ -214,6 +203,64 @@ public class ProfileActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             getApplicationContext().startActivity(intent);
         }       
+
+        adapter = new RecordingsCardAdapter(this, recordingList, recordingsPools);
+
+        Bundle bundle = getIntent().getExtras();
+        SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+        SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
+        }
+
+        if (bundle != null) {
+            showProfileUserId = bundle.getString("showProfileUserId");
+//            if (showProfileUserId != null) {
+//                userId = showProfileUserId;
+//            }
+        } else {
+            if (loginSharedPref.getString("userId", null) != null) {
+                showProfileUserId = loginSharedPref.getString("userId", null);
+            } else if (fbPref.getString("userId", null) != null) {
+                showProfileUserId = fbPref.getString("userId", null);
+            } else if (twitterPref.getString("userId", null) != null) {
+                showProfileUserId = twitterPref.getString("userId", null);
+            }
+        }
+
+        if (showProfileUserId.equals(userId)) {
+            if (rlFollow.getVisibility() == View.VISIBLE) {
+                rlFollow.setVisibility(View.GONE);
+            }
+            if (rlMessage.getVisibility() == View.VISIBLE) {
+                rlMessage.setVisibility(View.GONE);
+            }
+        } else {
+            if (rlFollow.getVisibility() == View.GONE) {
+                rlFollow.setVisibility(View.VISIBLE);
+            }
+            if (rlMessage.getVisibility() == View.GONE) {
+                rlMessage.setVisibility(View.VISIBLE);
+            }
+        }
+
+        if (showProfileUserId != null) {
+            fetchUserBio();
+            fetchGenreNames();
+            fetchRecordings();
+
+        } else {
+            Toast.makeText(getApplicationContext(), "Log in to view your Profile", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplicationContext().startActivity(intent);
+        }
 
         ivToMelody.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -511,7 +558,7 @@ public class ProfileActivity extends AppCompatActivity {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getApplicationContext(), errorMsg + " dumbo", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -610,7 +657,6 @@ public class ProfileActivity extends AppCompatActivity {
                     public void onResponse(String response) {
 
 //                        Toast.makeText(getActivity(), ""+response, Toast.LENGTH_SHORT).show();
-
                         Log.d("ReturnData", response);
                         recordingList.clear();
                         new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
@@ -696,7 +742,6 @@ public class ProfileActivity extends AppCompatActivity {
     public void Follow(final String follower_Id) {
 
         final String fid = follower_Id;
-
         StringRequest stringRequest = new StringRequest(Request.Method.POST, USERS_BIO,
                 new Response.Listener<String>() {
 
@@ -706,7 +751,6 @@ public class ProfileActivity extends AppCompatActivity {
 //                        String rsp = response;
 //                        Toast.makeText(getApplicationContext(), "" + rsp, Toast.LENGTH_SHORT).show();
 //                        Log.d("ReturnData", response);
-
                         JSONObject jsonObject;
                         JSONArray jsonArray;
 
@@ -755,7 +799,7 @@ public class ProfileActivity extends AppCompatActivity {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getApplicationContext(), errorMsg + " dumbo", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -770,7 +814,6 @@ public class ProfileActivity extends AppCompatActivity {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
-
     }
 
     private TabHost.TabContentFactory createTabContent() {
@@ -847,7 +890,5 @@ public class ProfileActivity extends AppCompatActivity {
 
             progressDialog.dismiss();
         }
-
     }
-
 }
