@@ -93,11 +93,6 @@ public class ProfileActivity extends AppCompatActivity {
     private String ID = "id";
     private String KEY = "key";
     private String GENRE = "genere";
-    private String STATION = "station";
-    private String FILE_TYPE = "file_type";
-    private String FILTER_TYPE = "filter_type";
-    private String FILTER = "filter";
-    String flag;
 
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
