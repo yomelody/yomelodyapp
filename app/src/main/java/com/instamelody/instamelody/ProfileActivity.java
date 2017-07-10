@@ -37,6 +37,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
+import com.instamelody.instamelody.Fragments.AudioFragment;
 import com.instamelody.instamelody.Fragments.BioFragment;
 import com.instamelody.instamelody.Fragments.ProfileActivityFragment;
 import com.instamelody.instamelody.Models.Genres;
@@ -83,6 +84,10 @@ public class ProfileActivity extends AppCompatActivity {
     private String ID = "id";
     private String KEY = "key";
     private String GENRE = "genere";
+    private String STATION = "station";
+    private String FILE_TYPE = "file_type";
+    private String FILTER_TYPE = "filter_type";
+    private String FILTER = "filter";
 
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
@@ -148,64 +153,6 @@ public class ProfileActivity extends AppCompatActivity {
         
         adapter = new RecordingsCardAdapter(this, recordingList, recordingsPools);
         
-        Bundle bundle = getIntent().getExtras();
-        SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-        SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
-        SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
-
-        if (loginSharedPref.getString("userId", null) != null) {
-            userId = loginSharedPref.getString("userId", null);
-        } else if (fbPref.getString("userId", null) != null) {
-            userId = fbPref.getString("userId", null);
-        } else if (twitterPref.getString("userId", null) != null) {
-            userId = twitterPref.getString("userId", null);
-        }
-
-        if (bundle != null) {
-            showProfileUserId = bundle.getString("showProfileUserId");
-//            if (showProfileUserId != null) {
-//                userId = showProfileUserId;
-//            }
-        } else {
-            if (loginSharedPref.getString("userId", null) != null) {
-                showProfileUserId = loginSharedPref.getString("userId", null);
-            } else if (fbPref.getString("userId", null) != null) {
-                showProfileUserId = fbPref.getString("userId", null);
-            } else if (twitterPref.getString("userId", null) != null) {
-                showProfileUserId = twitterPref.getString("userId", null);
-            }
-        }
-
-        if (showProfileUserId.equals(userId)) {
-            if (rlFollow.getVisibility() == View.VISIBLE) {
-                rlFollow.setVisibility(View.GONE);
-            }
-            if (rlMessage.getVisibility() == View.VISIBLE) {
-                rlMessage.setVisibility(View.GONE);
-            }
-        } else {
-            if (rlFollow.getVisibility() == View.GONE) {
-                rlFollow.setVisibility(View.VISIBLE);
-            }
-            if (rlMessage.getVisibility() == View.GONE) {
-                rlMessage.setVisibility(View.VISIBLE);
-            }
-        }
-
-        if (showProfileUserId != null) {
-            fetchUserBio();
-            fetchGenreNames();
-            fetchRecordings();
-
-        } else {
-            Toast.makeText(getApplicationContext(), "Log in to view your Profile", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            getApplicationContext().startActivity(intent);
-        }       
-
-        adapter = new RecordingsCardAdapter(this, recordingList, recordingsPools);
-
         Bundle bundle = getIntent().getExtras();
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
