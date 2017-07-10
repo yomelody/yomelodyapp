@@ -2,9 +2,14 @@ package com.instamelody.instamelody.Parse;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.security.keystore.KeyInfo;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.instamelody.instamelody.ChatActivity;
+import com.instamelody.instamelody.ContactsActivity;
 import com.instamelody.instamelody.Models.AudioModel;
 import com.instamelody.instamelody.Models.Chat;
 import com.instamelody.instamelody.Models.Comments;
@@ -15,6 +20,7 @@ import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
+import com.instamelody.instamelody.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,6 +46,7 @@ public class ParseContents {
     ArrayList<Genres> genreList = new ArrayList<>();
     static ArrayList<MelodyInstruments> instrumentsList = new ArrayList<>();
     String KEY_FLAG = "flag";
+    String KEY_INFO = "info";
     String KEY_RESPONSE = "response";//JSONArray
     String KEY_RESULT = "result";//JSONArray
     String KEY_INSTRUMENTS = "instruments";//JSONArray\
@@ -266,6 +273,12 @@ public class ParseContents {
         try {
             jsonObject = new JSONObject(response);
             if (jsonObject.getString(KEY_FLAG).equals("success")) {
+                String str = jsonObject.getString(KEY_INFO);
+                String s = str.substring(str.indexOf(":")+2, str.indexOf("}")-1);
+                if(!s.equals("your friend list is empty"))
+                {
+                    ContactsActivity.rlNoContacts.setVisibility(View.GONE);
+                }
                 jsonArray = jsonObject.getJSONArray(KEY_RESULT);
                 for (int i = 0; i < jsonArray.length(); i++) {
                     Contacts contacts = new Contacts();

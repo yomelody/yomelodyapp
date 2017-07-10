@@ -81,6 +81,7 @@
                         android:layout_alignParentBottom="true">
 
                         <RelativeLayout
+                            android:id="@+id/rlMessage"
                             android:layout_width="100dp"
                             android:layout_height="match_parent"
                             android:padding="4dp">

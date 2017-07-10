@@ -138,9 +138,9 @@ public class ProfileActivity extends AppCompatActivity {
         SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
 
         if (bundle != null) {
-            String checkUserId = bundle.getString("checkUserId");
-            if (checkUserId != null) {
-                userId = checkUserId;
+            String showProfileUserId = bundle.getString("showProfileUserId");
+            if (showProfileUserId != null) {
+                userId = showProfileUserId;
             }
             flag = "1";
         } else {

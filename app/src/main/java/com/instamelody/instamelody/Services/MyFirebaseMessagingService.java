@@ -9,11 +9,16 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.instamelody.instamelody.ChatActivity;
-import com.instamelody.instamelody.app.Config;
 import com.instamelody.instamelody.utils.NotificationUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import static com.instamelody.instamelody.utils.Const.PUSH_NOTIFICATION;
+
+/**
+ * Created by Shubahansh Jaiswal on 11/29/2016.
+ */
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -49,7 +54,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private void handleNotification(String result) {
         if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) {// app is in foreground, broadcast the push message
-            Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
+            Intent pushNotification = new Intent(PUSH_NOTIFICATION);
 //            String message = "";
 //            String senderName = "";
             String chatId = "";
@@ -104,7 +109,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Log.e("fbs", "image: " + imageUrl);
 
             if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) { // app is in foreground, broadcast the push message
-                Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
+                Intent pushNotification = new Intent(PUSH_NOTIFICATION);
                 pushNotification.putExtra("message", message);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
                 // play notification sound

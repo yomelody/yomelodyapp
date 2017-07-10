@@ -56,6 +56,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     ArrayList<String> mpids = new ArrayList<>();
     private static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     String melodyName;
+
     String USER_TYPE = "user_type";
     String USER_ID = "user_id";
     String FILE_ID = "file_id";
@@ -407,7 +408,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         return melodyList.size();
     }
 
-    public void fetchLikeState(final String userId, final String pos, final String likeState,String LikeMelodyName) {
+    public void fetchLikeState(final String userId, final String pos, final String likeState, String LikeMelodyName) {
         MelodyName=LikeMelodyName;
         StringRequest stringRequest = new StringRequest(Request.Method.POST, LIKES,
                 new Response.Listener<String>() {

@@ -50,6 +50,7 @@ public class ContactsActivity extends AppCompatActivity {
     public static Button btnCancel, btnOK;
     ImageView discover, message, profile, audio_feed, ivBackButton, ivHomeButton;
     String userId = "";
+    public static RelativeLayout rlNoContacts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +83,7 @@ public class ContactsActivity extends AppCompatActivity {
         message = (ImageView) findViewById(R.id.message);
         profile = (ImageView) findViewById(R.id.profile);
         audio_feed = (ImageView) findViewById(R.id.audio_feed);
+        rlNoContacts = (RelativeLayout) findViewById(R.id.rlNoContacts);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewContacts);
         recyclerView.setHasFixedSize(true);
@@ -203,7 +205,7 @@ public class ContactsActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("myid", userId );
+                params.put("myid", userId);
                 params.put("key", "passed");
 
                 return params;
