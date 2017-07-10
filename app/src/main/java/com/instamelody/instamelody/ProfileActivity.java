@@ -97,6 +97,10 @@ public class ProfileActivity extends AppCompatActivity {
     private String ID = "id";
     private String KEY = "key";
     private String GENRE = "genere";
+    private String STATION = "station";
+    private String FILE_TYPE = "file_type";
+    private String FILTER_TYPE = "filter_type";
+    private String FILTER = "filter";
 
     String flag;
 
@@ -104,7 +108,7 @@ public class ProfileActivity extends AppCompatActivity {
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
     ArrayList<Genres> genresArrayList = new ArrayList<>();
     Button btnAudio, btnActivity, btnBio, btnCancel;
-    RelativeLayout rlPartProfile, rlFragmentActivity, rlFragmentBio, rlSearch, rlFollow;
+    RelativeLayout rlPartProfile, rlFragmentActivity, rlFragmentBio, rlSearch, rlFollow, tab1;
     ImageView ivBackButton, ivHomeButton, ivAudio_feed, ivDiscover, ivMessage, ivProfile, ivSearchProfile, userCover, ivToMelody, ivFilterProfile;
     ImageView ivFollow, ivUnfollow;
     CircleImageView userProfileImageInProf;
@@ -157,8 +161,14 @@ public class ProfileActivity extends AppCompatActivity {
 //            if (flag.equals("2")) {
 //                fetchUserFromPrefs();
 //            }
+            /*fetchGenreNames();
+            fetchRecordings();*/
             fetchGenreNames();
-            fetchRecordings();
+            if (strName == null) {
+                fetchRecordings();
+            } else {
+                fetchRecordingsFilter();
+            }
 
         } else {
             Toast.makeText(getApplicationContext(), "Log in to view your Profile", Toast.LENGTH_SHORT).show();
@@ -185,6 +195,7 @@ public class ProfileActivity extends AppCompatActivity {
         rlFollow = (RelativeLayout) findViewById(R.id.rlFollow);
         ivUnfollow = (ImageView) findViewById(R.id.ivUnfollow);
         ivFollow = (ImageView) findViewById(R.id.ivFollow);
+        tab1 = (RelativeLayout) findViewById(R.id.tab1);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewProfile);
         recyclerView.setHasFixedSize(true);
@@ -345,14 +356,17 @@ public class ProfileActivity extends AppCompatActivity {
                 btnBio.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnAudio.setBackgroundColor(Color.parseColor("#FFFFFF"));
 
-//                List<Fragment> fragments = getSupportFragmentManager().getFragments();
-//                if (fragments != null) {
-//                    for (Fragment fragment : fragments) {
-//                        getSupportFragmentManager().beginTransaction().remove(fragment).commit();
-//                    }
-//                }
-                rlPartProfile.setVisibility(View.VISIBLE);
-                getFragmentManager().popBackStack();
+                /*List<Fragment> fragments = getSupportFragmentManager().getFragments();
+                if (fragments != null) {
+                    for (Fragment fragment : fragments) {
+                        getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+                    }
+                }*/
+
+                AudioFragment af = new AudioFragment();
+                getFragmentManager().beginTransaction().replace(R.id.activity_profile, af).commit();
+                /*rlPartProfile.setVisibility(View.VISIBLE);
+                getFragmentManager().popBackStack();*/
 
             }
         });
@@ -680,8 +694,6 @@ public class ProfileActivity extends AppCompatActivity {
                                 }
 //                                genreString = String.valueOf(currentTab).trim();
                                 fetchRecordings();
-
-                                fetchRecordings();
 //                                Toast.makeText(getActivity(), "beta: " + genreString, Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -734,6 +746,61 @@ public class ProfileActivity extends AppCompatActivity {
                 params.put(ID, userId);
                 params.put(KEY, "");
                 params.put(GENRE, genreString);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+    }
+
+    public void fetchRecordingsFilter() {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
+
+                        Log.d("ReturnData1", response);
+                        recordingList.clear();
+                        recordingsPools.clear();
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
+                        adapter.notifyDataSetChanged();
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(ID, userId);
+                params.put(KEY, STATION);
+                params.put(GENRE, genreString);
+                params.put(FILE_TYPE, "user_recording");
+                params.put(FILTER_TYPE, strName);
+                params.put(FILTER, "extrafilter");
                 return params;
             }
         };
@@ -853,7 +920,7 @@ public class ProfileActivity extends AppCompatActivity {
                 String filename = "myfile";
                 String outputString = "Hello world!";
 
-                URL aurl = new URL("http://35.165.96.167/api/upload_cover_melody_file.php");
+                URL aurl = new URL(RECORDINGS);
 
                 URLConnection connection = aurl.openConnection();
                 connection.connect();

@@ -288,6 +288,7 @@ public class StudioActivity extends AppCompatActivity {
         SharedPreferences loginSharedPref1 = this.getSharedPreferences("Url_recording", MODE_PRIVATE);
         fetchRecordingUrl = loginSharedPref1.getString("Recording_url", null);
 
+
         fetchGenreNames();
 
 
@@ -346,7 +347,7 @@ public class StudioActivity extends AppCompatActivity {
 
 
 //                String audioUrl = "http://35.165.96.167/api/uploads/melody/instruments/melody_cut.mp3";
-                String audioUrl = "http://35.165.96.167/api/uploads/melody/instruments/";
+                String audioUrl = "http://52.37.189.202/api/uploads/melody/instruments/";
 
                 Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
                 if (isSDPresent) {
@@ -653,7 +654,6 @@ public class StudioActivity extends AppCompatActivity {
                     rlRecordingButton.setEnabled(true);
                 }
                 tvDone.setEnabled(true);
-
                 chrono.stop();
                 /*m_handler.removeCallbacks(m_handlerTask);*/
 
@@ -1235,7 +1235,7 @@ public class StudioActivity extends AppCompatActivity {
             int count;
             try {
 
-                URL aurl = new URL("http://35.165.96.167/api/melody.php");
+                URL aurl = new URL("http://52.37.189.202/api/melody.php");
 
                 URLConnection connection = aurl.openConnection();
                 connection.connect();
@@ -1359,7 +1359,7 @@ public class StudioActivity extends AppCompatActivity {
                             String isJoin = melodyData.getString("isJoin");*/
                             Public = (String) melodyData.get("public");
                             if (flag.equals("success")) {
-//                                uploadRecordings(idUpload);
+                                uploadRecordings(idUpload);
                                 /*myTask = new LongOperation();
                                 myTask.execute();*/
                                 /*android.app.AlertDialog.Builder builder1 = new android.app.AlertDialog.Builder(StudioActivity.this);
@@ -1632,6 +1632,8 @@ public class StudioActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
+
+
     private void showFileChooser() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -1713,7 +1715,7 @@ public class StudioActivity extends AppCompatActivity {
 
         protected String doInBackground(String... params) {
             saveRecordings1();
-            uploadRecordings(idUpload);
+//            uploadRecordings(idUpload);
             return null;
         }
 

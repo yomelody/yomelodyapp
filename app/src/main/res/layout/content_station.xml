@@ -42,7 +42,7 @@
             android:textColor="#495C67" />
 
         <ImageView
-            android:id="@+id/ivSound"
+            android:id="@+id/ivStationSearch"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_alignParentEnd="true"
@@ -57,7 +57,7 @@
             android:layout_height="20dp"
             android:layout_centerVertical="true"
             android:layout_marginRight="15dp"
-            android:layout_toLeftOf="@+id/ivSound"
+            android:layout_toLeftOf="@+id/ivStationSearch"
             android:src="@drawable/filter" />
 
     </RelativeLayout>
