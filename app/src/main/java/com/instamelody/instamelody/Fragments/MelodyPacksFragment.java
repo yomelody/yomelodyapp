@@ -30,6 +30,8 @@ import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
+import com.instamelody.instamelody.Models.RecordingsModel;
+import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
 
@@ -44,6 +46,7 @@ import java.util.Map;
 import static android.content.Context.MODE_PRIVATE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
+import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
 /**
  * Created by Shubhansh Jaiswal on 11/29/2016.
@@ -53,6 +56,8 @@ public class MelodyPacksFragment extends Fragment {
 
     RecyclerView.Adapter adapter;
     ArrayList<MelodyCard> melodyList = new ArrayList<>();
+    ArrayList<RecordingsModel> recordingList = new ArrayList<>();
+    ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
     String KEY_GENRE_NAME = "name";
     String KEY_FLAG = "flag";
     String KEY_GENRE_ID = "id";
@@ -60,23 +65,50 @@ public class MelodyPacksFragment extends Fragment {
 
     String KEY = "key";
     String GENRE = "genere";
-    //    String genreString = "1";
+    String genreString = "1";
     String USER_ID = "user_id";
     ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     String KEY_MSG = "msg";
     String packName;
     String packId = "0";
     String resp;
+    String strName;
+    String userId;
+
+    private String ID = "id";
+    private String STATION = "station";
+    private String FILE_TYPE = "file_type";
+    private String FILTER_TYPE = "filter_type";
+    private String FILTER = "filter";
     ArrayList<Genres> genresArrayList = new ArrayList<>();
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
+        strName = filterPref.getString("stringFilter", null);
         fetchGenreNames();
 //        ParseContents pc = new ParseContents(getActivity());
 //        pc.parseGenres(resp,genresArrayList);
 //        genresArrayList=pc.getGenreList();
-        fetchMelodyPacks();
+
+        if (strName == null) {
+            fetchMelodyPacks();
+        } else {
+            fetchRecordingsFilter();
+        }
         adapter = new MelodyCardListAdapter(melodyList, getActivity());
+        SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+        SharedPreferences twitterPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
+        }
 
         RecordingsFragment rf = new RecordingsFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -229,6 +261,62 @@ public class MelodyPacksFragment extends Fragment {
                 if (userId != null) {
 //                    params.put(USER_ID, userId);
                 }
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(stringRequest);
+    }
+
+
+    public void fetchRecordingsFilter() {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
+
+                        Log.d("ReturnData1", response);
+                        recordingList.clear();
+                        recordingsPools.clear();
+                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
+                        adapter.notifyDataSetChanged();
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(ID, userId);
+                params.put(KEY, STATION);
+                params.put(GENRE, genreString);
+                params.put(FILE_TYPE, "user_recording");
+                params.put(FILTER_TYPE, strName);
+                params.put(FILTER, "extrafilter");
                 return params;
             }
         };

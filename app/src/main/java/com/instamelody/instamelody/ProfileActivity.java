@@ -145,6 +145,64 @@ public class ProfileActivity extends AppCompatActivity {
         tv_records = (TextView) findViewById(R.id.tv_records);
         tv_fans = (TextView) findViewById(R.id.tv_fans);
         tv_following = (TextView) findViewById(R.id.tv_following);
+        
+        adapter = new RecordingsCardAdapter(this, recordingList, recordingsPools);
+        
+        Bundle bundle = getIntent().getExtras();
+        SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+        SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
+        }
+
+        if (bundle != null) {
+            showProfileUserId = bundle.getString("showProfileUserId");
+//            if (showProfileUserId != null) {
+//                userId = showProfileUserId;
+//            }
+        } else {
+            if (loginSharedPref.getString("userId", null) != null) {
+                showProfileUserId = loginSharedPref.getString("userId", null);
+            } else if (fbPref.getString("userId", null) != null) {
+                showProfileUserId = fbPref.getString("userId", null);
+            } else if (twitterPref.getString("userId", null) != null) {
+                showProfileUserId = twitterPref.getString("userId", null);
+            }
+        }
+
+        if (showProfileUserId.equals(userId)) {
+            if (rlFollow.getVisibility() == View.VISIBLE) {
+                rlFollow.setVisibility(View.GONE);
+            }
+            if (rlMessage.getVisibility() == View.VISIBLE) {
+                rlMessage.setVisibility(View.GONE);
+            }
+        } else {
+            if (rlFollow.getVisibility() == View.GONE) {
+                rlFollow.setVisibility(View.VISIBLE);
+            }
+            if (rlMessage.getVisibility() == View.GONE) {
+                rlMessage.setVisibility(View.VISIBLE);
+            }
+        }
+
+        if (showProfileUserId != null) {
+            fetchUserBio();
+            fetchGenreNames();
+            fetchRecordings();
+
+        } else {
+            Toast.makeText(getApplicationContext(), "Log in to view your Profile", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplicationContext().startActivity(intent);
+        }       
 
         adapter = new RecordingsCardAdapter(this, recordingList, recordingsPools);
 
@@ -237,7 +295,6 @@ public class ProfileActivity extends AppCompatActivity {
                 arrayAdapter.add("# of Instruments");
                 arrayAdapter.add("BPM");
 
-
                 builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -287,14 +344,17 @@ public class ProfileActivity extends AppCompatActivity {
                 btnBio.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnAudio.setBackgroundColor(Color.parseColor("#FFFFFF"));
 
-//                List<Fragment> fragments = getSupportFragmentManager().getFragments();
-//                if (fragments != null) {
-//                    for (Fragment fragment : fragments) {
-//                        getSupportFragmentManager().beginTransaction().remove(fragment).commit();
-//                    }
-//                }
-                rlPartProfile.setVisibility(View.VISIBLE);
-                getFragmentManager().popBackStack();
+                /*List<Fragment> fragments = getSupportFragmentManager().getFragments();
+                if (fragments != null) {
+                    for (Fragment fragment : fragments) {
+                        getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+                    }
+                }*/
+
+                AudioFragment af = new AudioFragment();
+                getFragmentManager().beginTransaction().replace(R.id.activity_profile, af).commit();
+                /*rlPartProfile.setVisibility(View.VISIBLE);
+                getFragmentManager().popBackStack();*/
 
             }
         });
@@ -624,6 +684,61 @@ public class ProfileActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
+    public void fetchRecordingsFilter() {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
+
+                        Log.d("ReturnData1", response);
+                        recordingList.clear();
+                        recordingsPools.clear();
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
+                        adapter.notifyDataSetChanged();
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(ID, userId);
+                params.put(KEY, STATION);
+                params.put(GENRE, genreString);
+                params.put(FILE_TYPE, "user_recording");
+                params.put(FILTER_TYPE, strName);
+                params.put(FILTER, "extrafilter");
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+    }
+
     public void Follow(final String follower_Id) {
 
         final String fid = follower_Id;
@@ -733,7 +848,7 @@ public class ProfileActivity extends AppCompatActivity {
                 String filename = "myfile";
                 String outputString = "Hello world!";
 
-                URL aurl = new URL(UPLOAD_COVER_MELODY_FILE);
+                URL aurl = new URL(RECORDINGS);
 
                 URLConnection connection = aurl.openConnection();
                 connection.connect();

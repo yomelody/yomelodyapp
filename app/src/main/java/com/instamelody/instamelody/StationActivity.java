@@ -72,7 +72,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
     Button btnActivity, btnAudio, btnCancel;
     RelativeLayout rlFragmentActivity, rlPartStation, rlSearch;
-    ImageView ivBackButton, ivHomeButton, discover, message, ivProfile, audio_feed, ivSound, ivSound1, ivFilter;
+    ImageView ivBackButton, ivHomeButton, discover, message, ivProfile, audio_feed, ivStationSearch, ivMelodyStation, ivFilter;
     EditText subEtFilterName;
 
     TabHost host;
@@ -107,7 +107,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     int statusNormal, statusFb, statusTwitter;
     String strName;
     String titleString;
-    String searchGet;
+    String searchGet,search5;
     ProgressDialog progressDialog;
     LongOperation myTask = null;
 
@@ -124,8 +124,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
         audio_feed = (ImageView) findViewById(R.id.audio_feed);
-        ivSound = (ImageView) findViewById(R.id.ivSound);
-        ivSound1 = (ImageView) findViewById(R.id.ivSound1);
+        ivStationSearch = (ImageView) findViewById(R.id.ivStationSearch);
+        ivMelodyStation = (ImageView) findViewById(R.id.ivMelodyStation);
         ivFilter = (ImageView) findViewById(R.id.ivFilter);
         btnActivity = (Button) findViewById(R.id.btnActivity);
         btnAudio = (Button) findViewById(R.id.btnAudio);
@@ -207,11 +207,11 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
             }
         });
 
-        ivSound.setOnClickListener(new View.OnClickListener() {
+        ivStationSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                searchMenuItem.setVisible(position == 0);
-                rlSearch.setVisibility(View.INVISIBLE);
+                rlSearch.setVisibility(View.GONE);
                 search1.setVisibility(View.VISIBLE);
                 btnCancel.setVisibility(View.VISIBLE);
             }
@@ -223,6 +223,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 rlSearch.setVisibility(View.VISIBLE);
                 search1.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
+                Toast.makeText(StationActivity.this, ""+search5, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -274,7 +275,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
             }
         });
 
-        ivSound1.setOnClickListener(new View.OnClickListener() {
+        ivMelodyStation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(StationActivity.this, MelodyActivity.class);
@@ -313,6 +314,9 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                         strName = arrayAdapter.getItem(which);
                         AlertDialog.Builder builderInner = new AlertDialog.Builder(StationActivity.this);
                         builderInner.setMessage(strName);
+                        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                        editorFilterString.putString("stringFilter", strName);
+                        editorFilterString.apply();
                         builderInner.setTitle("Your Selected Item is");
                         builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
@@ -331,6 +335,15 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 builderSingle.show();
             }
         });
+
+        search1.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                 search5 = search1.getQuery().toString();
+
+            }
+        });
+
 
         instrumentAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, android.R.id.text1, values);
         list.setAdapter(instrumentAdapter);
@@ -510,14 +523,15 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         SearchManager searchManager = (SearchManager)
                 getSystemService(Context.SEARCH_SERVICE);
         searchMenuItem = menu.findItem(R.id.search);
-        searchView = (SearchView) searchMenuItem.getActionView();
-
-        searchView.setSearchableInfo(searchManager.
+        search1 = (SearchView) searchMenuItem.getActionView();
+        search1.setSearchableInfo(searchManager.
                 getSearchableInfo(getComponentName()));
-        searchView.setSubmitButtonEnabled(true);
-        searchView.setOnQueryTextListener(this);
+        search1.setSubmitButtonEnabled(true);
+        search1.setOnQueryTextListener(this);
 
-        searchGet = (String) searchView.getQuery();
+
+        searchGet = (String) search1.getQuery();
+        Log.d("msg", searchGet);
 
         return true;
     }
@@ -571,12 +585,15 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     @Override
     public boolean onQueryTextSubmit(String query) {
 //        fetchSearchData();
+        searchGet = (String) search1.getQuery();
+        Log.d("msg1", searchGet);
+        fetchSearchData();
         return false;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        fetchSearchData();
+
         return false;
     }
 
@@ -591,16 +608,15 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         }
 
         protected String doInBackground(String... params) {
-            AudioFragment aud_fag = new AudioFragment();
-            aud_fag.fetchRecordingsFilter(strName);
-            SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
-            editorFilterString.putString("stringFilter", strName);
-            editorFilterString.apply();
+            /*AudioFragment aud_fag = new AudioFragment();
+            aud_fag.fetchRecordingsFilter();*/
+            adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList, recordingsPools);
+            adapter.notifyDataSetChanged();
             return null;
         }
 
         protected void onPostExecute(String result) {
-            adapter = new RecordingsCardAdapter(getApplicationContext(),recordingList, recordingsPools);
+            adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList, recordingsPools);
             adapter.notifyDataSetChanged();
             progressDialog.dismiss();
         }

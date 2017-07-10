@@ -348,7 +348,13 @@ public class StudioActivity extends AppCompatActivity {
 
                 LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
 
+<<<<<<< HEAD
+
+//                String audioUrl = "http://35.165.96.167/api/uploads/melody/instruments/melody_cut.mp3";
+                String audioUrl = "http://52.37.189.202/api/uploads/melody/instruments/";
+=======
                 String audioUrl = "http://52.41.33.64/api/uploads/melody/instruments/";
+>>>>>>> 0da75bc2a3e29a862e6ddc124bb9c1fbd12965d3
 
                 Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
                 if (isSDPresent) {
@@ -655,7 +661,6 @@ public class StudioActivity extends AppCompatActivity {
                     rlRecordingButton.setEnabled(true);
                 }
                 tvDone.setEnabled(true);
-
                 chrono.stop();
                 /*m_handler.removeCallbacks(m_handlerTask);*/
 
@@ -1238,7 +1243,11 @@ public class StudioActivity extends AppCompatActivity {
             int count;
             try {
 
+<<<<<<< HEAD
+                URL aurl = new URL("http://52.37.189.202/api/melody.php");
+=======
                 URL aurl = new URL(MELODY);
+>>>>>>> 0da75bc2a3e29a862e6ddc124bb9c1fbd12965d3
 
                 URLConnection connection = aurl.openConnection();
                 connection.connect();
@@ -1633,6 +1642,8 @@ public class StudioActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
     }
+
+
 
     private void showFileChooser() {
         Intent intent = new Intent();
