@@ -47,7 +47,6 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.instamelody.instamelody.Models.HandelLogin;
-import com.instamelody.instamelody.app.Config;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
@@ -79,6 +78,7 @@ import retrofit2.Call;
 import static android.R.attr.id;
 import static android.R.attr.name;
 import static com.instamelody.instamelody.R.drawable.twitter;
+import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LOGIN;
 import static com.instamelody.instamelody.utils.Const.ServiceType.REGISTER;
 
@@ -98,8 +98,6 @@ public class SignInActivity extends AppCompatActivity {
     String KEY_DEVICE_TOKEN_SIGN_UP = "device_token";
     String KEY_DEVICE_TYPE = "device_type";
     String KEY_PROFILE_PIC = "profile_pic_url";
-
-
 
     String DeviceToken;
     String f_name;
@@ -128,6 +126,7 @@ public class SignInActivity extends AppCompatActivity {
     LoginButton fbloginbtn;
     String name, username, firstNamefb, lastNamefb, email, gender, birthday;
     String flag, user_id, First_name, Last_name, emailfinal, profilePic, coverPic, lastLogin, userName, fbId, fbEmail;
+    String fans, followers, records;
     HandelLogin obj = new HandelLogin();
     ProgressDialog progressDialog;
     String photoUrlNormalSize;
@@ -160,7 +159,7 @@ public class SignInActivity extends AppCompatActivity {
         btnfblogin = (RelativeLayout) findViewById(R.id.FbLogin);
         mcallbckmanager = CallbackManager.Factory.create();
         fbloginbtn = (LoginButton) findViewById(R.id.FbLoginReal);
-        SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, MODE_PRIVATE);
+        SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
         DeviceToken = fcmPref.getString("regId", null);
 //        Log.d("DeviceToken", DeviceToken);
 
@@ -219,7 +218,7 @@ public class SignInActivity extends AppCompatActivity {
                             @Override
                             public void onCompleted(JSONObject object, GraphResponse response) {
                                 //Toast.makeText(SignInActivity.this, "" + object, Toast.LENGTH_LONG).show();
-                                Log.d("Check",""+object);
+                                Log.d("Check", "" + object);
 
                                 try {
                                     fbId = object.getString("id");
@@ -248,7 +247,7 @@ public class SignInActivity extends AppCompatActivity {
                                 fbEditor.putString("FbGender", gender);
                                 fbEditor.putString("Birthday", birthday);
                                 fbEditor.putString("UserName", username);
-                                fbEditor.putString("profilePicFB", fbProfilePic);
+                                fbEditor.putString("profilePic", fbProfilePic);
                                 fbEditor.putInt("status", 1);
                                 fbEditor.commit();
                                 registerSpecialFB();
@@ -275,7 +274,6 @@ public class SignInActivity extends AppCompatActivity {
                 Toast.makeText(SignInActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-
 
         btnLogIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -383,7 +381,7 @@ public class SignInActivity extends AppCompatActivity {
                     tEditor.putString("Name", name);
                     tEditor.putString("email", email);
                     tEditor.putString("userName", username);
-                    tEditor.putString("ProfilePic", photoUrlNormalSize);
+                    tEditor.putString("profilePic", photoUrlNormalSize);
                     tEditor.putLong("ID", id);
                     tEditor.putInt("status", 1);
                     tEditor.commit();
@@ -449,43 +447,51 @@ public class SignInActivity extends AppCompatActivity {
                             JSONObject jsonObject = new JSONObject(successmsg);
                             flag = jsonObject.getString("flag");
                             if (flag.equals("unsuccess")) {
+                                btnLogIn.setEnabled(true);
                                 Toast.makeText(SignInActivity.this, "Invalid Email or Password", Toast.LENGTH_SHORT).show();
+                                btnLogIn.setEnabled(true);
                             }
                             JSONObject rspns = jsonObject.getJSONObject("response");
                             user_id = rspns.getString("user_id");
+                            userName = rspns.getString("username");
                             First_name = rspns.getString("First_name");
                             Last_name = rspns.getString("Last_name");
                             emailfinal = rspns.getString("email");
-                            /*profilePic = "http://" + rspns.getString("profilepic");*/
-                            String profPic1 = rspns.getString("profilepic");
-                            profilePic = profPic1;
-
+                            profilePic = rspns.getString("profilepic");
                             coverPic = rspns.getString("coverpic");
-                            lastLogin = rspns.getString("lastlogin");
-                            userName = rspns.getString("username");
+                            followers = rspns.getString("followers");
+                            fans = rspns.getString("fans");
+                            records = rspns.getString("records");
+//                            user_id = rspns.getString("dob");
+//                            user_id = rspns.getString("device_token");
+//                            user_id = rspns.getString("discrisption");
+//                            user_id = rspns.getString("mobile");
+//                            user_id = rspns.getString("device_type");
 
                             SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
                             editor.putString("userId", user_id);
+                            editor.putString("userName", userName);
                             editor.putString("firstName", First_name);
                             editor.putString("lastName", Last_name);
                             editor.putString("emailFinal", emailfinal);
                             editor.putString("profilePic", profilePic);
                             editor.putString("coverPic", coverPic);
-                            editor.putString("lastLogin", lastLogin);
-                            editor.putString("userName", userName);
+                            editor.putString("followers", followers);
+                            editor.putString("fans", fans);
+                            editor.putString("records", records);
                             editor.putInt("status", 1);
                             editor.commit();
-                            obj.setId(1);
+
+//                            obj.setId(1);
                             Intent i = new Intent(getApplicationContext(), HomeActivity.class);
-                            Bundle bundle = new Bundle();
-                            bundle.putString("login_val", "1");
-                            i.putExtras(bundle);
+//                            Bundle bundle = new Bundle();
+//                            bundle.putString("login_val", "1");
+//                            i.putExtras(bundle);
                             startActivity(i);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
                     }
                 },
                 new Response.ErrorListener() {
@@ -512,7 +518,6 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-
                 params.put(KEY, "admin@123");
                 params.put(KEY_EMAIL, email);
                 params.put(KEY_PASSWORD, password);
@@ -529,18 +534,15 @@ public class SignInActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-
             Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
             startActivity(intent);
-
         }
         return super.onKeyDown(keyCode, event);
     }
 
-
     public void registerSpecialFB() {
         SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
-        FbProf1 = fbPref.getString("profilePicFB", null);
+        FbProf1 = fbPref.getString("profilePic", null);
         StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER,
                 new Response.Listener<String>() {
                     @Override
@@ -552,25 +554,46 @@ public class SignInActivity extends AppCompatActivity {
 
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
-                            String flag = jsonObject.getString("flag");
-                            String response1 = jsonObject.getString("response");
-                            JSONObject rspns = jsonObject.getJSONObject("response");
-                            String userId = rspns.getString("id");
-                            String username = rspns.getString("username");
-                            String f_name = rspns.getString("f_name");
-                            String l_name = rspns.getString("l_name");
-                            String email = rspns.getString("email");
+                            flag = jsonObject.getString("flag");
+                            if (flag.equals("success")) {
+                                JSONObject rspns = jsonObject.getJSONObject("response");
+                                user_id = rspns.getString("id");
+                                userName = rspns.getString("username");
+                                First_name = rspns.getString("f_name");
+                                Last_name = rspns.getString("l_name");
+                                emailfinal = rspns.getString("email");
+                                profilePic = rspns.getString("profilepic");
+                                coverPic = rspns.getString("coverpic");
+                                followers = rspns.getString("followers");
+                                fans = rspns.getString("fans");
+                                records = rspns.getString("records");
+//                                user_id = rspns.getString("dob");
+//                                user_id = rspns.getString("device_token");
+//                                user_id = rspns.getString("discrisption");
+//                                user_id = rspns.getString("mobile");
+//                                user_id = rspns.getString("device_type");
 
-                            SharedPreferences.Editor fbEditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
-                            fbEditor.putString("userId", userId);
-                            fbEditor.putInt("status", 1);
-//                            fbEditor.putInt("status", 1);
-                            fbEditor.commit();
+                                SharedPreferences.Editor fbEditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
+                                fbEditor.putString("userId", user_id);
+//                                fbEditor.putString("firstName", First_name);
+//                                fbEditor.putString("lastName", Last_name);
+//                                fbEditor.putString("emailFinal", emailfinal);
+                                fbEditor.putString("profilePic", profilePic);
+                                fbEditor.putString("coverPic", coverPic);
+//                                fbEditor.putString("lastLogin", lastLogin);
+//                                fbEditor.putString("userName", userName);
+                                fbEditor.putString("fans", fans);
+                                fbEditor.putString("followers", followers);
+                                fbEditor.putString("records", records);
+                                fbEditor.putInt("status", 1);
+                                fbEditor.commit();
+                            }
+
+                            Intent i = new Intent(getApplicationContext(), HomeActivity.class);
+                            startActivity(i);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            String error = e.toString();
-//                            Toast.makeText(SignInActivity.this, error, Toast.LENGTH_SHORT).show();
                         }
                     }
                 },
@@ -600,7 +623,7 @@ public class SignInActivity extends AppCompatActivity {
 
                 params.put(KEY_FNAME, firstNamefb);
                 params.put(KEY_LNAME, lastNamefb);
-                params.put(KEY_USERNAME, firstNamefb+lastNamefb);
+                params.put(KEY_USERNAME, firstNamefb + lastNamefb);
                 params.put(KEY_EMAIL_SIGN_UP, fbEmail);
                 params.put(KEY_APP_ID, fbId);
                 params.put(KEY_USER_TYPE, "2");
@@ -615,6 +638,8 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     public void registrationSpecialTwitter() {
+        SharedPreferences twitterPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        photoUrlNormalSize = twitterPref.getString("profilePic", null);
         StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER,
                 new Response.Listener<String>() {
                     @Override
@@ -626,23 +651,40 @@ public class SignInActivity extends AppCompatActivity {
 
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
-                            String flag = jsonObject.getString("flag");
-                            JSONObject rspns = jsonObject.getJSONObject("response");
-                            String twitterId = rspns.getString("id");
-                            String username = rspns.getString("username");
-                            String f_name = rspns.getString("f_name");
-                            String l_name = rspns.getString("l_name");
-                            String email = rspns.getString("email");
-//                            device_token = rspns.getString("device_token");
-//                            profilepic = rspns.getString("profilepic");
-//                            coverpic = rspns.getString("coverpic");
-                            String dob = rspns.getString("dob");
+                            flag = jsonObject.getString("flag");
+                            if (flag.equals("success")) {
+                                JSONObject rspns = jsonObject.getJSONObject("response");
+                                user_id = rspns.getString("id");
+                                userName = rspns.getString("username");
+                                First_name = rspns.getString("f_name");
+                                Last_name = rspns.getString("l_name");
+                                emailfinal = rspns.getString("email");
+                                profilePic = rspns.getString("profilepic");
+                                coverPic = rspns.getString("coverpic");
+                                followers = rspns.getString("followers");
+                                fans = rspns.getString("fans");
+                                records = rspns.getString("records");
+//                                user_id = rspns.getString("dob");
+//                                user_id = rspns.getString("device_token");
+//                                user_id = rspns.getString("discrisption");
+//                                user_id = rspns.getString("mobile");
+//                                user_id = rspns.getString("device_type");
 
-                            SharedPreferences.Editor twitterEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
-                            twitterEditor.putString("userId", twitterId);
-                            twitterEditor.putInt("status", 1);
-                            twitterEditor.commit();
-
+                                SharedPreferences.Editor twitterEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
+                                twitterEditor.putString("userId", user_id);
+//                                twitterEditor.putString("firstName", First_name);
+//                                twitterEditor.putString("lastName", Last_name);
+//                                twitterEditor.putString("emailFinal", emailfinal);
+                                twitterEditor.putString("profilePic", profilePic);
+                                twitterEditor.putString("coverPic", coverPic);
+//                                twitterEditor.putString("lastLogin", lastLogin);
+//                                twitterEditor.putString("userName", userName);
+                                twitterEditor.putString("fans", fans);
+                                twitterEditor.putString("followers", followers);
+                                twitterEditor.putString("records", records);
+                                twitterEditor.putInt("status", 1);
+                                twitterEditor.commit();
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                             String error = e.toString();
@@ -688,7 +730,6 @@ public class SignInActivity extends AppCompatActivity {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
-
     }
 }
 

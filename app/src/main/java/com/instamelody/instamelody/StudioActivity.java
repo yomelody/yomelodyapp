@@ -293,6 +293,8 @@ public class StudioActivity extends AppCompatActivity {
         SharedPreferences loginSharedPref1 = this.getSharedPreferences("Url_recording", MODE_PRIVATE);
         fetchRecordingUrl = loginSharedPref1.getString("Recording_url", null);
 
+        fetchGenreNames();
+
         int hours = (int) (timeElapsed / 3600000);
         int minutes = (int) (timeElapsed - hours * 3600000) / 60000;
         int seconds = (int) (timeElapsed - hours * 3600000 - minutes * 60000) / 1000;
@@ -653,7 +655,6 @@ public class StudioActivity extends AppCompatActivity {
                     rlRecordingButton.setEnabled(true);
                 }
                 tvDone.setEnabled(true);
-
                 chrono.stop();
                 /*m_handler.removeCallbacks(m_handlerTask);*/
 
@@ -1360,7 +1361,7 @@ public class StudioActivity extends AppCompatActivity {
                             String isJoin = melodyData.getString("isJoin");*/
                             Public = (String) melodyData.get("public");
                             if (flag.equals("success")) {
-//                                uploadRecordings(idUpload);
+                                uploadRecordings(idUpload);
                                 /*myTask = new LongOperation();
                                 myTask.execute();*/
                                 /*android.app.AlertDialog.Builder builder1 = new android.app.AlertDialog.Builder(StudioActivity.this);
@@ -1632,6 +1633,8 @@ public class StudioActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
+
+
     private void showFileChooser() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -1713,7 +1716,7 @@ public class StudioActivity extends AppCompatActivity {
 
         protected String doInBackground(String... params) {
             saveRecordings1();
-            uploadRecordings(idUpload);
+//            uploadRecordings(idUpload);
             return null;
         }
 

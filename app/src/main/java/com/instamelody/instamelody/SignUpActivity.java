@@ -48,7 +48,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.instamelody.instamelody.app.Config;
 import com.instamelody.instamelody.utils.AppHelper;
 import com.instamelody.instamelody.utils.DateValidator;
 import com.instamelody.instamelody.utils.VolleyMultipartRequest;
@@ -78,6 +77,7 @@ import static android.R.attr.maxDate;
 import static android.R.attr.minDate;
 import static android.R.attr.negativeButtonText;
 import static com.facebook.internal.FacebookRequestErrorClassification.KEY_NAME;
+import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
 import static com.instamelody.instamelody.utils.Const.ServiceType.REGISTER;
 import static com.instamelody.instamelody.utils.Const.ServiceType.UPLOAD_FILE;
 
@@ -200,7 +200,7 @@ public class SignUpActivity extends AppCompatActivity {
             Picasso.with(SignUpActivity.this).load(profilePic).into(userProfileImage);
         }
 
-        SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, MODE_PRIVATE);
+        SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
         DeviceToken = fcmPref.getString("regId", null);
 
 
