@@ -132,7 +132,9 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
+        
+        adapter = new RecordingsCardAdapter(this, recordingList, recordingsPools);
+        
         Bundle bundle = getIntent().getExtras();
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
@@ -177,8 +179,6 @@ public class ProfileActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             getApplicationContext().startActivity(intent);
         }
-
-        adapter = new RecordingsCardAdapter(this, recordingList, recordingsPools);
 
         search1 = (SearchView) findViewById(R.id.searchOnProf);
         btnAudio = (Button) findViewById(R.id.btnAudio);
