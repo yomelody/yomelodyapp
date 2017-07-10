@@ -109,6 +109,7 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        
         search1 = (SearchView) findViewById(R.id.searchOnProf);
         btnAudio = (Button) findViewById(R.id.btnAudio);
         btnActivity = (Button) findViewById(R.id.btnActivity);
