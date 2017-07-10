@@ -477,17 +477,17 @@ public class SignInActivity extends AppCompatActivity {
                             editor.putString("userName", userName);
                             editor.putInt("status", 1);
                             editor.commit();
+
 //                            obj.setId(1);
                             Intent i = new Intent(getApplicationContext(), HomeActivity.class);
-                           /* Bundle bundle = new Bundle();
-                            bundle.putString("login_val", "1");
-                            i.putExtras(bundle);*/
+//                            Bundle bundle = new Bundle();
+//                            bundle.putString("login_val", "1");
+//                            i.putExtras(bundle);
                             startActivity(i);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
                     }
                 },
                 new Response.ErrorListener() {
