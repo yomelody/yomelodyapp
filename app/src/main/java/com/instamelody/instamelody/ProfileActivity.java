@@ -117,7 +117,6 @@ public class ProfileActivity extends AppCompatActivity {
         ivFilterProfile = (ImageView) findViewById(R.id.ivFilterProfile);
         btnCancel = (Button) findViewById(R.id.btnCancel);
         ivToMelody = (ImageView) findViewById(R.id.ivToMelody);
-
         rlPartProfile = (RelativeLayout) findViewById(R.id.rlPartProfile);
         rlFragmentActivity = (RelativeLayout) findViewById(R.id.rlFragmentActivity);
         rlFragmentBio = (RelativeLayout) findViewById(R.id.rlFragmentBio);
@@ -125,20 +124,17 @@ public class ProfileActivity extends AppCompatActivity {
         rlFollow = (RelativeLayout) findViewById(R.id.rlFollow);
         ivUnfollow = (ImageView) findViewById(R.id.ivUnfollow);
         ivFollow = (ImageView) findViewById(R.id.ivFollow);
-
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewProfile);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
         ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
         ivAudio_feed = (ImageView) findViewById(R.id.audio_feed);
         ivDiscover = (ImageView) findViewById(R.id.discover);
         ivMessage = (ImageView) findViewById(R.id.message);
         ivProfile = (ImageView) findViewById(R.id.profile);
-
         userProfileImageInProf = (CircleImageView) findViewById(R.id.userProfileImageInProf);
         userCover = (ImageView) findViewById(R.id.userCover);
         tvNameInProf = (TextView) findViewById(R.id.tvNameInProf);
