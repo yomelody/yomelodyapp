@@ -133,6 +133,45 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         
+         search1 = (SearchView) findViewById(R.id.searchOnProf);
+        btnAudio = (Button) findViewById(R.id.btnAudio);
+        btnActivity = (Button) findViewById(R.id.btnActivity);
+        btnBio = (Button) findViewById(R.id.btnBio);
+        rlSearch = (RelativeLayout) findViewById(R.id.rlSearch);
+        ivSearchProfile = (ImageView) findViewById(R.id.ivSearchProfile);
+        ivFilterProfile = (ImageView) findViewById(R.id.ivFilterProfile);
+        btnCancel = (Button) findViewById(R.id.btnCancel);
+        ivToMelody = (ImageView) findViewById(R.id.ivToMelody);
+
+        rlPartProfile = (RelativeLayout) findViewById(R.id.rlPartProfile);
+        rlFragmentActivity = (RelativeLayout) findViewById(R.id.rlFragmentActivity);
+        rlFragmentBio = (RelativeLayout) findViewById(R.id.rlFragmentBio);
+        rlFollow = (RelativeLayout) findViewById(R.id.rlFollow);
+        ivUnfollow = (ImageView) findViewById(R.id.ivUnfollow);
+        ivFollow = (ImageView) findViewById(R.id.ivFollow);
+        tab1 = (RelativeLayout) findViewById(R.id.tab1);
+
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerViewProfile);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
+        ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
+        ivAudio_feed = (ImageView) findViewById(R.id.audio_feed);
+        ivDiscover = (ImageView) findViewById(R.id.discover);
+        ivMessage = (ImageView) findViewById(R.id.message);
+        ivProfile = (ImageView) findViewById(R.id.profile);
+
+        userProfileImageInProf = (CircleImageView) findViewById(R.id.userProfileImageInProf);
+        userCover = (ImageView) findViewById(R.id.userCover);
+        tvNameInProf = (TextView) findViewById(R.id.tvNameInProf);
+        tvUserNameInProf = (TextView) findViewById(R.id.tvUserNameInProf);
+        tv_records = (TextView) findViewById(R.id.tv_records);
+        tv_fans = (TextView) findViewById(R.id.tv_fans);
+        tv_following = (TextView) findViewById(R.id.tv_following);
+        
         adapter = new RecordingsCardAdapter(this, recordingList, recordingsPools);
         
         Bundle bundle = getIntent().getExtras();
@@ -180,44 +219,7 @@ public class ProfileActivity extends AppCompatActivity {
             getApplicationContext().startActivity(intent);
         }
 
-        search1 = (SearchView) findViewById(R.id.searchOnProf);
-        btnAudio = (Button) findViewById(R.id.btnAudio);
-        btnActivity = (Button) findViewById(R.id.btnActivity);
-        btnBio = (Button) findViewById(R.id.btnBio);
-        rlSearch = (RelativeLayout) findViewById(R.id.rlSearch);
-        ivSearchProfile = (ImageView) findViewById(R.id.ivSearchProfile);
-        ivFilterProfile = (ImageView) findViewById(R.id.ivFilterProfile);
-        btnCancel = (Button) findViewById(R.id.btnCancel);
-        ivToMelody = (ImageView) findViewById(R.id.ivToMelody);
-
-        rlPartProfile = (RelativeLayout) findViewById(R.id.rlPartProfile);
-        rlFragmentActivity = (RelativeLayout) findViewById(R.id.rlFragmentActivity);
-        rlFragmentBio = (RelativeLayout) findViewById(R.id.rlFragmentBio);
-        rlFollow = (RelativeLayout) findViewById(R.id.rlFollow);
-        ivUnfollow = (ImageView) findViewById(R.id.ivUnfollow);
-        ivFollow = (ImageView) findViewById(R.id.ivFollow);
-        tab1 = (RelativeLayout) findViewById(R.id.tab1);
-
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerViewProfile);
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-
-        ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
-        ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
-        ivAudio_feed = (ImageView) findViewById(R.id.audio_feed);
-        ivDiscover = (ImageView) findViewById(R.id.discover);
-        ivMessage = (ImageView) findViewById(R.id.message);
-        ivProfile = (ImageView) findViewById(R.id.profile);
-
-        userProfileImageInProf = (CircleImageView) findViewById(R.id.userProfileImageInProf);
-        userCover = (ImageView) findViewById(R.id.userCover);
-        tvNameInProf = (TextView) findViewById(R.id.tvNameInProf);
-        tvUserNameInProf = (TextView) findViewById(R.id.tvUserNameInProf);
-        tv_records = (TextView) findViewById(R.id.tv_records);
-        tv_fans = (TextView) findViewById(R.id.tv_fans);
-        tv_following = (TextView) findViewById(R.id.tv_following);
+       
 
         ivToMelody.setOnClickListener(new View.OnClickListener() {
             @Override
