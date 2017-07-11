@@ -207,7 +207,7 @@ public class StudioActivity extends AppCompatActivity {
     ProgressDialog progressDialog, pDialog;
     LongOperation myTask = null;
     RelativeLayout rlSync;
-    static MediaPlayer mp;
+    MediaPlayer mp;
     static int duration1, currentPosition;
     SeekBar melodySlider;
     String array[] = {""};
@@ -581,8 +581,7 @@ public class StudioActivity extends AppCompatActivity {
 
                         } catch (IllegalStateException e) {
                             e.printStackTrace();
-                        }
-                        catch (IOException e) {
+                        } catch (IOException e) {
                             e.printStackTrace();
                         }
 
@@ -611,8 +610,7 @@ public class StudioActivity extends AppCompatActivity {
 
                     } catch (IllegalStateException e) {
                         e.printStackTrace();
-                    }
-                    catch (IOException e) {
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
 
@@ -625,6 +623,7 @@ public class StudioActivity extends AppCompatActivity {
         ivRecord_stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 // Toast.makeText(StudioActivity.this, "stop", Toast.LENGTH_SHORT).show();
                 ivRecord_stop.setVisibility(View.GONE);
                 rlRecordingButton.setVisibility(View.GONE);
@@ -636,7 +635,13 @@ public class StudioActivity extends AppCompatActivity {
                 if (mRecordingThread != null) {
                     mRecordingThread.stopRunning();
                 }
-
+//                if (mp != null) {
+//                    //    mp.stop();
+//                    mp.reset();
+//                    mp.release();
+//                    mp = null;
+//
+//                }
 
                 if (isRecording) {
                     ivRecord.setEnabled(false);
@@ -650,8 +655,9 @@ public class StudioActivity extends AppCompatActivity {
                     if (recorder != null) {
                         try {
                             recorder.stop();
-                            mp.stop();
+                            mp.reset();
                             mp.release();
+
                         } catch (RuntimeException ex) {
                             //Ignore
                         }
@@ -1679,11 +1685,12 @@ public class StudioActivity extends AppCompatActivity {
         for (int i = 0; i < InstrumentCountSize; i++) {
             Log.d("On studio Screen", "" + i);
             mp = MediaPlayer.create(StudioActivity.this, Uri.parse(instruments_count.get(i)));
-            mp.prepare();
+            //     mp.prepare();
             mp.start();
 //            if (instruments_count.size() > i + 1) {
 //                playNext();
 //            }
+            Log.d("object of MediaPlayer", mp.toString());
         }
 
 

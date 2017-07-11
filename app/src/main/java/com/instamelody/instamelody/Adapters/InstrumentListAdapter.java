@@ -289,7 +289,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 /*for (int i = 0; i < instrument_url_count.size(); i++) {
                     Iterator iter = instrument_url_count.iterator();
                     while (iter.hasNext()) {
-                        // if here          
+                        // if here
                         Toast.makeText(context, "" + iter.next(), Toast.LENGTH_SHORT).show();
 //                        Log.d("count", (String) iter.next());
                     }
@@ -362,13 +362,16 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
             }
         }*/
-        Iterator iter = instrument_url_count.iterator();
-        while (iter.hasNext()) {
-            fetch_url_arrayList.add((String) iter.next());
-        }
-        Log.d("collection", "" + fetch_url_arrayList);
+
+        //  Commented by Abhishek
+//        Iterator iter = instrument_url_count.iterator();
+//        while (iter.hasNext()) {
+//            fetch_url_arrayList.add((String) iter.next());
+//        }
+//        Log.d("collection", "" + instrument_url_count);
+        int index=instrument_url_count.size()-1;
         Intent i = new Intent("fetchingInstruments");
-        i.putStringArrayListExtra("instruments", fetch_url_arrayList);
+        i.putStringArrayListExtra("instruments", instrument_url_count);
         LocalBroadcastManager.getInstance(context).sendBroadcast(i);
     }
 
