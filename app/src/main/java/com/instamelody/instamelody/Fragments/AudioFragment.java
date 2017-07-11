@@ -288,7 +288,7 @@ public class AudioFragment extends Fragment {
     }
 
 
-    public void fetchRecordingsFilter() {
+    public void fetchRecordingsFilter(final String strname) {
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {
@@ -334,7 +334,7 @@ public class AudioFragment extends Fragment {
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
-                params.put(FILTER_TYPE, strName);
+                params.put(FILTER_TYPE, strname);
                 params.put(FILTER, "extrafilter");
                 return params;
             }

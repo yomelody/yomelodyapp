@@ -1,6 +1,7 @@
 package com.instamelody.instamelody.Parse;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.security.keystore.KeyInfo;
 import android.support.v7.widget.RecyclerView;
@@ -154,8 +155,13 @@ public class ParseContents {
             if (jsonObject.getString(KEY_FLAG).equals("success")) {
                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                 JSONObject selectedObj = jsonArray.getJSONObject(Integer.parseInt(mpid));
+
                 jsonArray = selectedObj.getJSONArray(KEY_INSTRUMENTS);
+
+                MelodyInstruments.setInstrumentCount(jsonArray.length());  // This code added by Abhishek
+                Log.d("Count", "" + jsonArray.length());
                 for (int j = 0; j < jsonArray.length(); j++) {
+
                     MelodyInstruments melodyInstruments = new MelodyInstruments();
                     JSONObject instrumentsJson = jsonArray.getJSONObject(j);
                     melodyInstruments.setInstrumentId(instrumentsJson.getInt(KEY_INSTRUMENT_ID));

@@ -271,7 +271,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         instrument_url_count.add(instrumentFile);
 //        Toast.makeText(context, "" + instrumentFile, Toast.LENGTH_SHORT).show();
         Log.d("Instruments size", "" + instrumentList.get(listPosition));
-        new DownloadInstruments().execute(instrumentFile);
+        //This line commented by Abhishek
+
+     //   new DownloadInstruments().execute(instrumentFile);
 
         //  i.putExtra("instruments", instrumentFile);
 
@@ -287,7 +289,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 /*for (int i = 0; i < instrument_url_count.size(); i++) {
                     Iterator iter = instrument_url_count.iterator();
                     while (iter.hasNext()) {
-                        // if here          
+                        // if here
                         Toast.makeText(context, "" + iter.next(), Toast.LENGTH_SHORT).show();
 //                        Log.d("count", (String) iter.next());
                     }
@@ -360,13 +362,16 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
             }
         }*/
-        Iterator iter = instrument_url_count.iterator();
-        while (iter.hasNext()) {
-            fetch_url_arrayList.add((String) iter.next());
-        }
-        Log.d("collection", "" + fetch_url_arrayList);
+
+        //  Commented by Abhishek
+//        Iterator iter = instrument_url_count.iterator();
+//        while (iter.hasNext()) {
+//            fetch_url_arrayList.add((String) iter.next());
+//        }
+//        Log.d("collection", "" + instrument_url_count);
+        int index=instrument_url_count.size()-1;
         Intent i = new Intent("fetchingInstruments");
-        i.putStringArrayListExtra("instruments", fetch_url_arrayList);
+        i.putStringArrayListExtra("instruments", instrument_url_count);
         LocalBroadcastManager.getInstance(context).sendBroadcast(i);
     }
 
@@ -424,93 +429,95 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         return instrumentList;
     }
 
-    class DownloadInstruments extends AsyncTask<String, String, String> {
+    //Commented by Abhishek
 
-        /**
-         * Before starting background thread
-         */
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            System.out.println("Starting download");
-
-            pDialog = new ProgressDialog(context);
-            pDialog.setMessage("Loading melody Packs ...");
-            pDialog.setIndeterminate(false);
-            pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            pDialog.setCancelable(false);
-//            pDialog.show();
-
-        }
-
-        /**
-         * Downloading file in background thread
-         */
-        @Override
-        protected String doInBackground(String... url) {
-            int count;
-            OutputStream output;
-            try {
-                for (int i = 0; i < instrument_url_count.size(); i++) {
-                    //{
-                    URL aurl = new URL((String) instrument_url_count.get(i));
-
-                    URLConnection connection = aurl.openConnection();
-                    connection.connect();
-                    // getting file length
-                    int lengthOfFile = connection.getContentLength();
-
-                    // input stream to read file - with 8k buffer
-                    InputStream input = new BufferedInputStream(aurl.openStream());
-
-                    Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
-
-
-                    if (isSDPresent) {
-                        // yes SD-card is present
-                        output = new FileOutputStream("sdcard/InstaMelody/Downloads/Melodies/" + i + ".mp3");
-                    } else {
-                        // Sorry
-                        output = new FileOutputStream(getApplicationContext().getFilesDir() + "/InstaMelody/Downloads/Melodies/" + i + ".mp3");
-                    }
-
-                    // Output stream to write file
-
-                    byte data[] = new byte[1024];
-
-                    long total = 0;
-                    while ((count = input.read(data)) != -1) {
-                        total += count;
-                        publishProgress("" + (int) ((total * 100) / lengthOfFile));
-                        output.write(data, 0, count);
-                    }
-
-                    // flushing output
-                    output.flush();
-
-                    // closing streams
-                    output.close();
-                    input.close();
-                    //   i++;
-                }
-                // }
-
-
-            } catch (Exception e) {
-                Log.d("Error: ", e.getMessage());
-            }
-            return null;
-        }
-
-        /**
-         * After completing background task
-         **/
-        @Override
-        protected void onPostExecute(String file_url) {
-            System.out.println("Downloaded");
-            pDialog.dismiss();
-//            frameSync.setVisibility(View.GONE);
-            // tvDone.setEnabled(true);
-        }
-    }
+//    class DownloadInstruments extends AsyncTask<String, String, String> {
+//
+//        /**
+//         * Before starting background thread
+//         */
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            System.out.println("Starting download");
+//
+//            pDialog = new ProgressDialog(context);
+//            pDialog.setMessage("Loading melody Packs ...");
+//            pDialog.setIndeterminate(false);
+//            pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            pDialog.setCancelable(false);
+////            pDialog.show();
+//
+//        }
+//
+//        /**
+//         * Downloading file in background thread
+//         */
+//        @Override
+//        protected String doInBackground(String... url) {
+//            int count;
+//            OutputStream output;
+//            try {
+//                for (int i = 0; i < instrument_url_count.size(); i++) {
+//                    //{
+//                    URL aurl = new URL((String) instrument_url_count.get(i));
+//
+//                    URLConnection connection = aurl.openConnection();
+//                    connection.connect();
+//                    // getting file length
+//                    int lengthOfFile = connection.getContentLength();
+//
+//                    // input stream to read file - with 8k buffer
+//                    InputStream input = new BufferedInputStream(aurl.openStream());
+//
+//                    Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+//
+//
+//                    if (isSDPresent) {
+//                        // yes SD-card is present
+//                        output = new FileOutputStream("sdcard/InstaMelody/Downloads/Melodies/" + i + ".mp3");
+//                    } else {
+//                        // Sorry
+//                        output = new FileOutputStream(getApplicationContext().getFilesDir() + "/InstaMelody/Downloads/Melodies/" + i + ".mp3");
+//                    }
+//
+//                    // Output stream to write file
+//
+//                    byte data[] = new byte[1024];
+//
+//                    long total = 0;
+//                    while ((count = input.read(data)) != -1) {
+//                        total += count;
+//                        publishProgress("" + (int) ((total * 100) / lengthOfFile));
+//                        output.write(data, 0, count);
+//                    }
+//
+//                    // flushing output
+//                    output.flush();
+//
+//                    // closing streams
+//                    output.close();
+//                    input.close();
+//                    //   i++;
+//                }
+//                // }
+//
+//
+//            } catch (Exception e) {
+//                Log.d("Error: ", e.getMessage());
+//            }
+//            return null;
+//        }
+//
+//        /**
+//         * After completing background task
+//         **/
+//        @Override
+//        protected void onPostExecute(String file_url) {
+//            System.out.println("Downloaded");
+//            pDialog.dismiss();
+////            frameSync.setVisibility(View.GONE);
+//            // tvDone.setEnabled(true);
+//        }
+//    }
 }
