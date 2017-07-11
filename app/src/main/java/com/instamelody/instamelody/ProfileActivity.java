@@ -10,15 +10,11 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -28,7 +24,6 @@ import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
@@ -41,24 +36,19 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
-import com.instamelody.instamelody.Fragments.ActivityFragment;
 import com.instamelody.instamelody.Fragments.AudioFragment;
 import com.instamelody.instamelody.Fragments.BioFragment;
 import com.instamelody.instamelody.Fragments.ProfileActivityFragment;
 import com.instamelody.instamelody.Models.Genres;
-import com.instamelody.instamelody.Models.RecordingsData;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Models.UserDetails;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.squareup.picasso.Picasso;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -69,15 +59,13 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
 import de.hdodenhof.circleimageview.CircleImageView;
-
 import static com.instamelody.instamelody.R.id.bio_fragment;
 import static com.instamelody.instamelody.R.id.rlPartStation;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
+import static com.instamelody.instamelody.utils.Const.ServiceType.UPLOAD_COVER_MELODY_FILE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.USERS_BIO;
 
 /**
@@ -93,27 +81,26 @@ public class ProfileActivity extends AppCompatActivity {
     String genreString = "1";
     String USER_ID = "user_id";
     String FOLLOWER_ID = "followerID";
-
     private String ID = "id";
     private String KEY = "key";
     private String GENRE = "genere";
-
-    String flag;
+    private String STATION = "station";
+    private String FILE_TYPE = "file_type";
+    private String FILTER_TYPE = "filter_type";
+    private String FILTER = "filter";
 
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
     ArrayList<Genres> genresArrayList = new ArrayList<>();
     Button btnAudio, btnActivity, btnBio, btnCancel;
-    RelativeLayout rlPartProfile, rlFragmentActivity, rlFragmentBio, rlSearch, rlFollow;
+    RelativeLayout rlPartProfile, rlFragmentActivity, rlFragmentBio, rlSearch, rlFollow, tab1, rlMessage;
     ImageView ivBackButton, ivHomeButton, ivAudio_feed, ivDiscover, ivMessage, ivProfile, ivSearchProfile, userCover, ivToMelody, ivFilterProfile;
     ImageView ivFollow, ivUnfollow;
     CircleImageView userProfileImageInProf;
     TextView tvNameInProf, tvUserNameInProf, tv_records, tv_fans, tv_following;
-    String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, coverPic;
-    String userId, records, fans, followers, followerId;
+    String Name, userName, profilePic, coverPic;
+    String userId, showProfileUserId, records, fans, followers, followerId;
     String strName;
-    String userIdNormal, userIdFb, userIdTwitter;
-    int statusNormal, statusFb, statusTwitter;
     SearchView search1;
     ProgressDialog progressDialog;
     LongOperation myTask = null;
@@ -127,36 +114,91 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
+        
+        search1 = (SearchView) findViewById(R.id.searchOnProf);
+        btnAudio = (Button) findViewById(R.id.btnAudio);
+        btnActivity = (Button) findViewById(R.id.btnActivity);
+        btnBio = (Button) findViewById(R.id.btnBio);
+        rlSearch = (RelativeLayout) findViewById(R.id.rlSearch);
+        ivSearchProfile = (ImageView) findViewById(R.id.ivSearchProfile);
+        ivFilterProfile = (ImageView) findViewById(R.id.ivFilterProfile);
+        btnCancel = (Button) findViewById(R.id.btnCancel);
+        ivToMelody = (ImageView) findViewById(R.id.ivToMelody);
+        rlPartProfile = (RelativeLayout) findViewById(R.id.rlPartProfile);
+        rlFragmentActivity = (RelativeLayout) findViewById(R.id.rlFragmentActivity);
+        rlFragmentBio = (RelativeLayout) findViewById(R.id.rlFragmentBio);
+        rlMessage = (RelativeLayout) findViewById(R.id.rlMessage);
+        rlFollow = (RelativeLayout) findViewById(R.id.rlFollow);
+        ivUnfollow = (ImageView) findViewById(R.id.ivUnfollow);
+        ivFollow = (ImageView) findViewById(R.id.ivFollow);
+        tab1 = (RelativeLayout) findViewById(R.id.tab1);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerViewProfile);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
+        ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
+        ivAudio_feed = (ImageView) findViewById(R.id.audio_feed);
+        ivDiscover = (ImageView) findViewById(R.id.discover);
+        ivMessage = (ImageView) findViewById(R.id.message);
+        ivProfile = (ImageView) findViewById(R.id.profile);
+        userProfileImageInProf = (CircleImageView) findViewById(R.id.userProfileImageInProf);
+        userCover = (ImageView) findViewById(R.id.userCover);
+        tvNameInProf = (TextView) findViewById(R.id.tvNameInProf);
+        tvUserNameInProf = (TextView) findViewById(R.id.tvUserNameInProf);
+        tv_records = (TextView) findViewById(R.id.tv_records);
+        tv_fans = (TextView) findViewById(R.id.tv_fans);
+        tv_following = (TextView) findViewById(R.id.tv_following);
+        
+        adapter = new RecordingsCardAdapter(this, recordingList, recordingsPools);
+        
         Bundle bundle = getIntent().getExtras();
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
         SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
 
-        if (bundle != null) {
-            String showProfileUserId = bundle.getString("showProfileUserId");
-            if (showProfileUserId != null) {
-                userId = showProfileUserId;
-            }
-            flag = "1";
-        } else {
-            if (loginSharedPref.getString("userId", null) != null) {
-                userId = loginSharedPref.getString("userId", null);
-            } else if (fbPref.getString("userId", null) != null) {
-                userId = fbPref.getString("userId", null);
-            } else if (twitterPref.getString("userId", null) != null) {
-                userId = twitterPref.getString("userId", null);
-            }
-            flag = "2";
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
         }
 
-        if (userId != null) {
-            if (flag.equals("1")) {
-                fetchUserBio();
-            }
-//            if (flag.equals("2")) {
-//                fetchUserFromPrefs();
+        if (bundle != null) {
+            showProfileUserId = bundle.getString("showProfileUserId");
+//            if (showProfileUserId != null) {
+//                userId = showProfileUserId;
 //            }
+        } else {
+            if (loginSharedPref.getString("userId", null) != null) {
+                showProfileUserId = loginSharedPref.getString("userId", null);
+            } else if (fbPref.getString("userId", null) != null) {
+                showProfileUserId = fbPref.getString("userId", null);
+            } else if (twitterPref.getString("userId", null) != null) {
+                showProfileUserId = twitterPref.getString("userId", null);
+            }
+        }
+
+        if (showProfileUserId.equals(userId)) {
+            if (rlFollow.getVisibility() == View.VISIBLE) {
+                rlFollow.setVisibility(View.GONE);
+            }
+            if (rlMessage.getVisibility() == View.VISIBLE) {
+                rlMessage.setVisibility(View.GONE);
+            }
+        } else {
+            if (rlFollow.getVisibility() == View.GONE) {
+                rlFollow.setVisibility(View.VISIBLE);
+            }
+            if (rlMessage.getVisibility() == View.GONE) {
+                rlMessage.setVisibility(View.VISIBLE);
+            }
+        }
+
+        if (showProfileUserId != null) {
+            fetchUserBio();
             fetchGenreNames();
             fetchRecordings();
 
@@ -167,46 +209,6 @@ public class ProfileActivity extends AppCompatActivity {
             getApplicationContext().startActivity(intent);
         }
 
-        adapter = new RecordingsCardAdapter(this, recordingList, recordingsPools);
-
-        search1 = (SearchView) findViewById(R.id.searchOnProf);
-        btnAudio = (Button) findViewById(R.id.btnAudio);
-        btnActivity = (Button) findViewById(R.id.btnActivity);
-        btnBio = (Button) findViewById(R.id.btnBio);
-        rlSearch = (RelativeLayout) findViewById(R.id.rlSearch);
-        ivSearchProfile = (ImageView) findViewById(R.id.ivSearchProfile);
-        ivFilterProfile = (ImageView) findViewById(R.id.ivFilterProfile);
-        btnCancel = (Button) findViewById(R.id.btnCancel);
-        ivToMelody = (ImageView) findViewById(R.id.ivToMelody);
-
-        rlPartProfile = (RelativeLayout) findViewById(R.id.rlPartProfile);
-        rlFragmentActivity = (RelativeLayout) findViewById(R.id.rlFragmentActivity);
-        rlFragmentBio = (RelativeLayout) findViewById(R.id.rlFragmentBio);
-        rlFollow = (RelativeLayout) findViewById(R.id.rlFollow);
-        ivUnfollow = (ImageView) findViewById(R.id.ivUnfollow);
-        ivFollow = (ImageView) findViewById(R.id.ivFollow);
-
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerViewProfile);
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-
-        ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
-        ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
-        ivAudio_feed = (ImageView) findViewById(R.id.audio_feed);
-        ivDiscover = (ImageView) findViewById(R.id.discover);
-        ivMessage = (ImageView) findViewById(R.id.message);
-        ivProfile = (ImageView) findViewById(R.id.profile);
-
-        userProfileImageInProf = (CircleImageView) findViewById(R.id.userProfileImageInProf);
-        userCover = (ImageView) findViewById(R.id.userCover);
-        tvNameInProf = (TextView) findViewById(R.id.tvNameInProf);
-        tvUserNameInProf = (TextView) findViewById(R.id.tvUserNameInProf);
-        tv_records = (TextView) findViewById(R.id.tv_records);
-        tv_fans = (TextView) findViewById(R.id.tv_fans);
-        tv_following = (TextView) findViewById(R.id.tv_following);
-
         ivToMelody.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -214,60 +216,6 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
-
-//        SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-//        firstName = loginSharedPref.getString("firstName", null);
-//        userNameLogin = loginSharedPref.getString("userName", null);
-//        profilePicLogin = loginSharedPref.getString("profilePic", null);
-//        statusNormal = loginSharedPref.getInt("status", 0);
-//
-//        if (statusNormal == 1) {
-//            tvNameInProf.setText(firstName);
-//            tvUserNameInProf.setText("@" + userNameLogin);
-//        }
-//
-//        if (profilePicLogin != null) {
-//            //ivProfile.setVisibility(View.GONE);
-//            userProfileImageInProf.setVisibility(View.VISIBLE);
-//            Picasso.with(ProfileActivity.this).load(profilePicLogin).into(userProfileImageInProf);
-//        }
-//
-//
-//        SharedPreferences twitterPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
-//        Name = twitterPref.getString("Name", null);
-//        userName = twitterPref.getString("userName", null);
-//        profilePic = twitterPref.getString("ProfilePic", null);
-//        statusTwitter = twitterPref.getInt("status", 0);
-//
-//        if (statusTwitter == 1) {
-//            tvNameInProf.setText(Name);
-//            tvUserNameInProf.setText("@" + userName);
-//        }
-//
-//        if (profilePic != null) {
-//            //ivProfile.setVisibility(View.GONE);
-//            userProfileImageInProf.setVisibility(View.VISIBLE);
-//            Picasso.with(ProfileActivity.this).load(profilePic).into(userProfileImageInProf);
-//        }
-//
-//
-//        SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
-//        fbName = fbPref.getString("FbName", null);
-//        fbUserName = fbPref.getString("userName", null);
-//        fbId = fbPref.getString("fbId", null);
-//        statusFb = fbPref.getInt("status", 0);
-//
-//        if (statusFb == 1) {
-//            tvNameInProf.setText(fbName);
-//            tvUserNameInProf.setText("@"+fbName);
-//        }
-//
-//        if (fbId != null) {
-//            //ivProfile.setVisibility(View.GONE);
-//            userProfileImageInProf.setVisibility(View.VISIBLE);
-//            Picasso.with(ProfileActivity.this).load("https://graph.facebook.com/" + fbId + "/picture").into(userProfileImageInProf);
-//        }
-
 
         ivSearchProfile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -278,7 +226,6 @@ public class ProfileActivity extends AppCompatActivity {
                 btnCancel.setVisibility(View.VISIBLE);
             }
         });
-
 
         ivFilterProfile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -294,7 +241,6 @@ public class ProfileActivity extends AppCompatActivity {
                 arrayAdapter.add("Artist");
                 arrayAdapter.add("# of Instruments");
                 arrayAdapter.add("BPM");
-
 
                 builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
                     @Override
@@ -345,14 +291,17 @@ public class ProfileActivity extends AppCompatActivity {
                 btnBio.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnAudio.setBackgroundColor(Color.parseColor("#FFFFFF"));
 
-//                List<Fragment> fragments = getSupportFragmentManager().getFragments();
-//                if (fragments != null) {
-//                    for (Fragment fragment : fragments) {
-//                        getSupportFragmentManager().beginTransaction().remove(fragment).commit();
-//                    }
-//                }
-                rlPartProfile.setVisibility(View.VISIBLE);
-                getFragmentManager().popBackStack();
+                /*List<Fragment> fragments = getSupportFragmentManager().getFragments();
+                if (fragments != null) {
+                    for (Fragment fragment : fragments) {
+                        getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+                    }
+                }*/
+
+                AudioFragment af = new AudioFragment();
+                getFragmentManager().beginTransaction().replace(R.id.activity_profile, af).commit();
+                /*rlPartProfile.setVisibility(View.VISIBLE);
+                getFragmentManager().popBackStack();*/
 
             }
         });
@@ -556,7 +505,7 @@ public class ProfileActivity extends AppCompatActivity {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getApplicationContext(), errorMsg + " dumbo", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -571,61 +520,6 @@ public class ProfileActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
     }
-
-//    public void fetchUserFromPrefs() {
-//        SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-//        firstName = loginSharedPref.getString("firstName", null);
-//        userNameLogin = loginSharedPref.getString("userName", null);
-//        profilePicLogin = loginSharedPref.getString("profilePic", null);
-//        statusNormal = loginSharedPref.getInt("status", 0);
-//
-//        if (statusNormal == 1) {
-//            tvNameInProf.setText(firstName);
-//            tvUserNameInProf.setText("@" + userNameLogin);
-//        }
-//
-//        if (profilePicLogin != null) {
-//            //ivProfile.setVisibility(View.GONE);
-//            userProfileImageInProf.setVisibility(View.VISIBLE);
-//            Picasso.with(ProfileActivity.this).load(profilePicLogin).into(userProfileImageInProf);
-//        }
-//
-//
-//        SharedPreferences twitterPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
-//        Name = twitterPref.getString("Name", null);
-//        userName = twitterPref.getString("userName", null);
-//        profilePic = twitterPref.getString("ProfilePic", null);
-//        statusTwitter = twitterPref.getInt("status", 0);
-//
-//        if (statusTwitter == 1) {
-//            tvNameInProf.setText(Name);
-//            tvUserNameInProf.setText("@" + userName);
-//        }
-//
-//        if (profilePic != null) {
-//            //ivProfile.setVisibility(View.GONE);
-//            userProfileImageInProf.setVisibility(View.VISIBLE);
-//            Picasso.with(ProfileActivity.this).load(profilePic).into(userProfileImageInProf);
-//        }
-//
-//
-//        SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
-//        fbName = fbPref.getString("FbName", null);
-//        fbUserName = fbPref.getString("userName", null);
-//        fbId = fbPref.getString("fbId", null);
-//        statusFb = fbPref.getInt("status", 0);
-//
-//        if (statusFb == 1) {
-//            tvNameInProf.setText(fbName);
-//            tvUserNameInProf.setText("@" + fbName);
-//        }
-//
-//        if (fbId != null) {
-//            //ivProfile.setVisibility(View.GONE);
-//            userProfileImageInProf.setVisibility(View.VISIBLE);
-//            Picasso.with(ProfileActivity.this).load("https://graph.facebook.com/" + fbId + "/picture").into(userProfileImageInProf);
-//        }
-//    }
 
     public void fetchGenreNames() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
@@ -657,7 +551,6 @@ public class ProfileActivity extends AppCompatActivity {
                                     spec.setIndicator(titleString);
                                     spec.setContent(createTabContent());
                                     host.addTab(spec);
-
                                 }
                             }
                         } catch (JSONException e) {
@@ -679,8 +572,6 @@ public class ProfileActivity extends AppCompatActivity {
                                     genreString = genresArrayList.get(currentTab).getId();
                                 }
 //                                genreString = String.valueOf(currentTab).trim();
-                                fetchRecordings();
-
                                 fetchRecordings();
 //                                Toast.makeText(getActivity(), "beta: " + genreString, Toast.LENGTH_SHORT).show();
                             }
@@ -713,7 +604,6 @@ public class ProfileActivity extends AppCompatActivity {
                     public void onResponse(String response) {
 
 //                        Toast.makeText(getActivity(), ""+response, Toast.LENGTH_SHORT).show();
-
                         Log.d("ReturnData", response);
                         recordingList.clear();
                         new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
@@ -741,10 +631,64 @@ public class ProfileActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
+    public void fetchRecordingsFilter() {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
+
+                        Log.d("ReturnData1", response);
+                        recordingList.clear();
+                        recordingsPools.clear();
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
+                        adapter.notifyDataSetChanged();
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(ID, userId);
+                params.put(KEY, STATION);
+                params.put(GENRE, genreString);
+                params.put(FILE_TYPE, "user_recording");
+                params.put(FILTER_TYPE, strName);
+                params.put(FILTER, "extrafilter");
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+    }
+
     public void Follow(final String follower_Id) {
 
         final String fid = follower_Id;
-
         StringRequest stringRequest = new StringRequest(Request.Method.POST, USERS_BIO,
                 new Response.Listener<String>() {
 
@@ -754,7 +698,6 @@ public class ProfileActivity extends AppCompatActivity {
 //                        String rsp = response;
 //                        Toast.makeText(getApplicationContext(), "" + rsp, Toast.LENGTH_SHORT).show();
 //                        Log.d("ReturnData", response);
-
                         JSONObject jsonObject;
                         JSONArray jsonArray;
 
@@ -803,7 +746,7 @@ public class ProfileActivity extends AppCompatActivity {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getApplicationContext(), errorMsg + " dumbo", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -818,7 +761,6 @@ public class ProfileActivity extends AppCompatActivity {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
-
     }
 
     private TabHost.TabContentFactory createTabContent() {
@@ -853,7 +795,7 @@ public class ProfileActivity extends AppCompatActivity {
                 String filename = "myfile";
                 String outputString = "Hello world!";
 
-                URL aurl = new URL("http://35.165.96.167/api/upload_cover_melody_file.php");
+                URL aurl = new URL(RECORDINGS);
 
                 URLConnection connection = aurl.openConnection();
                 connection.connect();
@@ -895,7 +837,5 @@ public class ProfileActivity extends AppCompatActivity {
 
             progressDialog.dismiss();
         }
-
     }
-
 }

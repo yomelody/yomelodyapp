@@ -106,12 +106,12 @@ public class AudioFragment extends Fragment {
         SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
         fetchGenreNames();
-        fetchRecordings();
-//        if (strName == null) {
-//            fetchRecordings();
-//        } else {
-//            fetchRecordingsFilter();
-//        }
+//        fetchRecordings();
+        if (strName == null) {
+            fetchRecordings();
+        } else {
+            fetchRecordingsFilter();
+        }
 
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
@@ -297,7 +297,7 @@ public class AudioFragment extends Fragment {
 
 //                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
 
-                        Log.d("ReturnData", response);
+                        Log.d("ReturnData1", response);
                         recordingList.clear();
                         recordingsPools.clear();
                         new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
@@ -330,7 +330,7 @@ public class AudioFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-//                params.put(ID, userId);
+                params.put(ID, userId);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
@@ -376,7 +376,7 @@ public class AudioFragment extends Fragment {
                 String filename = "myfile";
                 String outputString = "Hello world!";
 
-                URL aurl = new URL("http://35.165.96.167/api/recordings.php");
+                URL aurl = new URL(RECORDINGS);
 
                 URLConnection connection = aurl.openConnection();
                 connection.connect();

@@ -305,7 +305,7 @@ public class DiscoverActivity extends AppCompatActivity {
                 String filename = "myfile";
                 String outputString = "Hello world!";
 
-                URL aurl = new URL("http://35.165.96.167/api/recordings.php");
+                URL aurl = new URL("http://52.37.189.202/api/recordings.php");
 
                 URLConnection connection = aurl.openConnection();
                 connection.connect();

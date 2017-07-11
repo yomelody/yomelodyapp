@@ -47,7 +47,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.COMMENTS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.COMMENT_LIST;
 
 /**
- * Created by Shubahansh Jaiswal on 11/29/2016.
+ * Created by Shubhansh Jaiswal on 11/29/2016.
  */
 
 public class CommentsActivity extends AppCompatActivity {

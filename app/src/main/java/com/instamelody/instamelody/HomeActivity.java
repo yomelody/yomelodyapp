@@ -58,7 +58,7 @@ import static android.R.attr.id;
 import static android.R.attr.name;
 
 /**
- * Created by Shubahansh Jaiswal on 11/29/2016.
+ * Created by Shubhansh Jaiswal on 11/29/2016.
  */
 
 public class HomeActivity extends AppCompatActivity {
@@ -95,7 +95,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        HandelLogin obj = new HandelLogin();
+//        HandelLogin obj = new HandelLogin();
 
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
@@ -114,13 +114,6 @@ public class HomeActivity extends AppCompatActivity {
         tvFirstName = (TextView) findViewById(R.id.tvFirstName);
         tvUserName = (TextView) findViewById(R.id.tvUserName);
         userProfileImage = (CircleImageView) findViewById(R.id.userProfileImage);
-        userProfileImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(HomeActivity.this, ProfileActivity.class);
-                startActivity(i);
-            }
-        });
 
 //        Bitmap bitmap = getIntent().getParcelableExtra("BitmapImage");
 //        Toast.makeText(this, ""+bitmap, Toast.LENGTH_LONG).show();
@@ -197,7 +190,7 @@ public class HomeActivity extends AppCompatActivity {
         SharedPreferences twitterPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
         Name = twitterPref.getString("Name", null);
         userName = twitterPref.getString("userName", null);
-        profilePic = twitterPref.getString("ProfilePic", null);
+        profilePic = twitterPref.getString("profilePic", null);
         statusTwitter = twitterPref.getInt("status", 0);
 
         if (statusTwitter == 1) {
@@ -310,6 +303,14 @@ public class HomeActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
                 startActivity(intent);
 
+            }
+        });
+
+        userProfileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(HomeActivity.this, ProfileActivity.class);
+                startActivity(i);
             }
         });
     }

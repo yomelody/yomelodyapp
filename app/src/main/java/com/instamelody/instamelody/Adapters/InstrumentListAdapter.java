@@ -263,7 +263,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         } else if (fbName != null) {
             holder.tvUserName.setText("@" + fbName);
         }else
-        holder.tvUserName.setText("@" + instruments.getUserName());
+        holder.tvUserName.setText(instruments.getUserName());
         holder.tvInstrumentName.setText(instruments.getInstrumentName());
 
         holder.tvInstrumentLength.setText(instruments.getInstrumentLength());
