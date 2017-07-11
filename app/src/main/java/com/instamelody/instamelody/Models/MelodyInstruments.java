@@ -10,6 +10,9 @@ public class MelodyInstruments {
 
     int instrumentId;
     int melodyPacksId;
+
+
+    public static int InstrumentCount; // added by Abhishek
     String userName, userProfilePic, instrumentCover, instrumentType, instrumentFileSize, instrumentBpm;
     String instrumentCreated, instrumentLength;
     String instrumentFile, instrumentName;
@@ -56,9 +59,20 @@ public class MelodyInstruments {
         this.instrumentFileSize = instrumentFileSize;
     }
 
+    //added by Abhishek start from here
+    public static int getInstrumentCount() {
+        return InstrumentCount;
+    }
+
+    public static void setInstrumentCount(int instrumentCount) {
+        InstrumentCount = instrumentCount;
+    }
+    //End here
+
     public String getInstrumentBpm() {
         instrumentBpm = "BPM: " + instrumentBpm;
         return instrumentBpm;
+
     }
 
     public void setInstrumentBpm(String instrumentBpm) {
@@ -129,4 +143,6 @@ public class MelodyInstruments {
     public void setInstrumentLength(String instrumentLength) {
         this.instrumentLength = instrumentLength;
     }
+
+
 }
