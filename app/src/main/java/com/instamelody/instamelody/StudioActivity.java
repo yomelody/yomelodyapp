@@ -655,6 +655,9 @@ public class StudioActivity extends AppCompatActivity {
                     if (recorder != null) {
                         try {
                             recorder.stop();
+                   //         killMediaPlayer();
+
+                            mp.stop();
                             mp.reset();
                             mp.release();
 
@@ -824,6 +827,18 @@ public class StudioActivity extends AppCompatActivity {
         String size = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
         Log.d("Buffer Size & sample rate", "Size :" + size + " & Rate: " + rate);
 
+    }
+
+    private boolean StopMediaPlayer(MediaPlayer mp) {
+        if (mp != null) {
+            if (mp.isPlaying()) {
+                mp.stop();
+            }
+           mp.reset();
+            mp.release();
+            mp=null;
+        }
+        return true;
     }
 
 
@@ -1139,7 +1154,6 @@ public class StudioActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
     }
 
@@ -1669,7 +1683,7 @@ public class StudioActivity extends AppCompatActivity {
     }
 
     public void playAudioRecycler() throws IOException {
-//            killMediaPlayer();
+      //      killMediaPlayer();
 
         /*mp = new MediaPlayer();
 //        mp.setDataSource(audioFilePath);
@@ -1687,10 +1701,11 @@ public class StudioActivity extends AppCompatActivity {
             Log.d("On studio Screen", "" + i);
             mp = MediaPlayer.create(StudioActivity.this, Uri.parse(instruments_count.get(i)));
             //     mp.prepare();
-            mp.start();
+
 //            if (instruments_count.size() > i + 1) {
 //                playNext();
 //            }
+            mp.start();
             Log.d("object of MediaPlayer", mp.toString());
         }
 
@@ -1699,6 +1714,18 @@ public class StudioActivity extends AppCompatActivity {
 //        mp.start();
 //        timer = new Timer();
 //        if (instruments_count.size() > 1) playNext();
+    }
+
+    public  void killMediaPlayer() {
+        if (mp != null) {
+            try {
+                mp.reset();
+                mp.release();
+                mp = null;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 

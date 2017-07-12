@@ -449,14 +449,14 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         holder.ivStationPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                holder.seekBarRecordings.setVisibility(View.VISIBLE);
+//                holder.seekBarRecordings.setVisibility(View.VISIBLE);
                 holder.ivStationPause.setVisibility(View.VISIBLE);
                 try {
                     RecordingsPool recordingsPool = recordingsPools.get(listPosition);
                     instrumentFile = recordingsPool.getRecordingUrl();
                     Integer s = listPosition + 1;
 
-                    if (getItemCount() > s && instrumentFile != null) {
+                    if (getItemCount() >= s && instrumentFile != null) {
                         playAudio();
                         holder.primarySeekBarProgressUpdater();
                     }

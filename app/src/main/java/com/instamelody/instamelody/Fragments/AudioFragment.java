@@ -1,5 +1,6 @@
 package com.instamelody.instamelody.Fragments;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -36,6 +37,8 @@ import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.StationActivity;
+import com.instamelody.instamelody.StudioActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -74,6 +77,7 @@ public class AudioFragment extends Fragment {
     private String FILE_TYPE = "file_type";
     private String FILTER_TYPE = "filter_type";
     private String FILTER = "filter";
+
 
     String recordingId, addedBy, recordingTopic, userName, dateAdded, likeCount, playCount, commentCount, shareCount, profileUrl, coverUrl, genre, recordings;
 
@@ -131,8 +135,8 @@ public class AudioFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_audio, container, false);
+        setRetainInstance(true);
         return view;
     }
 
@@ -193,11 +197,11 @@ public class AudioFragment extends Fragment {
                                     genreString = genresArrayList.get(currentTab).getId();
                                 }
 //                                fetchRecordings();
-//                                if (strName == null) {
-//                                    fetchRecordings();
-//                                } else {
-//                                    fetchRecordingsFilter(strname);
-//                                }
+                                if (strName == null) {
+                                    fetchRecordings();
+                                } else {
+                                    fetchRecordingsFilter();
+                                }
 //                                Toast.makeText(getActivity(), "beta: " + genreString, Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -250,6 +254,7 @@ public class AudioFragment extends Fragment {
                         recordingsPools.clear();
                         new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
+
                     }
                 },
                 new Response.ErrorListener() {
@@ -302,7 +307,6 @@ public class AudioFragment extends Fragment {
                         recordingsPools.clear();
                         new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
-
                     }
                 },
                 new Response.ErrorListener() {
@@ -343,6 +347,11 @@ public class AudioFragment extends Fragment {
         requestQueue.add(stringRequest);
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        getActivity().findViewById(R.id.activity_station);
+    }
 
     private TabHost.TabContentFactory createTabContent() {
         return new TabHost.TabContentFactory() {
@@ -418,5 +427,6 @@ public class AudioFragment extends Fragment {
 
             progressDialog.dismiss();
         }
+
     }
 }

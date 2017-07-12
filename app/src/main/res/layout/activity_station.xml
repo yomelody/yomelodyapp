@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true"
     android:id="@+id/activity_station"
     tools:context="com.instamelody.instamelody.StationActivity">
@@ -23,15 +22,17 @@
 
             <ImageView
                 android:id="@+id/ivBackButton"
-                android:layout_width="45dp"
-                android:layout_height="28dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                android:padding="4dp"
                 android:layout_centerVertical="true"
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="5dp"
                 android:src="@drawable/left_arrow" />
 
             <RelativeLayout
-                android:id="@+id/rlTafree"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_centerHorizontal="true"
@@ -61,8 +62,11 @@
 
             <ImageView
                 android:id="@+id/ivHomeButton"
-                android:layout_width="40dp"
-                android:layout_height="28dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                android:padding="4dp"
                 android:layout_centerVertical="true"
                 android:layout_toEndOf="@+id/ivBackButton"
                 android:layout_toRightOf="@+id/ivBackButton"

@@ -9,6 +9,7 @@
         android:layout_height="match_parent"
         android:layout_marginBottom="45dp"
         android:layout_marginTop="80dp"
+        android:tag="audioTag"
         android:orientation="vertical"
         android:paddingBottom="2dp">
 
