@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 /**
- * Created by ADMIN on 7/11/2017.
+ * Created by Ajay on 7/11/2017.
  */
 
 public class RMethod {
@@ -24,7 +24,7 @@ public class RMethod {
         catch(Exception e){
             System.err.println(e);
         }
-        
+
         return date2;
     }
 }

@@ -426,6 +426,18 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         holder.tvContributeLength.setText(recordingsPools.get(listPosition).getDuration());
         holder.tvContributeDate.setText(recordingsPools.get(listPosition).getDateAdded());
 
+        int likeStatus=recordingList.get(listPosition).getLikeStatus();
+        if(likeStatus==0)
+        {
+            holder.ivDislikeButton.setVisibility(GONE);
+            holder.ivLikeButton.setVisibility(VISIBLE);
+        }
+        /*else
+        {
+            holder.ivDislikeButton.setVisibility(VISIBLE);
+            holder.ivLikeButton.setVisibility(GONE);
+        }*/
+
 
 //        tvContributeLength.setText(recordingList.get(listPosition).getTvContributeLength());
         holder.tvRecordingDate.setText(recordingList.get(listPosition).getRecordingCreated());

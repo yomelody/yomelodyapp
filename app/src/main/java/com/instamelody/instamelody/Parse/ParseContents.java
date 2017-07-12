@@ -382,6 +382,7 @@ public class ParseContents {
                     card.setPlayCount(cardJson.getInt("play_count"));
                     card.setCommentCount(cardJson.getInt("comment_count"));
                     card.setLikeCount(cardJson.getInt("like_count"));
+                    card.setLikeStatus(cardJson.getInt("like_status"));
                     card.setShareCount(cardJson.getInt("share_count"));
                     card.setRecordingCover(cardJson.getString("cover_url"));
                     card.setUserProfilePic(cardJson.getString("profile_url"));

@@ -1,7 +1,11 @@
 package com.instamelody.instamelody.Fragments;
 
 import android.app.Fragment;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -27,10 +31,20 @@ import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.ActivityCardAdapter;
 import com.instamelody.instamelody.Models.ActivityModel;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.SignInActivity;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -46,7 +60,9 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ACTIVITY;
+import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 import static com.instamelody.instamelody.utils.RMethod.getServerDiffrenceDate;
 
 /**
@@ -62,6 +78,7 @@ public class ActivityFragment extends Fragment {
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "responce";
     String id = "id";
+    ProgressDialog progressDialog;
     private static ArrayList<ActivityModel> arraylist;
 
     public ActivityFragment() {
@@ -87,12 +104,46 @@ public class ActivityFragment extends Fragment {
         String position, userId;
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userId = loginSharedPref.getString("userId", null);
-        if(userId!=null)
-        fetchActivityData(userId);
-
+        if(userId!=null) {
+            //fetchActivityData(userId);
+            new FetchActivityDetails().execute(userId);
+        }
+        else {
+            Toast.makeText(getApplicationContext(), "Log in to Chat", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplicationContext().startActivity(intent);
+        }
         return view;
     }
 
+
+    private class FetchActivityDetails extends AsyncTask<String, Void, String> {
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setTitle("Processing...");
+            progressDialog.setMessage("Please wait...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        protected String doInBackground(String... params) {
+
+            try {
+                String UserID = params[0];
+                fetchActivityData(UserID);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+
+            progressDialog.dismiss();
+        }
+    }
     public void fetchActivityData(final String userId) {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, ACTIVITY,
                 new Response.Listener<String>() {
@@ -241,129 +292,12 @@ public class ActivityFragment extends Fragment {
             date2 = dff.parse(clientDnT);
             dff.setTimeZone(TimeZone.getDefault());
             String formattedDate = dff.format(date2);
-
-
-            /*TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-            Calendar cal_Two = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-            date2=cal_Two.getTime();
-            System.out.println(cal_Two.getTime());
-
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            DateFormat sdf = new SimpleDateFormat(Date);
-            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-            Date date = df.parse(sdf.toString());
-            df.setTimeZone(TimeZone.getDefault());
-            String formattedDates = df.format(sdf);*/
         }
         catch(Exception e){
             System.err.println(e);
         }
-        /*Calendar c = new GregorianCalendar(TimeZone.getTimeZone("America/New_York"));
-        c.setTimeInMillis(new Date().getTime());
-        int EastCoastHourOfDay = c.get(Calendar.HOUR_OF_DAY);
-        int EastCoastDayOfMonth = c.get(Calendar.DAY_OF_MONTH);
 
-// Alaska
-        c = new GregorianCalendar(TimeZone.getTimeZone("America/Anchorage"));
-        c.setTimeInMillis(new Date().getTime());
-        int AlaskaHourOfDay = c.get(Calendar.HOUR_OF_DAY);
-        int AlaskaDayOfMonth = c.get(Calendar.DAY_OF_MONTH);
-
-// Difference between New York and Alaska
-        int hourDifference = EastCoastHourOfDay - AlaskaHourOfDay;
-        int dayDifference = EastCoastDayOfMonth - AlaskaDayOfMonth;
-        if (dayDifference != 0) {
-            hourDifference = hourDifference + 24;
-        }
-        System.out.println(hourDifference);
-
-// Local Time
-        int localHourOfDay = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        int localDayOfMonth = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
-
-// Difference between New York and Local Time (for me Germany)
-        hourDifference = EastCoastHourOfDay - localHourOfDay;
-        dayDifference = EastCoastDayOfMonth - localDayOfMonth;
-        if (dayDifference != 0) {
-            hourDifference = hourDifference + 24;
-        }
-        System.out.println(hourDifference);*/
         return date2;
 
-
-
-        /*Calendar localTime = Calendar.getInstance();
-
-        int hour = localTime.get(Calendar.HOUR);
-        int minute = localTime.get(Calendar.MINUTE);
-        int second = localTime.get(Calendar.SECOND);
-        int year = localTime.get(Calendar.YEAR);
-
-        // Print the local time
-        System.out.printf("Local time: %02d:%02d:%02d %02d\n", hour, minute, second, year);
-
-        // Create a calendar object for representing a Singapore time zone.
-        Calendar indiaTime = new GregorianCalendar(TimeZone.getTimeZone("America/Anchorage"));
-        indiaTime.setTimeInMillis(localTime.getTimeInMillis());
-        hour = indiaTime.get(Calendar.HOUR);
-        minute = indiaTime.get(Calendar.MINUTE);
-        second = indiaTime.get(Calendar.SECOND);
-        year = indiaTime.get(Calendar.YEAR);
-
-        // Print the local time in Germany time zone
-        System.out.printf("India time: %02d:%02d:%02d %02d\n", hour, minute, second, year);
-
-        // Here are all list of timezones for your reference
-        log(TimeZone.getAvailableIDs());
-
-        long currentTime = System.currentTimeMillis();
-        int edtOffset = TimeZone.getTimeZone("EDT").getOffset(currentTime);
-        int gmtOffset = TimeZone.getTimeZone("GMT").getOffset(currentTime);
-        int hourDifference = (gmtOffset - edtOffset) / (1000 * 60 * 60);
-        String diff = hourDifference + " hours";
-
-        TimeZone tz = TimeZone.getTimeZone("America/Anchorage");
-
-        long hours = TimeUnit.MILLISECONDS.toHours(tz.getRawOffset());
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(tz.getRawOffset())
-                - TimeUnit.HOURS.toMinutes(hours);
-        long hourss = tz.getRawOffset();
-
-        String timeZoneString = String.format("( GMT %d:%02d ) %s(%s)", hours,
-                minutes, tz.getDisplayName(), "America/Anchorage");
-        //tzList.add(timeZoneString);
-        System.out.println(timeZoneString);*/
-        /*// East Coast Time
-        Calendar c = new GregorianCalendar(TimeZone.getTimeZone("America/New_York"));
-        c.setTimeInMillis(new Date().getTime());
-        int EastCoastHourOfDay = c.get(Calendar.HOUR_OF_DAY);
-        int EastCoastDayOfMonth = c.get(Calendar.DAY_OF_MONTH);
-
-// Alaska
-        c = new GregorianCalendar(TimeZone.getTimeZone("Asia/Kolkata"));
-        c.setTimeInMillis(new Date().getTime());
-        int AlaskaHourOfDay = c.get(Calendar.HOUR_OF_DAY);
-        int AlaskaDayOfMonth = c.get(Calendar.DAY_OF_MONTH);
-
-// Difference between New York and Alaska
-        int hourDifference = EastCoastHourOfDay - AlaskaHourOfDay;
-        int dayDifference = EastCoastDayOfMonth - AlaskaDayOfMonth;
-        if (dayDifference != 0) {
-            hourDifference = hourDifference + 24;
-        }
-        System.out.println(hourDifference);
-
-// Local Time
-        int localHourOfDay = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        int localDayOfMonth = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
-
-// Difference between New York and Local Time (for me Germany)
-        hourDifference = EastCoastHourOfDay - localHourOfDay;
-        dayDifference = EastCoastDayOfMonth - localDayOfMonth;
-        if (dayDifference != 0) {
-            hourDifference = hourDifference + 24;
-        }
-        System.out.println(hourDifference);*/
-        //return hourDifference;
     }
 }
