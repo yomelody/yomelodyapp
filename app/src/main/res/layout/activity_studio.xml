@@ -22,8 +22,11 @@
 
             <ImageView
                 android:id="@+id/ivBackButton"
-                android:layout_width="45dp"
-                android:layout_height="28dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                android:padding="4dp"
                 android:layout_centerVertical="true"
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="5dp"
@@ -70,8 +73,9 @@
 
             <ImageView
                 android:id="@+id/ivSound"
-                android:layout_width="45dp"
-                android:layout_height="28dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:padding="4dp"
                 android:layout_marginRight="8dp"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@+id/rlAppBarSideButton"
@@ -79,8 +83,11 @@
 
             <ImageView
                 android:id="@+id/ivHomeButton"
-                android:layout_width="40dp"
-                android:layout_height="28dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                android:padding="4dp"
                 android:layout_centerVertical="true"
                 android:layout_toEndOf="@+id/ivBackButton"
                 android:layout_toRightOf="@+id/ivBackButton"
