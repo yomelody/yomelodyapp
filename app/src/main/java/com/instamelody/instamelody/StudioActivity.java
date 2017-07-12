@@ -207,7 +207,7 @@ public class StudioActivity extends AppCompatActivity {
     ProgressDialog progressDialog, pDialog;
     LongOperation myTask = null;
     RelativeLayout rlSync;
-    static MediaPlayer mp;
+    MediaPlayer mp;
     static int duration1, currentPosition;
     SeekBar melodySlider;
     String array[] = {""};
@@ -219,7 +219,7 @@ public class StudioActivity extends AppCompatActivity {
     String fetchRecordingUrl;
     byte[] bytes, soundBytes;
     String idUpload;
-
+    int InstrumentCountSize;
     private boolean mShouldContinue = true;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -349,36 +349,36 @@ public class StudioActivity extends AppCompatActivity {
                 LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
 
                 String audioUrl = "http://52.41.33.64/api/uploads/melody/instruments/";
-
-                Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
-                if (isSDPresent) {
-                    // Yes, SD-card is present
-                    File main = new File(Environment.getExternalStorageDirectory() +
-                            File.separator + "InstaMelody/Downloads/Melodies/" + melodyName + "/");
-                    boolean success = true;
-                    if (!main.exists()) {
-                        success = main.mkdirs();
-                    }
-                    if (success) {
-                        new DownloadFileFromURL().execute(audioUrl);
-                    } else {
-                        new DownloadFileFromURL().execute(audioUrl);
-                    }
-                } else {
-                    // No, SD-card is not present
-                    File main = new File("InstaMelody/Downloads/Melodies/" + melodyName + "/");
+                new DownloadFileFromURL().execute(audioUrl);
+//                Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+//                if (isSDPresent) {
+//                    // Yes, SD-card is present
 //                    File main = new File(Environment.getExternalStorageDirectory() +
 //                            File.separator + "InstaMelody/Downloads/Melodies/" + melodyName + "/");
-                    boolean success = true;
-                    if (!main.exists()) {
-                        success = main.mkdirs();
-                    }
-                    if (success) {
-                        new DownloadFileFromURL().execute(audioUrl);
-                    } else {
-                        new DownloadFileFromURL().execute(audioUrl);
-                    }
-                }
+//                    boolean success = true;
+//                    if (!main.exists()) {
+//                        success = main.mkdirs();
+//                    }
+//                    if (success) {
+//                        new DownloadFileFromURL().execute(audioUrl);
+//                    } else {
+//                        new DownloadFileFromURL().execute(audioUrl);
+//                    }
+//                } else {
+//                    // No, SD-card is not present
+//                    File main = new File("InstaMelody/Downloads/Melodies/" + melodyName + "/");
+////                    File main = new File(Environment.getExternalStorageDirectory() +
+////                            File.separator + "InstaMelody/Downloads/Melodies/" + melodyName + "/");
+//                    boolean success = true;
+//                    if (!main.exists()) {
+//                        success = main.mkdirs();
+//                    }
+//                    if (success) {
+//                        new DownloadFileFromURL().execute(audioUrl);
+//                    } else {
+//                        new DownloadFileFromURL().execute(audioUrl);
+//                    }
+//                }
             }
         }
 
@@ -574,15 +574,19 @@ public class StudioActivity extends AppCompatActivity {
                         waveform_view.setVisibility(View.VISIBLE);
                         try {
                             recordAudio();
+                            playAudioRecycler();
+                            Log.d("Instrument count", "" + instruments_count.size());
                             mRecordingThread.start();
                             chrono.start();
 
                         } catch (IllegalStateException e) {
                             e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
 
                         //   mRecordingThread.start();
-//                            playAudioRecycler();
+
 //                    primarySeekBarProgressUpdater();
                         //                 chrono.start();
                     } else {
@@ -598,12 +602,15 @@ public class StudioActivity extends AppCompatActivity {
 
                     try {
                         recordAudio();
+                        playAudioRecycler();
                         mRecordingThread.start();
 
                         chrono.start();
 
 
                     } catch (IllegalStateException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
 
@@ -616,6 +623,7 @@ public class StudioActivity extends AppCompatActivity {
         ivRecord_stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 // Toast.makeText(StudioActivity.this, "stop", Toast.LENGTH_SHORT).show();
                 ivRecord_stop.setVisibility(View.GONE);
                 rlRecordingButton.setVisibility(View.GONE);
@@ -627,10 +635,17 @@ public class StudioActivity extends AppCompatActivity {
                 if (mRecordingThread != null) {
                     mRecordingThread.stopRunning();
                 }
-
+//                if (mp != null) {
+//                    //    mp.stop();
+//                    mp.reset();
+//                    mp.release();
+//                    mp = null;
+//
+//                }
 
                 if (isRecording) {
                     ivRecord.setEnabled(false);
+
                     if (mPlayer != null) {
                         mPlayer.stop();
                         mp.stop();
@@ -640,8 +655,12 @@ public class StudioActivity extends AppCompatActivity {
                     if (recorder != null) {
                         try {
                             recorder.stop();
+                   //         killMediaPlayer();
+
                             mp.stop();
+                            mp.reset();
                             mp.release();
+
                         } catch (RuntimeException ex) {
                             //Ignore
                         }
@@ -808,6 +827,18 @@ public class StudioActivity extends AppCompatActivity {
         String size = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
         Log.d("Buffer Size & sample rate", "Size :" + size + " & Rate: " + rate);
 
+    }
+
+    private boolean StopMediaPlayer(MediaPlayer mp) {
+        if (mp != null) {
+            if (mp.isPlaying()) {
+                mp.stop();
+            }
+           mp.reset();
+            mp.release();
+            mp=null;
+        }
+        return true;
     }
 
 
@@ -1184,8 +1215,12 @@ public class StudioActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        Log.d("Instrument list Response", response);
+
                         instrumentList.clear();
                         new ParseContents(getApplicationContext()).parseInstrumentsAttached(response, instrumentList, mpid);
+
+                        InstrumentCountSize = MelodyInstruments.getInstrumentCount();
                         adapter.notifyDataSetChanged();
                     }
                 },
@@ -1209,6 +1244,8 @@ public class StudioActivity extends AppCompatActivity {
     }
 
 
+    // DownloadFileFromURL Modified by Abhishek
+
     class DownloadFileFromURL extends AsyncTask<String, String, String> {
 
         /**
@@ -1227,6 +1264,7 @@ public class StudioActivity extends AppCompatActivity {
             pDialog.show();
 
         }
+
 
         /**
          * Downloading file in background thread
@@ -1251,10 +1289,12 @@ public class StudioActivity extends AppCompatActivity {
                 OutputStream output;
                 if (isSDPresent) {
                     // yes SD-card is present
-                    output = new FileOutputStream("sdcard/InstaMelody/Downloads/Melodies/" + melodyName + "/" + instrumentName + ".mp3");
+                    //Code commented by Abhishek
+                    //output = new FileOutputStream("sdcard/InstaMelody/Downloads/Melodies/" + melodyName + "/" + instrumentName + ".mp3");
                 } else {
-                    // Sorry
-                    output = new FileOutputStream(getFilesDir() + "/InstaMelody/Downloads/Melodies/" + melodyName + "/" + instrumentName + ".mp3");
+
+                    //Code commented by Abhishek
+                    //   output = new FileOutputStream(getFilesDir() + "/InstaMelody/Downloads/Melodies/" + melodyName + "/" + instrumentName + ".mp3");
                 }
 
                 // Output stream to write file
@@ -1268,14 +1308,14 @@ public class StudioActivity extends AppCompatActivity {
 //                    publishProgress(""+(int)((total*100)/lengthOfFile));
 
                     // writing data to file
-                    output.write(data, 0, count);
+                    //  output.write(data, 0, count);
                 }
 
                 // flushing output
-                output.flush();
+                //     output.flush();
 
                 // closing streams
-                output.close();
+                //     output.close();
                 input.close();
 
             } catch (Exception e) {
@@ -1643,7 +1683,7 @@ public class StudioActivity extends AppCompatActivity {
     }
 
     public void playAudioRecycler() throws IOException {
-//            killMediaPlayer();
+      //      killMediaPlayer();
 
         /*mp = new MediaPlayer();
 //        mp.setDataSource(audioFilePath);
@@ -1652,13 +1692,21 @@ public class StudioActivity extends AppCompatActivity {
         mp.start();
         duration1 = mp.getDuration();
         currentPosition = mp.getCurrentPosition();*/
+//        Log.d("instruments_count", "" + instruments_count);
+//        Log.d("instruments_count_size", "" + InstrumentCountSize);
 
-        for (int i = 0; i < instruments_count.size(); i++) {
+        //This for loop modified by Abhishek
+
+        for (int i = 0; i < InstrumentCountSize; i++) {
+            Log.d("On studio Screen", "" + i);
             mp = MediaPlayer.create(StudioActivity.this, Uri.parse(instruments_count.get(i)));
-            mp.start();
+            //     mp.prepare();
+
 //            if (instruments_count.size() > i + 1) {
 //                playNext();
 //            }
+            mp.start();
+            Log.d("object of MediaPlayer", mp.toString());
         }
 
 
@@ -1666,6 +1714,18 @@ public class StudioActivity extends AppCompatActivity {
 //        mp.start();
 //        timer = new Timer();
 //        if (instruments_count.size() > 1) playNext();
+    }
+
+    public  void killMediaPlayer() {
+        if (mp != null) {
+            try {
+                mp.reset();
+                mp.release();
+                mp = null;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 
