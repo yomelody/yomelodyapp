@@ -105,7 +105,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     String userId, userNameLogin;
     String userIdNormal, userIdFb, userIdTwitter;
     int statusNormal, statusFb, statusTwitter;
-    String strName;
+    String strName,strSearch;
     String titleString;
     String searchGet, search5;
     ProgressDialog progressDialog;
@@ -225,8 +225,11 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 search1.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
                 search1.isSubmitButtonEnabled();
-                String f5 = search1.getQuery().toString();
-                Toast.makeText(StationActivity.this, "" + f5, Toast.LENGTH_SHORT).show();
+                String searchContent = search1.getQuery().toString();
+                SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+                editorSearchString.putString("stringSearch", searchContent);
+                editorSearchString.apply();
+                Toast.makeText(StationActivity.this, "" + searchContent, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -579,11 +582,18 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
     public void fetchSearchData() {
 
+        SharedPreferences filterPref = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE);
+        strSearch = filterPref.getString("stringSearch", null);
+
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Toast.makeText(getApplicationContext(), "" + response, Toast.LENGTH_SHORT).show();
+                        recordingList.clear();
+                        recordingsPools.clear();
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
+                        adapter.notifyDataSetChanged();
                         Log.d("ReturnDataS", response);
                     }
                 },
@@ -614,7 +624,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
                 params.put(KEY, STATION);
-                params.put(KEY_SEARCH, searchGet);
+                params.put(KEY_SEARCH, strSearch);
                 return params;
             }
         };
