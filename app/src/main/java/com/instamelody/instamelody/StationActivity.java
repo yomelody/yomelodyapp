@@ -107,7 +107,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     int statusNormal, statusFb, statusTwitter;
     String strName;
     String titleString;
-    String searchGet,search5;
+    String searchGet, search5;
     ProgressDialog progressDialog;
     LongOperation myTask = null;
 
@@ -214,6 +214,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 rlSearch.setVisibility(View.GONE);
                 search1.setVisibility(View.VISIBLE);
                 btnCancel.setVisibility(View.VISIBLE);
+
             }
         });
 
@@ -223,7 +224,9 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 rlSearch.setVisibility(View.VISIBLE);
                 search1.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
-                Toast.makeText(StationActivity.this, ""+search5, Toast.LENGTH_SHORT).show();
+                search1.isSubmitButtonEnabled();
+                String f5 = search1.getQuery().toString();
+                Toast.makeText(StationActivity.this, "" + f5, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -318,29 +321,11 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                         editorFilterString.putString("stringFilter", strName);
                         editorFilterString.apply();
                         builderInner.setTitle("Your Selected Item is");
-                        builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                myTask = new LongOperation();
-                                myTask.execute();
-//                                fetchGenreNames();
-//                                fetchRecordings();
-
-                                dialog.dismiss();
-                            }
-                        });
-                        builderInner.show();
+                        AudioFragment af = new AudioFragment();
+                        getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
                     }
                 });
                 builderSingle.show();
-            }
-        });
-
-        search1.setOnSearchClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                 search5 = search1.getQuery().toString();
-
             }
         });
 
@@ -491,6 +476,61 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         requestQueue.add(stringRequest);
     }
 
+    public void fetchRecordingsFilter() {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
+
+                        Log.d("ReturnData1", response);
+                        recordingList.clear();
+                        recordingsPools.clear();
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
+                        adapter.notifyDataSetChanged();
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(ID, userId);
+                params.put(KEY, STATION);
+                params.put(GENRE, genreString);
+                params.put(FILE_TYPE, "user_recording");
+                params.put(FILTER_TYPE, strName);
+                params.put(FILTER, "extrafilter");
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+    }
+
     @Override
     protected void onDestroy() {
         SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
@@ -585,7 +625,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     @Override
     public boolean onQueryTextSubmit(String query) {
 //        fetchSearchData();
-        searchGet = (String) search1.getQuery();
+        searchGet = search1.getQuery().toString();
         Log.d("msg1", searchGet);
         fetchSearchData();
         return false;
@@ -608,10 +648,11 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         }
 
         protected String doInBackground(String... params) {
-            /*AudioFragment aud_fag = new AudioFragment();
-            aud_fag.fetchRecordingsFilter();*/
-            adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList, recordingsPools);
-            adapter.notifyDataSetChanged();
+            AudioFragment aud_fag = new AudioFragment();
+            aud_fag.fetchGenreNames();
+            aud_fag.fetchRecordingsFilter();
+            /*adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList, recordingsPools);
+            adapter.notifyDataSetChanged();*/
             return null;
         }
 
