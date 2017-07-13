@@ -67,7 +67,7 @@
                                     android:layout_alignParentLeft="true"
                                     android:layout_alignParentStart="true"
                                     android:maxLength="25"
-                                    android:text="Space Time jhnfkjsdf  kjh"
+                                    android:text="Space Time"
                                     android:textColor="#FFFFFF"
                                     android:textSize="18sp"
                                     android:textStyle="normal|bold" />
@@ -216,7 +216,7 @@
                                 android:id="@+id/tvMelodyLength"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="00:00:00"
+                                android:text="99:99:99"
                                 android:textColor="#FFFFFF"
                                 android:textSize="12sp" />
 
@@ -228,7 +228,7 @@
                                 android:layout_alignParentRight="true"
                                 android:layout_below="@+id/tvMelodyLength"
                                 android:gravity="center"
-                                android:text="16-16-16"
+                                android:text="99-99-99"
                                 android:textColor="#FFFFFF"
                                 android:textSize="9sp" />
                         </RelativeLayout>
@@ -245,10 +245,10 @@
                         <RelativeLayout
                             android:id="@+id/rlSeekbarTracer"
                             android:layout_width="11dp"
-                            android:layout_height="40dp"
+                            android:layout_height="20dp"
                             android:layout_alignParentBottom="true"
                             android:layout_marginRight="70dp"
-                            android:background="@drawable/slider_blue_two"
+                            android:background="#500098FE"
                             android:visibility="visible" />
 
                         <SeekBar
@@ -258,7 +258,9 @@
                             android:layout_alignParentBottom="true"
                             android:layout_alignParentLeft="true"
                             android:layout_alignParentStart="true"
+                            android:layout_marginRight="50dp"
                             android:indeterminate="false"
+                            android:progress="0"
                             android:progressDrawable="@drawable/seekbar"
                             android:thumb="@drawable/slide"
                             android:thumbOffset="15dp"

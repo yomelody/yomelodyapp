@@ -172,6 +172,9 @@ public class ContactsActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
 
+//                        String str = response;
+//                        Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
+
                         contactList.clear();
                         adapter.notifyDataSetChanged();
                         recyclerView.smoothScrollToPosition(adapter.getItemCount());

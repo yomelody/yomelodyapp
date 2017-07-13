@@ -374,15 +374,33 @@ public class ProfileActivity extends AppCompatActivity {
         rlFollow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String followCount;
+                followCount = tv_following.getText().toString().trim();
+                int count = Integer.parseInt(followCount);
+
                 if (ivFollow.getVisibility() == View.VISIBLE) {
                     ivFollow.setVisibility(View.GONE);
                     ivUnfollow.setVisibility(View.VISIBLE);
+                    rlMessage.setVisibility(View.VISIBLE);
+                    count = count + 1;
+                    tv_following.setText(String.valueOf(count));
                     Follow();
                 } else {
                     ivUnfollow.setVisibility(View.GONE);
                     ivFollow.setVisibility(View.VISIBLE);
+                    rlMessage.setVisibility(View.GONE);
+                    count = count - 1;
+                    tv_following.setText(String.valueOf(count));
                     Follow();
                 }
+            }
+        });
+
+        rlMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(ProfileActivity.this, ChatActivity.class);
+                startActivity(i);
             }
         });
     }
@@ -424,32 +442,38 @@ public class ProfileActivity extends AppCompatActivity {
                                             rlMessage.setVisibility(View.GONE);
                                         }
                                     } else {
-                                        if (rlMessage.getVisibility() == View.GONE) {
-                                            rlMessage.setVisibility(View.VISIBLE);
-                                        }
                                         if (rlFollow.getVisibility() == View.GONE) {
                                             rlFollow.setVisibility(View.VISIBLE);
                                             if (!followStatus.equals("")) {
                                                 if (followStatus.equals("0")) {
                                                     ivFollow.setVisibility(View.VISIBLE);
+                                                    rlMessage.setVisibility(View.GONE);
                                                 } else if (followStatus.equals("1")) {
                                                     ivUnfollow.setVisibility(View.VISIBLE);
+                                                    rlMessage.setVisibility(View.VISIBLE);
                                                 }
                                             }
                                         }
                                     }
                                     records = userJson.getString("records");
                                     if (!records.equals("")) {
-                                        tv_records.setText("Records: " + records);
+                                        tv_records.setText(records);
+                                    } else {
+                                        tv_records.setText(0);
                                     }
                                     fans = userJson.getString("fans");
                                     if (!fans.equals("")) {
-                                        tv_fans.setText("Fans: " + fans);
+                                        tv_fans.setText(fans);
+                                    } else {
+                                        tv_fans.setText(0);
                                     }
                                     followers = userJson.getString("followers");
                                     if (!followers.equals("")) {
-                                        tv_following.setText("Following: " + followers);
+                                        tv_following.setText(followers);
+                                    } else {
+                                        tv_following.setText(0);
                                     }
+
                                     profilePic = userJson.getString("profilepic");
                                     userProfileImageInProf.setVisibility(View.VISIBLE);
                                     Picasso.with(ProfileActivity.this).load(profilePic).into(userProfileImageInProf);
@@ -643,35 +667,16 @@ public class ProfileActivity extends AppCompatActivity {
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, FOLLOWERS,
                 new Response.Listener<String>() {
-
                     @Override
                     public void onResponse(String response) {
 
-                        String message, followers, followStatus;
                         String str = response;
 //                        Toast.makeText(getApplicationContext(), "" + str, Toast.LENGTH_SHORT).show();
 //                        Log.d("ReturnData", response);
-                        JSONObject jsonObject, jobj;
+                        JSONObject jsonObject;
                         try {
                             jsonObject = new JSONObject(response);
                             if (jsonObject.getString(KEY_FLAG).equals(SUCCESS)) {
-                                jobj = jsonObject.getJSONObject(KEY_RESPONSE);
-//                                message = jobj.getString("msg");
-//                                Toast.makeText(ProfileActivity.this, message, Toast.LENGTH_SHORT).show();
-                                followers = jobj.getString("follow_count");
-                                if (!followers.equals("")) {
-                                    tv_following.setText("Following: " + followers);
-                                }
-//                                followStatus = jobj.getString("follow_status");
-//                                if (!followStatus.equals("")) {
-//                                    if (followStatus.equals("0")) {
-//                                        ivUnfollow.setVisibility(View.GONE);
-//                                        ivFollow.setVisibility(View.VISIBLE);
-//                                    } else if (followStatus.equals("1")) {
-//                                        ivFollow.setVisibility(View.GONE);
-//                                        ivUnfollow.setVisibility(View.VISIBLE);
-//                                    }
-//                                }
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -704,8 +709,8 @@ public class ProfileActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(KEY, PASSED);
-                params.put(USER_ID, userId);
-                params.put(FOLLOWER_ID, showProfileUserId);
+                params.put(USER_ID, showProfileUserId);
+                params.put(FOLLOWER_ID, userId);
                 return params;
             }
         };
