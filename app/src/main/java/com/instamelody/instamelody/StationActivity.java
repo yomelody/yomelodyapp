@@ -15,6 +15,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -229,7 +230,13 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
                 editorSearchString.putString("stringSearch", searchContent);
                 editorSearchString.apply();
-                Toast.makeText(StationActivity.this, "" + searchContent, Toast.LENGTH_SHORT).show();
+                SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                editorFilterString.clear();
+                editorFilterString.apply();
+                AudioFragment af = new AudioFragment();
+                getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
+
+//                Toast.makeText(StationActivity.this, "" + searchContent, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -323,6 +330,9 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                         SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
                         editorFilterString.putString("stringFilter", strName);
                         editorFilterString.apply();
+                        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+                        editorSearchString.clear();
+                        editorSearchString.apply();
                         builderInner.setTitle("Your Selected Item is");
                         AudioFragment af = new AudioFragment();
                         getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
@@ -347,6 +357,17 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+        editorFilterString.clear();
+        editorFilterString.apply();
+        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+        editorSearchString.clear();
+        editorSearchString.apply();
     }
 
     public void fetchGenreNames() {
@@ -536,10 +557,14 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
         SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
         editorFilterString.clear();
         editorFilterString.apply();
-        super.onDestroy();
+        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+        editorSearchString.clear();
+        editorSearchString.apply();
+
     }
 
     private TabHost.TabContentFactory createTabContent() {
@@ -582,8 +607,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
     public void fetchSearchData() {
 
-        SharedPreferences filterPref = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE);
-        strSearch = filterPref.getString("stringSearch", null);
+        SharedPreferences searchPref = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE);
+        strSearch = searchPref.getString("stringSearch", null);
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {
@@ -646,6 +671,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
         return false;
     }
+
 
 
     private class LongOperation extends AsyncTask<String, Void, String> {
