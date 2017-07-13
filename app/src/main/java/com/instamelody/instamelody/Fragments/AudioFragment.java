@@ -77,6 +77,7 @@ public class AudioFragment extends Fragment {
     private String FILE_TYPE = "file_type";
     private String FILTER_TYPE = "filter_type";
     private String FILTER = "filter";
+    private String KEY_SEARCH = "search";
 
 
     String recordingId, addedBy, recordingTopic, userName, dateAdded, likeCount, playCount, commentCount, shareCount, profileUrl, coverUrl, genre, recordings;
@@ -97,7 +98,7 @@ public class AudioFragment extends Fragment {
     int statusNormal, statusFb, statusTwitter;
     ProgressDialog progressDialog;
     LongOperation myTask = null;
-    String strName;
+    String strName, strSearch;
 
     public AudioFragment() {
 
@@ -109,11 +110,19 @@ public class AudioFragment extends Fragment {
 
         SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
+        SharedPreferences searchPref = getActivity().getSharedPreferences("SearchPref", MODE_PRIVATE);
+        strSearch = searchPref.getString("stringSearch", null);
+
         fetchGenreNames();
-//        fetchRecordings();
-        if (strName == null) {
+
+        if (strName == null && strSearch == null) {
+
             fetchRecordings();
+        } else if (strSearch != null & strName == null) {
+
+            fetchSearchData();
         } else {
+
             fetchRecordingsFilter();
         }
 
@@ -184,6 +193,14 @@ public class AudioFragment extends Fragment {
 
                         if (host.getCurrentTab() == 0) {
 //                            Toast.makeText(getActivity(), "All " + host.getCurrentTab(), Toast.LENGTH_SHORT).show();
+                            if (strName == null && strSearch == null) {
+                                fetchRecordings();
+                            } else if (strSearch != null) {
+                                fetchSearchData();
+                            } else {
+                                fetchRecordingsFilter();
+                            }
+
                         }
 
                         host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
@@ -197,8 +214,10 @@ public class AudioFragment extends Fragment {
                                     genreString = genresArrayList.get(currentTab).getId();
                                 }
 //                                fetchRecordings();
-                                if (strName == null) {
+                                if (strName == null && strSearch == null) {
                                     fetchRecordings();
+                                } else if (strSearch != null) {
+                                    fetchSearchData();
                                 } else {
                                     fetchRecordingsFilter();
                                 }
@@ -265,7 +284,7 @@ public class AudioFragment extends Fragment {
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
                         } else if (error instanceof NoConnectionError) {
-                            errorMsg = "There is no connection";
+//                            errorMsg = "There is no connection";
                         } else if (error instanceof AuthFailureError) {
                             errorMsg = "AuthFailureError";
                         } else if (error instanceof ServerError) {
@@ -317,7 +336,7 @@ public class AudioFragment extends Fragment {
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
                         } else if (error instanceof NoConnectionError) {
-                            errorMsg = "There is no connection";
+//                            errorMsg = "There is no connection";
                         } else if (error instanceof AuthFailureError) {
                             errorMsg = "AuthFailureError";
                         } else if (error instanceof ServerError) {
@@ -340,6 +359,55 @@ public class AudioFragment extends Fragment {
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
                 params.put(FILTER, "extrafilter");
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(stringRequest);
+    }
+
+    public void fetchSearchData() {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+//                        Toast.makeText(getActivity(), "" + response, Toast.LENGTH_SHORT).show();
+                        recordingList.clear();
+                        recordingsPools.clear();
+                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
+                        adapter.notifyDataSetChanged();
+                        Log.d("ReturnDataS", response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+//                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(ID, userId);
+                params.put(KEY, STATION);
+                params.put(KEY_SEARCH, strSearch);
                 return params;
             }
         };
@@ -379,46 +447,12 @@ public class AudioFragment extends Fragment {
 
         protected String doInBackground(String... params) {
 
-            try {
-                //Getting data from server
-
-                String filename = "myfile";
-                String outputString = "Hello world!";
-
-                URL aurl = new URL(RECORDINGS);
-
-                URLConnection connection = aurl.openConnection();
-                connection.connect();
-                // getting file length
-                int lengthOfFile = connection.getContentLength();
-
-                // input stream to read file - with 8k buffer
-                InputStream input = new BufferedInputStream(aurl.openStream(), 8192);
-
-                try {
-                    FileOutputStream outputStream = getActivity().openFileOutput(filename, Context.MODE_PRIVATE);
-                    outputStream.write(outputString.getBytes());
-                    outputStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    FileInputStream inputStream = getActivity().openFileInput(filename);
-                    BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
-                    StringBuilder total = new StringBuilder();
-                    String line;
-                    while ((line = r.readLine()) != null) {
-                        total.append(line);
-                    }
-                    r.close();
-                    inputStream.close();
-                    Log.d("File", "File contents: " + total);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (strName == null && strSearch == null) {
+                fetchRecordings();
+            } else if (strSearch != null) {
+                fetchSearchData();
+            } else {
+                fetchRecordingsFilter();
             }
             return null;
         }
