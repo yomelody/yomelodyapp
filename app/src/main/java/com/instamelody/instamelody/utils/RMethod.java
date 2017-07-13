@@ -20,7 +20,7 @@ public class RMethod {
             date2 = dff.parse(clientDnT);
             dff.setTimeZone(TimeZone.getDefault());
             String formattedDate = dff.format(date2);
-            String ts4;
+            String tss4;
         }
         catch(Exception e){
             System.err.println(e);
