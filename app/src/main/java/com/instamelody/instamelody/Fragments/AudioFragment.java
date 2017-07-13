@@ -372,6 +372,19 @@ public class AudioFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+
+                        String successMsg = response.toString();
+                        try {
+                            JSONObject jsonObject = new JSONObject(successMsg);
+                            String flag = jsonObject.getString("flag");
+                            String msg =  jsonObject.getString("msg");
+                            if (flag.equals("unsuccess") ){
+                                Toast.makeText(getActivity(), ""+msg, Toast.LENGTH_SHORT).show();
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
 //                        Toast.makeText(getActivity(), "" + response, Toast.LENGTH_SHORT).show();
                         recordingList.clear();
                         recordingsPools.clear();

@@ -106,7 +106,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     String userId, userNameLogin;
     String userIdNormal, userIdFb, userIdTwitter;
     int statusNormal, statusFb, statusTwitter;
-    String strName,strSearch;
+    String strName, strSearch;
     String titleString;
     String searchGet, search5;
     ProgressDialog progressDialog;
@@ -671,7 +671,6 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
         return false;
     }
-
 
 
     private class LongOperation extends AsyncTask<String, Void, String> {
