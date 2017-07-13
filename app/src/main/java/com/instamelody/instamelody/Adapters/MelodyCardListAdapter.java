@@ -25,6 +25,8 @@ import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.CommentsActivity;
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
+import com.instamelody.instamelody.Models.RecordingsModel;
+import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
@@ -55,7 +57,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     static ArrayList<MelodyCard> melodyList = new ArrayList<>();
     ArrayList<String> mpids = new ArrayList<>();
     private static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
-    String melodyName;
+    String melodyName,fetchRecordingUrl;
 
     String USER_TYPE = "user_type";
     String USER_ID = "user_id";
@@ -67,7 +69,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";
     String Topic ="topic";
-
+    RecordingsPool recordingsPool;
     Context context;
     MediaPlayer mediaPlayer;
     int playerPos;
@@ -87,6 +89,9 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         Button btnMelodyAdd;
         SeekBar melodySlider;
         RelativeLayout rlSeekbarTracer, rlLike, rlPlay, rlComment,rlshare;
+
+
+
 
         public MyViewHolder(final View itemView) {
             super(itemView);
@@ -118,6 +123,8 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             rlPlay = (RelativeLayout) itemView.findViewById(R.id.rlPlay);
             rlComment = (RelativeLayout) itemView.findViewById(R.id.rlComment);
             rlshare=(RelativeLayout)itemView.findViewById(R.id.rlShare);
+
+
            // MelodyName=tvMelodyName.getText().toString().trim();
             ivPlay.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -235,6 +242,9 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     shareIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
                     shareIntent.setType("image/jpeg");
                     startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));*/
+
+
+                    recordingsPool.getProfileUrl();
 
                     Intent shareIntent = new Intent();
                     shareIntent.setAction(Intent.ACTION_SEND);
@@ -401,6 +411,9 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         holder.tvLikeCount.setText(String.valueOf(melody.getLikeCount()));
         holder.tvCommentCount.setText(String.valueOf(melody.getCommentCount()));
         holder.tvShareCount.setText(String.valueOf(melody.getShareCount()));
+
+
+
     }
 
     @Override

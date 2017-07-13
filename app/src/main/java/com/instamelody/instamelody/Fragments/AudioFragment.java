@@ -283,8 +283,16 @@ public class AudioFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
 //                params.put(ID, userId);
-                params.put(KEY, STATION);
-                params.put(GENRE, genreString);
+                if(userId!=null)
+                {
+                    params.put(ID, userId);
+                    params.put(KEY, "station");
+                }
+                else {
+                    params.put(KEY, STATION);
+                    params.put(GENRE, genreString);
+
+                }
                 return params;
             }
         };
