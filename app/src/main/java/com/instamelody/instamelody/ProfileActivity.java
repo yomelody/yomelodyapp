@@ -391,6 +391,8 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
