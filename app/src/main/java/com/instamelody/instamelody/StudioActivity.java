@@ -1502,8 +1502,8 @@ public class StudioActivity extends AppCompatActivity {
 //                        melodyInstruments.setAudioType("recording");
                         instrumentList.add(melodyInstruments);
                         //adapter.notifyItemInserted(instrumentList.size()-1);
-                        /*adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
-                        adapter.notifyDataSetChanged();*/
+                        adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+                        adapter.notifyDataSetChanged();
 
                         InputMethodManager inputManager = (InputMethodManager)
                                 getSystemService(Context.INPUT_METHOD_SERVICE);
