@@ -270,7 +270,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         instrumentFile = instruments.getInstrumentFile();
         instrument_url_count.add(instrumentFile);
 //        Toast.makeText(context, "" + instrumentFile, Toast.LENGTH_SHORT).show();
-        Log.d("Instruments size", "" + instrumentList.get(listPosition));
+        Log.d("Instruments size", "" +instrumentFile);
         //This line commented by Abhishek
 
      //   new DownloadInstruments().execute(instrumentFile);
@@ -369,7 +369,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 //            fetch_url_arrayList.add((String) iter.next());
 //        }
 //        Log.d("collection", "" + instrument_url_count);
-        int index=instrument_url_count.size()-1;
+
         Intent i = new Intent("fetchingInstruments");
         i.putStringArrayListExtra("instruments", instrument_url_count);
         LocalBroadcastManager.getInstance(context).sendBroadcast(i);
@@ -430,7 +430,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     }
 
     //Commented by Abhishek
-
+//
 //    class DownloadInstruments extends AsyncTask<String, String, String> {
 //
 //        /**

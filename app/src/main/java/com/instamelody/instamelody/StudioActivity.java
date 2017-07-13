@@ -219,7 +219,7 @@ public class StudioActivity extends AppCompatActivity {
     String fetchRecordingUrl;
     byte[] bytes, soundBytes;
     String idUpload;
-    int InstrumentCountSize;
+    int InstrumentCountSize = 0;
     private boolean mShouldContinue = true;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -319,6 +319,7 @@ public class StudioActivity extends AppCompatActivity {
             melodyPackId = intent.getExtras().getString("clickPosition");
             if (melodyPackId != null) {
                 fetchInstruments(melodyPackId);
+
                 noMelodyNote.setVisibility(View.GONE);
                 recyclerViewInstruments.setVisibility(View.VISIBLE);
                 recyclerViewInstruments.setHasFixedSize(true);
@@ -344,12 +345,14 @@ public class StudioActivity extends AppCompatActivity {
                     MelodyInstruments instruments = instrumentList.get(i);
                     instrumentName = instruments.getInstrumentName();
 
+
                 }
 
                 LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
 
-                String audioUrl = "http://52.41.33.64/api/uploads/melody/instruments/";
-                new DownloadFileFromURL().execute(audioUrl);
+                //      String audioUrl = "http://52.41.33.64/api/uploads/melody/instruments/";
+
+                new DownloadFileFromURL().execute();
 //                Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
 //                if (isSDPresent) {
 //                    // Yes, SD-card is present
@@ -655,11 +658,15 @@ public class StudioActivity extends AppCompatActivity {
                     if (recorder != null) {
                         try {
                             recorder.stop();
-                   //         killMediaPlayer();
+                            //         killMediaPlayer();
 
                             mp.stop();
+                            mp.stop();
+                            mp.reset();
                             mp.reset();
                             mp.release();
+                            mp.release();
+                            mp = null;
 
                         } catch (RuntimeException ex) {
                             //Ignore
@@ -834,9 +841,9 @@ public class StudioActivity extends AppCompatActivity {
             if (mp.isPlaying()) {
                 mp.stop();
             }
-           mp.reset();
+            mp.reset();
             mp.release();
-            mp=null;
+            mp = null;
         }
         return true;
     }
@@ -1223,6 +1230,8 @@ public class StudioActivity extends AppCompatActivity {
 
                         InstrumentCountSize = MelodyInstruments.getInstrumentCount();
                         adapter.notifyDataSetChanged();
+
+
                     }
                 },
                 new Response.ErrorListener() {
@@ -1242,6 +1251,7 @@ public class StudioActivity extends AppCompatActivity {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
+
     }
 
 
@@ -1274,50 +1284,51 @@ public class StudioActivity extends AppCompatActivity {
         protected String doInBackground(String... url) {
             int count;
             try {
+            //    for (int i = 0; i < InstrumentCountSize; i++) {
+                       URL aurl = new URL(MELODY);
+                 //   URL aurl = new URL((String) instruments_count.get(i));
+                    URLConnection connection = aurl.openConnection();
+                    connection.connect();
+                    // getting file length
+                    int lengthOfFile = connection.getContentLength();
 
-                URL aurl = new URL(MELODY);
+                    // input stream to read file - with 8k buffer
+                    InputStream input = new BufferedInputStream(aurl.openStream(), 8192);
 
-                URLConnection connection = aurl.openConnection();
-                connection.connect();
-                // getting file length
-                int lengthOfFile = connection.getContentLength();
+                    Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
 
-                // input stream to read file - with 8k buffer
-                InputStream input = new BufferedInputStream(aurl.openStream(), 8192);
+                    OutputStream output;
+                    if (isSDPresent) {
+                        // yes SD-card is present
+                        //Code commented by Abhishek
+                        output = new FileOutputStream("sdcard/InstaMelody/Downloads/Melodies/" + melodyName + "/" + instrumentName + ".mp3");
+                    } else {
 
-                Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+                        //Code commented by Abhishek
+                        output = new FileOutputStream(getFilesDir() + "/InstaMelody/Downloads/Melodies/" + melodyName + "/" + instrumentName + ".mp3");
+                    }
 
-                OutputStream output;
-                if (isSDPresent) {
-                    // yes SD-card is present
-                    //Code commented by Abhishek
-                    //output = new FileOutputStream("sdcard/InstaMelody/Downloads/Melodies/" + melodyName + "/" + instrumentName + ".mp3");
-                } else {
+                    // Output stream to write file
 
-                    //Code commented by Abhishek
-                    //   output = new FileOutputStream(getFilesDir() + "/InstaMelody/Downloads/Melodies/" + melodyName + "/" + instrumentName + ".mp3");
-                }
+                    byte data[] = new byte[1024];
 
-                // Output stream to write file
+                    long total = 0;
+                    while ((count = input.read(data)) != -1) {
+                        total += count;
 
-                byte data[] = new byte[1024];
+                        publishProgress("" + (int) ((total * 100) / lengthOfFile));
 
-                long total = 0;
-                while ((count = input.read(data)) != -1) {
-                    total += count;
+                        // writing data to file
+                        output.write(data, 0, count);
+                    }
 
-//                    publishProgress(""+(int)((total*100)/lengthOfFile));
+                    // flushing output
+                    output.flush();
 
-                    // writing data to file
-                    //  output.write(data, 0, count);
-                }
+                    // closing streams
+                    output.close();
+                    input.close();
 
-                // flushing output
-                //     output.flush();
-
-                // closing streams
-                //     output.close();
-                input.close();
 
             } catch (Exception e) {
                 Log.d("Error: ", e.getMessage());
@@ -1625,7 +1636,7 @@ public class StudioActivity extends AppCompatActivity {
         VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
     }
 
- public void fetchGenreNames() {
+    public void fetchGenreNames() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
                 new Response.Listener<String>() {
                     @Override
@@ -1674,7 +1685,6 @@ public class StudioActivity extends AppCompatActivity {
     }
 
 
-
     private void showFileChooser() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -1683,8 +1693,9 @@ public class StudioActivity extends AppCompatActivity {
 
     }
 
+
     public void playAudioRecycler() throws IOException {
-      //      killMediaPlayer();
+        //      killMediaPlayer();
 
         /*mp = new MediaPlayer();
 //        mp.setDataSource(audioFilePath);
@@ -1698,16 +1709,25 @@ public class StudioActivity extends AppCompatActivity {
 
         //This for loop modified by Abhishek
 
-        for (int i = 0; i < InstrumentCountSize; i++) {
-            Log.d("On studio Screen", "" + i);
-            mp = MediaPlayer.create(StudioActivity.this, Uri.parse(instruments_count.get(i)));
-            //     mp.prepare();
 
-//            if (instruments_count.size() > i + 1) {
-//                playNext();
-//            }
+        for (int i = 0; i < InstrumentCountSize; i++) {
+            mp = new MediaPlayer();
+//            Log.d("On studio Screen", "" + instruments_count.get(i));
+//            mp = MediaPlayer.create(StudioActivity.this, Uri.parse(instruments_count.get(i)));
+//
+//            mp.start();
+//            Log.d("object of MediaPlayer", mp.toString());
+//            mp = new MediaPlayer(); // initialize it here
+//            mp.setOnPreparedListener(this);
+//            mp.setOnCompletionListener(this);
+//            mp.setOnErrorListener(this);
+//            mp.setOnBufferingUpdateListener(this);
+
+            mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mp.setDataSource(instruments_count.get(i));
+            mp.prepare();
             mp.start();
-            Log.d("object of MediaPlayer", mp.toString());
+
         }
 
 
@@ -1717,7 +1737,7 @@ public class StudioActivity extends AppCompatActivity {
 //        if (instruments_count.size() > 1) playNext();
     }
 
-    public  void killMediaPlayer() {
+    public void killMediaPlayer() {
         if (mp != null) {
             try {
                 mp.reset();
