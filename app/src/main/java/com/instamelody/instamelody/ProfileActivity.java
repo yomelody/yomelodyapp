@@ -389,6 +389,14 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        rlMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(ProfileActivity.this, ChatActivity.class);
+                startActivity(i);
+            }
+        });
+
     }
 
 
