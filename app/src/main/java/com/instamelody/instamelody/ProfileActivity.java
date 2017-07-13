@@ -245,6 +245,7 @@ public class ProfileActivity extends AppCompatActivity {
                         editorFilterString.putString("stringFilter", strName);
                         editorFilterString.apply();
                         builderInner.setTitle("Your Selected Item is");
+                        recyclerView.setVisibility(View.GONE);
                         AudioFragment af = new AudioFragment();
                         getFragmentManager().beginTransaction().replace(R.id.activity_profile, af).commit();
                     }
@@ -259,6 +260,15 @@ public class ProfileActivity extends AppCompatActivity {
                 rlSearch.setVisibility(View.VISIBLE);
                 search1.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
+                String searchContent = search1.getQuery().toString();
+                SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+                editorSearchString.putString("stringSearch", searchContent);
+                editorSearchString.apply();
+                SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                editorFilterString.clear();
+                editorFilterString.apply();
+                AudioFragment af = new AudioFragment();
+                getFragmentManager().beginTransaction().replace(R.id.activity_profile, af).commit();
             }
         });
 
@@ -398,6 +408,17 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+        editorFilterString.clear();
+        editorFilterString.apply();
+        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+        editorSearchString.clear();
+        editorSearchString.apply();
+    }
+
     public void fetchUserBio() {
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, USERS_BIO,
@@ -435,6 +456,9 @@ public class ProfileActivity extends AppCompatActivity {
                                             rlMessage.setVisibility(View.GONE);
                                         }
                                     } else {
+//                                        if (rlMessage.getVisibility() == View.GONE) {
+//                                            rlMessage.setVisibility(View.VISIBLE);
+//                                        }
                                         if (rlFollow.getVisibility() == View.GONE) {
                                             rlFollow.setVisibility(View.VISIBLE);
                                             if (!followStatus.equals("")) {
