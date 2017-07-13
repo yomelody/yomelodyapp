@@ -280,7 +280,7 @@ public class ParseContents {
         try {
             jsonObject = new JSONObject(response);
             if (jsonObject.getString(KEY_FLAG).equals("success")) {
-                String str = jsonObject.getString(KEY_INFO);
+                String str = jsonObject.getString(KEY_RESULT);
                 String s = str.substring(str.indexOf(":")+2, str.indexOf("}")-1);
                 if(!s.equals("your friend list is empty"))
                 {
@@ -382,6 +382,7 @@ public class ParseContents {
                     card.setPlayCount(cardJson.getInt("play_count"));
                     card.setCommentCount(cardJson.getInt("comment_count"));
                     card.setLikeCount(cardJson.getInt("like_count"));
+                    card.setLikeStatus(cardJson.getInt("like_status"));
                     card.setShareCount(cardJson.getInt("share_count"));
                     card.setRecordingCover(cardJson.getString("cover_url"));
                     card.setUserProfilePic(cardJson.getString("profile_url"));

@@ -22,8 +22,11 @@
 
             <ImageView
                 android:id="@+id/ivBackButton"
-                android:layout_width="45dp"
-                android:layout_height="28dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                android:padding="4dp"
                 android:layout_centerVertical="true"
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="5dp"
@@ -70,8 +73,9 @@
 
             <ImageView
                 android:id="@+id/ivSound"
-                android:layout_width="45dp"
-                android:layout_height="28dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:padding="4dp"
                 android:layout_marginRight="8dp"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@+id/rlAppBarSideButton"
@@ -79,8 +83,11 @@
 
             <ImageView
                 android:id="@+id/ivHomeButton"
-                android:layout_width="40dp"
-                android:layout_height="28dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                android:padding="4dp"
                 android:layout_centerVertical="true"
                 android:layout_toEndOf="@+id/ivBackButton"
                 android:layout_toRightOf="@+id/ivBackButton"
@@ -99,20 +106,20 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_alignParentBottom="true"
-            android:background="#fbf7f7">
+            android:background="#fbf7f7"
+            android:layout_alignParentBottom="true">
 
             <LinearLayout
                 android:id="@+id/linear1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_alignParentBottom="true">
 
                 <RelativeLayout
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
                     android:layout_weight="0.33"
+                    android:layout_height="match_parent"
                     android:background="#FFFFFF"
                     android:padding="5dp">
 
@@ -120,16 +127,16 @@
                         android:id="@+id/audio_feed"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:background="@drawable/audio_feed"
                         android:layout_alignParentTop="true"
-                        android:layout_centerHorizontal="true"
-                        android:background="@drawable/audio_feed" />
+                        android:layout_centerHorizontal="true" />
 
                 </RelativeLayout>
 
                 <RelativeLayout
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
                     android:layout_weight="0.33"
+                    android:layout_height="match_parent"
                     android:background="#FFFFFF"
                     android:padding="5dp">
 
@@ -137,26 +144,26 @@
                         android:id="@+id/discover"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:background="@drawable/discover"
                         android:layout_alignParentTop="true"
-                        android:layout_centerHorizontal="true"
-                        android:background="@drawable/discover" />
+                        android:layout_centerHorizontal="true" />
 
                 </RelativeLayout>
 
                 <RelativeLayout
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
                     android:layout_weight="0.33"
+                    android:layout_height="match_parent"
                     android:background="#FFFFFF">
 
                     <ImageView
                         android:id="@+id/message"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:background="@drawable/messenger"
                         android:layout_alignParentTop="true"
-                        android:layout_centerHorizontal="true"
                         android:layout_margin="5dp"
-                        android:background="@drawable/messenger" />
+                        android:layout_centerHorizontal="true" />
 
                     <FrameLayout
                         android:layout_width="match_parent"
@@ -166,23 +173,23 @@
                             android:id="@+id/message_count"
                             android:layout_width="15dp"
                             android:layout_height="15dp"
-                            android:layout_gravity="right"
-                            android:layout_marginRight="32dp"
-                            android:layout_marginTop="2dp"
                             android:background="@drawable/red_circle"
                             android:text="99"
-                            android:textAlignment="center"
                             android:textSize="12sp"
+                            android:textAlignment="center"
                             android:textStyle="normal|bold"
-                            android:visibility="invisible" />
+                            android:layout_gravity="right"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginRight="32dp"
+                            android:visibility="invisible"/>
 
                     </FrameLayout>
                 </RelativeLayout>
 
                 <RelativeLayout
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
                     android:layout_weight="0.33"
+                    android:layout_height="match_parent"
                     android:background="#FFFFFF"
                     android:padding="5dp">
 
@@ -190,9 +197,9 @@
                         android:id="@+id/ivProfile"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:background="@drawable/profile"
                         android:layout_alignParentTop="true"
-                        android:layout_centerHorizontal="true"
-                        android:background="@drawable/profile" />
+                        android:layout_centerHorizontal="true" />
 
                 </RelativeLayout>
             </LinearLayout>
