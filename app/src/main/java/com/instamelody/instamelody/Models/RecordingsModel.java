@@ -50,6 +50,10 @@ public class RecordingsModel {
         this.recordingName = recordingName;
     }
 
+    public void setLikeStatus(int likeStatus) {
+        this.likeStatus = likeStatus;
+    }
+
     public String getUserName() {
         return userName;
     }
@@ -119,6 +123,10 @@ public class RecordingsModel {
 
     public String getGenreId() {
         return genreId;
+    }
+
+    public int getLikeStatus() {
+        return likeStatus;
     }
 
     public void setGenreId(String genreId) {

@@ -241,19 +241,12 @@ public class ProfileActivity extends AppCompatActivity {
                         strName = arrayAdapter.getItem(which);
                         AlertDialog.Builder builderInner = new AlertDialog.Builder(ProfileActivity.this);
                         builderInner.setMessage(strName);
+                        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                        editorFilterString.putString("stringFilter", strName);
+                        editorFilterString.apply();
                         builderInner.setTitle("Your Selected Item is");
-                        builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                myTask = new LongOperation();
-                                myTask.execute();
-//                                fetchGenreNames();
-//                                fetchRecordings();
-
-                                dialog.dismiss();
-                            }
-                        });
-                        builderInner.show();
+                        AudioFragment af = new AudioFragment();
+                        getFragmentManager().beginTransaction().replace(R.id.activity_profile, af).commit();
                     }
                 });
                 builderSingle.show();

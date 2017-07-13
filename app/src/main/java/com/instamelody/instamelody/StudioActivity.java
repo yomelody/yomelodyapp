@@ -1155,7 +1155,6 @@ public class StudioActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
     }
 
     public void playAudio() throws IOException {
