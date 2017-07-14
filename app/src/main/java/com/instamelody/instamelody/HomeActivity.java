@@ -69,15 +69,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 //        HandelLogin obj = new HandelLogin();
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
 
-            if (checkPermissions()) {
-                //Toast.makeText(getApplicationContext(), "Permission granted", Toast.LENGTH_SHORT).show();
-            } else {
-                setPermissions();
-            }
-
-        }
 
 
 
@@ -359,26 +351,6 @@ public class HomeActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
     }*/
-
-    @TargetApi(17)
-    public boolean checkPermissions() {
-        if ((ContextCompat.checkSelfPermission(HomeActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @TargetApi(17)
-    public void setPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-            requestPermissions(new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-        }
-
-    }
-
 
 }
 
