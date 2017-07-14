@@ -1714,12 +1714,17 @@ public class StudioActivity extends AppCompatActivity {
             mp = new MediaPlayer();
             mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mp.setDataSource(instruments_count.get(i));
-            mp.prepare();
+            mp.prepareAsync();
          //   mp.start();
             mps.add(mp);
         }
         for (MediaPlayer mp: mps) {
-            mp.start();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
         }
     }
 
