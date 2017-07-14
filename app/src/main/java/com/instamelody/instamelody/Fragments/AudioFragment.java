@@ -81,7 +81,6 @@ public class AudioFragment extends Fragment {
     private String USER_NAME = "username";
 
 
-
     String recordingId, addedBy, recordingTopic, userName, dateAdded, likeCount, playCount, commentCount, shareCount, profileUrl, coverUrl, genre, recordings;
 
     String KEY_GENRE_NAME = "name";
@@ -100,7 +99,7 @@ public class AudioFragment extends Fragment {
     int statusNormal, statusFb, statusTwitter;
     ProgressDialog progressDialog;
     LongOperation myTask = null;
-    String strName, strSearch,strArtist;
+    String strName, strSearch, strArtist;
 
     public AudioFragment() {
 
@@ -115,18 +114,21 @@ public class AudioFragment extends Fragment {
         SharedPreferences searchPref = getActivity().getSharedPreferences("SearchPref", MODE_PRIVATE);
         strSearch = searchPref.getString("stringSearch", null);
         SharedPreferences filterPrefArtist = getActivity().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE);
-        strArtist=filterPrefArtist.getString("stringFilterArtist", null);
+        strArtist = filterPrefArtist.getString("stringFilterArtist", null);
 
         fetchGenreNames();
 
         if (strName == null && strSearch == null) {
 
             fetchRecordings();
-        } else if (strSearch != null && strName == null  && strArtist == null) {
+        } else if (strSearch != null) {
+
             fetchSearchData();
         } else if (strArtist != null)
+
             fetchRecordingsFilterArtist();
         else {
+
             fetchRecordingsFilter();
         }
 
@@ -201,7 +203,7 @@ public class AudioFragment extends Fragment {
                             if (strName == null && strSearch == null) {
 
                                 fetchRecordings();
-                            } else if (strSearch != null && strName == null  && strArtist == null) {
+                            } else if (strSearch != null && strName == null && strArtist == null) {
                                 fetchSearchData();
                             } else if (strArtist != null & strName == null && strSearch == null)
                                 fetchRecordingsFilterArtist();
@@ -225,9 +227,9 @@ public class AudioFragment extends Fragment {
                                 if (strName == null && strSearch == null) {
 
                                     fetchRecordings();
-                                } else if (strSearch != null && strName == null  && strArtist == null) {
+                                } else if (strSearch != null) {
                                     fetchSearchData();
-                                } else if (strArtist != null & strName == null && strSearch == null)
+                                } else if (strArtist != null)
                                     fetchRecordingsFilterArtist();
                                 else {
                                     fetchRecordingsFilter();
@@ -255,7 +257,7 @@ public class AudioFragment extends Fragment {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -305,7 +307,7 @@ public class AudioFragment extends Fragment {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -313,6 +315,8 @@ public class AudioFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
 //                params.put(ID, userId);
+               /* params.put(KEY, STATION);
+                params.put(GENRE, genreString);*/
                 if(userId!=null)
                 {
                     params.put(ID, userId);
@@ -365,7 +369,7 @@ public class AudioFragment extends Fragment {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -396,9 +400,9 @@ public class AudioFragment extends Fragment {
                         try {
                             JSONObject jsonObject = new JSONObject(successMsg);
                             String flag = jsonObject.getString("flag");
-                            String msg =  jsonObject.getString("msg");
-                            if (flag.equals("unsuccess") ){
-                                Toast.makeText(getActivity(), ""+msg, Toast.LENGTH_SHORT).show();
+                            String msg = jsonObject.getString("msg");
+                            if (flag.equals("unsuccess")) {
+                                Toast.makeText(getActivity(), "" + msg, Toast.LENGTH_SHORT).show();
                             }
 
                         } catch (JSONException e) {
@@ -430,7 +434,7 @@ public class AudioFragment extends Fragment {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -457,7 +461,7 @@ public class AudioFragment extends Fragment {
                         try {
                             JSONObject jsonObject = new JSONObject(rs);
                             String flag = jsonObject.getString("flag");
-                            Toast.makeText(getActivity(), ""+flag, Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(getActivity(), "" + flag, Toast.LENGTH_SHORT).show();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -489,7 +493,7 @@ public class AudioFragment extends Fragment {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -501,7 +505,7 @@ public class AudioFragment extends Fragment {
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
-                params.put(USER_NAME,strArtist);
+                params.put(USER_NAME, strArtist);
                 params.put(FILTER, "extrafilter");
                 return params;
             }
@@ -553,7 +557,7 @@ public class AudioFragment extends Fragment {
             if (strName == null && strSearch == null) {
 
                 fetchRecordings();
-            } else if (strSearch != null && strName == null  && strArtist == null) {
+            } else if (strSearch != null) {
                 fetchSearchData();
             } else if (strArtist != null)
                 fetchRecordingsFilterArtist();

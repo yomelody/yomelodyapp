@@ -229,11 +229,13 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     shareIntent.setType("image/jpeg");
                     startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));*/
 
-
+                    RecordingsModel recording = recordingList.get(getAdapterPosition());
+                    String RecordingURL=recording.getrecordingurl();
                     Intent shareIntent = new Intent();
                     shareIntent.setAction(Intent.ACTION_SEND);
                     shareIntent.putExtra(Intent.EXTRA_STREAM, "");
                     shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt");
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, RecordingURL);
                     shareIntent.setType("image/jpeg");
                     context.startActivity(Intent.createChooser(shareIntent, "Hello."));
                 }
@@ -518,7 +520,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
                         }
                     },
                     new Response.ErrorListener() {

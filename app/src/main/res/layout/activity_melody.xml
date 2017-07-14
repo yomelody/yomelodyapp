@@ -71,7 +71,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_toRightOf="@+id/searchMelody"
                 android:background="#E4E4E4"
-                android:text="cancel"
+                android:text="Submit"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                 android:textColor="#4575FC"
                 android:visibility="gone" />

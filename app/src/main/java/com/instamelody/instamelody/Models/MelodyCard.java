@@ -23,6 +23,8 @@ public class MelodyCard {
     String melodyPackId;
     String melodyCover;
     String genreName;
+    int LikeStatus;
+    String MelodyURL;
 
     public String getMelodyPackId() {
         return melodyPackId;
@@ -80,6 +82,22 @@ public class MelodyCard {
 
     public int getLikeCount() {
         return likeCount;
+    }
+
+    public int getLikeStatus() {
+        return LikeStatus;
+    }
+
+    public String getMelodyURL() {
+        return MelodyURL;
+    }
+
+    public void setLikeStatus(int LikeStatus) {
+        this.LikeStatus = LikeStatus;
+    }
+
+    public void setMelodyURL(String MelodyURL) {
+        this.MelodyURL = MelodyURL;
     }
 
     public void setLikeCount(int likeCount) {

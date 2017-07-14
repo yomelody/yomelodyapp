@@ -221,9 +221,9 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 rlSearch.setVisibility(View.GONE);
                 search1.setVisibility(View.VISIBLE);
                 btnCancel.setVisibility(View.VISIBLE);
-
             }
         });
+
 
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -443,7 +443,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -491,7 +491,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -546,7 +546,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -625,7 +625,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Toast.makeText(getApplicationContext(), "" + response, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getApplicationContext(), "" + response, Toast.LENGTH_SHORT).show();
                         recordingList.clear();
                         recordingsPools.clear();
                         new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
@@ -651,7 +651,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -671,9 +671,23 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     @Override
     public boolean onQueryTextSubmit(String query) {
 //        fetchSearchData();
-        searchGet = search1.getQuery().toString();
+        /*searchGet = search1.getQuery().toString();
         Log.d("msg1", searchGet);
-        fetchSearchData();
+        fetchSearchData();*/
+
+        rlSearch.setVisibility(View.VISIBLE);
+        search1.setVisibility(View.GONE);
+        btnCancel.setVisibility(View.GONE);
+        search1.isSubmitButtonEnabled();
+        String searchContent = search1.getQuery().toString();
+        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+        editorSearchString.putString("stringSearch", searchContent);
+        editorSearchString.apply();
+        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+        editorFilterString.clear();
+        editorFilterString.apply();
+        AudioFragment af = new AudioFragment();
+        getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
         return false;
     }
 
@@ -744,7 +758,6 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtFilterName.getWindowToken(), 0);
-
 
             }
         });

@@ -62,7 +62,7 @@ public class MelodyPacksFragment extends Fragment {
     String KEY_FLAG = "flag";
     String KEY_GENRE_ID = "id";
     String KEY_RESPONSE = "response";//JSONArray
-
+    String users_id="users_id";
     String KEY = "key";
     String GENRE = "genere";
     String genreString = "1";
@@ -104,11 +104,15 @@ public class MelodyPacksFragment extends Fragment {
 
         if (loginSharedPref.getString("userId", null) != null) {
             userId = loginSharedPref.getString("userId", null);
+            users_id=userId;
         } else if (fbPref.getString("userId", null) != null) {
             userId = fbPref.getString("userId", null);
+            //MelodyUser=userId;
         } else if (twitterPref.getString("userId", null) != null) {
             userId = twitterPref.getString("userId", null);
+            //MelodyUser=userId;
         }
+
 
         RecordingsFragment rf = new RecordingsFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -248,14 +252,25 @@ public class MelodyPacksFragment extends Fragment {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
+                        try {
+                            Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+                            Log.d("Error", errorMsg);
+                        } catch (Throwable throwable) {
+                            Log.d("Fetch Melody Packs Error", throwable.toString());
+                        }
+
                     }
                 }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(GENRE, packId);
+                if(userId!=null)
+                {
+                    params.put(users_id,GENRE);
+                }
+                else {
+                    params.put(GENRE, packId);
+                }
                 SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
                 String userId = loginSharedPref.getString("userId", null);
                 if (userId != null) {

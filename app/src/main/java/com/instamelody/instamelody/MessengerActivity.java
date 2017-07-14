@@ -186,7 +186,6 @@ public class MessengerActivity extends AppCompatActivity {
                         try {
                             jsonObject = new JSONObject(response);
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
-                                rlNoMsg.setVisibility(View.GONE);
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     Chat chat = new Chat();

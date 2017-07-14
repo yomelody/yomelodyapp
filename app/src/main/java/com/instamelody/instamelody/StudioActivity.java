@@ -107,6 +107,7 @@ import java.util.TimerTask;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.provider.Contacts.SettingsColumns.KEY;
+import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ADD_RECORDINGS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
@@ -219,8 +220,11 @@ public class StudioActivity extends AppCompatActivity {
     String fetchRecordingUrl;
     byte[] bytes, soundBytes;
     String idUpload;
-    int InstrumentCountSize;
+    int InstrumentCountSize = 0;
     private boolean mShouldContinue = true;
+    ArrayList<String> urls;
+    MediaPlayer[] media;
+    List<MediaPlayer> mps = new ArrayList<MediaPlayer>();
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -319,6 +323,7 @@ public class StudioActivity extends AppCompatActivity {
             melodyPackId = intent.getExtras().getString("clickPosition");
             if (melodyPackId != null) {
                 fetchInstruments(melodyPackId);
+
                 noMelodyNote.setVisibility(View.GONE);
                 recyclerViewInstruments.setVisibility(View.VISIBLE);
                 recyclerViewInstruments.setHasFixedSize(true);
@@ -344,29 +349,57 @@ public class StudioActivity extends AppCompatActivity {
                     MelodyInstruments instruments = instrumentList.get(i);
                     instrumentName = instruments.getInstrumentName();
 
+
                 }
 
                 LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
 
                 String audioUrl = "http://52.41.33.64/api/uploads/melody/instruments/";
                 new DownloadFileFromURL().execute(audioUrl);
+//                final Handler mTimerHandler = new Handler();
+//                        final Handler threadHandler = new Handler();
+//                        new Thread() {
+//                            @Override
+//                            public void run() {
+//                               threadHandler.postDelayed(new Runnable() {
+//                                    public void run() {
+//                                        new DownloadFileFromURL().execute();
+//                                    }
+//                                }, 2000);
+//                            }
+//                        }.start();
+//                final String audioUrl = "http://52.41.33.64/api/uploads/melody/instruments/";
+//                //     new DownloadFileFromURL().execute(audioUrl);
 //                Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
 //                if (isSDPresent) {
 //                    // Yes, SD-card is present
 //                    File main = new File(Environment.getExternalStorageDirectory() +
-//                            File.separator + "InstaMelody/Downloads/Melodies/" + melodyName + "/");
+//                            File.separator + "InstaMelody/Downloads/Melodies/");
 //                    boolean success = true;
 //                    if (!main.exists()) {
 //                        success = main.mkdirs();
 //                    }
 //                    if (success) {
-//                        new DownloadFileFromURL().execute(audioUrl);
+//                        final Handler mTimerHandler = new Handler();
+//                        final Handler threadHandler = new Handler();
+//                        new Thread() {
+//                            @Override
+//                            public void run() {
+//                                threadHandler.postDelayed(new Runnable() {
+//                                    public void run() {
+//                                        new DownloadFileFromURL().execute(audioUrl);
+//                                    }
+//                                }, 2000);
+//                            }
+//                        }.start();
+//
+//
 //                    } else {
 //                        new DownloadFileFromURL().execute(audioUrl);
 //                    }
 //                } else {
 //                    // No, SD-card is not present
-//                    File main = new File("InstaMelody/Downloads/Melodies/" + melodyName + "/");
+//                    File main = new File("InstaMelody/Downloads/Melodies/");
 ////                    File main = new File(Environment.getExternalStorageDirectory() +
 ////                            File.separator + "InstaMelody/Downloads/Melodies/" + melodyName + "/");
 //                    boolean success = true;
@@ -635,13 +668,7 @@ public class StudioActivity extends AppCompatActivity {
                 if (mRecordingThread != null) {
                     mRecordingThread.stopRunning();
                 }
-//                if (mp != null) {
-//                    //    mp.stop();
-//                    mp.reset();
-//                    mp.release();
-//                    mp = null;
-//
-//                }
+
 
                 if (isRecording) {
                     ivRecord.setEnabled(false);
@@ -655,11 +682,7 @@ public class StudioActivity extends AppCompatActivity {
                     if (recorder != null) {
                         try {
                             recorder.stop();
-                   //         killMediaPlayer();
-
-                            mp.stop();
-                            mp.reset();
-                            mp.release();
+                            killMediaPlayer();
 
                         } catch (RuntimeException ex) {
                             //Ignore
@@ -834,9 +857,9 @@ public class StudioActivity extends AppCompatActivity {
             if (mp.isPlaying()) {
                 mp.stop();
             }
-           mp.reset();
+            mp.reset();
             mp.release();
-            mp=null;
+            mp = null;
         }
         return true;
     }
@@ -1222,6 +1245,8 @@ public class StudioActivity extends AppCompatActivity {
 
                         InstrumentCountSize = MelodyInstruments.getInstrumentCount();
                         adapter.notifyDataSetChanged();
+
+
                     }
                 },
                 new Response.ErrorListener() {
@@ -1241,6 +1266,7 @@ public class StudioActivity extends AppCompatActivity {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
+
     }
 
 
@@ -1624,7 +1650,7 @@ public class StudioActivity extends AppCompatActivity {
         VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
     }
 
- public void fetchGenreNames() {
+    public void fetchGenreNames() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
                 new Response.Listener<String>() {
                     @Override
@@ -1673,7 +1699,6 @@ public class StudioActivity extends AppCompatActivity {
     }
 
 
-
     private void showFileChooser() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -1682,50 +1707,33 @@ public class StudioActivity extends AppCompatActivity {
 
     }
 
+
     public void playAudioRecycler() throws IOException {
-      //      killMediaPlayer();
-
-        /*mp = new MediaPlayer();
-//        mp.setDataSource(audioFilePath);
-        mp.setDataSource(receiveInstruments);
-        mp.prepare();
-        mp.start();
-        duration1 = mp.getDuration();
-        currentPosition = mp.getCurrentPosition();*/
-//        Log.d("instruments_count", "" + instruments_count);
-//        Log.d("instruments_count_size", "" + InstrumentCountSize);
-
         //This for loop modified by Abhishek
-
         for (int i = 0; i < InstrumentCountSize; i++) {
-            Log.d("On studio Screen", "" + i);
-            mp = MediaPlayer.create(StudioActivity.this, Uri.parse(instruments_count.get(i)));
-            //     mp.prepare();
-
-//            if (instruments_count.size() > i + 1) {
-//                playNext();
-//            }
-            mp.start();
-            Log.d("object of MediaPlayer", mp.toString());
+            mp = new MediaPlayer();
+            mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mp.setDataSource(instruments_count.get(i));
+            mp.prepare();
+         //   mp.start();
+            mps.add(mp);
         }
-
-
-//        mp = MediaPlayer.create(this, Uri.parse(instruments_count.get(0)));
-//        mp.start();
-//        timer = new Timer();
-//        if (instruments_count.size() > 1) playNext();
+        for (MediaPlayer mp: mps) {
+            mp.start();
+        }
     }
 
-    public  void killMediaPlayer() {
-        if (mp != null) {
+    public void killMediaPlayer() {
+        for (MediaPlayer mp : mps) {
             try {
+                mp.stop();
                 mp.reset();
                 mp.release();
-                mp = null;
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        mps.clear();
     }
 
 

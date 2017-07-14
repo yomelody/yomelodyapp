@@ -270,7 +270,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         instrumentFile = instruments.getInstrumentFile();
         instrument_url_count.add(instrumentFile);
 //        Toast.makeText(context, "" + instrumentFile, Toast.LENGTH_SHORT).show();
-        Log.d("Instruments size", "" + instrumentList.get(listPosition));
+        Log.d("Instruments size", "" +instrumentFile);
         //This line commented by Abhishek
 
      //   new DownloadInstruments().execute(instrumentFile);
@@ -309,14 +309,16 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     if (getItemCount() > s && instrumentFile != null) {
                         playAudio();
                         holder.primarySeekBarProgressUpdater();
-                    } else if (getItemCount() + 1 > s) {
+                    }
+                    else if (getItemCount() + 1 > s) {
                         if (getItemCount() == 1 || getItemCount() == 2) {
                             playAudio();
                             holder.primarySeekBarProgressUpdater();
                         } else
                             playAudio1();
                         holder.primarySeekBarProgressUpdater();
-                    } else {
+                    }
+                    else {
                         playAudio();
                         holder.primarySeekBarProgressUpdater();
                     }
@@ -369,7 +371,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 //            fetch_url_arrayList.add((String) iter.next());
 //        }
 //        Log.d("collection", "" + instrument_url_count);
-        int index=instrument_url_count.size()-1;
+
         Intent i = new Intent("fetchingInstruments");
         i.putStringArrayListExtra("instruments", instrument_url_count);
         LocalBroadcastManager.getInstance(context).sendBroadcast(i);
@@ -394,9 +396,10 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 Environment.getExternalStorageDirectory().getAbsolutePath()
                         + "/InstaMelody.amr";
         mp = new MediaPlayer();
+        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mp.setDataSource(audioFilePath);
 //        mp.setDataSource(instrumentFile);
-        mp.prepare();
+        mp.prepareAsync();
         mp.start();
         duration1 = mp.getDuration();
         currentPosition = mp.getCurrentPosition();
@@ -430,7 +433,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     }
 
     //Commented by Abhishek
-
+//
 //    class DownloadInstruments extends AsyncTask<String, String, String> {
 //
 //        /**
