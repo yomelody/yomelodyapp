@@ -152,7 +152,6 @@
                         android:indeterminate="false"
                         android:thumb="@drawable/slider_thumb4"
                         android:progressDrawable="@drawable/new_seekbar"
-                        android:visibility="gone"
                         android:layout_marginTop="35dp" />
 
                     <ImageView

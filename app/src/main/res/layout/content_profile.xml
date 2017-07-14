@@ -5,9 +5,9 @@
     android:id="@+id/content_profile"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#CBCBCB"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.instamelody.instamelody.ProfileActivity"
-    android:background="#CBCBCB"
     tools:showIn="@layout/activity_profile">
 
     <LinearLayout
@@ -25,7 +25,7 @@
                 android:id="@+id/userCover"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="fitXY"/>
+                android:scaleType="fitXY" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -47,8 +47,8 @@
                     <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
-                        android:layout_below="@+id/userProfileImageInProf">
+                        android:layout_below="@+id/userProfileImageInProf"
+                        android:layout_centerHorizontal="true">
 
                         <TextView
                             android:id="@+id/tvNameInProf"
@@ -56,10 +56,10 @@
                             android:layout_height="wrap_content"
                             android:text=""
                             android:textAlignment="center"
-                            android:textSize="16dp"
-                            android:textStyle="bold"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                            android:textColor="#FFFFFF" />
+                            android:textColor="#FFFFFF"
+                            android:textSize="16dp"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/tvUserNameInProf"
@@ -68,10 +68,10 @@
                             android:layout_below="@+id/tvNameInProf"
                             android:layout_centerHorizontal="true"
                             android:text=""
-                            android:textSize="14sp"
                             android:textAlignment="center"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                            android:textColor="#FFFFFF" />
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp" />
 
                     </RelativeLayout>
 
@@ -84,12 +84,13 @@
                             android:id="@+id/rlMessage"
                             android:layout_width="100dp"
                             android:layout_height="match_parent"
-                            android:padding="4dp">
+                            android:padding="4dp"
+                            android:visibility="gone">
 
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:src="@drawable/message_icon"/>
+                                android:src="@drawable/message_icon" />
 
                         </RelativeLayout>
 
@@ -97,23 +98,24 @@
                             android:id="@+id/rlFollow"
                             android:layout_width="100dp"
                             android:layout_height="match_parent"
-                            android:padding="4dp"
                             android:layout_alignParentEnd="true"
-                            android:layout_alignParentRight="true">
+                            android:layout_alignParentRight="true"
+                            android:padding="4dp"
+                            android:visibility="gone">
 
                             <ImageView
                                 android:id="@+id/ivFollow"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:src="@drawable/follow"
-                                android:visibility="visible"/>
+                                android:visibility="gone" />
 
                             <ImageView
                                 android:id="@+id/ivUnfollow"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:src="@drawable/following"
-                                android:visibility="gone"/>
+                                android:visibility="gone" />
 
                         </RelativeLayout>
                     </RelativeLayout>
@@ -139,57 +141,105 @@
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.33">
+                android:layout_weight="0.33"
+                android:background="#FFFFFF">
 
-                <TextView
-                    android:id="@+id/tv_records"
-                    android:layout_width="match_parent"
+                <RelativeLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_centerVertical="true"
-                    android:background="#FFFFFF"
-                    android:text=""
-                    android:gravity="center"
-                    android:textAlignment="center"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textColor="#495C67" />
-            </RelativeLayout>
+                    android:layout_centerHorizontal="true">
 
+                    <TextView
+                        android:id="@+id/tvRecordsText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_centerVertical="true"
+                        android:gravity="center"
+                        android:text="Records : "
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textColor="#495C67" />
 
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.33">
+                    <TextView
+                        android:id="@+id/tv_records"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_toEndOf="@+id/tvRecordsText"
+                        android:layout_toRightOf="@+id/tvRecordsText"
+                        android:gravity="center"
+                        android:text=""
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textColor="#495C67" />
 
-                <TextView
-                    android:id="@+id/tv_fans"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_centerVertical="true"
-                    android:background="#FFFFFF"
-                    android:text=""
-                    android:gravity="center"
-                    android:textAlignment="center"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textColor="#495C67" />
-
+                </RelativeLayout>
             </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.33">
+                android:layout_weight="0.33"
+                android:background="#FFFFFF">
 
-                <TextView
-                    android:id="@+id/tv_following"
-                    android:layout_width="match_parent"
+                <RelativeLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_centerVertical="true"
-                    android:background="#FFFFFF"
-                    android:text=""
-                    android:gravity="center"
-                    android:textAlignment="center"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textColor="#495C67" />
+                    android:layout_centerHorizontal="true">
+
+                    <TextView
+                        android:id="@+id/tvfansText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_centerVertical="true"
+                        android:gravity="center"
+                        android:text="Fans : "
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textColor="#495C67" />
+
+                    <TextView
+                        android:id="@+id/tv_fans"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_toEndOf="@+id/tvfansText"
+                        android:layout_toRightOf="@+id/tvfansText"
+                        android:gravity="center"
+                        android:text=""
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textColor="#495C67" />
+
+                </RelativeLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.33"
+                android:background="#FFFFFF">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_centerHorizontal="true">
+
+                    <TextView
+                        android:id="@+id/tvfollowingText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_centerVertical="true"
+                        android:gravity="center"
+                        android:text="Followers : "
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textColor="#495C67" />
+
+                    <TextView
+                        android:id="@+id/tv_following"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_toEndOf="@+id/tvfollowingText"
+                        android:layout_toRightOf="@+id/tvfollowingText"
+                        android:gravity="center"
+                        android:text=""
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textColor="#495C67" />
+                </RelativeLayout>
             </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
@@ -198,14 +248,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/llTop"
-        android:layout_marginTop="1dp"
-        android:layout_marginBottom="45dp">
+        android:layout_marginBottom="45dp"
+        android:layout_marginTop="1dp">
 
         <RelativeLayout
             android:id="@+id/rlSearch"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_marginTop="1dp"
             android:background="#E4E4E4">
 
             <Button
@@ -372,10 +421,7 @@
                 </LinearLayout>
             </TabHost>
         </RelativeLayout>
-
-
     </RelativeLayout>
-
 </RelativeLayout>
 
 

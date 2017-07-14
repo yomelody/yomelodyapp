@@ -24,6 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
@@ -46,9 +47,11 @@ import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Models.UserDetails;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.squareup.picasso.Picasso;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -60,17 +63,18 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 import de.hdodenhof.circleimageview.CircleImageView;
-import static com.instamelody.instamelody.R.id.bio_fragment;
-import static com.instamelody.instamelody.R.id.rlPartStation;
+
+import static com.instamelody.instamelody.utils.Const.ServiceType.FOLLOWERS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
-import static com.instamelody.instamelody.utils.Const.ServiceType.UPLOAD_COVER_MELODY_FILE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.USERS_BIO;
 
 /**
  * Created by Saurabh Singh on 01/09/2017
  */
+
 public class ProfileActivity extends AppCompatActivity {
 
     String KEY_GENRE_NAME = "name";
@@ -80,9 +84,12 @@ public class ProfileActivity extends AppCompatActivity {
     String KEY_RESULT = "result";
     String genreString = "1";
     String USER_ID = "user_id";
+    String MY_ID = "my_id";
     String FOLLOWER_ID = "followerID";
     private String ID = "id";
     private String KEY = "key";
+    String PASSED = "passed";
+    String SUCCESS = "success";
     private String GENRE = "genere";
     private String STATION = "station";
     private String FILE_TYPE = "file_type";
@@ -98,23 +105,21 @@ public class ProfileActivity extends AppCompatActivity {
     ImageView ivFollow, ivUnfollow;
     CircleImageView userProfileImageInProf;
     TextView tvNameInProf, tvUserNameInProf, tv_records, tv_fans, tv_following;
-    String Name, userName, profilePic, coverPic;
-    String userId, showProfileUserId, records, fans, followers, followerId;
+    String Name, userName, profilePic, coverPic, followStatus;
+    String userId, showProfileUserId;
     String strName;
     SearchView search1;
     ProgressDialog progressDialog;
     LongOperation myTask = null;
-    TabHost host;
     private static RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
-    private static RecyclerView recyclerView;
-    private static ArrayList<RecordingsModel> data;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        
+
         search1 = (SearchView) findViewById(R.id.searchOnProf);
         btnAudio = (Button) findViewById(R.id.btnAudio);
         btnActivity = (Button) findViewById(R.id.btnActivity);
@@ -150,9 +155,9 @@ public class ProfileActivity extends AppCompatActivity {
         tv_records = (TextView) findViewById(R.id.tv_records);
         tv_fans = (TextView) findViewById(R.id.tv_fans);
         tv_following = (TextView) findViewById(R.id.tv_following);
-        
+
         adapter = new RecordingsCardAdapter(this, recordingList, recordingsPools);
-        
+
         Bundle bundle = getIntent().getExtras();
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
@@ -168,9 +173,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         if (bundle != null) {
             showProfileUserId = bundle.getString("showProfileUserId");
-//            if (showProfileUserId != null) {
-//                userId = showProfileUserId;
-//            }
         } else {
             if (loginSharedPref.getString("userId", null) != null) {
                 showProfileUserId = loginSharedPref.getString("userId", null);
@@ -178,22 +180,6 @@ public class ProfileActivity extends AppCompatActivity {
                 showProfileUserId = fbPref.getString("userId", null);
             } else if (twitterPref.getString("userId", null) != null) {
                 showProfileUserId = twitterPref.getString("userId", null);
-            }
-        }
-
-        if (showProfileUserId.equals(userId)) {
-            if (rlFollow.getVisibility() == View.VISIBLE) {
-                rlFollow.setVisibility(View.GONE);
-            }
-            if (rlMessage.getVisibility() == View.VISIBLE) {
-                rlMessage.setVisibility(View.GONE);
-            }
-        } else {
-            if (rlFollow.getVisibility() == View.GONE) {
-                rlFollow.setVisibility(View.VISIBLE);
-            }
-            if (rlMessage.getVisibility() == View.GONE) {
-                rlMessage.setVisibility(View.VISIBLE);
             }
         }
 
@@ -255,19 +241,13 @@ public class ProfileActivity extends AppCompatActivity {
                         strName = arrayAdapter.getItem(which);
                         AlertDialog.Builder builderInner = new AlertDialog.Builder(ProfileActivity.this);
                         builderInner.setMessage(strName);
+                        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                        editorFilterString.putString("stringFilter", strName);
+                        editorFilterString.apply();
                         builderInner.setTitle("Your Selected Item is");
-                        builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                myTask = new LongOperation();
-                                myTask.execute();
-//                                fetchGenreNames();
-//                                fetchRecordings();
-
-                                dialog.dismiss();
-                            }
-                        });
-                        builderInner.show();
+                        recyclerView.setVisibility(View.GONE);
+                        AudioFragment af = new AudioFragment();
+                        getFragmentManager().beginTransaction().replace(R.id.activity_profile, af).commit();
                     }
                 });
                 builderSingle.show();
@@ -280,6 +260,15 @@ public class ProfileActivity extends AppCompatActivity {
                 rlSearch.setVisibility(View.VISIBLE);
                 search1.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
+                String searchContent = search1.getQuery().toString();
+                SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+                editorSearchString.putString("stringSearch", searchContent);
+                editorSearchString.apply();
+                SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                editorFilterString.clear();
+                editorFilterString.apply();
+                AudioFragment af = new AudioFragment();
+                getFragmentManager().beginTransaction().replace(R.id.activity_profile, af).commit();
             }
         });
 
@@ -302,7 +291,6 @@ public class ProfileActivity extends AppCompatActivity {
                 getFragmentManager().beginTransaction().replace(R.id.activity_profile, af).commit();
                 /*rlPartProfile.setVisibility(View.VISIBLE);
                 getFragmentManager().popBackStack();*/
-
             }
         });
 
@@ -389,17 +377,46 @@ public class ProfileActivity extends AppCompatActivity {
         rlFollow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String followCount;
+                followCount = tv_following.getText().toString().trim();
+                int count = Integer.parseInt(followCount);
+
                 if (ivFollow.getVisibility() == View.VISIBLE) {
                     ivFollow.setVisibility(View.GONE);
                     ivUnfollow.setVisibility(View.VISIBLE);
-                    Follow(followerId);
+                    rlMessage.setVisibility(View.VISIBLE);
+                    count = count + 1;
+                    tv_following.setText(String.valueOf(count));
+                    Follow();
                 } else {
                     ivUnfollow.setVisibility(View.GONE);
                     ivFollow.setVisibility(View.VISIBLE);
-                    Follow(followerId);
+                    rlMessage.setVisibility(View.GONE);
+                    count = count - 1;
+                    tv_following.setText(String.valueOf(count));
+                    Follow();
                 }
             }
         });
+
+        rlMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(ProfileActivity.this, ChatActivity.class);
+                startActivity(i);
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+        editorFilterString.clear();
+        editorFilterString.apply();
+        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+        editorSearchString.clear();
+        editorSearchString.apply();
     }
 
     public void fetchUserBio() {
@@ -408,21 +425,20 @@ public class ProfileActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-//                        String rsp = response;
-//                        Toast.makeText(getApplicationContext(), "" + rsp, Toast.LENGTH_SHORT).show();
+
+                        String records, fans, followers;
+                        String str = response;
+//                        Toast.makeText(getApplicationContext(), "" + str, Toast.LENGTH_SHORT).show();
 //                        Log.d("ReturnData", response);
                         JSONObject jsonObject;
                         JSONArray jsonArray;
-
                         try {
                             jsonObject = new JSONObject(response);
-                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
+                            if (jsonObject.getString(KEY_FLAG).equals(SUCCESS)) {
                                 jsonArray = jsonObject.getJSONArray(KEY_RESULT);
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     UserDetails userDetails = new UserDetails();
                                     JSONObject userJson = jsonArray.getJSONObject(i);
-
-                                    followerId = userJson.getString("id");
                                     Name = userJson.getString("fname") + " " + userJson.getString("lname");
                                     if (!Name.equals("")) {
                                         tvNameInProf.setText(Name);
@@ -431,18 +447,50 @@ public class ProfileActivity extends AppCompatActivity {
                                     if (!userName.equals("")) {
                                         tvUserNameInProf.setText("@" + userName);
                                     }
+                                    followStatus = userJson.getString("follow_status");
+                                    if (showProfileUserId.equals(userId)) {
+                                        if (rlFollow.getVisibility() == View.VISIBLE) {
+                                            rlFollow.setVisibility(View.GONE);
+                                        }
+                                        if (rlMessage.getVisibility() == View.VISIBLE) {
+                                            rlMessage.setVisibility(View.GONE);
+                                        }
+                                    } else {
+//                                        if (rlMessage.getVisibility() == View.GONE) {
+//                                            rlMessage.setVisibility(View.VISIBLE);
+//                                        }
+                                        if (rlFollow.getVisibility() == View.GONE) {
+                                            rlFollow.setVisibility(View.VISIBLE);
+                                            if (!followStatus.equals("")) {
+                                                if (followStatus.equals("0")) {
+                                                    ivFollow.setVisibility(View.VISIBLE);
+                                                    rlMessage.setVisibility(View.GONE);
+                                                } else if (followStatus.equals("1")) {
+                                                    ivUnfollow.setVisibility(View.VISIBLE);
+                                                    rlMessage.setVisibility(View.VISIBLE);
+                                                }
+                                            }
+                                        }
+                                    }
                                     records = userJson.getString("records");
                                     if (!records.equals("")) {
-                                        tv_records.setText("Records: " + records);
+                                        tv_records.setText(records);
+                                    } else {
+                                        tv_records.setText(0);
                                     }
                                     fans = userJson.getString("fans");
                                     if (!fans.equals("")) {
-                                        tv_fans.setText("Fans: " + fans);
+                                        tv_fans.setText(fans);
+                                    } else {
+                                        tv_fans.setText(0);
                                     }
                                     followers = userJson.getString("followers");
                                     if (!followers.equals("")) {
-                                        tv_following.setText("Following: " + followers);
+                                        tv_following.setText(followers);
+                                    } else {
+                                        tv_following.setText(0);
                                     }
+
                                     profilePic = userJson.getString("profilepic");
                                     userProfileImageInProf.setVisibility(View.VISIBLE);
                                     Picasso.with(ProfileActivity.this).load(profilePic).into(userProfileImageInProf);
@@ -512,8 +560,9 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(KEY, "passed");
-                params.put(USER_ID, userId);
+                params.put(KEY, PASSED);
+                params.put(USER_ID, showProfileUserId);
+                params.put(MY_ID, userId);
                 return params;
             }
         };
@@ -536,7 +585,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                         try {
                             jsonObject = new JSONObject(response);
-                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
+                            if (jsonObject.getString(KEY_FLAG).equals(SUCCESS)) {
                                 myTask = new LongOperation();
                                 myTask.execute();
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
@@ -631,6 +680,130 @@ public class ProfileActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
+    public void Follow() {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, FOLLOWERS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        String str = response;
+//                        Toast.makeText(getApplicationContext(), "" + str, Toast.LENGTH_SHORT).show();
+//                        Log.d("ReturnData", response);
+                        JSONObject jsonObject;
+                        try {
+                            jsonObject = new JSONObject(response);
+                            if (jsonObject.getString(KEY_FLAG).equals(SUCCESS)) {
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(KEY, PASSED);
+                params.put(USER_ID, showProfileUserId);
+                params.put(FOLLOWER_ID, userId);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+    }
+
+    private TabHost.TabContentFactory createTabContent() {
+        return new TabHost.TabContentFactory() {
+            @Override
+            public View createTabContent(String tag) {
+                RecyclerView rv = new RecyclerView(ProfileActivity.this);
+                rv.setHasFixedSize(true);
+                RecyclerView.LayoutManager lm = new LinearLayoutManager(ProfileActivity.this);
+                rv.setLayoutManager(lm);
+                rv.setItemAnimator(new DefaultItemAnimator());
+                rv.setAdapter(adapter);
+                return rv;
+            }
+        };
+    }
+
+    private class LongOperation extends AsyncTask<String, Void, String> {
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(ProfileActivity.this);
+            progressDialog.setTitle("Processing...");
+            progressDialog.setMessage("Please wait...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        protected String doInBackground(String... params) {
+
+            try {
+                //Getting data from server
+                String filename = "myfile";
+                String outputString = "Hello world!";
+                URL aurl = new URL(RECORDINGS);
+                URLConnection connection = aurl.openConnection();
+                connection.connect();
+                // getting file length
+                int lengthOfFile = connection.getContentLength();
+                // input stream to read file - with 8k buffer
+                InputStream input = new BufferedInputStream(aurl.openStream(), 8192);
+                try {
+                    FileOutputStream outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+                    outputStream.write(outputString.getBytes());
+                    outputStream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    FileInputStream inputStream = openFileInput(filename);
+                    BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
+                    StringBuilder total = new StringBuilder();
+                    String line;
+                    while ((line = r.readLine()) != null) {
+                        total.append(line);
+                    }
+                    r.close();
+                    inputStream.close();
+                    Log.d("File", "File contents: " + total);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+            progressDialog.dismiss();
+        }
+    }
+
     public void fetchRecordingsFilter() {
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
@@ -639,13 +812,11 @@ public class ProfileActivity extends AppCompatActivity {
                     public void onResponse(String response) {
 
 //                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
-
                         Log.d("ReturnData1", response);
                         recordingList.clear();
                         recordingsPools.clear();
                         new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
-
                     }
                 },
                 new Response.ErrorListener() {
@@ -684,158 +855,5 @@ public class ProfileActivity extends AppCompatActivity {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
-    }
-
-    public void Follow(final String follower_Id) {
-
-        final String fid = follower_Id;
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, USERS_BIO,
-                new Response.Listener<String>() {
-
-                    @Override
-                    public void onResponse(String response) {
-
-//                        String rsp = response;
-//                        Toast.makeText(getApplicationContext(), "" + rsp, Toast.LENGTH_SHORT).show();
-//                        Log.d("ReturnData", response);
-                        JSONObject jsonObject;
-                        JSONArray jsonArray;
-
-                        try {
-                            jsonObject = new JSONObject(response);
-                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
-                                jsonArray = jsonObject.getJSONArray(KEY_RESULT);
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    UserDetails userDetails = new UserDetails();
-                                    JSONObject userJson = jsonArray.getJSONObject(i);
-
-                                    records = userJson.getString("records");
-                                    if (!records.equals("")) {
-                                        tv_records.setText("Records: " + records);
-                                    }
-                                    fans = userJson.getString("fans");
-                                    if (!fans.equals("")) {
-                                        tv_fans.setText("Fans: " + fans);
-                                    }
-                                    followers = userJson.getString("follow_count");
-                                    if (!followers.equals("")) {
-                                        tv_following.setText("Following: " + followers);
-                                    }
-                                }
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        String errorMsg = "";
-                        if (error instanceof TimeoutError) {
-                            errorMsg = "Internet connection timed out";
-                        } else if (error instanceof NoConnectionError) {
-                            errorMsg = "There is no connection";
-                        } else if (error instanceof AuthFailureError) {
-                            errorMsg = "AuthFailureError";
-                        } else if (error instanceof ServerError) {
-                            errorMsg = "We are facing problem in connecting to server";
-                        } else if (error instanceof NetworkError) {
-                            errorMsg = "We are facing problem in connecting to network";
-                        } else if (error instanceof ParseError) {
-                            errorMsg = "ParseError";
-                        }
-                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put(KEY, "passed");
-                params.put(USER_ID, userId);
-                params.put(FOLLOWER_ID, fid);
-                return params;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        requestQueue.add(stringRequest);
-    }
-
-    private TabHost.TabContentFactory createTabContent() {
-        return new TabHost.TabContentFactory() {
-            @Override
-            public View createTabContent(String tag) {
-                RecyclerView rv = new RecyclerView(ProfileActivity.this);
-                rv.setHasFixedSize(true);
-                RecyclerView.LayoutManager lm = new LinearLayoutManager(ProfileActivity.this);
-                rv.setLayoutManager(lm);
-                rv.setItemAnimator(new DefaultItemAnimator());
-                rv.setAdapter(adapter);
-                return rv;
-            }
-        };
-    }
-
-    private class LongOperation extends AsyncTask<String, Void, String> {
-        protected void onPreExecute() {
-            progressDialog = new ProgressDialog(ProfileActivity.this);
-            progressDialog.setTitle("Processing...");
-            progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-
-        protected String doInBackground(String... params) {
-
-            try {
-                //Getting data from server
-
-                String filename = "myfile";
-                String outputString = "Hello world!";
-
-                URL aurl = new URL(RECORDINGS);
-
-                URLConnection connection = aurl.openConnection();
-                connection.connect();
-                // getting file length
-                int lengthOfFile = connection.getContentLength();
-
-                // input stream to read file - with 8k buffer
-                InputStream input = new BufferedInputStream(aurl.openStream(), 8192);
-
-                try {
-                    FileOutputStream outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                    outputStream.write(outputString.getBytes());
-                    outputStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    FileInputStream inputStream = openFileInput(filename);
-                    BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
-                    StringBuilder total = new StringBuilder();
-                    String line;
-                    while ((line = r.readLine()) != null) {
-                        total.append(line);
-                    }
-                    r.close();
-                    inputStream.close();
-                    Log.d("File", "File contents: " + total);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-
-            progressDialog.dismiss();
-        }
     }
 }

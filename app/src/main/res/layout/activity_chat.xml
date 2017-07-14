@@ -147,13 +147,14 @@
 
                     <ImageView
                         android:id="@+id/ivAdjust"
-                        android:layout_width="35dp"
-                        android:layout_height="35dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:padding="8dp"
                         android:layout_centerVertical="true"
-                        android:layout_marginEnd="5dp"
-                        android:layout_marginRight="5dp"
+                        android:layout_marginEnd="6dp"
+                        android:layout_marginRight="6dp"
                         android:visibility="visible"
-                        app:srcCompat="@drawable/adjustments" />
+                        app:srcCompat="@drawable/setting" />
 
                     <TextView
                         android:id="@+id/tvSend"

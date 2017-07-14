@@ -195,6 +195,16 @@ public class MelodyActivity extends AppCompatActivity {
                 ivMelodyFilter.setVisibility(View.VISIBLE);
                 search1.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
+                search1.isSubmitButtonEnabled();
+                String searchContent = search1.getQuery().toString();
+                SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+                editorSearchString.putString("stringSearch", searchContent);
+                editorSearchString.apply();
+                SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                editorFilterString.clear();
+                editorFilterString.apply();
+                AudioFragment af = new AudioFragment();
+                getFragmentManager().beginTransaction().replace(R.id.activity_melody, af).commit();
             }
         });
 
@@ -227,19 +237,12 @@ public class MelodyActivity extends AppCompatActivity {
                         strName = arrayAdapter.getItem(which);
                         AlertDialog.Builder builderInner = new AlertDialog.Builder(MelodyActivity.this);
                         builderInner.setMessage(strName);
+                        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                        editorFilterString.putString("stringFilter", strName);
+                        editorFilterString.apply();
                         builderInner.setTitle("Your Selected Item is");
-                        builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                /*myTask = new LongOperation();
-                                myTask.execute();*/
-//                                fetchGenreNames();
-//                                fetchRecordings();
-
-                                dialog.dismiss();
-                            }
-                        });
-                        builderInner.show();
+                        RecordingsFragment rf = new RecordingsFragment();
+                        getFragmentManager().beginTransaction().replace(R.id.activity_melody, rf).commit();
                     }
                 });
                 builderSingle.show();
@@ -287,6 +290,29 @@ public class MelodyActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+        editorFilterString.clear();
+        editorFilterString.apply();
+        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+        editorSearchString.clear();
+        editorSearchString.apply();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+        editorFilterString.clear();
+        editorFilterString.apply();
+        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+        editorSearchString.clear();
+        editorSearchString.apply();
 
     }
 

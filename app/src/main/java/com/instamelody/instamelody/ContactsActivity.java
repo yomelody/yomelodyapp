@@ -3,7 +3,6 @@ package com.instamelody.instamelody;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.ArrayRes;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -171,6 +170,9 @@ public class ContactsActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+
+//                        String str = response;
+//                        Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
 
                         contactList.clear();
                         adapter.notifyDataSetChanged();

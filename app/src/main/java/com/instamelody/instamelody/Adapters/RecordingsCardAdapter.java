@@ -192,16 +192,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         MelodyName=recording.getRecordingName();
                         position =recording.getRecordingId();
 
-                        if (ivLikeButton.getVisibility() == VISIBLE) {
-                            ivLikeButton.setVisibility(GONE);
-                            ivDislikeButton.setVisibility(VISIBLE);
-                            String like = tvLikeCount.getText().toString().trim();
-                            int likeValue = Integer.parseInt(like) + 1;
-                            like = String.valueOf(likeValue);
-                            tvLikeCount.setText(like);
-                            fetchLikeState(userId, position, "1",MelodyName);
-
-                        } else if (ivLikeButton.getVisibility() == GONE) {
+                        if (ivDislikeButton.getVisibility() == VISIBLE) {
                             ivLikeButton.setVisibility(VISIBLE);
                             ivDislikeButton.setVisibility(GONE);
                             String like = tvLikeCount.getText().toString().trim();
@@ -209,6 +200,16 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             like = String.valueOf(likeValue);
                             tvLikeCount.setText(like);
                             fetchLikeState(userId, position, "0",MelodyName);
+
+
+                        } else if (ivDislikeButton.getVisibility() == GONE) {
+                            ivLikeButton.setVisibility(GONE);
+                            ivDislikeButton.setVisibility(VISIBLE);
+                            String like = tvLikeCount.getText().toString().trim();
+                            int likeValue = Integer.parseInt(like) + 1;
+                            like = String.valueOf(likeValue);
+                            tvLikeCount.setText(like);
+                            fetchLikeState(userId, position, "1",MelodyName);
                         }
                     } else {
                         Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
@@ -228,10 +229,13 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     shareIntent.setType("image/jpeg");
                     startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));*/
 
+                    RecordingsModel recording = recordingList.get(getAdapterPosition());
+                    String RecordingURL=recording.getrecordingurl();
                     Intent shareIntent = new Intent();
                     shareIntent.setAction(Intent.ACTION_SEND);
                     shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Testing");
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt");
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, RecordingURL);
                     shareIntent.setType("image/jpeg");
                     context.startActivity(Intent.createChooser(shareIntent, "Hello."));
                 }
@@ -426,6 +430,17 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         holder.tvContributeLength.setText(recordingsPools.get(listPosition).getDuration());
         holder.tvContributeDate.setText(recordingsPools.get(listPosition).getDateAdded());
 
+        int likeStatus=recordingList.get(listPosition).getLikeStatus();
+        if(likeStatus==0)
+        {
+            holder.ivDislikeButton.setVisibility(GONE);
+            //holder.ivLikeButton.setVisibility(VISIBLE);
+        }
+        else
+        {
+            holder.ivDislikeButton.setVisibility(VISIBLE);
+        }
+
 
 //        tvContributeLength.setText(recordingList.get(listPosition).getTvContributeLength());
         holder.tvRecordingDate.setText(recordingList.get(listPosition).getRecordingCreated());
@@ -437,14 +452,14 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         holder.ivStationPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                holder.seekBarRecordings.setVisibility(View.VISIBLE);
+//                holder.seekBarRecordings.setVisibility(View.VISIBLE);
                 holder.ivStationPause.setVisibility(View.VISIBLE);
                 try {
                     RecordingsPool recordingsPool = recordingsPools.get(listPosition);
                     instrumentFile = recordingsPool.getRecordingUrl();
                     Integer s = listPosition + 1;
 
-                    if (getItemCount() > s && instrumentFile != null) {
+                    if (getItemCount() >= s && instrumentFile != null) {
                         playAudio();
                         holder.primarySeekBarProgressUpdater();
                     }
@@ -505,7 +520,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
                         }
                     },
                     new Response.ErrorListener() {

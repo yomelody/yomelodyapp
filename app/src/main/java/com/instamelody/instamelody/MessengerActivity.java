@@ -69,8 +69,6 @@ public class MessengerActivity extends AppCompatActivity {
         audio_feed = (ImageView) findViewById(R.id.audio_feed);
         rlNoMsg = (RelativeLayout) findViewById(R.id.rlNoMsg);
 
-        rlNoMsg.setVisibility(View.GONE);
-
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
         SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
@@ -188,7 +186,6 @@ public class MessengerActivity extends AppCompatActivity {
                         try {
                             jsonObject = new JSONObject(response);
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
-                                rlNoMsg.setVisibility(View.GONE);
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     Chat chat = new Chat();

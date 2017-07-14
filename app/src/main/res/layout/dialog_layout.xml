@@ -13,8 +13,7 @@
         <EditText
             android:id="@+id/dialogEtTopicName"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Topic Name" />
+            android:layout_height="wrap_content" />
 
         <Spinner
             android:id="@+id/spinnerGenre"

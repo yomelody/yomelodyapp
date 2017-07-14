@@ -1178,7 +1178,6 @@ public class StudioActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
     }
 
     public void playAudio() throws IOException {
@@ -1529,8 +1528,8 @@ public class StudioActivity extends AppCompatActivity {
 //                        melodyInstruments.setAudioType("recording");
                         instrumentList.add(melodyInstruments);
                         //adapter.notifyItemInserted(instrumentList.size()-1);
-                        /*adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
-                        adapter.notifyDataSetChanged();*/
+                        adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+                        adapter.notifyDataSetChanged();
 
                         InputMethodManager inputManager = (InputMethodManager)
                                 getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -1716,8 +1715,11 @@ public class StudioActivity extends AppCompatActivity {
             mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mp.setDataSource(instruments_count.get(i));
             mp.prepare();
-            mp.start();
+         //   mp.start();
             mps.add(mp);
+        }
+        for (MediaPlayer mp: mps) {
+            mp.start();
         }
     }
 
