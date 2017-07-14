@@ -280,13 +280,7 @@ public class ParseContents {
         try {
             jsonObject = new JSONObject(response);
             if (jsonObject.getString(KEY_FLAG).equals("success")) {
-                String str = jsonObject.getString(KEY_RESULT);
-                String s = str.substring(str.indexOf(":")+2, str.indexOf("}")-1);
-                if(!s.equals("your friend list is empty"))
-                {
-                    ContactsActivity.rlNoContacts.setVisibility(View.GONE);
-                }
-                jsonArray = jsonObject.getJSONArray(KEY_RESULT);
+                jsonArray = jsonObject.getJSONArray(KEY_INFO);
                 for (int i = 0; i < jsonArray.length(); i++) {
                     Contacts contacts = new Contacts();
                     JSONObject commentJson = jsonArray.getJSONObject(i);
@@ -298,6 +292,8 @@ public class ParseContents {
                     contacts.setUserName(commentJson.getString("username"));
                     chatList.add(contacts);
                 }
+            } else {
+                ContactsActivity.rlNoContacts.setVisibility(View.VISIBLE);
             }
         } catch (JSONException e) {
             e.printStackTrace();

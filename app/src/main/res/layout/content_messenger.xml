@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/noConvMsg"
@@ -93,9 +93,7 @@
                     android:textStyle="italic" />
 
             </RelativeLayout>
-
         </RelativeLayout>
-
     </RelativeLayout>
 </RelativeLayout>
 
