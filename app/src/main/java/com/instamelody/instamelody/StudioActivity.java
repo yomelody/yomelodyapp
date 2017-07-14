@@ -107,6 +107,7 @@ import java.util.TimerTask;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.provider.Contacts.SettingsColumns.KEY;
+import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ADD_RECORDINGS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
@@ -221,6 +222,8 @@ public class StudioActivity extends AppCompatActivity {
     String idUpload;
     int InstrumentCountSize = 0;
     private boolean mShouldContinue = true;
+    ArrayList<String> urls;
+    MediaPlayer[] media;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -350,38 +353,50 @@ public class StudioActivity extends AppCompatActivity {
 
                 LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
 
-                //      String audioUrl = "http://52.41.33.64/api/uploads/melody/instruments/";
+                final String audioUrl = "http://52.41.33.64/api/uploads/melody/instruments/";
+                //     new DownloadFileFromURL().execute(audioUrl);
+                Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+                if (isSDPresent) {
+                    // Yes, SD-card is present
+                    File main = new File(Environment.getExternalStorageDirectory() +
+                            File.separator + "InstaMelody/Downloads/Melodies/");
+                    boolean success = true;
+                    if (!main.exists()) {
+                        success = main.mkdirs();
+                    }
+                    if (success) {
+                        final Handler mTimerHandler = new Handler();
+                        final Handler threadHandler = new Handler();
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                threadHandler.postDelayed(new Runnable() {
+                                    public void run() {
+                                        new DownloadFileFromURL().execute(audioUrl);
+                                    }
+                                }, 2000);
+                            }
+                        }.start();
 
-                new DownloadFileFromURL().execute();
-//                Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
-//                if (isSDPresent) {
-//                    // Yes, SD-card is present
+
+                    } else {
+                        new DownloadFileFromURL().execute(audioUrl);
+                    }
+                } else {
+                    // No, SD-card is not present
+                    File main = new File("InstaMelody/Downloads/Melodies/");
 //                    File main = new File(Environment.getExternalStorageDirectory() +
 //                            File.separator + "InstaMelody/Downloads/Melodies/" + melodyName + "/");
-//                    boolean success = true;
-//                    if (!main.exists()) {
-//                        success = main.mkdirs();
-//                    }
-//                    if (success) {
-//                        new DownloadFileFromURL().execute(audioUrl);
-//                    } else {
-//                        new DownloadFileFromURL().execute(audioUrl);
-//                    }
-//                } else {
-//                    // No, SD-card is not present
-//                    File main = new File("InstaMelody/Downloads/Melodies/" + melodyName + "/");
-////                    File main = new File(Environment.getExternalStorageDirectory() +
-////                            File.separator + "InstaMelody/Downloads/Melodies/" + melodyName + "/");
-//                    boolean success = true;
-//                    if (!main.exists()) {
-//                        success = main.mkdirs();
-//                    }
-//                    if (success) {
-//                        new DownloadFileFromURL().execute(audioUrl);
-//                    } else {
-//                        new DownloadFileFromURL().execute(audioUrl);
-//                    }
-//                }
+                    boolean success = true;
+                    if (!main.exists()) {
+                        success = main.mkdirs();
+                    }
+                    if (success) {
+                        new DownloadFileFromURL().execute(audioUrl);
+                    } else {
+                        new DownloadFileFromURL().execute(audioUrl);
+                    }
+                }
             }
         }
 
@@ -1283,29 +1298,29 @@ public class StudioActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... url) {
             int count;
+            OutputStream output;
             try {
-            //    for (int i = 0; i < InstrumentCountSize; i++) {
-                       URL aurl = new URL(MELODY);
-                 //   URL aurl = new URL((String) instruments_count.get(i));
+                for (int i = 0; i < InstrumentCountSize; i++) {
+                    //{
+                    URL aurl = new URL((String) instruments_count.get(i));
+
                     URLConnection connection = aurl.openConnection();
                     connection.connect();
                     // getting file length
                     int lengthOfFile = connection.getContentLength();
 
                     // input stream to read file - with 8k buffer
-                    InputStream input = new BufferedInputStream(aurl.openStream(), 8192);
+                    InputStream input = new BufferedInputStream(aurl.openStream());
 
                     Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
 
-                    OutputStream output;
+
                     if (isSDPresent) {
                         // yes SD-card is present
-                        //Code commented by Abhishek
-                        output = new FileOutputStream("sdcard/InstaMelody/Downloads/Melodies/" + melodyName + "/" + instrumentName + ".mp3");
+                        output = new FileOutputStream("sdcard/InstaMelody/Downloads/Melodies/" + i + ".mp3");
                     } else {
-
-                        //Code commented by Abhishek
-                        output = new FileOutputStream(getFilesDir() + "/InstaMelody/Downloads/Melodies/" + melodyName + "/" + instrumentName + ".mp3");
+                        // Sorry
+                        output = new FileOutputStream(getApplicationContext().getFilesDir() + "/InstaMelody/Downloads/Melodies/" + i + ".mp3");
                     }
 
                     // Output stream to write file
@@ -1315,10 +1330,7 @@ public class StudioActivity extends AppCompatActivity {
                     long total = 0;
                     while ((count = input.read(data)) != -1) {
                         total += count;
-
                         publishProgress("" + (int) ((total * 100) / lengthOfFile));
-
-                        // writing data to file
                         output.write(data, 0, count);
                     }
 
@@ -1328,6 +1340,9 @@ public class StudioActivity extends AppCompatActivity {
                     // closing streams
                     output.close();
                     input.close();
+                    //   i++;
+                }
+                // }
 
 
             } catch (Exception e) {
@@ -1695,6 +1710,7 @@ public class StudioActivity extends AppCompatActivity {
 
 
     public void playAudioRecycler() throws IOException {
+
         //      killMediaPlayer();
 
         /*mp = new MediaPlayer();
