@@ -42,6 +42,7 @@ import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.instamelody.instamelody.Adapters.InstrumentListAdapter.audioUrl;
+import static com.instamelody.instamelody.utils.Const.ServiceType.LIKESAPI;
 import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
 /*import static com.instamelody.instamelody.R.id.melodySlider;
 import static com.instamelody.instamelody.R.id.rlShare;
@@ -204,19 +205,11 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     //String positions = mpids.get(getAdapterPosition() + 1);
                     if (userId != null) {
 //                        position = Integer.toString(getAdapterPosition() + 1);
-                        position = mpids.get(getAdapterPosition() + 1);
+                        //position = mpids.get(getAdapterPosition());
                         MelodyCard melody = melodyList.get(getAdapterPosition());
                         MelodyName=melody.getMelodyName();
-                        if (ivLikeButton.getVisibility() == VISIBLE) {
-                            ivLikeButton.setVisibility(GONE);
-                            ivDislikeButton.setVisibility(VISIBLE);
-                            String like = tvLikeCount.getText().toString().trim();
-                            int likeValue = Integer.parseInt(like) + 1;
-                            like = String.valueOf(likeValue);
-                            tvLikeCount.setText(like);
-                            fetchLikeState(userId, position, "1",MelodyName);
-
-                        } else if (ivLikeButton.getVisibility() == GONE) {
+                        position =melody.getMelodyPackId();
+                        if (ivDislikeButton.getVisibility() == VISIBLE) {
                             ivLikeButton.setVisibility(VISIBLE);
                             ivDislikeButton.setVisibility(GONE);
                             String like = tvLikeCount.getText().toString().trim();
@@ -224,6 +217,16 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                             like = String.valueOf(likeValue);
                             tvLikeCount.setText(like);
                             fetchLikeState(userId, position, "0",MelodyName);
+
+                        } else if (ivDislikeButton.getVisibility() == GONE) {
+
+                            ivLikeButton.setVisibility(GONE);
+                            ivDislikeButton.setVisibility(VISIBLE);
+                            String like = tvLikeCount.getText().toString().trim();
+                            int likeValue = Integer.parseInt(like) + 1;
+                            like = String.valueOf(likeValue);
+                            tvLikeCount.setText(like);
+                            fetchLikeState(userId, position, "1",MelodyName);
                         }
                     } else {
                         Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
@@ -243,13 +246,17 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     shareIntent.setType("image/jpeg");
                     startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));*/
 
+                    /*MelodyCard melody = melodyList.get(getAdapterPosition());
+                    MelodyName=melody.getMelodyName();*/
 
-                    recordingsPool.getProfileUrl();
+                    MelodyCard recording = melodyList.get(getAdapterPosition());
+                    String RecordingURL=recording.getMelodyURL();
 
                     Intent shareIntent = new Intent();
                     shareIntent.setAction(Intent.ACTION_SEND);
                     shareIntent.putExtra(Intent.EXTRA_STREAM, "");
                     shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Testing");
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, RecordingURL);
                     shareIntent.setType("image/jpeg");
                     context.startActivity(Intent.createChooser(shareIntent, "Hello."));
                 }
@@ -412,6 +419,19 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         holder.tvCommentCount.setText(String.valueOf(melody.getCommentCount()));
         holder.tvShareCount.setText(String.valueOf(melody.getShareCount()));
 
+        int likeStatus=melodyList.get(listPosition).getLikeStatus();
+        if(likeStatus==0)
+        {
+            holder.ivDislikeButton.setVisibility(GONE);
+            //holder.ivLikeButton.setVisibility(VISIBLE);
+        }
+        else
+        {
+            holder.ivDislikeButton.setVisibility(VISIBLE);
+        }
+
+
+
 
 
     }
@@ -423,7 +443,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 
     public void fetchLikeState(final String userId, final String pos, final String likeState, String LikeMelodyName) {
         MelodyName=LikeMelodyName;
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, LIKES,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, LIKESAPI,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

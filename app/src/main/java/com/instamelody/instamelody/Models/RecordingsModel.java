@@ -15,7 +15,7 @@ public class RecordingsModel {
     String userProfilePic;
     String recordingCover;
     String genreId;
-    String genreName;
+    String genreName,recordingurl;
 
 
     public String getGenreName() {
@@ -127,6 +127,14 @@ public class RecordingsModel {
 
     public int getLikeStatus() {
         return likeStatus;
+    }
+
+    public String getrecordingurl() {
+        return recordingurl;
+    }
+
+    public void setrecordingurl(String recordingurl) {
+        this.recordingurl = recordingurl;
     }
 
     public void setGenreId(String genreId) {
