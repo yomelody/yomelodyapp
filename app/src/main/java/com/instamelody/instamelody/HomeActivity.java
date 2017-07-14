@@ -49,7 +49,9 @@ public class HomeActivity extends AppCompatActivity {
     String REGISTER_URL = "http://35.165.96.167/api/registration.php";
 
     SignUpActivity obj = new SignUpActivity();
-    Button Settings, SignIn, SignOut;
+    Button Settings;
+    static Button SignIn;
+    static Button SignOut;
     ImageView ivStation;
     ImageView ivStudio;
     ImageView ivMelody;
@@ -241,7 +243,6 @@ public class HomeActivity extends AppCompatActivity {
                 SignOut.setVisibility(View.INVISIBLE);
                 SignIn.setVisibility(View.VISIBLE);
                 HomeActivity.this.recreate();
-
             }
         });
 

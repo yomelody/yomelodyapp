@@ -54,9 +54,7 @@
                                     android:layout_height="33dp"
                                     android:layout_centerHorizontal="true"
                                     android:layout_centerVertical="true"
-                                    android:src="@drawable/artist"
-                                    app:civ_border_color="#FF000000"
-                                    app:civ_border_width="2dp" />
+                                    android:src="@drawable/artist" />
 
                             </RelativeLayout>
 
