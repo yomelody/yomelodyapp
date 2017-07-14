@@ -16,10 +16,10 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp">
+            android:layout_marginTop="25dp">
 
             <TextView
-                android:id="@+id/tvSettings"
+                android:id="@+id/tvDone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -30,12 +30,12 @@
                 android:shadowDx="1"
                 android:shadowDy="1"
                 android:shadowRadius="2"
-                android:text="Settings"
+                android:text="Done"
                 android:textColor="@android:color/white"
                 android:textStyle="normal|bold" />
 
             <TextView
-                android:id="@+id/tvDone"
+                android:id="@+id/tvSettings"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -46,7 +46,8 @@
                 android:shadowDx="1"
                 android:shadowDy="1"
                 android:shadowRadius="2"
-                android:text="Done"
+                android:text="Settings"
+                android:visibility="gone"
                 android:textColor="@android:color/white"
                 android:textStyle="normal|bold" />
 
@@ -90,12 +91,12 @@
 
                 <ImageView
                     android:id="@+id/ivLogoContainer"
-                    android:layout_width="85dp"
-                    android:layout_height="85dp"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="39dp"
+                    android:layout_marginTop="20dp"
                     app:srcCompat="@drawable/logo" />
 
             </RelativeLayout>
@@ -111,8 +112,8 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="30dp"
-                    android:layout_marginTop="10dp"
-                    android:text="Log on to share your melody recordings and messages on our network!"
+                    android:layout_marginTop="5dp"
+                    android:text="Sign in to share your melody recordings and messages on our network!"
                     android:textAlignment="center"
                     android:textSize="14dp"
                     android:textStyle="normal|bold" />

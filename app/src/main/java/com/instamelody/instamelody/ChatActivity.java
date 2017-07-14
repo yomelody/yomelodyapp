@@ -671,7 +671,6 @@ public class ChatActivity extends AppCompatActivity {
                         Log.d("Error", errorMsg);
                     }
                 })
-
         {
             @Override
             protected Map<String, String> getParams() {
