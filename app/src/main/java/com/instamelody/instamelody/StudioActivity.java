@@ -1715,8 +1715,11 @@ public class StudioActivity extends AppCompatActivity {
             mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mp.setDataSource(instruments_count.get(i));
             mp.prepare();
-            mp.start();
+         //   mp.start();
             mps.add(mp);
+        }
+        for (MediaPlayer mp: mps) {
+            mp.start();
         }
     }
 
