@@ -16,10 +16,10 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp">
+            android:layout_marginTop="25dp">
 
             <TextView
-                android:id="@+id/tvSignIn"
+                android:id="@+id/tvDone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -30,12 +30,12 @@
                 android:shadowDx="1"
                 android:shadowDy="1"
                 android:shadowRadius="2"
-                android:text="Sign In"
+                android:text="Done"
                 android:textColor="@android:color/white"
                 android:textStyle="normal|bold" />
 
             <TextView
-                android:id="@+id/tvDone"
+                android:id="@+id/tvSignIn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -46,9 +46,27 @@
                 android:shadowDx="1"
                 android:shadowDy="1"
                 android:shadowRadius="2"
-                android:text="Done"
+                android:text="Sign in"
                 android:textColor="@android:color/white"
-                android:textStyle="normal|bold" />
+                android:textStyle="normal|bold"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvSignOut"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="30dp"
+                android:layout_marginRight="30dp"
+                android:shadowColor="@android:color/black"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2"
+                android:text="Sign Out"
+                android:textColor="@android:color/white"
+                android:textStyle="normal|bold"
+                android:visibility="gone" />
 
         </RelativeLayout>
     </LinearLayout>
@@ -56,8 +74,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/llTop"
-        android:layout_above="@+id/settings_fragment">
+        android:layout_above="@+id/settings_fragment"
+        android:layout_below="@+id/llTop">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -71,34 +89,34 @@
                 android:layout_centerHorizontal="true">
 
                 <ImageView
-                    android:layout_width="110dp"
-                    android:layout_height="110dp"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
                     app:srcCompat="@drawable/logo" />
 
             </RelativeLayout>
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ivLogoContainer"
+                android:layout_marginTop="5dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/ivLogoContainer"
-                    android:layout_marginTop="5dp">
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="5dp"
+                    android:shadowColor="@android:color/black"
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="2"
+                    android:text="Settings"
+                    android:textAlignment="center"
+                    android:textColor="@android:color/white"
+                    android:textSize="15dp"
+                    android:textStyle="normal|bold" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
-                        android:shadowColor="@android:color/black"
-                        android:layout_marginTop="5dp"
-                        android:shadowDx="1"
-                        android:shadowDy="1"
-                        android:shadowRadius="2"
-                        android:text="Settings"
-                        android:textAlignment="center"
-                        android:textColor="@android:color/white"
-                        android:textSize="15dp"
-                        android:textStyle="normal|bold" />
-
-                </RelativeLayout>
+            </RelativeLayout>
         </RelativeLayout>
     </RelativeLayout>
 
@@ -328,8 +346,8 @@
             android:id="@+id/bottomLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="10dp">
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="5dp">
 
             <RelativeLayout
                 android:layout_width="wrap_content"

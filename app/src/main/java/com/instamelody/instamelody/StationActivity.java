@@ -15,14 +15,19 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TabHost;
 import android.support.v7.widget.SearchView;
 
@@ -47,6 +52,7 @@ import android.graphics.Color;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.instamelody.instamelody.Fragments.ActivityFragment;
@@ -105,9 +111,10 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     String userId, userNameLogin;
     String userIdNormal, userIdFb, userIdTwitter;
     int statusNormal, statusFb, statusTwitter;
-    String strName,strSearch;
+    String strName, strSearch;
     String titleString;
     String searchGet, search5;
+    String artistName;
     ProgressDialog progressDialog;
     LongOperation myTask = null;
 
@@ -214,9 +221,9 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 rlSearch.setVisibility(View.GONE);
                 search1.setVisibility(View.VISIBLE);
                 btnCancel.setVisibility(View.VISIBLE);
-
             }
         });
+
 
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -229,7 +236,13 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
                 editorSearchString.putString("stringSearch", searchContent);
                 editorSearchString.apply();
-                Toast.makeText(StationActivity.this, "" + searchContent, Toast.LENGTH_SHORT).show();
+                SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                editorFilterString.clear();
+                editorFilterString.apply();
+                AudioFragment af = new AudioFragment();
+                getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
+
+//                Toast.makeText(StationActivity.this, "" + searchContent, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -318,14 +331,21 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         strName = arrayAdapter.getItem(which);
-                        AlertDialog.Builder builderInner = new AlertDialog.Builder(StationActivity.this);
-                        builderInner.setMessage(strName);
-                        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
-                        editorFilterString.putString("stringFilter", strName);
-                        editorFilterString.apply();
-                        builderInner.setTitle("Your Selected Item is");
-                        AudioFragment af = new AudioFragment();
-                        getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
+                        if (strName.equals("Artist")) {
+                            openDialog();
+                        } else {
+                            AlertDialog.Builder builderInner = new AlertDialog.Builder(StationActivity.this);
+                            builderInner.setMessage(strName);
+                            SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                            editorFilterString.putString("stringFilter", strName);
+                            editorFilterString.apply();
+                            SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+                            editorSearchString.clear();
+                            editorSearchString.apply();
+                            builderInner.setTitle("Your Selected Item is");
+                            AudioFragment af = new AudioFragment();
+                            getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
+                        }
                     }
                 });
                 builderSingle.show();
@@ -347,6 +367,18 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+        editorFilterString.clear();
+        editorFilterString.apply();
+        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+        editorSearchString.clear();
+        editorSearchString.apply();
+
     }
 
     public void fetchGenreNames() {
@@ -411,7 +443,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -459,7 +491,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -514,7 +546,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -536,10 +568,14 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
         SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
         editorFilterString.clear();
         editorFilterString.apply();
-        super.onDestroy();
+        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+        editorSearchString.clear();
+        editorSearchString.apply();
+
     }
 
     private TabHost.TabContentFactory createTabContent() {
@@ -582,14 +618,14 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
     public void fetchSearchData() {
 
-        SharedPreferences filterPref = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE);
-        strSearch = filterPref.getString("stringSearch", null);
+        SharedPreferences searchPref = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE);
+        strSearch = searchPref.getString("stringSearch", null);
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Toast.makeText(getApplicationContext(), "" + response, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getApplicationContext(), "" + response, Toast.LENGTH_SHORT).show();
                         recordingList.clear();
                         recordingsPools.clear();
                         new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
@@ -615,7 +651,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -635,9 +671,23 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     @Override
     public boolean onQueryTextSubmit(String query) {
 //        fetchSearchData();
-        searchGet = search1.getQuery().toString();
+        /*searchGet = search1.getQuery().toString();
         Log.d("msg1", searchGet);
-        fetchSearchData();
+        fetchSearchData();*/
+
+        rlSearch.setVisibility(View.VISIBLE);
+        search1.setVisibility(View.GONE);
+        btnCancel.setVisibility(View.GONE);
+        search1.isSubmitButtonEnabled();
+        String searchContent = search1.getQuery().toString();
+        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+        editorSearchString.putString("stringSearch", searchContent);
+        editorSearchString.apply();
+        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+        editorFilterString.clear();
+        editorFilterString.apply();
+        AudioFragment af = new AudioFragment();
+        getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
         return false;
     }
 
@@ -674,4 +724,53 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
     }
 
+    private void openDialog() {
+        LayoutInflater inflater = LayoutInflater.from(StationActivity.this);
+        View subView = inflater.inflate(R.layout.dialog_layout, null);
+
+        subEtFilterName = (EditText) subView.findViewById(R.id.dialogEtTopicName);
+
+        android.support.v7.app.AlertDialog.Builder builder2 = new android.support.v7.app.AlertDialog.Builder(this);
+        builder2.setTitle("ArtistName");
+        builder2.setMessage("Choose Artist Name to Search Artist");
+        builder2.setView(subView);
+
+        TextView title = new TextView(this);
+        title.setText("ArtistName");
+        title.setBackgroundColor(Color.DKGRAY);
+        title.setPadding(10, 10, 10, 10);
+        title.setGravity(Gravity.CENTER);
+        title.setTextColor(Color.WHITE);
+        title.setTextSize(20);
+
+        builder2.setCustomTitle(title);
+
+        builder2.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //tvInfo.setText(subEtTopicName.getText().toString());
+                artistName = subEtFilterName.getText().toString().trim();
+                SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
+                editorFilterArtist.putString("stringFilterArtist", artistName);
+                editorFilterArtist.apply();
+                AudioFragment af = new AudioFragment();
+                getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
+
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(subEtFilterName.getWindowToken(), 0);
+
+            }
+        });
+
+        builder2.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(subEtFilterName.getWindowToken(), 0);
+            }
+        });
+
+        builder2.show();
+    }
 }

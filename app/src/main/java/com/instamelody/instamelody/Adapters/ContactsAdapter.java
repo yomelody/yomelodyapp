@@ -164,7 +164,6 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
 //            } else {
 //                Toast.makeText(context, rList.toString(), Toast.LENGTH_SHORT).show();
 //            }
-
         }
     }
 

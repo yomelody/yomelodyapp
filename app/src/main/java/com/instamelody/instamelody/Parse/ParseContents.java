@@ -70,6 +70,8 @@ public class ParseContents {
     String KEY_COVER = "cover";
     String KEY_PROFILE_PIC = "profilepic";
     String KEY_DATE = "date";
+    String like_status = "like_status";
+    String melodyurl = "melodyurl";
 
     String KEY_INSTRUMENT_ID = "id";
     String KEY_INSTRUMENT_NAME = "instruments_name";
@@ -113,6 +115,8 @@ public class ParseContents {
                     card.setMelodyCover(cardJson.getString(KEY_COVER));
                     card.setUserProfilePic(cardJson.getString(KEY_PROFILE_PIC));
                     card.setMelodyCreated(cardJson.getString(KEY_DATE));
+                    card.setLikeStatus(cardJson.getInt(like_status));
+                    card.setMelodyURL(cardJson.getString(melodyurl));
 
                     instrumentArray = cardJson.getJSONArray(KEY_INSTRUMENTS);
                     for (int j = 0; j < instrumentArray.length(); j++) {
@@ -280,13 +284,7 @@ public class ParseContents {
         try {
             jsonObject = new JSONObject(response);
             if (jsonObject.getString(KEY_FLAG).equals("success")) {
-                String str = jsonObject.getString(KEY_INFO);
-                String s = str.substring(str.indexOf(":")+2, str.indexOf("}")-1);
-                if(!s.equals("your friend list is empty"))
-                {
-                    ContactsActivity.rlNoContacts.setVisibility(View.GONE);
-                }
-                jsonArray = jsonObject.getJSONArray(KEY_RESULT);
+                jsonArray = jsonObject.getJSONArray(KEY_INFO);
                 for (int i = 0; i < jsonArray.length(); i++) {
                     Contacts contacts = new Contacts();
                     JSONObject commentJson = jsonArray.getJSONObject(i);
@@ -298,6 +296,8 @@ public class ParseContents {
                     contacts.setUserName(commentJson.getString("username"));
                     chatList.add(contacts);
                 }
+            } else {
+                ContactsActivity.rlNoContacts.setVisibility(View.VISIBLE);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -383,6 +383,7 @@ public class ParseContents {
                     card.setCommentCount(cardJson.getInt("comment_count"));
                     card.setLikeCount(cardJson.getInt("like_count"));
                     card.setLikeStatus(cardJson.getInt("like_status"));
+                    card.setrecordingurl(cardJson.getString("recording_url"));
                     card.setShareCount(cardJson.getInt("share_count"));
                     card.setRecordingCover(cardJson.getString("cover_url"));
                     card.setUserProfilePic(cardJson.getString("profile_url"));

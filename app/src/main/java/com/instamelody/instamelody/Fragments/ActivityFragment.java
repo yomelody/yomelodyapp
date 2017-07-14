@@ -108,12 +108,12 @@ public class ActivityFragment extends Fragment {
             //fetchActivityData(userId);
             new FetchActivityDetails().execute(userId);
         }
-        else {
-            Toast.makeText(getApplicationContext(), "Log in to Chat", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            getApplicationContext().startActivity(intent);
-        }
+//        else {
+//            Toast.makeText(getApplicationContext(), "Log in to Chat", Toast.LENGTH_SHORT).show();
+//            Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            getApplicationContext().startActivity(intent);
+//        }
         return view;
     }
 
