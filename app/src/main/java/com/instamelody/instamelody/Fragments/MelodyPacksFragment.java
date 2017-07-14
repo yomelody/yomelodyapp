@@ -252,8 +252,13 @@ public class MelodyPacksFragment extends Fragment {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
+                        try {
+                            Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+                            Log.d("Error", errorMsg);
+                        } catch (Throwable throwable) {
+                            Log.d("Fetch Melody Packs Error", throwable.toString());
+                        }
+
                     }
                 }) {
             @Override

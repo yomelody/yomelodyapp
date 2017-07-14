@@ -309,14 +309,16 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     if (getItemCount() > s && instrumentFile != null) {
                         playAudio();
                         holder.primarySeekBarProgressUpdater();
-                    } else if (getItemCount() + 1 > s) {
+                    }
+                    else if (getItemCount() + 1 > s) {
                         if (getItemCount() == 1 || getItemCount() == 2) {
                             playAudio();
                             holder.primarySeekBarProgressUpdater();
                         } else
                             playAudio1();
                         holder.primarySeekBarProgressUpdater();
-                    } else {
+                    }
+                    else {
                         playAudio();
                         holder.primarySeekBarProgressUpdater();
                     }
@@ -394,9 +396,10 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 Environment.getExternalStorageDirectory().getAbsolutePath()
                         + "/InstaMelody.amr";
         mp = new MediaPlayer();
+        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mp.setDataSource(audioFilePath);
 //        mp.setDataSource(instrumentFile);
-        mp.prepare();
+        mp.prepareAsync();
         mp.start();
         duration1 = mp.getDuration();
         currentPosition = mp.getCurrentPosition();
