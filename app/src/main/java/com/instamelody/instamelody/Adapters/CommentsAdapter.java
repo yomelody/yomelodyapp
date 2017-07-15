@@ -1,6 +1,7 @@
 package com.instamelody.instamelody.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import com.instamelody.instamelody.CommentsActivity;
 import com.instamelody.instamelody.Models.Comments;
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Parse.ParseContents;
+import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
 import com.squareup.picasso.Picasso;
 
@@ -46,6 +48,17 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MyView
             tvTime = (TextView) itemView.findViewById(R.id.tvTime);
             tvUsername = (TextView) itemView.findViewById(R.id.tvUsername);
             tvMsg = (TextView) itemView.findViewById(R.id.tvMsg);
+
+            userProfileImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    String showProfileUserId = commentList.get(getAdapterPosition()).getUser_id();
+                    Intent intent = new Intent(view.getContext(), ProfileActivity.class);
+                    intent.putExtra("showProfileUserId", showProfileUserId);
+                    view.getContext().startActivity(intent);
+                }
+            });
         }
     }
 
