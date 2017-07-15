@@ -400,7 +400,13 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         mp.setDataSource(audioFilePath);
 //        mp.setDataSource(instrumentFile);
         mp.prepareAsync();
-        mp.start();
+        mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.start();
+            }
+        });
+     //   mp.start();
         duration1 = mp.getDuration();
         currentPosition = mp.getCurrentPosition();
 
