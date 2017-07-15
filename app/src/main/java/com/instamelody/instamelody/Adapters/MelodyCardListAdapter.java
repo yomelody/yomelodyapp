@@ -3,6 +3,7 @@ package com.instamelody.instamelody.Adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
@@ -521,8 +522,15 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         killMediaPlayer();
 
         mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.setDataSource(url);
-        mediaPlayer.prepare();
+        mediaPlayer.prepareAsync();
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.start();
+            }
+        });
         mediaPlayer.seekTo(playerPos);
         mediaPlayer.start();
         duration = mediaPlayer.getDuration();

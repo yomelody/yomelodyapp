@@ -532,12 +532,14 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
+           //     killMediaPlayer();
             }
         });
 
         ivHomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+              //  killMediaPlayer();
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
             }
@@ -1710,15 +1712,18 @@ public class StudioActivity extends AppCompatActivity {
 
     public void playAudioRecycler() throws IOException {
         //This for loop modified by Abhishek
+  //      InstrumentListAdapter.playfrom_studio = true;
+     //   adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+   //     adapter.notifyDataSetChanged();
         for (int i = 0; i < InstrumentCountSize; i++) {
             mp = new MediaPlayer();
             mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mp.setDataSource(instruments_count.get(i));
             mp.prepareAsync();
-         //   mp.start();
+            //   mp.start();
             mps.add(mp);
         }
-        for (MediaPlayer mp: mps) {
+        for (MediaPlayer mp : mps) {
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -1734,6 +1739,7 @@ public class StudioActivity extends AppCompatActivity {
                 mp.stop();
                 mp.reset();
                 mp.release();
+           //     mp=null;
             } catch (Exception e) {
                 e.printStackTrace();
             }
