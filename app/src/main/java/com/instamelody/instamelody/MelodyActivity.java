@@ -201,6 +201,19 @@ public class MelodyActivity extends AppCompatActivity {
                 ivMelodyFilter.setVisibility(View.VISIBLE);
                 search1.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
+
+            }
+        });
+
+        search1.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                rlMelodySearch.setVisibility(View.VISIBLE);
+                ivHomeButton.setVisibility(View.VISIBLE);
+                appBarMainText.setVisibility(View.VISIBLE);
+                ivMelodyFilter.setVisibility(View.VISIBLE);
+                search1.setVisibility(View.GONE);
+                btnCancel.setVisibility(View.GONE);
                 search1.isSubmitButtonEnabled();
                 String searchContent = search1.getQuery().toString();
                 SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
@@ -211,6 +224,12 @@ public class MelodyActivity extends AppCompatActivity {
                 editorFilterString.apply();
                 AudioFragment af = new AudioFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_melody, af).commit();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
             }
         });
 
@@ -253,8 +272,8 @@ public class MelodyActivity extends AppCompatActivity {
                             editorSearchString.clear();
                             editorSearchString.apply();
                             builderInner.setTitle("Your Selected Item is");
-                            MelodyPacksFragment mpf = new MelodyPacksFragment();
-                            getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
+                            AudioFragment af = new AudioFragment();
+                            getFragmentManager().beginTransaction().replace(R.id.activity_melody, af).commit();
                         }
                     }
                 });
