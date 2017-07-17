@@ -142,6 +142,5 @@ public class SettingsActivity extends AppCompatActivity {
 //                Toast.makeText(getApplicationContext(),"seekbar touch stopped!", Toast.LENGTH_SHORT).show();
 //            }
 //        });
-
     }
 }

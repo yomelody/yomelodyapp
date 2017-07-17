@@ -64,6 +64,7 @@
                 app:iconifiedByDefault="false"
                 app:queryHint="@string/search_hint" />
 
+
             <Button
                 android:id="@+id/btnCancel"
                 android:layout_width="90dp"
@@ -71,7 +72,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_toRightOf="@+id/searchMelody"
                 android:background="#E4E4E4"
-                android:text="Submit"
+                android:text="cancel"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                 android:textColor="#4575FC"
                 android:visibility="gone" />

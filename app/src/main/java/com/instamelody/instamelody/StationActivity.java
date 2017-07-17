@@ -87,7 +87,6 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     private static RecyclerView recyclerView;
 
     private MenuItem searchMenuItem;
-    SearchView.OnQueryTextListener listener;
     SearchView searchView, search1;
     ListView list;
     ArrayAdapter<String> instrumentAdapter;
@@ -167,19 +166,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        listener = new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                // newText is text entered by user to SearchView
-//                Toast.makeText(getApplicationContext(), newText, Toast.LENGTH_LONG).show();
-                return false;
-            }
-        };
 
 
         AudioFragment af = new AudioFragment();
@@ -231,6 +218,17 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 rlSearch.setVisibility(View.VISIBLE);
                 search1.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
+
+//                Toast.makeText(StationActivity.this, "" + searchContent, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        search1.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                rlSearch.setVisibility(View.VISIBLE);
+                search1.setVisibility(View.GONE);
+                btnCancel.setVisibility(View.GONE);
                 search1.isSubmitButtonEnabled();
                 String searchContent = search1.getQuery().toString();
                 SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
@@ -241,8 +239,13 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 editorFilterString.apply();
                 AudioFragment af = new AudioFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
+                return false;
 
-//                Toast.makeText(StationActivity.this, "" + searchContent, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
             }
         });
 

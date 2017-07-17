@@ -119,18 +119,12 @@ public class AudioFragment extends Fragment {
         fetchGenreNames();
 
         if (strName == null && strSearch == null) {
-
-            fetchRecordings();
-        } else if (strSearch != null) {
-
-            fetchSearchData();
-        } else if (strArtist != null)
-
-            fetchRecordingsFilterArtist();
-        else {
-
-            fetchRecordingsFilter();
-        }
+                fetchRecordings();
+            } else if (strSearch != null) {
+                fetchSearchData();
+            } else {
+                fetchRecordingsFilter();
+            }
 
 
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
@@ -201,13 +195,10 @@ public class AudioFragment extends Fragment {
                         if (host.getCurrentTab() == 0) {
 //                            Toast.makeText(getActivity(), "All " + host.getCurrentTab(), Toast.LENGTH_SHORT).show();
                             if (strName == null && strSearch == null) {
-
                                 fetchRecordings();
-                            } else if (strSearch != null && strName == null && strArtist == null) {
+                            } else if (strSearch != null) {
                                 fetchSearchData();
-                            } else if (strArtist != null & strName == null && strSearch == null)
-                                fetchRecordingsFilterArtist();
-                            else {
+                            } else {
                                 fetchRecordingsFilter();
                             }
 
@@ -225,13 +216,10 @@ public class AudioFragment extends Fragment {
                                 }
 //                                fetchRecordings();
                                 if (strName == null && strSearch == null) {
-
                                     fetchRecordings();
                                 } else if (strSearch != null) {
                                     fetchSearchData();
-                                } else if (strArtist != null)
-                                    fetchRecordingsFilterArtist();
-                                else {
+                                } else {
                                     fetchRecordingsFilter();
                                 }
 //                                Toast.makeText(getActivity(), "beta: " + genreString, Toast.LENGTH_SHORT).show();

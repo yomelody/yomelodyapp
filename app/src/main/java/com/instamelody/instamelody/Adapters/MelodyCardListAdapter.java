@@ -1,8 +1,10 @@
 package com.instamelody.instamelody.Adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
@@ -76,6 +78,9 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     int playerPos;
     int duration, length;
     String mpid,MelodyName;
+    String Key_shared_by_user = "shared_by_user";
+    String Key_shared_with = "shared_with";
+    String Key_file_type = "file_type";
 
     public MelodyCardListAdapter(ArrayList<MelodyCard> melodyList, Context context) {
         this.melodyList = melodyList;
@@ -246,8 +251,8 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     shareIntent.setType("image/jpeg");
                     startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));*/
 
-                    /*MelodyCard melody = melodyList.get(getAdapterPosition());
-                    MelodyName=melody.getMelodyName();*/
+                    MelodyCard melody = melodyList.get(getAdapterPosition());
+                    MelodyName=melody.getMelodyName();
 
                     MelodyCard recording = melodyList.get(getAdapterPosition());
                     String RecordingURL=recording.getMelodyURL();
@@ -259,7 +264,11 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     shareIntent.putExtra(Intent.EXTRA_TEXT, RecordingURL);
                     shareIntent.setType("image/jpeg");
                     context.startActivity(Intent.createChooser(shareIntent, "Hello."));
+                    ((Activity) context).startActivityForResult(Intent.createChooser(shareIntent, "Hello."),1);
+                    SetMelodyShare("","","");
+
                 }
+
             });
 
             rlPlay.setOnClickListener(new View.OnClickListener() {
@@ -521,8 +530,15 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         killMediaPlayer();
 
         mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.setDataSource(url);
-        mediaPlayer.prepare();
+        mediaPlayer.prepareAsync();
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.start();
+            }
+        });
         mediaPlayer.seekTo(playerPos);
         mediaPlayer.start();
         duration = mediaPlayer.getDuration();
@@ -542,4 +558,47 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     public static ArrayList<MelodyCard> returnMelodyList() {
         return melodyList;
     }
+
+    public void SetMelodyShare(final String file_id, final String shared_by_user,final String shared_with) {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, PLAY_COUNT,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //       Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
+                        JSONObject jsonObject, respObject;
+
+                        try {
+                            jsonObject = new JSONObject(response);
+                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
+                                //respObject = jsonObject.getJSONObject(KEY_RESPONSE);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //       Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
+                        String errorMsg = error.toString();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put(FILE_ID, file_id);
+                params.put(Key_shared_by_user, shared_by_user);
+                params.put(Key_shared_with, shared_with);
+                params.put(Key_file_type, "admin_melody");
+                return params;
+            }
+        };
+        RequestQueue requestQueue1 = Volley.newRequestQueue(context);
+        requestQueue1.add(stringRequest);
+    }
+
+
 }
