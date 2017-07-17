@@ -126,7 +126,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             rlshare=(RelativeLayout)itemView.findViewById(R.id.rlShare);
 
 
-           // MelodyName=tvMelodyName.getText().toString().trim();
+            // MelodyName=tvMelodyName.getText().toString().trim();
             ivPlay.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -479,7 +479,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                 //       Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
+                        //       Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
                         JSONObject jsonObject, respObject;
 
                         try {
@@ -487,7 +487,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
                                 respObject = jsonObject.getJSONObject(KEY_RESPONSE);
                                 String str = respObject.getString("play_count");
-                          //      Toast.makeText(context, "" + str, Toast.LENGTH_SHORT).show();
+                                //      Toast.makeText(context, "" + str, Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -497,7 +497,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                 //       Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
+                        //       Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
                         String errorMsg = error.toString();
                         Log.d("Error", errorMsg);
                     }
@@ -508,7 +508,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 params.put(USER_TYPE, "admin");
                 params.put(USERID, userId);
                 params.put(FILEID, pos);
-            //    params.put(TYPE, "admin_melody");
+                //    params.put(TYPE, "admin_melody");
                 params.put(TYPE, "melody");
                 return params;
             }

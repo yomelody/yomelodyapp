@@ -99,10 +99,12 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     ArrayList instrument_url_count = new ArrayList();
     ArrayList<String> fetch_url_arrayList = new ArrayList<>();
     static int duration1, currentPosition;
+    //  public static boolean playfrom_studio = false;
 
     public InstrumentListAdapter(ArrayList<MelodyInstruments> instrumentList, Context context) {
         this.instrumentList = instrumentList;
         this.context = context;
+        //   this.playfrom_studio=false;
     }
 
     private boolean hasLoadButton = true;
@@ -262,20 +264,25 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             holder.tvUserName.setText("@" + userName);
         } else if (fbName != null) {
             holder.tvUserName.setText("@" + fbName);
-        }else
-        holder.tvUserName.setText(instruments.getUserName());
+        } else
+            holder.tvUserName.setText(instruments.getUserName());
         holder.tvInstrumentName.setText(instruments.getInstrumentName());
 
         holder.tvInstrumentLength.setText(instruments.getInstrumentLength());
         instrumentFile = instruments.getInstrumentFile();
         instrument_url_count.add(instrumentFile);
 //        Toast.makeText(context, "" + instrumentFile, Toast.LENGTH_SHORT).show();
-        Log.d("Instruments size", "" +instrumentFile);
+        Log.d("Instruments size", "" + instrumentFile);
         //This line commented by Abhishek
 
-     //   new DownloadInstruments().execute(instrumentFile);
+        //   new DownloadInstruments().execute(instrumentFile);
 
         //  i.putExtra("instruments", instrumentFile);
+//        if (playfrom_studio == true) {
+//            holder.ivPlay.setVisibility(View.GONE);
+//            holder.ivPause.setVisibility(View.VISIBLE);
+//            holder.primarySeekBarProgressUpdater();
+//        }
 
 
         audioValue = instruments.getAudioType();
@@ -295,7 +302,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     }
                 }*/
 
-
                 //   Log.d("instruments_url", instrumentFile);
                 instrumentName = instruments.getInstrumentName();
 //                Intent i = new Intent("fetchingInstruments");
@@ -304,21 +310,19 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
 
                 try {
-                    Integer s = listPosition +1;
+                    Integer s = listPosition + 1;
 
                     if (getItemCount() > s && instrumentFile != null) {
                         playAudio();
                         holder.primarySeekBarProgressUpdater();
-                    }
-                    else if (getItemCount() + 1 > s) {
+                    } else if (getItemCount() + 1 > s) {
                         if (getItemCount() == 1 || getItemCount() == 2) {
                             playAudio();
                             holder.primarySeekBarProgressUpdater();
                         } else
                             playAudio1();
                         holder.primarySeekBarProgressUpdater();
-                    }
-                    else {
+                    } else {
                         playAudio();
                         holder.primarySeekBarProgressUpdater();
                     }
@@ -400,7 +404,13 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         mp.setDataSource(audioFilePath);
 //        mp.setDataSource(instrumentFile);
         mp.prepareAsync();
-        mp.start();
+        mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.start();
+            }
+        });
+        //   mp.start();
         duration1 = mp.getDuration();
         currentPosition = mp.getCurrentPosition();
 
