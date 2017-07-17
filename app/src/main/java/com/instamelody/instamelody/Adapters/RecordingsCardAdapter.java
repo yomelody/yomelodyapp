@@ -40,6 +40,9 @@ import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,6 +53,7 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LIKESAPI;
+import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
 
 /**
  * Created by Saurabh Singh on 12//2016.
@@ -78,6 +82,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";
     String Topic ="topic";
+    String Key_shared_by_user = "shared_by_user";
+    String Key_shared_with = "shared_with";
+    String Key_file_type = "file_type";
     Context context;
 
     public RecordingsCardAdapter(Context context, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools) {
@@ -550,5 +557,45 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
         }
 
+    }
+    public void SetMelodyShare(final String file_id, final String shared_by_user,final String shared_with) {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, PLAY_COUNT,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //       Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
+                        JSONObject jsonObject, respObject;
+
+                        try {
+                            jsonObject = new JSONObject(response);
+                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
+                                //respObject = jsonObject.getJSONObject(KEY_RESPONSE);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //       Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
+                        String errorMsg = error.toString();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put(FILE_ID, file_id);
+                params.put(Key_shared_by_user, shared_by_user);
+                params.put(Key_shared_with, shared_with);
+                params.put(Key_file_type, "admin_melody");
+                return params;
+            }
+        };
+        RequestQueue requestQueue1 = Volley.newRequestQueue(context);
+        requestQueue1.add(stringRequest);
     }
 }
