@@ -20,9 +20,9 @@ public class ActivityModel {
         return UserImgURL;
     }
 
-    public void setUserImgURL(String userImgURL) {
+   /* public void setUserImgURL(String userImgURL) {
         UserImgURL = userImgURL;
-    }
+    }*/
 
     public int getId_() {
         return id_;
