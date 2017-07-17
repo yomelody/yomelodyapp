@@ -4,25 +4,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.instamelody.instamelody.Models.ActivityModel;
-import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
-import com.instamelody.instamelody.SignInActivity;
-import com.instamelody.instamelody.StudioActivity;
 import com.squareup.picasso.Picasso;
-
 import java.util.ArrayList;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * Created by Saurabh Singh on 12/21/2016.
@@ -38,7 +29,7 @@ public class ActivityCardAdapter extends RecyclerView.Adapter<ActivityCardAdapte
         this.context = context;
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView tvmsg, tvtopic, tvtime;
         ImageView userprofileimage;
         CardView mCardView;
@@ -51,6 +42,17 @@ public class ActivityCardAdapter extends RecyclerView.Adapter<ActivityCardAdapte
             this.tvtopic = (TextView) itemView.findViewById(R.id.topic);
             this.tvtime = (TextView) itemView.findViewById(R.id.time);
             this.mCardView = (CardView) itemView.findViewById(R.id.card_activity);
+
+            userprofileimage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    String showProfileUserId = activityList.get(getAdapterPosition()).getCreatedByUserId();
+                    Intent intent = new Intent(view.getContext(), ProfileActivity.class);
+                    intent.putExtra("showProfileUserId", showProfileUserId);
+                    view.getContext().startActivity(intent);
+                }
+            });
         }
     }
 
@@ -90,14 +92,6 @@ public class ActivityCardAdapter extends RecyclerView.Adapter<ActivityCardAdapte
         tvmsg.setText(activityList.get(listPosition).getTvmsg());
         tvtopic.setText(activityList.get(listPosition).gettvtopic());
         tvtime.setText(activityList.get(listPosition).getTvtime());
-        userprofileimage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent intent = new Intent(v.getContext(), ProfileActivity.class);
-                v.getContext().startActivity(intent);
-            }
-        });
     }
 
     @Override
