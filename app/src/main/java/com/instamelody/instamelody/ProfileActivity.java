@@ -293,7 +293,6 @@ public class ProfileActivity extends AppCompatActivity {
                 search1.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
                 search1.isSubmitButtonEnabled();
-                fetchSearchData();
                 String searchContent = search1.getQuery().toString();
                 SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
                 editorSearchString.putString("stringSearch", searchContent);
@@ -301,7 +300,7 @@ public class ProfileActivity extends AppCompatActivity {
                 SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
                 editorFilterString.clear();
                 editorFilterString.apply();
-
+                fetchSearchData();
                 return false;
             }
 
