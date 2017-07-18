@@ -1,6 +1,7 @@
 package com.instamelody.instamelody.utils;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -9,22 +10,65 @@ import java.util.TimeZone;
  */
 
 public class RMethod {
-    public static Date getServerDiffrenceDate(String ServerDate)
+    public static String getServerDiffrenceDate(String ServerDate)
     {
         String clientDnT = ServerDate ;// "2017-06-01 07:20:00";
         Date date2=null;
         SimpleDateFormat dff = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-
+        String val = "";
         try{
             dff.setTimeZone(TimeZone.getTimeZone("UTC"));
             date2 = dff.parse(clientDnT);
             dff.setTimeZone(TimeZone.getDefault());
             String formattedDate = dff.format(date2);
+
+
+            Calendar c = Calendar.getInstance();
+            Date currentDate = c.getTime();
+
+            long diff = currentDate.getTime() - date2.getTime();
+            long seconds = diff / 1000;
+            long minutes = seconds / 60;
+            long hours = minutes / 60;
+            long days = hours / 24;
+            long years=(days/365);
+            if (days == 0) {
+                if (hours == 0) {
+                    if (minutes == 0) {
+                        if (seconds <= 5) {
+                            val = "Just now";
+                        } else {
+                            val = String.valueOf(seconds) + " " + "secs"+" ago";
+                        }
+                    } else if (minutes == 1) {
+                        val = String.valueOf(minutes) + " " + "min" +" ago";
+                    } else {
+                        val = String.valueOf(minutes) + " " + "mins"+" ago";
+                    }
+                } else if (hours == 1) {
+                    val = String.valueOf(hours) + " " + "hour"+" ago";
+                } else {
+                    val = String.valueOf(hours) + " " + "hrs"+" ago";
+                }
+            } else if (days == 1) {
+                val = "1 day";
+            }
+            else {
+                long year=(days/365);
+                if(year>0) {
+                    val = String.valueOf(days / 365) + "year" + " ago";
+                }
+                else {
+                    val = days + "day" + " ago";
+                }
+            }
+
+
         }
         catch(Exception e){
             System.err.println(e);
         }
 
-        return date2;
+        return val;
     }
 }

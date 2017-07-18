@@ -86,10 +86,15 @@ public class DiscoverActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discover);
-        fetchGenreNames();
-        fetchRecordings();
+
+        ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
+        ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
+        discover = (ImageView) findViewById(R.id.discover);
+        message = (ImageView) findViewById(R.id.message);
+        audio_feed = (ImageView) findViewById(R.id.audio_feed);
+
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userId = loginSharedPref.getString("userId", null);
 
@@ -108,17 +113,26 @@ public class DiscoverActivity extends AppCompatActivity {
             userId = userIdTwitter;
         }
 
-
-        ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
-        ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
-        discover = (ImageView) findViewById(R.id.discover);
-        message = (ImageView) findViewById(R.id.message);
-        audio_feed = (ImageView) findViewById(R.id.audio_feed);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewDiscover);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList,recordingsPools);
-//        recyclerView.setAdapter(adapter);
-        super.onCreate(savedInstanceState);
+
+
+        if(userId !=null && userId!="") {
+            adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList,recordingsPools);
+            fetchGenreNames();
+            fetchRecordings();
+        }
+        else {
+            Toast.makeText(getApplicationContext(), "Log in to view your Profile", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplicationContext().startActivity(intent);
+        }
+
         discover.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -277,9 +291,9 @@ public class DiscoverActivity extends AppCompatActivity {
         return new TabHost.TabContentFactory() {
             @Override
             public View createTabContent(String tag) {
-                RecyclerView rv = new RecyclerView(getApplicationContext());
+                RecyclerView rv = new RecyclerView(DiscoverActivity.this);
                 rv.setHasFixedSize(true);
-                RecyclerView.LayoutManager lm = new LinearLayoutManager(getApplicationContext());
+                RecyclerView.LayoutManager lm = new LinearLayoutManager(DiscoverActivity.this);
                 rv.setLayoutManager(lm);
                 rv.setItemAnimator(new DefaultItemAnimator());
                 rv.setAdapter(adapter);
@@ -305,7 +319,7 @@ public class DiscoverActivity extends AppCompatActivity {
                 String filename = "myfile";
                 String outputString = "Hello world!";
 
-                URL aurl = new URL("http://52.37.189.202/api/recordings.php");
+                URL aurl = new URL(RECORDINGS);
 
                 URLConnection connection = aurl.openConnection();
                 connection.connect();
