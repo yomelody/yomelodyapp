@@ -255,8 +255,6 @@ public class DiscoverActivity extends AppCompatActivity {
                                     spec.setIndicator(titleString);
                                     spec.setContent(createTabContent());
                                     host.addTab(spec);
-
-
                                 }
                             }
                         } catch (JSONException e) {

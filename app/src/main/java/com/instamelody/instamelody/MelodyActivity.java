@@ -126,8 +126,6 @@ public class MelodyActivity extends AppCompatActivity {
 
         SharedPreferences filterPref = this.getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
-        SharedPreferences searchPref = this.getSharedPreferences("SearchPref", MODE_PRIVATE);
-        strSearch = searchPref.getString("stringSearch", null);
         SharedPreferences filterPrefArtist = this.getSharedPreferences("FilterPrefArtist", MODE_PRIVATE);
         strArtist = filterPrefArtist.getString("stringFilterArtist", null);
 
@@ -224,6 +222,8 @@ public class MelodyActivity extends AppCompatActivity {
                 appBarMainText.setVisibility(View.GONE);
                 ivMelodyFilter.setVisibility(View.GONE);
                 search1.setVisibility(View.VISIBLE);
+                ((EditText)  search1.findViewById(android.support.v7.appcompat.R.id.search_src_text))
+                        .setHintTextColor(getResources().getColor(R.color.colorSearch));
                 btnCancel.setVisibility(View.VISIBLE);
             }
         });
@@ -248,6 +248,7 @@ public class MelodyActivity extends AppCompatActivity {
             }
         });
 
+
         search1.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -265,14 +266,16 @@ public class MelodyActivity extends AppCompatActivity {
                 SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
                 editorFilterString.clear();
                 editorFilterString.apply();
-                fetchSearchData();
-                /*AudioFragment af = new AudioFragment();
-                getFragmentManager().beginTransaction().replace(R.id.activity_melody, af).commit();*/
+//                fetchSearchData();
+                AudioFragment af = new AudioFragment();
+                getFragmentManager().beginTransaction().replace(R.id.activity_melody, af).commit();
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                ((EditText)  search1.findViewById(android.support.v7.appcompat.R.id.search_src_text))
+                        .setTextColor(getResources().getColor(R.color.colorSearch));
                 return false;
             }
         });
@@ -599,6 +602,9 @@ public class MelodyActivity extends AppCompatActivity {
     }
 
     public void fetchSearchData() {
+
+        SharedPreferences searchPref = this.getSharedPreferences("SearchPref", MODE_PRIVATE);
+        strSearch = searchPref.getString("stringSearch", null);
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {

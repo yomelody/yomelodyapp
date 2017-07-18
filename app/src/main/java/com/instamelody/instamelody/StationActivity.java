@@ -207,6 +207,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 //                searchMenuItem.setVisible(position == 0);
                 rlSearch.setVisibility(View.GONE);
                 search1.setVisibility(View.VISIBLE);
+                ((EditText)  search1.findViewById(android.support.v7.appcompat.R.id.search_src_text))
+                        .setHintTextColor(getResources().getColor(R.color.colorSearch));
                 btnCancel.setVisibility(View.VISIBLE);
             }
         });

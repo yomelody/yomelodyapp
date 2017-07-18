@@ -124,9 +124,11 @@ public class AudioFragment extends Fragment {
                 fetchRecordings();
             } else if (strSearch != null) {
                 fetchSearchData();
-            } else {
-                fetchRecordingsFilter();
-            }
+            } else if (strArtist != null){
+            fetchRecordingsFilterArtist();
+            }else {
+            fetchRecordingsFilter();
+        }
 
 
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
@@ -200,7 +202,9 @@ public class AudioFragment extends Fragment {
                                 fetchRecordings();
                             } else if (strSearch != null) {
                                 fetchSearchData();
-                            } else {
+                            } else if (strArtist != null){
+                                fetchRecordingsFilterArtist();
+                            }else {
                                 fetchRecordingsFilter();
                             }
 
@@ -221,7 +225,9 @@ public class AudioFragment extends Fragment {
                                     fetchRecordings();
                                 } else if (strSearch != null) {
                                     fetchSearchData();
-                                } else {
+                                } else if (strArtist != null){
+                                    fetchRecordingsFilterArtist();
+                                }else {
                                     fetchRecordingsFilter();
                                 }
 //                                Toast.makeText(getActivity(), "beta: " + genreString, Toast.LENGTH_SHORT).show();
@@ -556,13 +562,12 @@ public class AudioFragment extends Fragment {
 
 
             if (strName == null && strSearch == null) {
-
                 fetchRecordings();
             } else if (strSearch != null) {
                 fetchSearchData();
-            } else if (strArtist != null)
+            } else if (strArtist != null){
                 fetchRecordingsFilterArtist();
-            else {
+            }else {
                 fetchRecordingsFilter();
             }
             return null;

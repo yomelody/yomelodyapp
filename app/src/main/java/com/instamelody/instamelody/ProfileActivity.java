@@ -132,8 +132,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         SharedPreferences filterPref = this.getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
-        SharedPreferences searchPref = this.getSharedPreferences("SearchPref", MODE_PRIVATE);
-        strSearch = searchPref.getString("stringSearch", null);
         SharedPreferences filterPrefArtist = this.getSharedPreferences("FilterPrefArtist", MODE_PRIVATE);
         strArtist = filterPrefArtist.getString("stringFilterArtist", null);
 
@@ -226,6 +224,8 @@ public class ProfileActivity extends AppCompatActivity {
 //                searchMenuItem.setVisible(position == 0);
                 rlSearch.setVisibility(View.INVISIBLE);
                 search1.setVisibility(View.VISIBLE);
+                ((EditText)  search1.findViewById(android.support.v7.appcompat.R.id.search_src_text))
+                        .setHintTextColor(getResources().getColor(R.color.colorSearch));
                 btnCancel.setVisibility(View.VISIBLE);
             }
         });
@@ -900,6 +900,9 @@ public class ProfileActivity extends AppCompatActivity {
 
     public void fetchSearchData() {
 
+        SharedPreferences searchPref = this.getSharedPreferences("SearchPref", MODE_PRIVATE);
+        strSearch = searchPref.getString("stringSearch", null);
+
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
@@ -951,6 +954,7 @@ public class ProfileActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
+//                params.put(KEY, STATION);
                 params.put(KEY_SEARCH, strSearch);
                 return params;
             }
