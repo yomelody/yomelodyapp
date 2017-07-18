@@ -120,10 +120,11 @@ public class ActivityFragment extends Fragment {
 
     private class FetchActivityDetails extends AsyncTask<String, Void, String> {
         protected void onPreExecute() {
+            super.onPreExecute();
             progressDialog = new ProgressDialog(getActivity());
             progressDialog.setTitle("Processing...");
             progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(false);
+            //progressDialog.setCancelable(false);
             progressDialog.show();
         }
 
@@ -140,8 +141,12 @@ public class ActivityFragment extends Fragment {
         }
 
         protected void onPostExecute(String result) {
-
-            progressDialog.dismiss();
+            super.onPostExecute(result);
+            if (progressDialog != null)
+            {
+                progressDialog.dismiss();
+            }
+           // progressDialog.dismiss();
         }
     }
     public void fetchActivityData(final String userId) {
@@ -227,78 +232,9 @@ public class ActivityFragment extends Fragment {
         requestQueue1.add(stringRequest);
     }
     public String DateTime(String send_at) {
-        Date dtdate=getServerDiffrenceDate(send_at);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String val = "";
-        try {
-            Date oldDate = dateFormat.parse(send_at);
-            Calendar c = Calendar.getInstance();
-            Date currentDate = c.getTime();
-
-            long diff = currentDate.getTime() - dtdate.getTime();
-            long seconds = diff / 1000;
-            long minutes = seconds / 60;
-            long hours = minutes / 60;
-            long days = hours / 24;
-            long years=(days/365);
-            if (days == 0) {
-                if (hours == 0) {
-                    if (minutes == 0) {
-                        if (seconds <= 5) {
-                            val = "Just now";
-                        } else {
-                            val = String.valueOf(seconds) + " " + "secs"+" ago";
-                        }
-                    } else if (minutes == 1) {
-                        val = String.valueOf(minutes) + " " + "min" +" ago";
-                    } else {
-                        val = String.valueOf(minutes) + " " + "mins"+" ago";
-                    }
-                } else if (hours == 1) {
-                    val = String.valueOf(hours) + " " + "hour"+" ago";
-                } else {
-                    val = String.valueOf(hours) + " " + "hrs"+" ago";
-                }
-            } else if (days == 1) {
-                val = "1 day";
-            }
-            else {
-                long year=(days/365);
-                if(year>0) {
-                    val = String.valueOf(days / 365) + "year" + " ago";
-                }
-                else {
-                    val = days + "day" + " ago";
-                }
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        val=getServerDiffrenceDate(send_at);
         return val;
     }
-    private static void log(String[] availableIDs) {
 
-        System.out.println("\nHere are all list of timezones for your reference:");
-        for (String temp : availableIDs) {
-            System.out.println(temp);
-        }
-    }
-    public static Date getDiffrenceBetween(String Date,String ZoneName) {
-        String clientDnT = Date ;// "2017-06-01 07:20:00";
-        Date date2=null;
-        SimpleDateFormat dff = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-
-        try{
-            dff.setTimeZone(TimeZone.getTimeZone("UTC"));
-            date2 = dff.parse(clientDnT);
-            dff.setTimeZone(TimeZone.getDefault());
-            String formattedDate = dff.format(date2);
-        }
-        catch(Exception e){
-            System.err.println(e);
-        }
-
-        return date2;
-
-    }
 }
