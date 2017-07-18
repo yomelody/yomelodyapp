@@ -173,7 +173,7 @@ public class ChatActivity extends AppCompatActivity {
 //        sendAt = chatPrefs.getString("sendAt", null);
 
         SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
-        senderId = prefs.getString("senderId", null);
+//        senderId = prefs.getString("senderId", null);
         receiverId = prefs.getString("receiverId", null);
         receiverName = prefs.getString("receiverName", null);
         receiverImage = prefs.getString("receiverImage", null);
@@ -690,6 +690,8 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
 
+                        String str = response;
+                        Toast.makeText(ChatActivity.this, str + "here1", Toast.LENGTH_SHORT).show();
                         getChatMsgs(chatId);
 
 //                        cAdapter.notifyDataSetChanged();
@@ -714,7 +716,7 @@ public class ChatActivity extends AppCompatActivity {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), errorMsg + "here2", Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -723,7 +725,7 @@ public class ChatActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
 
                 params.put(SENDER_ID, user_Id);
-                params.put(RECEIVER_ID, senderId);
+                params.put(RECEIVER_ID, receiverId);
                 params.put(CHAT_ID, chatId);
                 params.put(TITLE, "message");
                 params.put(MESSAGE, message);
