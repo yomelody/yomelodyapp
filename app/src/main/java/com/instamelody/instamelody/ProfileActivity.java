@@ -173,8 +173,6 @@ public class ProfileActivity extends AppCompatActivity {
         tv_fans = (TextView) findViewById(R.id.tv_fans);
         tv_following = (TextView) findViewById(R.id.tv_following);
 
-        adapter = new RecordingsCardAdapter(this, recordingList, recordingsPools);
-
         Bundle bundle = getIntent().getExtras();
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
@@ -199,6 +197,8 @@ public class ProfileActivity extends AppCompatActivity {
                 showProfileUserId = twitterPref.getString("userId", null);
             }
         }
+
+        adapter = new RecordingsCardAdapter(this, recordingList, recordingsPools);
 
         if (showProfileUserId != null) {
             fetchUserBio();
@@ -466,95 +466,92 @@ public class ProfileActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
-                        String records, fans, followers;
-                        String str = response;
-//                        Toast.makeText(getApplicationContext(), "" + str, Toast.LENGTH_SHORT).show();
-//                        Log.d("ReturnData", response);
-                        JSONObject jsonObject;
-                        JSONArray jsonArray;
-                        try {
-                            jsonObject = new JSONObject(response);
-                            if (jsonObject.getString(KEY_FLAG).equals(SUCCESS)) {
-                                jsonArray = jsonObject.getJSONArray(KEY_RESULT);
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    UserDetails userDetails = new UserDetails();
-                                    JSONObject userJson = jsonArray.getJSONObject(i);
-                                    Name = userJson.getString("fname") + " " + userJson.getString("lname");
-                                    if (!Name.equals("")) {
-                                        tvNameInProf.setText(Name);
-                                    }
-                                    userName = userJson.getString("username");
-                                    if (!userName.equals("")) {
-                                        tvUserNameInProf.setText("@" + userName);
-                                    }
-                                    followStatus = userJson.getString("follow_status");
-                                    if (showProfileUserId.equals(userId)) {
-                                        if (rlFollow.getVisibility() == View.VISIBLE) {
-                                            rlFollow.setVisibility(View.GONE);
+                            String records, fans, followers;
+                            String str = response;
+                            JSONObject jsonObject;
+                            JSONArray jsonArray;
+                            try {
+                                jsonObject = new JSONObject(response);
+                                if (jsonObject.getString(KEY_FLAG).equals(SUCCESS)) {
+                                    jsonArray = jsonObject.getJSONArray(KEY_RESULT);
+                                    for (int i = 0; i < jsonArray.length(); i++) {
+                                        UserDetails userDetails = new UserDetails();
+                                        JSONObject userJson = jsonArray.getJSONObject(i);
+                                        Name = userJson.getString("fname") + " " + userJson.getString("lname");
+                                        if (!Name.equals("")) {
+                                            tvNameInProf.setText(Name);
                                         }
-                                        if (rlMessage.getVisibility() == View.VISIBLE) {
-                                            rlMessage.setVisibility(View.GONE);
+                                        userName = userJson.getString("username");
+                                        if (!userName.equals("")) {
+                                            tvUserNameInProf.setText("@" + userName);
                                         }
-                                    } else {
+                                        followStatus = userJson.getString("follow_status");
+                                        if (showProfileUserId.equals(userId)) {
+                                            if (rlFollow.getVisibility() == View.VISIBLE) {
+                                                rlFollow.setVisibility(View.GONE);
+                                            }
+                                            if (rlMessage.getVisibility() == View.VISIBLE) {
+                                                rlMessage.setVisibility(View.GONE);
+                                            }
+                                        } else {
 //                                        if (rlMessage.getVisibility() == View.GONE) {
 //                                            rlMessage.setVisibility(View.VISIBLE);
 //                                        }
-                                        if (rlFollow.getVisibility() == View.GONE) {
-                                            rlFollow.setVisibility(View.VISIBLE);
-                                            if (!followStatus.equals("")) {
-                                                if (followStatus.equals("0")) {
-                                                    ivFollow.setVisibility(View.VISIBLE);
-                                                    rlMessage.setVisibility(View.GONE);
-                                                } else if (followStatus.equals("1")) {
-                                                    ivUnfollow.setVisibility(View.VISIBLE);
-                                                    rlMessage.setVisibility(View.VISIBLE);
+                                            if (rlFollow.getVisibility() == View.GONE) {
+                                                rlFollow.setVisibility(View.VISIBLE);
+                                                if (!followStatus.equals("")) {
+                                                    if (followStatus.equals("0")) {
+                                                        ivFollow.setVisibility(View.VISIBLE);
+                                                        rlMessage.setVisibility(View.GONE);
+                                                    } else if (followStatus.equals("1")) {
+                                                        ivUnfollow.setVisibility(View.VISIBLE);
+                                                        rlMessage.setVisibility(View.VISIBLE);
+                                                    }
                                                 }
                                             }
                                         }
-                                    }
-                                    records = userJson.getString("records");
-                                    if (!records.equals("")) {
-                                        tv_records.setText(records);
-                                    } else {
-                                        tv_records.setText(0);
-                                    }
-                                    fans = userJson.getString("fans");
-                                    if (!fans.equals("")) {
-                                        tv_fans.setText(fans);
-                                    } else {
-                                        tv_fans.setText(0);
-                                    }
-                                    followers = userJson.getString("followers");
-                                    if (!followers.equals("")) {
-                                        tv_following.setText(followers);
-                                    } else {
-                                        tv_following.setText(0);
-                                    }
+                                        records = userJson.getString("records");
+                                        if (!records.equals("")) {
+                                            tv_records.setText(records);
+                                        } else {
+                                            tv_records.setText(0);
+                                        }
+                                        fans = userJson.getString("fans");
+                                        if (!fans.equals("")) {
+                                            tv_fans.setText(fans);
+                                        } else {
+                                            tv_fans.setText(0);
+                                        }
+                                        followers = userJson.getString("followers");
+                                        if (!followers.equals("")) {
+                                            tv_following.setText(followers);
+                                        } else {
+                                            tv_following.setText(0);
+                                        }
 
-                                    profilePic = userJson.getString("profilepic");
-                                    userProfileImageInProf.setVisibility(View.VISIBLE);
-                                    Picasso.with(ProfileActivity.this).load(profilePic).into(userProfileImageInProf);
-                                    coverPic = userJson.getString("coverpic");
-                                    Picasso.with(ProfileActivity.this).load(coverPic).into(userCover);
+                                        profilePic = userJson.getString("profilepic");
+                                        userProfileImageInProf.setVisibility(View.VISIBLE);
+                                        Picasso.with(ProfileActivity.this).load(profilePic).into(userProfileImageInProf);
+                                        coverPic = userJson.getString("coverpic");
+                                        Picasso.with(ProfileActivity.this).load(coverPic).into(userCover);
 
-                                    userDetails.setId(userJson.getString("id"));
-                                    userDetails.setUsername(userJson.getString("username"));
-                                    userDetails.setFname(userJson.getString("fname"));
-                                    userDetails.setLname(userJson.getString("lname"));
-                                    userDetails.setEmail(userJson.getString("email"));
-                                    userDetails.setMobile(userJson.getString("mobile"));
-                                    userDetails.setDob(userJson.getString("dob"));
-                                    userDetails.setLogintype(userJson.getString("logintype"));
-                                    userDetails.setLogin_with(userJson.getString("login_with"));
-                                    userDetails.setProfilepic(userJson.getString("profilepic"));
-                                    userDetails.setCoverpic(userJson.getString("coverpic"));
-                                    userDetails.setRegisterdate(userJson.getString("registerdate"));
-                                    userDetails.setFollowers(userJson.getString("followers"));
-                                    userDetails.setFans(userJson.getString("fans"));
-                                    userDetails.setRecords(userJson.getString("records"));
-                                    userDetails.setDevicetoken(userJson.getString("devicetoken"));
-                                    userDetails.setDiscrisption(userJson.getString("discrisption"));
+                                        userDetails.setId(userJson.getString("id"));
+                                        userDetails.setUsername(userJson.getString("username"));
+                                        userDetails.setFname(userJson.getString("fname"));
+                                        userDetails.setLname(userJson.getString("lname"));
+                                        userDetails.setEmail(userJson.getString("email"));
+                                        userDetails.setMobile(userJson.getString("mobile"));
+                                        userDetails.setDob(userJson.getString("dob"));
+                                        userDetails.setLogintype(userJson.getString("logintype"));
+                                        userDetails.setLogin_with(userJson.getString("login_with"));
+                                        userDetails.setProfilepic(userJson.getString("profilepic"));
+                                        userDetails.setCoverpic(userJson.getString("coverpic"));
+                                        userDetails.setRegisterdate(userJson.getString("registerdate"));
+                                        userDetails.setFollowers(userJson.getString("followers"));
+                                        userDetails.setFans(userJson.getString("fans"));
+                                        userDetails.setRecords(userJson.getString("records"));
+                                        userDetails.setDevicetoken(userJson.getString("devicetoken"));
+                                        userDetails.setDiscrisption(userJson.getString("discrisption"));
 
 //                                    if (userJson.getString("id") == userId) {
 //                                        SharedPreferences prefUserDetails = getApplicationContext().getSharedPreferences("prefUserDetails", MODE_PRIVATE);
@@ -569,11 +566,12 @@ public class ProfileActivity extends AppCompatActivity {
 //                                        String json = mPrefs.getString("MyObject", "");
 //                                        MyObject obj = gson.fromJson(json, MyObject.class);
 //                                    }
+                                    }
                                 }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+
                     }
                 },
                 new Response.ErrorListener() {
