@@ -48,8 +48,10 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -308,7 +310,8 @@ public class AudioFragment extends Fragment {
                 if(userId!=null)
                 {
                     params.put(ID, userId);
-                    params.put(KEY, "station");
+                    params.put(KEY, STATION);
+                    params.put(GENRE,genreString);
                 }
                 else {
                     params.put(KEY, STATION);
@@ -541,6 +544,16 @@ public class AudioFragment extends Fragment {
             } else {
                 fetchRecordingsFilter();
             }*/
+            try {
+                URL aurl = new URL("http://52.37.189.202/api/recordings.php");
+                URLConnection connection = aurl.openConnection();
+                connection.connect();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
 
             if (strName == null && strSearch == null) {
 

@@ -297,10 +297,11 @@ public class ProfileActivity extends AppCompatActivity {
                 SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
                 editorSearchString.putString("stringSearch", searchContent);
                 editorSearchString.apply();
+                fetchSearchData();
                 SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
                 editorFilterString.clear();
                 editorFilterString.apply();
-                fetchSearchData();
+
                 return false;
             }
 
@@ -1051,7 +1052,6 @@ public class ProfileActivity extends AppCompatActivity {
                 editorFilterArtist.putString("stringFilterArtist", artistName);
                 editorFilterArtist.apply();
                 fetchRecordingsFilterArtist();
-
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtFilterName.getWindowToken(), 0);
 

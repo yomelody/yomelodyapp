@@ -1,10 +1,13 @@
 package com.instamelody.instamelody;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,14 +15,27 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TabHost;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -55,7 +71,9 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
 public class DiscoverActivity extends AppCompatActivity {
 
-    ImageView discover, message, ivBackButton, ivHomeButton, audio_feed;
+    ImageView discover, message, ivBackButton, ivHomeButton, audio_feed, ivFilterDiscover;
+    Button appBarSearchDiscoverBtn;
+    EditText subEtFilterName;
     TabHost host;
     private static RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -70,6 +88,7 @@ public class DiscoverActivity extends AppCompatActivity {
     private String FILE_TYPE = "file_type";
     private String FILTER_TYPE = "filter_type";
     private String FILTER = "filter";
+    private String USER_NAME = "username";
 
     String KEY_GENRE_NAME = "name";
     String KEY_GENRE_ID = "id";
@@ -79,7 +98,7 @@ public class DiscoverActivity extends AppCompatActivity {
     String userId, userNameLogin;
     String strName;
     String titleString;
-    String userIdNormal, userIdFb, userIdTwitter;
+    String userIdNormal, userIdFb, userIdTwitter, artistName;
     int statusNormal, statusFb, statusTwitter;
     ProgressDialog progressDialog;
     LongOperation myTask = null;
@@ -115,8 +134,10 @@ public class DiscoverActivity extends AppCompatActivity {
         message = (ImageView) findViewById(R.id.message);
         audio_feed = (ImageView) findViewById(R.id.audio_feed);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewDiscover);
+        ivFilterDiscover = (ImageView) findViewById(R.id.ivFilterDiscover);
+        appBarSearchDiscoverBtn = (Button) findViewById(R.id.appBarSearchDiscoverBtn);
 
-        adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList,recordingsPools);
+        adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList, recordingsPools);
 //        recyclerView.setAdapter(adapter);
         super.onCreate(savedInstanceState);
         discover.setOnClickListener(new View.OnClickListener() {
@@ -158,6 +179,51 @@ public class DiscoverActivity extends AppCompatActivity {
             }
         });
 
+        ivFilterDiscover.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builderSingle = new AlertDialog.Builder(DiscoverActivity.this);
+//                builderSingle.setIcon(R.drawable.ic_launcher);
+                builderSingle.setTitle("Filter Audio");
+
+                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(DiscoverActivity.this, android.R.layout.select_dialog_singlechoice);
+                arrayAdapter.add("Latest");
+                arrayAdapter.add("Trending");
+                arrayAdapter.add("Favorites");
+                arrayAdapter.add("Artist");
+                arrayAdapter.add("# of Instruments");
+                arrayAdapter.add("BPM");
+
+                builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        strName = arrayAdapter.getItem(which);
+                        if (strName.equals("Artist")) {
+                            openDialog();
+                        } else {
+                            AlertDialog.Builder builderInner = new AlertDialog.Builder(DiscoverActivity.this);
+                            builderInner.setMessage(strName);
+                            SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                            editorFilterString.putString("stringFilter", strName);
+                            editorFilterString.apply();
+                            SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+                            editorSearchString.clear();
+                            editorSearchString.apply();
+                            builderInner.setTitle("Your Selected Item is");
+                            fetchRecordingsFilter();
+                        }
+                    }
+                });
+                builderSingle.show();
+            }
+        });
     }
 
     public void fetchGenreNames() {
@@ -175,7 +241,7 @@ public class DiscoverActivity extends AppCompatActivity {
                         try {
                             jsonObject = new JSONObject(response);
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
-                                myTask= new LongOperation();
+                                myTask = new LongOperation();
                                 myTask.execute();
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                                 for (int i = 0; i < jsonArray.length(); i++) {
@@ -206,9 +272,9 @@ public class DiscoverActivity extends AppCompatActivity {
                             public void onTabChanged(String arg0) {
                                 genreString = arg0;
                                 int currentTab = host.getCurrentTab();
-                                if (currentTab==0){
-                                    genreString= "";
-                                }else {
+                                if (currentTab == 0) {
+                                    genreString = "";
+                                } else {
                                     genreString = genresArrayList.get(currentTab).getId();
                                 }
                                 fetchRecordings();
@@ -248,7 +314,7 @@ public class DiscoverActivity extends AppCompatActivity {
                         Log.d("ReturnData", response);
                         recordingList.clear();
                         recordingsPools.clear();
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList,recordingsPools);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                     }
                 },
@@ -266,6 +332,170 @@ public class DiscoverActivity extends AppCompatActivity {
                 params.put(ID, userId);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+    }
+
+    public void fetchRecordingsFilter() {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
+                        Log.d("ReturnData1", response);
+                        recordingList.clear();
+                        recordingsPools.clear();
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
+                        adapter.notifyDataSetChanged();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(ID, userId);
+                params.put(KEY, STATION);
+                params.put(GENRE, genreString);
+                params.put(FILE_TYPE, "user_recording");
+                params.put(FILTER_TYPE, strName);
+                params.put(FILTER, "extrafilter");
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+    }
+
+    private void openDialog() {
+        LayoutInflater inflater = LayoutInflater.from(DiscoverActivity.this);
+        View subView = inflater.inflate(R.layout.dialog_layout, null);
+
+        subEtFilterName = (EditText) subView.findViewById(R.id.dialogEtTopicName);
+
+        android.support.v7.app.AlertDialog.Builder builder2 = new android.support.v7.app.AlertDialog.Builder(this);
+        builder2.setTitle("ArtistName");
+        builder2.setMessage("Choose Artist Name to Search Artist");
+        builder2.setView(subView);
+
+        TextView title = new TextView(this);
+        title.setText("ArtistName");
+        title.setBackgroundColor(Color.DKGRAY);
+        title.setPadding(10, 10, 10, 10);
+        title.setGravity(Gravity.CENTER);
+        title.setTextColor(Color.WHITE);
+        title.setTextSize(20);
+
+        builder2.setCustomTitle(title);
+
+        builder2.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //tvInfo.setText(subEtTopicName.getText().toString());
+                artistName = subEtFilterName.getText().toString().trim();
+                SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
+                editorFilterArtist.putString("stringFilterArtist", artistName);
+                editorFilterArtist.apply();
+                fetchRecordingsFilterArtist();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(subEtFilterName.getWindowToken(), 0);
+
+            }
+        });
+
+        builder2.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(subEtFilterName.getWindowToken(), 0);
+            }
+        });
+
+        builder2.show();
+    }
+
+    public void fetchRecordingsFilterArtist() {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String rs = response.toString();
+                        try {
+                            JSONObject jsonObject = new JSONObject(rs);
+                            String flag = jsonObject.getString("flag");
+//                            Toast.makeText(getActivity(), "" + flag, Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
+
+                        Log.d("ReturnData1", response);
+                        recordingList.clear();
+                        recordingsPools.clear();
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
+                        adapter.notifyDataSetChanged();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+//                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+//                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(ID, userId);
+                params.put(KEY, STATION);
+                params.put(GENRE, genreString);
+                params.put(FILE_TYPE, "user_recording");
+                params.put(FILTER_TYPE, strName);
+                params.put(USER_NAME, artistName);
+                params.put(FILTER, "extrafilter");
                 return params;
             }
         };

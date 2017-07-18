@@ -38,7 +38,7 @@
                 android:layout_marginRight="15dp">
 
                 <Button
-                    android:id="@+id/appBarSideButton"
+                    android:id="@+id/appBarSearchDiscoverBtn"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_centerVertical="true"
@@ -65,7 +65,7 @@
             </RelativeLayout>
 
             <ImageView
-                android:id="@+id/ivSound"
+                android:id="@+id/ivFilterDiscover"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_centerVertical="true"
