@@ -21,6 +21,10 @@ public class ActivityModel {
         return createdByUserId;
     }
 
+    public String getUserImgURL() {
+        return UserImgURL;
+    }
+
    /* public void setUserImgURL(String userImgURL) {
         return UserImgURL;
     }*/
