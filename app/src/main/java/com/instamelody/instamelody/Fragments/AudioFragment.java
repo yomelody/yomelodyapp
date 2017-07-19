@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TabHost;
 import android.widget.Toast;
 
@@ -100,13 +101,21 @@ public class AudioFragment extends Fragment {
     String userIdNormal, userIdFb, userIdTwitter;
     int statusNormal, statusFb, statusTwitter;
     ProgressDialog progressDialog;
+    ProgressBar pbr;
     LongOperation myTask = null;
     String strName, strSearch, strArtist;
     AudioBackGroupProcess LoadAudio=null;
     public AudioFragment() {
 
     }
-
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_audio, container, false);
+        pbr = (ProgressBar) view.findViewById(R.id.pbbar);
+        setRetainInstance(true);
+        return view;
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -151,13 +160,7 @@ public class AudioFragment extends Fragment {
         adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_audio, container, false);
-        setRetainInstance(true);
-        return view;
-    }
+
 
 
     public void fetchGenreNames() {
@@ -539,11 +542,12 @@ public class AudioFragment extends Fragment {
 
     private class LongOperation extends AsyncTask<String, Void, String> {
         protected void onPreExecute() {
-            progressDialog = new ProgressDialog(getActivity());
+           /* progressDialog = new ProgressDialog(getActivity());
             progressDialog.setTitle("Processing...");
             progressDialog.setMessage("Please wait...");
             progressDialog.setCancelable(false);
-            progressDialog.show();
+            progressDialog.show();*/
+            pbr.setVisibility(View.VISIBLE);
         }
 
         protected String doInBackground(String... params) {
@@ -579,18 +583,19 @@ public class AudioFragment extends Fragment {
         }
 
         protected void onPostExecute(String result) {
-
-            progressDialog.dismiss();
+            pbr.setVisibility(View.GONE);
+            //progressDialog.dismiss();
         }
 
     }
     private class AudioBackGroupProcess extends AsyncTask<String, Void, String> {
         protected void onPreExecute() {
-            progressDialog = new ProgressDialog(getActivity());
+           /* progressDialog = new ProgressDialog(getActivity());
             progressDialog.setTitle("Processing...");
             progressDialog.setMessage("Please wait...");
             progressDialog.setCancelable(false);
-            progressDialog.show();
+            progressDialog.show();*/
+            pbr.setVisibility(View.VISIBLE);
         }
 
         protected String doInBackground(String... params) {
@@ -609,8 +614,8 @@ public class AudioFragment extends Fragment {
         }
 
         protected void onPostExecute(String result) {
-
-            progressDialog.dismiss();
+            pbr.setVisibility(View.GONE);
+            //progressDialog.dismiss();
         }
 
     }

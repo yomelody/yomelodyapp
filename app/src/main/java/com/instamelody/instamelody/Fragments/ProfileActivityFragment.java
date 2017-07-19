@@ -169,6 +169,7 @@ public class ProfileActivityFragment extends Fragment {
                                             c.getString("activity_name"),
                                             c.getString("topic"),
                                             DateTime(c.getString("activity_created_time")),
+                                            c.getString("profile_pick"),
                                             c.getString("profile_pick")
                                     ));
 
