@@ -1725,7 +1725,7 @@ public class StudioActivity extends AppCompatActivity {
             Log.d("Instrument url----------------:",""+instrumentList.get(i));
             mp = new MediaPlayer();
             mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mp.setDataSource(instruments_count.get(i));
+            mp.setDataSource(instrumentList.get(i).getInstrumentFile());
             mp.prepareAsync();
             //   mp.start();
             mps.add(mp);
