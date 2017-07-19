@@ -1722,13 +1722,14 @@ public class StudioActivity extends AppCompatActivity {
      //   adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
    //     adapter.notifyDataSetChanged();
         for (int i = 0; i < InstrumentCountSize; i++) {
-            Log.d("Instrument url----------------:",""+instrumentList.get(i));
+            Log.d("Instrument url----------------:",""+instrumentList.get(i).getInstrumentFile());
             mp = new MediaPlayer();
             mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mp.setDataSource(instruments_count.get(i));
-            mp.prepareAsync();
+            mp.setDataSource(instrumentList.get(i).getInstrumentFile());
             //   mp.start();
+            mp.prepareAsync();
             mps.add(mp);
+
         }
         for (MediaPlayer mp : mps) {
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
