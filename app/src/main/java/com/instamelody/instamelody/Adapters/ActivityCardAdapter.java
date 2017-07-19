@@ -79,7 +79,8 @@ public class ActivityCardAdapter extends RecyclerView.Adapter<ActivityCardAdapte
         userprofileimage.setImageResource(R.drawable.profile1);
 
         ActivityModel am = activityList.get(listPosition);
-        if(am.getUserImgURL().equals(null) || am.getUserImgURL().equals("") ) {
+        String url=activityList.get(listPosition).getUserImgURL();
+        if(url.equals(null) || url.equals("")) {
 
         }
         else {

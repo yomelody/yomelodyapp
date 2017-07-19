@@ -560,15 +560,40 @@ public class AudioFragment extends Fragment {
                 fetchRecordingsFilter();
             }*/
             try {
-                URL aurl = new URL("http://52.37.189.202/api/recordings.php");
+                //Getting data from server
+                String filename = "myfile";
+                String outputString = "Hello world!";
+                URL aurl = new URL(RECORDINGS);
                 URLConnection connection = aurl.openConnection();
                 connection.connect();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+                // getting file length
+                int lengthOfFile = connection.getContentLength();
+                // input stream to read file - with 8k buffer
+                InputStream input = new BufferedInputStream(aurl.openStream(), 8192);
+                try {
+                    FileOutputStream outputStream = getActivity().openFileOutput(filename, Context.MODE_PRIVATE);
+                    outputStream.write(outputString.getBytes());
+                    outputStream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    FileInputStream inputStream = getActivity().openFileInput(filename);
+                    BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
+                    StringBuilder total = new StringBuilder();
+                    String line;
+                    while ((line = r.readLine()) != null) {
+                        total.append(line);
+                    }
+                    r.close();
+                    inputStream.close();
+                    Log.d("File", "File contents: " + total);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-
 
             if (strName == null && strSearch == null) {
                 fetchRecordings();

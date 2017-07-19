@@ -2,7 +2,9 @@ package com.instamelody.instamelody.Fragments;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -62,7 +64,7 @@ public class MelodyPacksFragment extends Fragment {
     String KEY_FLAG = "flag";
     String KEY_GENRE_ID = "id";
     String KEY_RESPONSE = "response";//JSONArray
-    String users_id="users_id";
+    String users_id = "users_id";
     String KEY = "key";
     String GENRE = "genere";
     String genreString = "1";
@@ -87,6 +89,8 @@ public class MelodyPacksFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
+
+        //     new Loader().execute();
         fetchGenreNames();
 //        ParseContents pc = new ParseContents(getActivity());
 //        pc.parseGenres(resp,genresArrayList);
@@ -122,6 +126,7 @@ public class MelodyPacksFragment extends Fragment {
         transaction.commit();
         super.onCreate(savedInstanceState);
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -197,8 +202,14 @@ public class MelodyPacksFragment extends Fragment {
                         } else if (error instanceof ParseError) {
 //                            errorMsg = "ParseError";
                         }
-                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
+                        //Added by Abhishek Dubey
+                        try {
+                            Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+                            Log.d("Error", errorMsg);
+                        } catch (Throwable throwable) {
+                            Log.d("Error", throwable.toString());
+                        }
+
                     }
                 }) {
             @Override
@@ -265,12 +276,10 @@ public class MelodyPacksFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                if(userId!=null)
-                {
-                    params.put(users_id,userId);
+                if (userId != null) {
+                    params.put(users_id, userId);
                     params.put(GENRE, "0");
-                }
-                else {
+                } else {
                     params.put(GENRE, packId);
                 }
                 SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
@@ -355,4 +364,29 @@ public class MelodyPacksFragment extends Fragment {
             }
         };
     }
+
+    class AsyncData extends AsyncTask<Void, Void, Void>{
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // init progressdialog
+
+        }
+
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            // get data
+            return null;
+        }
+
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            // dismiss dialog
+        }
+    }
 }
+

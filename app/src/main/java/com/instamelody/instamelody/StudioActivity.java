@@ -503,7 +503,7 @@ public class StudioActivity extends AppCompatActivity {
 
         audioFilePath =
                 Environment.getExternalStorageDirectory().getAbsolutePath()
-                        + "/InstaMelody.amr";
+                        + "/InstaMelody.mp3";
 
 
         chrono.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
@@ -670,7 +670,6 @@ public class StudioActivity extends AppCompatActivity {
                 if (mRecordingThread != null) {
                     mRecordingThread.stopRunning();
                 }
-
 
                 if (isRecording) {
                     ivRecord.setEnabled(false);
@@ -1152,13 +1151,20 @@ public class StudioActivity extends AppCompatActivity {
     }
 
     public void recordAudio() {
-
+        AudioManager am1 = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        Log.i("WiredHeadsetOn = ", am1.isWiredHeadsetOn()+"");
+      if(am1.isWiredHeadsetOn()==true){
+          Toast.makeText(this, "Headset is connected", Toast.LENGTH_SHORT).show();
+      }
+      else{
+          Toast.makeText(this, "Headset not connected", Toast.LENGTH_SHORT).show();
+      }
         recorder = new MediaRecorder();
         //     recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         recorder.setOutputFile(audioFilePath);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 
 
         try {
@@ -1643,7 +1649,7 @@ public class StudioActivity extends AppCompatActivity {
 
 //                params.put(FILE1, new DataPart("InstaMelody.mp3", audioFilePath.getBytes(), "audio/mpeg"));
 //                params.put(FILE1,new DataPart("InstaMelody.mp3",MediaExtractor(),"audio/mpeg"));
-                params.put(FILE1, new DataPart("InstaMelody.amr", soundBytes, "audio/amr"));
+                params.put(FILE1, new DataPart("InstaMelody.mp3", soundBytes, "audio/amr"));
                 return params;
             }
 
@@ -1716,9 +1722,10 @@ public class StudioActivity extends AppCompatActivity {
      //   adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
    //     adapter.notifyDataSetChanged();
         for (int i = 0; i < InstrumentCountSize; i++) {
+            Log.d("Instrument url----------------:",""+instrumentList.get(i));
             mp = new MediaPlayer();
             mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mp.setDataSource(instruments_count.get(i));
+            mp.setDataSource(instrumentList.get(i).getInstrumentFile());
             mp.prepareAsync();
             //   mp.start();
             mps.add(mp);
