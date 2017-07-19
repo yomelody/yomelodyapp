@@ -163,12 +163,12 @@ public class ProfileActivityFragment extends Fragment {
                                     ));
 */
                                     JSONObject c = jsonArray.getJSONObject(i);
-                                    arraylist.add(new ActivityModel(
-                                            Integer.parseInt(c.getString("id")),
+                                    arraylist.add(new ActivityModel(Integer.parseInt(c.getString("id")),
 //                                             Integer.parseInt(c.getString("id")),
                                             c.getString("activity_name"),
                                             c.getString("topic"),
                                             DateTime(c.getString("activity_created_time")),
+                                            c.getString("profile_pick"),
                                             c.getString("profile_pick")
                                     ));
 

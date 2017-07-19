@@ -16,6 +16,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -23,6 +24,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.SearchView;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +43,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
+import com.instamelody.instamelody.Fragments.AudioFragment;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsData;
 import com.instamelody.instamelody.Models.RecordingsModel;
@@ -62,6 +66,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.instamelody.instamelody.R.id.appBarMainText;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
@@ -71,9 +76,10 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
 public class DiscoverActivity extends AppCompatActivity {
 
-    ImageView discover, message, ivBackButton, ivHomeButton, audio_feed, ivFilterDiscover;
+    ImageView discover, message, ivBackButton, audio_feed, ivFilterDiscover, ivHomeDiscover;
     Button appBarSearchDiscoverBtn;
     EditText subEtFilterName;
+    TextView appBarMainTextDiscover;
     TabHost host;
     private static RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -89,6 +95,7 @@ public class DiscoverActivity extends AppCompatActivity {
     private String FILTER_TYPE = "filter_type";
     private String FILTER = "filter";
     private String USER_NAME = "username";
+    private String KEY_SEARCH = "search";
 
     String KEY_GENRE_NAME = "name";
     String KEY_GENRE_ID = "id";
@@ -96,12 +103,15 @@ public class DiscoverActivity extends AppCompatActivity {
     String KEY_RESPONSE = "response";//JSONArray
     String genreString = "1";
     String userId, userNameLogin;
-    String strName;
+    String strName, strSearch;
     String titleString;
     String userIdNormal, userIdFb, userIdTwitter, artistName;
     int statusNormal, statusFb, statusTwitter;
     ProgressDialog progressDialog;
     LongOperation myTask = null;
+    RelativeLayout rlDiscoverSearch;
+    android.support.v7.widget.SearchView search2;
+    Button btnCancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +119,6 @@ public class DiscoverActivity extends AppCompatActivity {
         setContentView(R.layout.activity_discover);
 
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
-        ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
         discover = (ImageView) findViewById(R.id.discover);
         message = (ImageView) findViewById(R.id.message);
         audio_feed = (ImageView) findViewById(R.id.audio_feed);
@@ -134,24 +143,26 @@ public class DiscoverActivity extends AppCompatActivity {
 
 
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
-        ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
         discover = (ImageView) findViewById(R.id.discover);
         message = (ImageView) findViewById(R.id.message);
         audio_feed = (ImageView) findViewById(R.id.audio_feed);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewDiscover);
         ivFilterDiscover = (ImageView) findViewById(R.id.ivFilterDiscover);
+        ivHomeDiscover = (ImageView) findViewById(R.id.ivHomeDiscover);
+        appBarMainTextDiscover = (TextView) findViewById(R.id.appBarMainTextDiscover);
+        rlDiscoverSearch = (RelativeLayout) findViewById(R.id.rlDiscoverSearch);
+        search2 = (android.support.v7.widget.SearchView) findViewById(R.id.searchDiscover);
+        btnCancel = (Button) findViewById(R.id.btnCancel);
         appBarSearchDiscoverBtn = (Button) findViewById(R.id.appBarSearchDiscoverBtn);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
 
-
-        if(userId !=null && userId!="") {
-        adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList, recordingsPools);
+        if (userId != null && userId != "") {
+            adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList, recordingsPools);
             fetchGenreNames();
             fetchRecordings();
-        }
-        else {
+        } else {
             Toast.makeText(getApplicationContext(), "Log in to view your Profile", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -189,7 +200,7 @@ public class DiscoverActivity extends AppCompatActivity {
             }
         });
 
-        ivHomeButton.setOnClickListener(new View.OnClickListener() {
+        ivHomeDiscover.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
@@ -240,6 +251,61 @@ public class DiscoverActivity extends AppCompatActivity {
                     }
                 });
                 builderSingle.show();
+            }
+        });
+
+        appBarSearchDiscoverBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ivHomeDiscover.setVisibility(View.GONE);
+                appBarMainTextDiscover.setVisibility(View.GONE);
+                ivFilterDiscover.setVisibility(View.GONE);
+                search2.setVisibility(View.VISIBLE);
+                ((EditText) search2.findViewById(android.support.v7.appcompat.R.id.search_src_text))
+                        .setHintTextColor(getResources().getColor(R.color.colorSearch));
+                btnCancel.setVisibility(View.VISIBLE);
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rlDiscoverSearch.setVisibility(View.VISIBLE);
+                ivHomeDiscover.setVisibility(View.VISIBLE);
+                appBarMainTextDiscover.setVisibility(View.VISIBLE);
+                ivFilterDiscover.setVisibility(View.VISIBLE);
+                search2.setVisibility(View.GONE);
+                btnCancel.setVisibility(View.GONE);
+
+            }
+        });
+
+        search2.setOnQueryTextListener(new android.support.v7.widget.SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                rlDiscoverSearch.setVisibility(View.VISIBLE);
+                ivHomeDiscover.setVisibility(View.VISIBLE);
+                appBarMainTextDiscover.setVisibility(View.VISIBLE);
+                ivFilterDiscover.setVisibility(View.VISIBLE);
+                search2.setVisibility(View.GONE);
+                btnCancel.setVisibility(View.GONE);
+                search2.isSubmitButtonEnabled();
+                String searchContent = search2.getQuery().toString();
+                SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+                editorSearchString.putString("stringSearch", searchContent);
+                editorSearchString.apply();
+                SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                editorFilterString.clear();
+                editorFilterString.apply();
+                fetchSearchData();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                ((EditText) search2.findViewById(android.support.v7.appcompat.R.id.search_src_text))
+                        .setTextColor(getResources().getColor(R.color.colorSearch));
+                return false;
             }
         });
     }
@@ -512,6 +578,70 @@ public class DiscoverActivity extends AppCompatActivity {
                 params.put(FILTER_TYPE, strName);
                 params.put(USER_NAME, artistName);
                 params.put(FILTER, "extrafilter");
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+    }
+
+    public void fetchSearchData() {
+
+        SharedPreferences searchPref = this.getSharedPreferences("SearchPref", MODE_PRIVATE);
+        strSearch = searchPref.getString("stringSearch", null);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        String successMsg = response.toString();
+                        try {
+                            JSONObject jsonObject = new JSONObject(successMsg);
+                            String flag = jsonObject.getString("flag");
+                            String msg = jsonObject.getString("msg");
+                            if (flag.equals("unsuccess")) {
+                                Toast.makeText(getApplicationContext(), "" + msg, Toast.LENGTH_SHORT).show();
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+//                        Toast.makeText(getActivity(), "" + response, Toast.LENGTH_SHORT).show();
+                        recordingList.clear();
+                        recordingsPools.clear();
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
+                        adapter.notifyDataSetChanged();
+                        Log.d("ReturnDataS", response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+//                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+//                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(ID, userId);
+                params.put(KEY_SEARCH, strSearch);
                 return params;
             }
         };
