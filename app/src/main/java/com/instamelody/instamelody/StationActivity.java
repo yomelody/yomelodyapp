@@ -175,15 +175,14 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         btnAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 btnActivity.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnAudio.setBackgroundColor(Color.parseColor("#FFFFFF"));
 
+                //new FetchActivityDetails().execute(userId);
 
                 AudioFragment af = new AudioFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
 
-//                getFragmentManager().popBackStack();
 
             }
         });
@@ -195,9 +194,9 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 btnAudio.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnActivity.setBackgroundColor(Color.parseColor("#FFFFFF"));
 
-
                 ActivityFragment actf = new ActivityFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_station, actf).commit();
+
             }
         });
 
@@ -778,4 +777,44 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
         builder2.show();
     }
+    private class FetchActivityDetails extends AsyncTask<String, Void, String> {
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(StationActivity.this);
+            progressDialog.setTitle("Processing...");
+            progressDialog.setMessage("Please wait...");
+            //progressDialog.setCancelable(false);
+            progressDialog.show();
+            btnActivity.setEnabled(false);
+            btnAudio.setEnabled(false);
+
+        }
+
+        protected String doInBackground(String... params) {
+
+            try {
+                String UserID = params[0];
+
+                AudioFragment af = new AudioFragment();
+                getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if (progressDialog != null)
+            {
+                progressDialog.dismiss();
+                btnActivity.setEnabled(true);
+                btnAudio.setEnabled(true);
+            }
+            // progressDialog.dismiss();
+        }
+    }
+    public void DisableActivity()
+    {}
 }

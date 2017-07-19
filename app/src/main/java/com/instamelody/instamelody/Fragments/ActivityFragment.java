@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 import com.android.volley.AuthFailureError;
@@ -33,6 +34,7 @@ import com.instamelody.instamelody.Adapters.ActivityCardAdapter;
 import com.instamelody.instamelody.Models.ActivityModel;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
+import com.instamelody.instamelody.StationActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -81,7 +83,6 @@ public class ActivityFragment extends Fragment {
     String id = "id";
     ProgressDialog progressDialog;
     private static ArrayList<ActivityModel> arraylist;
-
     public ActivityFragment() {
     }
 
@@ -104,8 +105,9 @@ public class ActivityFragment extends Fragment {
         String position, userId;
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userId = loginSharedPref.getString("userId", null);
+
+
         if(userId!=null) {
-            //fetchActivityData(userId);
             new FetchActivityDetails().execute(userId);
         }
 //        else {
@@ -126,6 +128,7 @@ public class ActivityFragment extends Fragment {
             progressDialog.setMessage("Please wait...");
             //progressDialog.setCancelable(false);
             progressDialog.show();
+
         }
 
         protected String doInBackground(String... params) {

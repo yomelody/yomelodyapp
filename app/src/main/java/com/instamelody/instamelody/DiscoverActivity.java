@@ -147,7 +147,7 @@ public class DiscoverActivity extends AppCompatActivity {
 
 
         if(userId !=null && userId!="") {
-        adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList, recordingsPools);
+
             fetchGenreNames();
             fetchRecordings();
         }
@@ -157,6 +157,8 @@ public class DiscoverActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             getApplicationContext().startActivity(intent);
         }
+
+        adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList,recordingsPools);
 
         discover.setOnClickListener(new View.OnClickListener() {
             @Override

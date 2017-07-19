@@ -102,7 +102,7 @@ public class AudioFragment extends Fragment {
     ProgressDialog progressDialog;
     LongOperation myTask = null;
     String strName, strSearch, strArtist;
-
+    AudioBackGroupProcess LoadAudio=null;
     public AudioFragment() {
 
     }
@@ -120,15 +120,6 @@ public class AudioFragment extends Fragment {
 
         fetchGenreNames();
 
-        if (strName == null && strSearch == null) {
-                fetchRecordings();
-            } else if (strSearch != null) {
-                fetchSearchData();
-            } else if (strArtist != null){
-            fetchRecordingsFilterArtist();
-            }else {
-            fetchRecordingsFilter();
-        }
 
 
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
@@ -141,6 +132,20 @@ public class AudioFragment extends Fragment {
             userId = fbPref.getString("userId", null);
         } else if (twitterPref.getString("userId", null) != null) {
             userId = twitterPref.getString("userId", null);
+        }
+
+        if (strName == null && strSearch == null) {
+            //new AudioBackGroupProcess().execute();
+            LoadAudio = new AudioBackGroupProcess();
+            LoadAudio.execute();
+            //fetchRecordings();
+        } else if (strSearch != null) {
+            fetchSearchData();
+        } else if (strArtist != null) {
+            fetchRecordingsFilterArtist();
+        }
+        else {
+            fetchRecordingsFilter();
         }
 
         adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
@@ -570,6 +575,36 @@ public class AudioFragment extends Fragment {
             }else {
                 fetchRecordingsFilter();
             }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+
+            progressDialog.dismiss();
+        }
+
+    }
+    private class AudioBackGroupProcess extends AsyncTask<String, Void, String> {
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setTitle("Processing...");
+            progressDialog.setMessage("Please wait...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        protected String doInBackground(String... params) {
+
+            if (strName == null && strSearch == null) {
+
+                fetchRecordings();
+            } /*else if (strSearch != null) {
+                fetchSearchData();
+            } else if (strArtist != null)
+                fetchRecordingsFilterArtist();
+            else {
+                fetchRecordingsFilter();
+            }*/
             return null;
         }
 
