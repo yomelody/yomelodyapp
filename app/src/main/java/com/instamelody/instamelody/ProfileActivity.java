@@ -181,7 +181,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         }
 
-        adapter = new RecordingsCardAdapter(this, recordingList, recordingsPools);
+
 
         if (showProfileUserId != null) {
             fetchUserBio();
@@ -194,6 +194,7 @@ public class ProfileActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             getApplicationContext().startActivity(intent);
         }
+        adapter = new RecordingsCardAdapter(this, recordingList, recordingsPools);
 
         ivToMelody.setOnClickListener(new View.OnClickListener() {
             @Override
