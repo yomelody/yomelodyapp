@@ -374,7 +374,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 //        while (iter.hasNext()) {
 //            fetch_url_arrayList.add((String) iter.next());
 //        }
-//        Log.d("collection", "" + instrument_url_count);
+        Log.d("collection", "" + instrument_url_count);
 
         Intent i = new Intent("fetchingInstruments");
         i.putStringArrayListExtra("instruments", instrument_url_count);
@@ -398,7 +398,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 //        killMediaPlayer();
         audioFilePath =
                 Environment.getExternalStorageDirectory().getAbsolutePath()
-                        + "/InstaMelody.amr";
+                        + "/InstaMelody.mp3";
         mp = new MediaPlayer();
         mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mp.setDataSource(audioFilePath);

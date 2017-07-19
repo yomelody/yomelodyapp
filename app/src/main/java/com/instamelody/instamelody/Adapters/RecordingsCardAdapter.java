@@ -63,10 +63,10 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
 
 public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAdapter.MyViewHolder> {
 
-    String genreName,mpid,MelodyName,profile;
+    String genreName, mpid, MelodyName, profile;
     static String instrumentFile;
     static MediaPlayer mp;
-    static int duration1, currentPosition;
+    int duration1, currentPosition;
     int length;
     ArrayList<String> mpids = new ArrayList<>();
     private ArrayList<RecordingsModel> recordingList = new ArrayList<>();
@@ -81,7 +81,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     String FILEID = "fileid";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";
-    String Topic ="topic";
+    String Topic = "topic";
     String Key_shared_by_user = "shared_by_user";
     String Key_shared_with = "shared_with";
     String Key_file_type = "file_type";
@@ -98,10 +98,10 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
         TextView tvUserName, tvRecordingName, tvContributeLength, tvRecordingDate, tvRecordingGenres, tvContributeDate, tvIncludedCount;
         TextView tvViewCount, tvLikeCount, tvCommentCount, tvShareCount;
-        ImageView userProfileImage, ivRecordingCover,ivLikeButton,ivCommentButton,ivShareButton,ivDislikeButton;
-        ImageView ivJoin, ivStationPlay,ivStationPause;
+        ImageView userProfileImage, ivRecordingCover, ivLikeButton, ivCommentButton, ivShareButton, ivDislikeButton;
+        ImageView ivJoin, ivStationPlay, ivStationPause;
         SeekBar seekBarRecordings;
-        RelativeLayout rlProfilePic,rlLike;
+        RelativeLayout rlProfilePic, rlLike;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -126,7 +126,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             rlProfilePic = (RelativeLayout) itemView.findViewById(R.id.rlProfilePic);
             ivLikeButton = (ImageView) itemView.findViewById(R.id.ivLikeButton);
             ivDislikeButton = (ImageView) itemView.findViewById(R.id.ivDislikeButton);
-            ivCommentButton=(ImageView)itemView.findViewById(R.id.ivCommentButton);
+            ivCommentButton = (ImageView) itemView.findViewById(R.id.ivCommentButton);
             ivShareButton = (ImageView) itemView.findViewById(R.id.ivShareButton);
             rlLike = (RelativeLayout) itemView.findViewById(R.id.rlLike);
 
@@ -196,8 +196,8 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         //position = mpids.get(getAdapterPosition() + 1);
 
                         RecordingsModel recording = recordingList.get(getAdapterPosition());
-                        MelodyName=recording.getRecordingName();
-                        position =recording.getRecordingId();
+                        MelodyName = recording.getRecordingName();
+                        position = recording.getRecordingId();
 
                         if (ivDislikeButton.getVisibility() == VISIBLE) {
                             ivLikeButton.setVisibility(VISIBLE);
@@ -206,7 +206,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             int likeValue = Integer.parseInt(like) - 1;
                             like = String.valueOf(likeValue);
                             tvLikeCount.setText(like);
-                            fetchLikeState(userId, position, "0",MelodyName);
+                            fetchLikeState(userId, position, "0", MelodyName);
 
 
                         } else if (ivDislikeButton.getVisibility() == GONE) {
@@ -216,7 +216,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             int likeValue = Integer.parseInt(like) + 1;
                             like = String.valueOf(likeValue);
                             tvLikeCount.setText(like);
-                            fetchLikeState(userId, position, "1",MelodyName);
+                            fetchLikeState(userId, position, "1", MelodyName);
                         }
                     } else {
                         Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
@@ -226,7 +226,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 }
             });
 
-            ivShareButton.setOnClickListener(new View.OnClickListener(){
+            ivShareButton.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
@@ -237,7 +237,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));*/
 
                     RecordingsModel recording = recordingList.get(getAdapterPosition());
-                    String RecordingURL=recording.getrecordingurl();
+                    String RecordingURL = recording.getrecordingurl();
                     Intent shareIntent = new Intent();
                     shareIntent.setAction(Intent.ACTION_SEND);
                     shareIntent.putExtra(Intent.EXTRA_STREAM, "");
@@ -335,6 +335,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
         private void primarySeekBarProgressUpdater() {
             Handler mHandler1 = new Handler();
+            duration1 = mp.getDuration();
             seekBarRecordings.setProgress((int) (((float) mp.getCurrentPosition() / duration1) * 100));// This math construction give a percentage of "was playing"/"song length"
             if (mp.isPlaying()) {
                 Runnable notification = new Runnable() {
@@ -437,14 +438,11 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         holder.tvContributeLength.setText(recordingsPools.get(listPosition).getDuration());
         holder.tvContributeDate.setText(recordingsPools.get(listPosition).getDateAdded());
 
-        int likeStatus=recordingList.get(listPosition).getLikeStatus();
-        if(likeStatus==0)
-        {
+        int likeStatus = recordingList.get(listPosition).getLikeStatus();
+        if (likeStatus == 0) {
             holder.ivDislikeButton.setVisibility(GONE);
             //holder.ivLikeButton.setVisibility(VISIBLE);
-        }
-        else
-        {
+        } else {
             holder.ivDislikeButton.setVisibility(VISIBLE);
         }
 
@@ -510,7 +508,8 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
 
     public void playAudio() throws IOException {
-//            killMediaPlayer();
+        killMediaPlayer();
+
         mp = new MediaPlayer();
 //        mp.setDataSource(audioFilePath);
         mp.setDataSource(instrumentFile);
@@ -519,10 +518,21 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         duration1 = mp.getDuration();
         currentPosition = mp.getCurrentPosition();
     }
-    public void fetchLikeState(final String userId, final String pos, final String likeState,String LikeMelodyName) {
 
-        try{
-            MelodyName=LikeMelodyName;
+    private void killMediaPlayer() {
+        if (mp != null) {
+            try {
+                mp.release();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void fetchLikeState(final String userId, final String pos, final String likeState, String LikeMelodyName) {
+
+        try {
+            MelodyName = LikeMelodyName;
             StringRequest stringRequest = new StringRequest(Request.Method.POST, LIKESAPI,
                     new Response.Listener<String>() {
                         @Override
@@ -551,14 +561,13 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             };
             RequestQueue requestQueue1 = Volley.newRequestQueue(context);
             requestQueue1.add(stringRequest);
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
 
         }
 
     }
-    public void SetMelodyShare(final String file_id, final String shared_by_user,final String shared_with) {
+
+    public void SetMelodyShare(final String file_id, final String shared_by_user, final String shared_with) {
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, PLAY_COUNT,
                 new Response.Listener<String>() {

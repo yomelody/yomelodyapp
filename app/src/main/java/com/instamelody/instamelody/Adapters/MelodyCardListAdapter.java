@@ -540,7 +540,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             }
         });
         mediaPlayer.seekTo(playerPos);
-        mediaPlayer.start();
+      //  mediaPlayer.start();
         duration = mediaPlayer.getDuration();
     }
 
