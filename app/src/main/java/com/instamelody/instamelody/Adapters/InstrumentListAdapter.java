@@ -374,7 +374,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 //        while (iter.hasNext()) {
 //            fetch_url_arrayList.add((String) iter.next());
 //        }
-        Log.d("collection", "" + instrument_url_count);
+//        Log.d("collection", "" + instrument_url_count);
 
         Intent i = new Intent("fetchingInstruments");
         i.putStringArrayListExtra("instruments", instrument_url_count);
