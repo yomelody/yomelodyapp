@@ -615,12 +615,12 @@ public class AudioFragment extends Fragment {
     }
     private class AudioBackGroupProcess extends AsyncTask<String, Void, String> {
         protected void onPreExecute() {
-           /* progressDialog = new ProgressDialog(getActivity());
+            progressDialog = new ProgressDialog(getActivity());
             progressDialog.setTitle("Processing...");
             progressDialog.setMessage("Please wait...");
             progressDialog.setCancelable(false);
-            progressDialog.show();*/
-            pbr.setVisibility(View.VISIBLE);
+            progressDialog.show();
+            //pbr.setVisibility(View.VISIBLE);
         }
 
         protected String doInBackground(String... params) {
@@ -639,8 +639,8 @@ public class AudioFragment extends Fragment {
         }
 
         protected void onPostExecute(String result) {
-            pbr.setVisibility(View.GONE);
-            //progressDialog.dismiss();
+            //pbr.setVisibility(View.GONE);
+            progressDialog.dismiss();
         }
 
     }
