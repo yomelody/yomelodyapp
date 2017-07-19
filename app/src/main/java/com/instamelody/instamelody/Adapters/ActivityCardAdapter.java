@@ -81,7 +81,7 @@ public class ActivityCardAdapter extends RecyclerView.Adapter<ActivityCardAdapte
         ActivityModel am = activityList.get(listPosition);
         //if(am.getUserImgURL()=="null")
 
-        Picasso.with(holder.userprofileimage.getContext()).load(am.getUserImgURL()).into(holder.userprofileimage);
+//        Picasso.with(holder.userprofileimage.getContext()).load(am.getUserImgURL()).into(holder.userprofileimage);
 
         //activityList.get(listPosition).getUserImgURL();
 

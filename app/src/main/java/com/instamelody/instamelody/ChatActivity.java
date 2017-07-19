@@ -173,12 +173,11 @@ public class ChatActivity extends AppCompatActivity {
 //        sendAt = chatPrefs.getString("sendAt", null);
 
         SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
-//        senderId = prefs.getString("senderId", null);
+        senderId = prefs.getString("senderId", null);
         receiverId = prefs.getString("receiverId", null);
         receiverName = prefs.getString("receiverName", null);
         receiverImage = prefs.getString("receiverImage", null);
         chatId = prefs.getString("chatId", null);
-
         tvUserName = (TextView) findViewById(R.id.tvUserName);
         tvUserName.setText(receiverName);
 
@@ -669,9 +668,9 @@ public class ChatActivity extends AppCompatActivity {
                         }
                         Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+                        error.printStackTrace();
                     }
-                })
-        {
+                }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
@@ -691,11 +690,11 @@ public class ChatActivity extends AppCompatActivity {
                     public void onResponse(String response) {
 
                         String str = response;
-                        Toast.makeText(ChatActivity.this, str + "here1", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
                         getChatMsgs(chatId);
-
 //                        cAdapter.notifyDataSetChanged();
 //                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
+
                     }
                 },
                 new Response.ErrorListener() {
@@ -716,16 +715,21 @@ public class ChatActivity extends AppCompatActivity {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getApplicationContext(), errorMsg + "here2", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "chat api error response "+errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+                        error.printStackTrace();
                     }
                 }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-
-                params.put(SENDER_ID, user_Id);
-                params.put(RECEIVER_ID, receiverId);
+                if (receiverId.equals(user_Id)) {
+                    params.put(RECEIVER_ID, senderId);
+                    params.put(SENDER_ID, user_Id);
+                } else {
+                    params.put(RECEIVER_ID, receiverId);
+                    params.put(SENDER_ID, user_Id);
+                }
                 params.put(CHAT_ID, chatId);
                 params.put(TITLE, "message");
                 params.put(MESSAGE, message);

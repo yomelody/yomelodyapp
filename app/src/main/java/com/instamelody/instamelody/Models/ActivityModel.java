@@ -21,9 +21,9 @@ public class ActivityModel {
         return createdByUserId;
     }
 
-   /* public void setUserImgURL(String userImgURL) {
-        return UserImgURL;
-    }*/
+//    public void setUserImgURL(String userImgURL) {
+//        return UserImgURL;
+//    }
 
     public int getId_() {
         return id_;

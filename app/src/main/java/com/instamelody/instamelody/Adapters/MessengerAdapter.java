@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.instamelody.instamelody.ChatActivity;
 import com.instamelody.instamelody.Models.Chat;
+import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
 import com.squareup.picasso.Picasso;
 
@@ -28,7 +29,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
 
     ArrayList<Chat> chatList = new ArrayList<>();
     Context context;
-    String receiverId = "", chatID = "", receiverName = "", receiverImage = "", senderId = "";
+    String receiverId = "", chatID = "", receiverName = "", receiverImage = "", senderId = "", userId;
 
     public MessengerAdapter(ArrayList<Chat> chatList, Context context) {
         this.chatList = chatList;
@@ -43,6 +44,18 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
 
         public MyViewHolder(View itemView) {
             super(itemView);
+
+            SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+            SharedPreferences twitterPref = context.getSharedPreferences("TwitterPref", MODE_PRIVATE);
+            SharedPreferences fbPref = context.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+
+            if (loginSharedPref.getString("userId", null) != null) {
+                userId = loginSharedPref.getString("userId", null);
+            } else if (fbPref.getString("userId", null) != null) {
+                userId = fbPref.getString("userId", null);
+            } else if (twitterPref.getString("userId", null) != null) {
+                userId = twitterPref.getString("userId", null);
+            }
 
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
             tvMsg = (TextView) itemView.findViewById(R.id.tvMsg);
@@ -72,6 +85,24 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.putExtra("from", "MessengerActivity");
                     context.startActivity(intent);
+                }
+            });
+
+            userProfileImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    String showProfileUserId;
+                    String senderID = chatList.get(getAdapterPosition()).getSenderID();
+                    String receiverID = chatList.get(getAdapterPosition()).getReceiverID();
+                    if (senderID.equals(userId)) {
+                        showProfileUserId = receiverID;
+                    } else {
+                        showProfileUserId = senderID;
+                    }
+                    Intent intent = new Intent(view.getContext(), ProfileActivity.class);
+                    intent.putExtra("showProfileUserId", showProfileUserId);
+                    view.getContext().startActivity(intent);
                 }
             });
         }
