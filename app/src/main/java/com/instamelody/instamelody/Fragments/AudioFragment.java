@@ -48,8 +48,10 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -100,7 +102,7 @@ public class AudioFragment extends Fragment {
     ProgressDialog progressDialog;
     LongOperation myTask = null;
     String strName, strSearch, strArtist;
-
+    AudioBackGroupProcess LoadAudio=null;
     public AudioFragment() {
 
     }
@@ -118,13 +120,6 @@ public class AudioFragment extends Fragment {
 
         fetchGenreNames();
 
-        if (strName == null && strSearch == null) {
-                fetchRecordings();
-            } else if (strSearch != null) {
-                fetchSearchData();
-            } else {
-                fetchRecordingsFilter();
-            }
 
 
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
@@ -137,6 +132,20 @@ public class AudioFragment extends Fragment {
             userId = fbPref.getString("userId", null);
         } else if (twitterPref.getString("userId", null) != null) {
             userId = twitterPref.getString("userId", null);
+        }
+
+        if (strName == null && strSearch == null) {
+            //new AudioBackGroupProcess().execute();
+            LoadAudio = new AudioBackGroupProcess();
+            LoadAudio.execute();
+            //fetchRecordings();
+        } else if (strSearch != null) {
+            fetchSearchData();
+        } else if (strArtist != null) {
+            fetchRecordingsFilterArtist();
+        }
+        else {
+            fetchRecordingsFilter();
         }
 
         adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
@@ -198,7 +207,9 @@ public class AudioFragment extends Fragment {
                                 fetchRecordings();
                             } else if (strSearch != null) {
                                 fetchSearchData();
-                            } else {
+                            } else if (strArtist != null){
+                                fetchRecordingsFilterArtist();
+                            }else {
                                 fetchRecordingsFilter();
                             }
 
@@ -219,7 +230,9 @@ public class AudioFragment extends Fragment {
                                     fetchRecordings();
                                 } else if (strSearch != null) {
                                     fetchSearchData();
-                                } else {
+                                } else if (strArtist != null){
+                                    fetchRecordingsFilterArtist();
+                                }else {
                                     fetchRecordingsFilter();
                                 }
 //                                Toast.makeText(getActivity(), "beta: " + genreString, Toast.LENGTH_SHORT).show();
@@ -308,7 +321,8 @@ public class AudioFragment extends Fragment {
                 if(userId!=null)
                 {
                     params.put(ID, userId);
-                    params.put(KEY, "station");
+                    params.put(KEY, STATION);
+                    params.put(GENRE,genreString);
                 }
                 else {
                     params.put(KEY, STATION);
@@ -541,17 +555,56 @@ public class AudioFragment extends Fragment {
             } else {
                 fetchRecordingsFilter();
             }*/
+            try {
+                URL aurl = new URL("http://52.37.189.202/api/recordings.php");
+                URLConnection connection = aurl.openConnection();
+                connection.connect();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            if (strName == null && strSearch == null) {
+                fetchRecordings();
+            } else if (strSearch != null) {
+                fetchSearchData();
+            } else if (strArtist != null){
+                fetchRecordingsFilterArtist();
+            }else {
+                fetchRecordingsFilter();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+
+            progressDialog.dismiss();
+        }
+
+    }
+    private class AudioBackGroupProcess extends AsyncTask<String, Void, String> {
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setTitle("Processing...");
+            progressDialog.setMessage("Please wait...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        protected String doInBackground(String... params) {
 
             if (strName == null && strSearch == null) {
 
                 fetchRecordings();
-            } else if (strSearch != null) {
+            } /*else if (strSearch != null) {
                 fetchSearchData();
             } else if (strArtist != null)
                 fetchRecordingsFilterArtist();
             else {
                 fetchRecordingsFilter();
-            }
+            }*/
             return null;
         }
 

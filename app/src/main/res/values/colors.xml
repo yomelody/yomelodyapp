@@ -11,5 +11,6 @@
     <color name="secondary_text">#FFFFFF</color>
     <color name="navy_blue">#3B6EFE</color>
     <color name="colorSeekProgress">#0098fe</color>
+    <color name="colorSearch">#ABB4B9</color>
 
 </resources>
