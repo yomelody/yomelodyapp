@@ -532,13 +532,14 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.setDataSource(url);
-        mediaPlayer.prepareAsync();
-        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                mp.start();
-            }
-        });
+        mediaPlayer.prepare();
+        mediaPlayer.start();
+//        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+//            @Override
+//            public void onPrepared(MediaPlayer mp) {
+//                mp.start();
+//            }
+//        });
         mediaPlayer.seekTo(playerPos);
       //  mediaPlayer.start();
         duration = mediaPlayer.getDuration();
