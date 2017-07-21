@@ -158,18 +158,16 @@ public class ProfileActivityFragment extends Fragment {
                                             ActivityData.UserNameArray1[i],
                                             ActivityData.Topic[i],
                                             ActivityData.Time[i]
-
-
                                     ));
 */
                                     JSONObject c = jsonArray.getJSONObject(i);
                                     arraylist.add(new ActivityModel(
                                             Integer.parseInt(c.getString("id")),
-//                                             Integer.parseInt(c.getString("id")),
                                             c.getString("activity_name"),
                                             c.getString("topic"),
                                             DateTime(c.getString("activity_created_time")),
-                                            c.getString("profile_pick")
+                                            c.getString("profile_pick"),
+                                            c.getString("created_by_userID")
                                     ));
 
 
