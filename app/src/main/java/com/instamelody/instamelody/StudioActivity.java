@@ -1806,7 +1806,8 @@ public class StudioActivity extends AppCompatActivity {
 
         protected String doInBackground(String... params) {
             saveRecordings1();
-//            uploadRecordings(idUpload);
+
+        //    uploadRecordings(idUpload);
             return null;
         }
 
@@ -1815,6 +1816,8 @@ public class StudioActivity extends AppCompatActivity {
             Toast.makeText(StudioActivity.this, value1 + "  " + "SAVE", Toast.LENGTH_SHORT).show();
 //            adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
 //            adapter.notifyDataSetChanged();
+            adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+            adapter.notifyDataSetChanged();
             frameSync.setVisibility(View.GONE);
             progressDialog.dismiss();
         }
