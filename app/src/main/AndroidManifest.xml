@@ -68,7 +68,7 @@
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.app.searchable"
-                android:resource="@xml/searchable"></meta-data>
+                android:resource="@xml/searchable" />
         </activity>
         <activity
             android:name=".MelodyActivity"
@@ -132,16 +132,17 @@
             android:configChanges="orientation"
             android:label="@string/title_activity_profile"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".CommentsActivity"
             android:label="@string/title_activity_comments"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".JoinActivity"
             android:label="@string/title_activity_join"
-            android:theme="@style/AppTheme"></activity>
-        <activity android:name=".Update"></activity>
+            android:theme="@style/AppTheme" />
+        <activity android:name=".Update" />
+        <activity android:name=".PrivacyPolicy"></activity>
     </application>
 
 </manifest>
