@@ -2,11 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_sign_up"
+    android:id="@+id/activity_update"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_home3"
-    tools:context="com.instamelody.instamelody.SignUpActivity">
+    tools:context="com.instamelody.instamelody.Update">
 
     <LinearLayout
         android:id="@+id/llTop"
@@ -19,7 +19,7 @@
             android:layout_marginTop="20dp">
 
             <TextView
-                android:id="@+id/tvDone"
+                android:id="@+id/tvDoneUpdate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -57,7 +57,7 @@
                 android:layout_centerVertical="true">
 
                 <TextView
-                    android:id="@+id/tvCreateAccount"
+                    android:id="@+id/tvMyAccount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="45dp"
@@ -67,10 +67,10 @@
                     android:textStyle="normal|bold" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/userProfileImage"
+                    android:id="@+id/userProfileImageUpdate"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
-                    android:layout_below="@+id/tvCreateAccount"
+                    android:layout_below="@+id/tvMyAccount"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
                     android:src="@drawable/artist1"/>
@@ -92,6 +92,7 @@
 
                 <EditText
                     android:id="@+id/etuFirstName"
+                    android:enabled="false"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
@@ -103,10 +104,7 @@
                     android:ems="10"
                     android:fontFamily="sans-serif-medium"
                     android:hint="First"
-                    android:clickable="false"
-                    android:cursorVisible="false"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
+                    android:focusableInTouchMode="true"
                     android:inputType="textCapWords|textPersonName"
                     android:selectAllOnFocus="false"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
@@ -116,17 +114,17 @@
                     android:textStyle="normal" />
 
                 <TextView
-                    android:id="@+id/errorFname"
+                    android:id="@+id/errorFnameUpdate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="10dp"
                     android:textColor="#c43e26"
                     android:visibility="gone"
-                    android:layout_toLeftOf="@+id/btnClearFN"/>
+                    android:layout_toLeftOf="@+id/btnClearFNUpdate"/>
 
                 <Button
-                    android:id="@+id/btnClearFN"
+                    android:id="@+id/btnClearFNUpdate"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:layout_alignParentEnd="true"
@@ -144,7 +142,7 @@
                 android:layout_marginTop="20dp">
 
                 <Button
-                    android:id="@+id/btnClearLN"
+                    android:id="@+id/btnClearLNUpdate"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:layout_alignParentEnd="true"
@@ -156,6 +154,7 @@
 
                 <EditText
                     android:id="@+id/etuLastName"
+                    android:enabled="false"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
@@ -167,10 +166,7 @@
                     android:ems="10"
                     android:fontFamily="sans-serif-medium"
                     android:hint="Last"
-                    android:clickable="false"
-                    android:cursorVisible="false"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
+                    android:focusableInTouchMode="true"
                     android:inputType="textCapWords|textPersonName"
                     android:selectAllOnFocus="false"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
@@ -187,7 +183,7 @@
                 android:layout_marginTop="20dp">
 
                 <EditText
-                    android:id="@+id/etuEmail"
+                    android:id="@+id/etuEmailUpdate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
@@ -219,10 +215,10 @@
                     android:layout_marginRight="10dp"
                     android:textColor="#c43e26"
                     android:visibility="gone"
-                    android:layout_toLeftOf="@+id/btnClearEmail"/>
+                    android:layout_toLeftOf="@+id/btnClearEmailUpdate"/>
 
                 <Button
-                    android:id="@+id/btnClearEmail"
+                    android:id="@+id/btnClearEmailUpdate"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:layout_alignParentEnd="true"
@@ -240,7 +236,7 @@
                 android:layout_marginTop="20dp">
 
                 <Button
-                    android:id="@+id/btnClearUserName"
+                    android:id="@+id/btnClearUserNameUpdate"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:layout_alignParentEnd="true"
@@ -251,17 +247,18 @@
                     android:background="@drawable/close"/>
 
                 <TextView
-                    android:id="@+id/errorUname"
+                    android:id="@+id/errorUnameUpdate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="10dp"
                     android:textColor="#c43e26"
                     android:visibility="gone"
-                    android:layout_toLeftOf="@+id/btnClearUserName"/>
+                    android:layout_toLeftOf="@+id/btnClearUserNameUpdate"/>
 
                 <EditText
                     android:id="@+id/etuUsername"
+                    android:enabled="false"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
@@ -273,10 +270,7 @@
                     android:ems="10"
                     android:fontFamily="sans-serif-medium"
                     android:hint="Username"
-                    android:clickable="false"
-                    android:cursorVisible="false"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
+                    android:focusableInTouchMode="true"
                     android:inputType="textPersonName"
                     android:selectAllOnFocus="false"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
@@ -294,6 +288,7 @@
 
                 <EditText
                     android:id="@+id/etuPassWord"
+                    android:enabled="false"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
@@ -305,10 +300,7 @@
                     android:ems="10"
                     android:fontFamily="sans-serif-medium"
                     android:hint=" New Password"
-                    android:clickable="false"
-                    android:cursorVisible="false"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
+                    android:focusableInTouchMode="true"
                     android:inputType="textPassword"
                     android:selectAllOnFocus="false"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
@@ -318,17 +310,17 @@
                     android:textStyle="normal" />
 
                 <TextView
-                    android:id="@+id/errorPassword"
+                    android:id="@+id/errorPasswordUpdate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="10dp"
                     android:textColor="#c43e26"
                     android:visibility="gone"
-                    android:layout_toLeftOf="@+id/btnClearPass"/>
+                    android:layout_toLeftOf="@+id/btnClearPassUpdate"/>
 
                 <Button
-                    android:id="@+id/btnClearPass"
+                    android:id="@+id/btnClearPassUpdate"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:layout_alignParentEnd="true"
@@ -348,6 +340,7 @@
 
                 <EditText
                     android:id="@+id/etuConfirmPassWord"
+                    android:enabled="false"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
@@ -359,10 +352,7 @@
                     android:ems="10"
                     android:fontFamily="sans-serif-medium"
                     android:hint="Confirm password"
-                    android:clickable="false"
-                    android:cursorVisible="false"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
+                    android:focusableInTouchMode="true"
                     android:inputType="textPassword"
                     android:selectAllOnFocus="false"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
@@ -372,17 +362,17 @@
                     android:textStyle="normal" />
 
                 <TextView
-                    android:id="@+id/errorConfirmPass"
+                    android:id="@+id/errorConfirmPassUpdate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="10dp"
                     android:textColor="#c43e26"
                     android:visibility="gone"
-                    android:layout_toLeftOf="@+id/btnClearConfirmPass"/>
+                    android:layout_toLeftOf="@+id/btnClearConfirmPassUpdate"/>
 
                 <Button
-                    android:id="@+id/btnClearConfirmPass"
+                    android:id="@+id/btnClearConfirmPassUpdate"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:layout_alignParentEnd="true"
@@ -400,7 +390,7 @@
                 android:layout_marginTop="20dp">
 
                 <Button
-                    android:id="@+id/btnClearDOB"
+                    android:id="@+id/btnClearDOBUpdate"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:layout_alignParentEnd="true"
@@ -412,17 +402,17 @@
 
 
                 <TextView
-                    android:id="@+id/errorDOB"
+                    android:id="@+id/errorDOBUpdate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="10dp"
                     android:textColor="#c43e26"
                     android:visibility="gone"
-                    android:layout_toLeftOf="@+id/btnClearDOB"/>
+                    android:layout_toLeftOf="@+id/btnClearDOBUpdate"/>
 
                 <TextView
-                    android:id="@+id/tvDob"
+                    android:id="@+id/tvDobUpdate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
@@ -442,7 +432,7 @@
                     android:textColor="@android:color/white"
                     android:textColorLink="@color/homeBlinker"
                     android:textSize="16sp"
-                    android:textStyle="normal" />
+                    android:textStyle="normal"/>
 
             </RelativeLayout>
 
@@ -453,6 +443,7 @@
 
                 <EditText
                     android:id="@+id/etuPhone"
+                    android:enabled="false"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
@@ -464,10 +455,7 @@
                     android:ems="10"
                     android:fontFamily="sans-serif-medium"
                     android:hint="Phone"
-                    android:clickable="false"
-                    android:cursorVisible="false"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
+                    android:focusableInTouchMode="true"
                     android:inputType="phone"
                     android:selectAllOnFocus="false"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
@@ -478,17 +466,17 @@
                     android:maxLength="15" />
 
                 <TextView
-                    android:id="@+id/errorPhone"
+                    android:id="@+id/errorPhoneUpdate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="10dp"
                     android:textColor="#c43e26"
                     android:visibility="gone"
-                    android:layout_toLeftOf="@+id/btnClearPhone"/>
+                    android:layout_toLeftOf="@+id/btnClearPhoneUpdate"/>
 
                 <Button
-                    android:id="@+id/btnClearPhone"
+                    android:id="@+id/btnClearPhoneUpdate"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:layout_alignParentEnd="true"

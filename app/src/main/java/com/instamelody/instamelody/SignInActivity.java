@@ -103,7 +103,7 @@ public class SignInActivity extends AppCompatActivity {
     String f_name;
     String l_name;
     String userId;
-    String dob;
+    String dob,mobile;
     String fbProfilePic;
     String FbProf1;
     TextView tvSettings, tvDone, tvSignUp, tvFirstName, tvUserName;
@@ -462,6 +462,8 @@ public class SignInActivity extends AppCompatActivity {
                             followers = rspns.getString("followers");
                             fans = rspns.getString("fans");
                             records = rspns.getString("records");
+                            dob = rspns.getString("dob");
+                            mobile = rspns.getString("mobile");
 //                            user_id = rspns.getString("dob");
 //                            user_id = rspns.getString("device_token");
 //                            user_id = rspns.getString("discrisption");
@@ -479,6 +481,8 @@ public class SignInActivity extends AppCompatActivity {
                             editor.putString("followers", followers);
                             editor.putString("fans", fans);
                             editor.putString("records", records);
+                            editor.putString("dob",dob);
+                            editor.putString("mobile",mobile);
                             editor.putInt("status", 1);
                             editor.commit();
 

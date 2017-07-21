@@ -79,7 +79,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     Button btnActivity, btnAudio, btnCancel;
     RelativeLayout rlFragmentActivity, rlPartStation, rlSearch;
     ImageView ivBackButton, ivHomeButton, discover, message, ivProfile, audio_feed, ivStationSearch, ivMelodyStation, ivFilter;
-    EditText subEtFilterName;
+    EditText subEtFilterName,subEtFilterInstruments;
 
     TabHost host;
     private static RecyclerView.Adapter adapter;
@@ -113,7 +113,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     String strName, strSearch;
     String titleString;
     String searchGet, search5;
-    String artistName;
+    String artistName,Instruments;
     ProgressDialog progressDialog;
     LongOperation myTask = null;
 
@@ -337,6 +337,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                         strName = arrayAdapter.getItem(which);
                         if (strName.equals("Artist")) {
                             openDialog();
+                        }else if(strName.equals("# of Instruments")){
+                            openDialogInstruments();
                         } else {
                             AlertDialog.Builder builderInner = new AlertDialog.Builder(StationActivity.this);
                             builderInner.setMessage(strName);
@@ -772,6 +774,56 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 dialog.cancel();
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtFilterName.getWindowToken(), 0);
+            }
+        });
+
+        builder2.show();
+    }
+
+    private void openDialogInstruments() {
+        LayoutInflater inflater = LayoutInflater.from(StationActivity.this);
+        View subView = inflater.inflate(R.layout.dialog_layout, null);
+
+        subEtFilterName = (EditText) subView.findViewById(R.id.dialogEtTopicName);
+
+        android.support.v7.app.AlertDialog.Builder builder2 = new android.support.v7.app.AlertDialog.Builder(this);
+        builder2.setTitle("Number of Instruments");
+        builder2.setMessage("Give Instruments Value to Filter");
+        builder2.setView(subView);
+
+        TextView title = new TextView(this);
+        title.setText("Instruments");
+        title.setBackgroundColor(Color.DKGRAY);
+        title.setPadding(10, 10, 10, 10);
+        title.setGravity(Gravity.CENTER);
+        title.setTextColor(Color.WHITE);
+        title.setTextSize(20);
+
+        builder2.setCustomTitle(title);
+
+        builder2.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //tvInfo.setText(subEtTopicName.getText().toString());
+                Instruments = subEtFilterInstruments.getText().toString().trim();
+                SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
+                editorFilterInstruments.putString("stringFilterInstruments", Instruments);
+                editorFilterInstruments.apply();
+                AudioFragment af = new AudioFragment();
+                getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
+
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(subEtFilterInstruments.getWindowToken(), 0);
+
+            }
+        });
+
+        builder2.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(subEtFilterInstruments.getWindowToken(), 0);
             }
         });
 
