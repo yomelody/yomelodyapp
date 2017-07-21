@@ -371,40 +371,45 @@ public class ParseContents {
             if (jsonObject.getString(KEY_FLAG).equals("success")) {
                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                 for (int i = 0; i < jsonArray.length(); i++) {
+
                     RecordingsModel card = new RecordingsModel();
                     JSONObject cardJson = jsonArray.getJSONObject(i);
-                    card.setAddedBy(cardJson.getString("added_by"));
-                    card.setRecordingCreated(cardJson.getString("date_added"));
-                    card.setGenreId(cardJson.getString("genre"));
-                    card.setRecordingName(cardJson.getString("recording_topic"));
-                    card.setUserName(cardJson.getString("user_name"));
-                    card.setRecordingId(cardJson.getString("recording_id"));
-                    card.setPlayCount(cardJson.getInt("play_count"));
-                    card.setCommentCount(cardJson.getInt("comment_count"));
-                    card.setLikeCount(cardJson.getInt("like_count"));
-                    card.setLikeStatus(cardJson.getInt("like_status"));
-                    card.setrecordingurl(cardJson.getString("recording_url"));
-                    card.setShareCount(cardJson.getInt("share_count"));
-                    card.setRecordingCover(cardJson.getString("cover_url"));
-                    card.setUserProfilePic(cardJson.getString("profile_url"));
-                    card.setGenreName(cardJson.getString("genre_name"));
 
-                    instrumentArray = cardJson.getJSONArray("recordings");
-                    for (int j = 0; j < instrumentArray.length(); j++) {
-                        RecordingsPool rp = new RecordingsPool();
-                        JSONObject instrumentJson = instrumentArray.getJSONObject(j);
-                        rp.setAddedById(instrumentJson.getString("added_by_id"));
-                        rp.setUserName(instrumentJson.getString("user_name"));
-                        rp.setName(instrumentJson.getString("name"));
-                        rp.setCoverUrl(instrumentJson.getString("cover_url"));
-                        rp.setProfileUrl(instrumentJson.getString("profile_url"));
-                        rp.setDateAdded(instrumentJson.getString("date_added"));
-                        rp.setDuration(instrumentJson.getString("duration"));
-                        rp.setRecordingUrl(instrumentJson.getString("recording_url"));
-                        rp.setInstruments(instrumentJson.getString("instruments"));
-                        recordingsPools.add(rp);
+                        card.setAddedBy(cardJson.getString("added_by"));
+                        card.setRecordingCreated(cardJson.getString("date_added"));
+                        card.setGenreId(cardJson.getString("genre"));
+                        card.setRecordingName(cardJson.getString("recording_topic"));
+                        card.setUserName(cardJson.getString("user_name"));
+                        card.setRecordingId(cardJson.getString("recording_id"));
+                        card.setPlayCount(cardJson.getInt("play_count"));
+                        card.setCommentCount(cardJson.getInt("comment_count"));
+                        card.setLikeCount(cardJson.getInt("like_count"));
+                        card.setLikeStatus(cardJson.getInt("like_status"));
+                        card.setrecordingurl(cardJson.getString("recording_url"));
+                        card.setShareCount(cardJson.getInt("share_count"));
+                        card.setRecordingCover(cardJson.getString("cover_url"));
+                        card.setUserProfilePic(cardJson.getString("profile_url"));
+                        card.setGenreName(cardJson.getString("genre_name"));
+
+                    if(!cardJson.getString("recordings").equals("null")) {
+                        instrumentArray = cardJson.getJSONArray("recordings");
+                        for (int j = 0; j < instrumentArray.length(); j++) {
+                            RecordingsPool rp = new RecordingsPool();
+                            JSONObject instrumentJson = instrumentArray.getJSONObject(j);
+                            rp.setAddedById(instrumentJson.getString("added_by_id"));
+                            rp.setUserName(instrumentJson.getString("user_name"));
+                            rp.setName(instrumentJson.getString("name"));
+                            rp.setCoverUrl(instrumentJson.getString("cover_url"));
+                            rp.setProfileUrl(instrumentJson.getString("profile_url"));
+                            rp.setDateAdded(instrumentJson.getString("date_added"));
+                            rp.setDuration(instrumentJson.getString("duration"));
+                            rp.setRecordingUrl(instrumentJson.getString("recording_url"));
+                            rp.setInstruments(instrumentJson.getString("instruments"));
+                            recordingsPools.add(rp);
+                        }
                     }
-                    recordingList.add(card);
+                        recordingList.add(card);
+
 
 
 //                    card.setTvContributeDate(cardJson.getString("30/02/17"));
