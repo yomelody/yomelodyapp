@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_update"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_home3"
+    tools:context="com.instamelody.instamelody.Update">
+
+    <LinearLayout
+        android:id="@+id/llTop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp">
+
+            <TextView
+                android:id="@+id/tvDoneUpdate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="30dp"
+                android:layout_marginStart="30dp"
+                android:shadowColor="@android:color/black"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2"
+                android:text="Done"
+                android:textColor="@android:color/white"
+                android:textStyle="normal|bold" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/linear"
+            android:layout_alignParentTop="true">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true">
+
+                <TextView
+                    android:id="@+id/tvMyAccount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="45dp"
+                    android:text=" My Account"
+                    android:textColor="#FFFFFF"
+                    android:textSize="15dp"
+                    android:textStyle="normal|bold" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/userProfileImageUpdate"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_below="@+id/tvMyAccount"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:src="@drawable/artist1"/>
+
+            </RelativeLayout>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/linear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp">
+
+                <EditText
+                    android:id="@+id/etuFirstName"
+                    android:enabled="false"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginStart="25dp"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:fontFamily="sans-serif-medium"
+                    android:hint="First"
+                    android:focusableInTouchMode="true"
+                    android:inputType="textCapWords|textPersonName"
+                    android:selectAllOnFocus="false"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="#FFFFFF"
+                    android:textColorLink="@color/homeBlinker"
+                    android:textSize="16sp"
+                    android:textStyle="normal" />
+
+                <TextView
+                    android:id="@+id/errorFnameUpdate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:textColor="#c43e26"
+                    android:visibility="gone"
+                    android:layout_toLeftOf="@+id/btnClearFNUpdate"/>
+
+                <Button
+                    android:id="@+id/btnClearFNUpdate"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginRight="25dp"
+                    android:background="@drawable/close"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
+
+                <Button
+                    android:id="@+id/btnClearLNUpdate"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginRight="25dp"
+                    android:background="@drawable/close"/>
+
+                <EditText
+                    android:id="@+id/etuLastName"
+                    android:enabled="false"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginStart="25dp"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:fontFamily="sans-serif-medium"
+                    android:hint="Last"
+                    android:focusableInTouchMode="true"
+                    android:inputType="textCapWords|textPersonName"
+                    android:selectAllOnFocus="false"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="@android:color/white"
+                    android:textColorLink="@color/homeBlinker"
+                    android:textSize="16sp"
+                    android:textStyle="normal" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
+
+                <EditText
+                    android:id="@+id/etuEmailUpdate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginStart="25dp"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:fontFamily="sans-serif-medium"
+                    android:hint="Email"
+                    android:clickable="false"
+                    android:cursorVisible="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:inputType="textEmailAddress"
+                    android:selectAllOnFocus="false"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="@android:color/white"
+                    android:textColorLink="@color/homeBlinker"
+                    android:textSize="16sp"
+                    android:textStyle="normal" />
+
+                <TextView
+                    android:id="@+id/errorEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:textColor="#c43e26"
+                    android:visibility="gone"
+                    android:layout_toLeftOf="@+id/btnClearEmailUpdate"/>
+
+                <Button
+                    android:id="@+id/btnClearEmailUpdate"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginRight="25dp"
+                    android:background="@drawable/close"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
+
+                <Button
+                    android:id="@+id/btnClearUserNameUpdate"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginRight="25dp"
+                    android:background="@drawable/close"/>
+
+                <TextView
+                    android:id="@+id/errorUnameUpdate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:textColor="#c43e26"
+                    android:visibility="gone"
+                    android:layout_toLeftOf="@+id/btnClearUserNameUpdate"/>
+
+                <EditText
+                    android:id="@+id/etuUsername"
+                    android:enabled="false"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginStart="25dp"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:fontFamily="sans-serif-medium"
+                    android:hint="Username"
+                    android:focusableInTouchMode="true"
+                    android:inputType="textPersonName"
+                    android:selectAllOnFocus="false"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="@android:color/white"
+                    android:textColorLink="@color/homeBlinker"
+                    android:textSize="16sp"
+                    android:textStyle="normal" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
+
+                <EditText
+                    android:id="@+id/etuPassWord"
+                    android:enabled="false"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginStart="25dp"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:fontFamily="sans-serif-medium"
+                    android:hint=" New Password"
+                    android:focusableInTouchMode="true"
+                    android:inputType="textPassword"
+                    android:selectAllOnFocus="false"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="@android:color/white"
+                    android:textColorLink="@color/homeBlinker"
+                    android:textSize="16sp"
+                    android:textStyle="normal" />
+
+                <TextView
+                    android:id="@+id/errorPasswordUpdate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:textColor="#c43e26"
+                    android:visibility="gone"
+                    android:layout_toLeftOf="@+id/btnClearPassUpdate"/>
+
+                <Button
+                    android:id="@+id/btnClearPassUpdate"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginRight="25dp"
+                    android:background="@drawable/close"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:visibility="visible">
+
+                <EditText
+                    android:id="@+id/etuConfirmPassWord"
+                    android:enabled="false"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginStart="25dp"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:fontFamily="sans-serif-medium"
+                    android:hint="Confirm password"
+                    android:focusableInTouchMode="true"
+                    android:inputType="textPassword"
+                    android:selectAllOnFocus="false"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="@android:color/white"
+                    android:textColorLink="@color/homeBlinker"
+                    android:textSize="16sp"
+                    android:textStyle="normal" />
+
+                <TextView
+                    android:id="@+id/errorConfirmPassUpdate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:textColor="#c43e26"
+                    android:visibility="gone"
+                    android:layout_toLeftOf="@+id/btnClearConfirmPassUpdate"/>
+
+                <Button
+                    android:id="@+id/btnClearConfirmPassUpdate"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginRight="25dp"
+                    android:background="@drawable/close"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
+
+                <Button
+                    android:id="@+id/btnClearDOBUpdate"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginRight="25dp"
+                    android:background="@drawable/close"/>
+
+
+                <TextView
+                    android:id="@+id/errorDOBUpdate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:textColor="#c43e26"
+                    android:visibility="gone"
+                    android:layout_toLeftOf="@+id/btnClearDOBUpdate"/>
+
+                <TextView
+                    android:id="@+id/tvDobUpdate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginRight="48dp"
+                    android:layout_marginEnd="48dp"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:fontFamily="sans-serif-medium"
+                    android:hint="Date of Birth: Day | Month | Year"
+                    android:inputType="text|date"
+                    android:selectAllOnFocus="false"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="@android:color/white"
+                    android:textColorLink="@color/homeBlinker"
+                    android:textSize="16sp"
+                    android:textStyle="normal"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
+
+                <EditText
+                    android:id="@+id/etuPhone"
+                    android:enabled="false"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginStart="25dp"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:fontFamily="sans-serif-medium"
+                    android:hint="Phone"
+                    android:focusableInTouchMode="true"
+                    android:inputType="phone"
+                    android:selectAllOnFocus="false"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="@android:color/white"
+                    android:textColorLink="@color/homeBlinker"
+                    android:textSize="16sp"
+                    android:textStyle="normal"
+                    android:maxLength="15" />
+
+                <TextView
+                    android:id="@+id/errorPhoneUpdate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:textColor="#c43e26"
+                    android:visibility="gone"
+                    android:layout_toLeftOf="@+id/btnClearPhoneUpdate"/>
+
+                <Button
+                    android:id="@+id/btnClearPhoneUpdate"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginRight="25dp"
+                    android:background="@drawable/close"/>
+
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/buttonEditProfile"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="20dp"
+                android:visibility="visible"
+                android:background="@drawable/round_button"
+                android:text="Edit Profile"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="#FFFFFF" />
+
+            <Button
+                android:id="@+id/buttonUpdate"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="20dp"
+                android:visibility="gone"
+                android:background="@drawable/round_button"
+                android:text="Update"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="#FFFFFF" />
+
+            <RelativeLayout
+                android:id="@+id/bottomLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView8"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="InstaMelody v1.0 Studio Version"
+                        android:textColor="@android:color/background_light"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+            </RelativeLayout>
+        </LinearLayout>
+    </RelativeLayout>
+</RelativeLayout>
+

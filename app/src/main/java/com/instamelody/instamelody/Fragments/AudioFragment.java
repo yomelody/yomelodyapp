@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TabHost;
 import android.widget.Toast;
 
@@ -81,6 +82,7 @@ public class AudioFragment extends Fragment {
     private String FILTER = "filter";
     private String KEY_SEARCH = "search";
     private String USER_NAME = "username";
+    private String COUNT = "count";
 
 
     String recordingId, addedBy, recordingTopic, userName, dateAdded, likeCount, playCount, commentCount, shareCount, profileUrl, coverUrl, genre, recordings;
@@ -100,13 +102,21 @@ public class AudioFragment extends Fragment {
     String userIdNormal, userIdFb, userIdTwitter;
     int statusNormal, statusFb, statusTwitter;
     ProgressDialog progressDialog;
+    ProgressBar pbr;
     LongOperation myTask = null;
-    String strName, strSearch, strArtist;
+    String strName, strSearch, strArtist, strInstruments;
     AudioBackGroupProcess LoadAudio=null;
     public AudioFragment() {
 
     }
-
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_audio, container, false);
+        pbr = (ProgressBar) view.findViewById(R.id.pbbar);
+        setRetainInstance(true);
+        return view;
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,9 +127,18 @@ public class AudioFragment extends Fragment {
         strSearch = searchPref.getString("stringSearch", null);
         SharedPreferences filterPrefArtist = getActivity().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE);
         strArtist = filterPrefArtist.getString("stringFilterArtist", null);
+        SharedPreferences FilterInstruments = getActivity().getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE);
+        strInstruments = FilterInstruments.getString("stringFilterInstruments", null);
 
         fetchGenreNames();
 
+            fetchRecordings();
+        } else if (strSearch != null) {
+            fetchSearchData();
+        } else if (strArtist != null) {
+        } else if (strInstruments!= null){
+            fetchRecordingsFilterInstruments();
+        }else{
 
 
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
@@ -151,13 +170,7 @@ public class AudioFragment extends Fragment {
         adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_audio, container, false);
-        setRetainInstance(true);
-        return view;
-    }
+
 
 
     public void fetchGenreNames() {
@@ -207,9 +220,11 @@ public class AudioFragment extends Fragment {
                                 fetchRecordings();
                             } else if (strSearch != null) {
                                 fetchSearchData();
-                            } else if (strArtist != null){
+                            } else if (strArtist != null) {
                                 fetchRecordingsFilterArtist();
-                            }else {
+                            } else if (strInstruments!= null){
+                                fetchRecordingsFilterInstruments();
+                            }else{
                                 fetchRecordingsFilter();
                             }
 
@@ -230,9 +245,11 @@ public class AudioFragment extends Fragment {
                                     fetchRecordings();
                                 } else if (strSearch != null) {
                                     fetchSearchData();
-                                } else if (strArtist != null){
+                                } else if (strArtist != null) {
                                     fetchRecordingsFilterArtist();
-                                }else {
+                                } else if (strInstruments!= null){
+                                    fetchRecordingsFilterInstruments();
+                                }else{
                                     fetchRecordingsFilter();
                                 }
 //                                Toast.makeText(getActivity(), "beta: " + genreString, Toast.LENGTH_SHORT).show();
@@ -318,13 +335,11 @@ public class AudioFragment extends Fragment {
 //                params.put(ID, userId);
                /* params.put(KEY, STATION);
                 params.put(GENRE, genreString);*/
-                if(userId!=null)
-                {
+                if (userId != null) {
                     params.put(ID, userId);
                     params.put(KEY, STATION);
-                    params.put(GENRE,genreString);
-                }
-                else {
+                    params.put(GENRE, genreString);
+                } else {
                     params.put(KEY, STATION);
                     params.put(GENRE, genreString);
 
@@ -516,6 +531,69 @@ public class AudioFragment extends Fragment {
         requestQueue.add(stringRequest);
     }
 
+    public void fetchRecordingsFilterInstruments() {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String rs = response.toString();
+                        try {
+                            JSONObject jsonObject = new JSONObject(rs);
+                            String flag = jsonObject.getString("flag");
+//                            Toast.makeText(getActivity(), "" + flag, Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
+
+                        Log.d("ReturnData1", response);
+                        recordingList.clear();
+                        recordingsPools.clear();
+                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
+                        adapter.notifyDataSetChanged();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+//                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+//                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(ID, userId);
+                params.put(KEY, STATION);
+                params.put(GENRE, genreString);
+                params.put(FILE_TYPE, "user_recording");
+                params.put(FILTER_TYPE, strName);
+                params.put(COUNT, strInstruments);
+                params.put(FILTER, "extrafilter");
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(stringRequest);
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -539,11 +617,12 @@ public class AudioFragment extends Fragment {
 
     private class LongOperation extends AsyncTask<String, Void, String> {
         protected void onPreExecute() {
-            progressDialog = new ProgressDialog(getActivity());
+           /* progressDialog = new ProgressDialog(getActivity());
             progressDialog.setTitle("Processing...");
             progressDialog.setMessage("Please wait...");
             progressDialog.setCancelable(false);
-            progressDialog.show();
+            progressDialog.show();*/
+            pbr.setVisibility(View.VISIBLE);
         }
 
         protected String doInBackground(String... params) {
@@ -556,31 +635,58 @@ public class AudioFragment extends Fragment {
                 fetchRecordingsFilter();
             }*/
             try {
-                URL aurl = new URL("http://52.37.189.202/api/recordings.php");
+                //Getting data from server
+                String filename = "myfile";
+                String outputString = "Hello world!";
+                URL aurl = new URL(RECORDINGS);
                 URLConnection connection = aurl.openConnection();
                 connection.connect();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+                // getting file length
+                int lengthOfFile = connection.getContentLength();
+                // input stream to read file - with 8k buffer
+                InputStream input = new BufferedInputStream(aurl.openStream(), 8192);
+                try {
+                    FileOutputStream outputStream = getActivity().openFileOutput(filename, Context.MODE_PRIVATE);
+                    outputStream.write(outputString.getBytes());
+                    outputStream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    FileInputStream inputStream = getActivity().openFileInput(filename);
+                    BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
+                    StringBuilder total = new StringBuilder();
+                    String line;
+                    while ((line = r.readLine()) != null) {
+                        total.append(line);
+                    }
+                    r.close();
+                    inputStream.close();
+                    Log.d("File", "File contents: " + total);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-
 
             if (strName == null && strSearch == null) {
                 fetchRecordings();
             } else if (strSearch != null) {
                 fetchSearchData();
-            } else if (strArtist != null){
+            } else if (strArtist != null) {
                 fetchRecordingsFilterArtist();
-            }else {
+            } else if (strInstruments!= null){
+                fetchRecordingsFilterInstruments();
+            }else{
                 fetchRecordingsFilter();
             }
             return null;
         }
 
         protected void onPostExecute(String result) {
-
-            progressDialog.dismiss();
+            pbr.setVisibility(View.GONE);
+            //progressDialog.dismiss();
         }
 
     }
@@ -591,6 +697,7 @@ public class AudioFragment extends Fragment {
             progressDialog.setMessage("Please wait...");
             progressDialog.setCancelable(false);
             progressDialog.show();
+            //pbr.setVisibility(View.VISIBLE);
         }
 
         protected String doInBackground(String... params) {
@@ -609,7 +716,7 @@ public class AudioFragment extends Fragment {
         }
 
         protected void onPostExecute(String result) {
-
+            //pbr.setVisibility(View.GONE);
             progressDialog.dismiss();
         }
 

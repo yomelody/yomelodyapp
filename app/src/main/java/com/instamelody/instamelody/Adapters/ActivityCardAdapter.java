@@ -79,19 +79,13 @@ public class ActivityCardAdapter extends RecyclerView.Adapter<ActivityCardAdapte
         userprofileimage.setImageResource(R.drawable.profile1);
 
         ActivityModel am = activityList.get(listPosition);
-        if(am.getUserImgURL().equals(null) || am.getUserImgURL().equals("") ) {
+        String url=activityList.get(listPosition).getUserImgURL();
+        if(url.equals(null) || url.equals("")) {
 
         }
         else {
             Picasso.with(holder.userprofileimage.getContext()).load(am.getUserImgURL()).into(holder.userprofileimage);
         }
-
-        //activityList.get(listPosition).getUserImgURL();
-
-        tvmsg.setText(activityList.get(listPosition).getTvmsg());
-//        userprofileimage.setImageResource(activityList.get(listPosition).getUserImgURL());
-//        Picasso.with(context.getUserImgURL).load(activityList.getString("profile_pick")).into(context.userProfileImage);
-//        c.getString("activity_name"),
         tvmsg.setText(activityList.get(listPosition).getTvmsg());
         tvtopic.setText(activityList.get(listPosition).gettvtopic());
         tvtime.setText(activityList.get(listPosition).getTvtime());

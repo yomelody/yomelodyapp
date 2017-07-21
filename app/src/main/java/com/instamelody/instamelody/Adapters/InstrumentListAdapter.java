@@ -398,7 +398,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 //        killMediaPlayer();
         audioFilePath =
                 Environment.getExternalStorageDirectory().getAbsolutePath()
-                        + "/InstaMelody.amr";
+                        + "/InstaMelody.mp3";
         mp = new MediaPlayer();
         mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mp.setDataSource(audioFilePath);
