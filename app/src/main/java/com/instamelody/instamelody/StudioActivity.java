@@ -171,7 +171,7 @@ public class StudioActivity extends AppCompatActivity {
     Timer myTimer;
     Chronometer chrono;
     ImageView audio_feed, grey_circle, blue_circle;
-    TextView recording_time, tvPublic, tvDone, tvInfo, recording_date, melody_date, melody_detail;
+    TextView  tvPublic, tvDone, tvInfo, recording_date, melody_date, melody_detail;
     EditText subEtTopicName;
     Spinner sp;
     RadioGroup rgR;
@@ -255,7 +255,7 @@ public class StudioActivity extends AppCompatActivity {
         ivRecord_pause = (ImageView) findViewById(R.id.ivRecord_pause);
         profile_image = (CircleImageView) findViewById(R.id.profile_image);
         artist_name = (TextView) findViewById(R.id.artist_name);
-        recording_time = (TextView) findViewById(R.id.recording_time);
+      //  recording_time = (TextView) findViewById(R.id.recording_time);
         melody_detail = (TextView) findViewById(R.id.melody_detail);
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         firstName = loginSharedPref.getString("firstName", null);
@@ -284,8 +284,8 @@ public class StudioActivity extends AppCompatActivity {
         waveform_view = (com.instamelody.instamelody.utils.WaveformView) findViewById(R.id.waveform_view);
         mDecibelView = (TextView) findViewById(R.id.decibel_view);
         startTime = SystemClock.elapsedRealtime();
-        myTimer = new Timer();
-        timeElapsed = SystemClock.elapsedRealtime() - chrono.getBase();
+      //  myTimer = new Timer();
+     //   timeElapsed = SystemClock.elapsedRealtime() - chrono.getBase();
         rlInviteButton = (RelativeLayout) findViewById(R.id.rlInviteButton);
         rlPublic = (RelativeLayout) findViewById(R.id.rlPublic);
         recyclerViewInstruments = (RecyclerView) findViewById(R.id.recyclerViewInstruments);
@@ -298,7 +298,7 @@ public class StudioActivity extends AppCompatActivity {
         fetchRecordingUrl = loginSharedPref1.getString("Recording_url", null);
 
         fetchGenreNames();
-
+        elapsedMillis = SystemClock.elapsedRealtime() - chrono.getBase();
         int hours = (int) (timeElapsed / 3600000);
         int minutes = (int) (timeElapsed - hours * 3600000) / 60000;
         int seconds = (int) (timeElapsed - hours * 3600000 - minutes * 60000) / 1000;
@@ -312,7 +312,7 @@ public class StudioActivity extends AppCompatActivity {
         melody_date.setText(dateString);
 
 
-        elapsedMillis = SystemClock.elapsedRealtime() - chrono.getBase();
+
 
 
         Intent intent = getIntent();
@@ -506,15 +506,15 @@ public class StudioActivity extends AppCompatActivity {
                         + "/InstaMelody.mp3";
 
 
-        chrono.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
-            @Override
-            public void onChronometerTick(Chronometer chronometer) {
-                countUp = ((SystemClock.elapsedRealtime() - chronometer.getBase()) / 1000);
-                countUp_milli = ((SystemClock.elapsedRealtime() - chronometer.getBase()));
-                asText = (countUp / 60) + ":" + (countUp % 60);
-                recording_time.setText(asText);
-            }
-        });
+//        chrono.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+//            @Override
+//            public void onChronometerTick(Chronometer chronometer) {
+//                countUp = ((SystemClock.elapsedRealtime() - chronometer.getBase()) / 1000);
+//                countUp_milli = ((SystemClock.elapsedRealtime() - chronometer.getBase()));
+//                asText = (countUp / 60) + ":" + (countUp % 60);
+//                recording_time.setText(asText);
+//            }
+//        });
 
 
         rlMelodyButton.setOnClickListener(new View.OnClickListener() {
@@ -612,6 +612,7 @@ public class StudioActivity extends AppCompatActivity {
                             playAudioRecycler();
                             Log.d("Instrument count", "" + instruments_count.size());
                             mRecordingThread.start();
+                            chrono.setBase(SystemClock.elapsedRealtime());
                             chrono.start();
 
                         } catch (IllegalStateException e) {
@@ -989,27 +990,30 @@ public class StudioActivity extends AppCompatActivity {
 
         builder2.setCustomTitle(title);
 
-
-        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
-        builder2.setMessage("Would you like to save as an instrumental or recording");
-        AlertDialog dialog = builder1.show();
-        TextView messageText = (TextView) dialog.findViewById(android.R.id.message);
-        messageText.setPadding(20, 20, 20, 20);
-        messageText.setGravity(Gravity.CENTER);
-        messageText.setTextColor(Color.WHITE);
-        messageText.setTextSize(20);
-        dialog.show();
+//
+//        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+//        builder2.setMessage("Would you like to save as an instrumental or recording");
+//        AlertDialog dialog = builder1.show();
+//        TextView messageText = (TextView) dialog.findViewById(android.R.id.message);
+//        messageText.setPadding(20, 20, 20, 20);
+//        messageText.setGravity(Gravity.CENTER);
+//        messageText.setTextColor(Color.WHITE);
+//        messageText.setTextSize(20);
+//        dialog.show();
 
 
         builder2.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-//                saveRecordings1();
-                myTask = new LongOperation();
-                myTask.execute();
-                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+              //  saveRecordings1();
+              //  myTask = new LongOperation();
+                new LongOperation().execute();
+          //      new LongOperation().execute();
+               // getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
-
+             //   dialog.cancel();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(subEtTopicName.getWindowToken(), 0);
             }
         });
 
@@ -1017,7 +1021,8 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
-
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(subEtTopicName.getWindowToken(), 0);
             }
         });
         builder2.show();
@@ -1805,9 +1810,10 @@ public class StudioActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(String result) {
+
             Toast.makeText(StudioActivity.this, value1 + "  " + "SAVE", Toast.LENGTH_SHORT).show();
-            adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
-            adapter.notifyDataSetChanged();
+//            adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+//            adapter.notifyDataSetChanged();
             frameSync.setVisibility(View.GONE);
             progressDialog.dismiss();
         }

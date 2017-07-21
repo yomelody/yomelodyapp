@@ -14,6 +14,7 @@
 Application, Particularly used for adding Instru-
 mental music and melody to audio recording voice messages
 and social conversations. </string>
+
     <string name="title_activity_comments">CommentsActivity</string>
     <string name="title_activity_join">JoinActivity</string>
 </resources>
