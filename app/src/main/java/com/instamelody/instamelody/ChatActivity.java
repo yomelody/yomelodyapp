@@ -755,8 +755,8 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public void getGalleryImages() {
-        if (isExternalStorageRemovable()) {
 
+        if (isExternalStorageRemovable()) {
             String state = Environment.getExternalStorageState();
             if (Environment.MEDIA_MOUNTED.equals(state) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
                 String ExternalStorageDirectoryPath = Environment.getExternalStorageDirectory().getAbsolutePath();
