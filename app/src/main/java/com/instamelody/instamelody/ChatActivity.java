@@ -54,6 +54,7 @@ import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.ChatAdapter;
 import com.instamelody.instamelody.Adapters.RecentImagesAdapter;
 import com.instamelody.instamelody.Models.Message;
+import com.instamelody.instamelody.Models.RecentImagesModel;
 import com.instamelody.instamelody.utils.NotificationUtils;
 import com.squareup.picasso.Picasso;
 
@@ -103,19 +104,13 @@ public class ChatActivity extends AppCompatActivity {
     String IS_READ = "isread";
     String TITLE = "title";
     String MESSAGE = "message";
-    String DEVICE_TOKEN = "device_token";
 
-    ArrayList<String> fileList = new ArrayList<String>();// list of file paths
-    File[] files;
-    ArrayList<Message> messageArrayList;
-    ArrayList<String> fileArray = new ArrayList<>();
-    //    Set<String> recieverId = new HashSet<>();
+    ArrayList<RecentImagesModel> fileArray = new ArrayList<>();
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     EditText etMessage;
 
-    public View customView;
     ImageView ivBackButton, ivHomeButton, ivAdjust, ivCamera, tvImgChat, ivNewChat;
-    TextView tvSend, tvMsgChat;
+    TextView tvSend;
     RecyclerView recycleImage, recyclerViewChat;
     LayoutInflater inflater;
     RelativeLayout rlMessage;
@@ -140,7 +135,6 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
 
         parent = getIntent().getStringExtra("from");
-
         fileArray.clear();
         getGalleryImages();
 
@@ -715,7 +709,7 @@ public class ChatActivity extends AppCompatActivity {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getApplicationContext(), "chat api error response "+errorMsg, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "chat api error response " + errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                         error.printStackTrace();
                     }
@@ -761,8 +755,8 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public void getGalleryImages() {
-
         if (isExternalStorageRemovable()) {
+
             String state = Environment.getExternalStorageState();
             if (Environment.MEDIA_MOUNTED.equals(state) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
                 String ExternalStorageDirectoryPath = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -776,14 +770,19 @@ public class ChatActivity extends AppCompatActivity {
                     last = length - 1;
                     if (length > 15) {
                         length = 15;
+                        last = length;
                     }
                     File file;
+
                     for (int i = 0; i < length; i++) {
+                        RecentImagesModel rim = new RecentImagesModel();
                         file = files[last];
                         if (file.getAbsoluteFile().toString().trim().endsWith(".jpg")) {
-                            fileArray.add(file.getAbsolutePath());
+                            rim.setName(file.getName());
+                            rim.setFilepath(file.getAbsolutePath().toString().trim());
                             last = last - 1;
                         }
+                        fileArray.add(rim);
                     }
                 }
             } else {
@@ -803,18 +802,20 @@ public class ChatActivity extends AppCompatActivity {
                     int last;
                     int length = files.length;
                     last = length - 1;
-                    if (length > 30) {
-                        length = 30;
+                    if (length > 15) {
+                        length = 15;
                         last = length;
                     }
                     File file;
                     for (int i = 0; i < length; i++) {
+                        RecentImagesModel rim = new RecentImagesModel();
                         file = files[last];
                         if (file.getAbsoluteFile().toString().trim().endsWith(".jpg")) {
-//                            fileArray.add(0,file.getAbsolutePath());
-                            fileArray.add(file.getAbsolutePath());
+                            rim.setName(file.getName());
+                            rim.setFilepath(file.getAbsolutePath().toString().trim());
                             last = last - 1;
                         }
+                        fileArray.add(rim);
                     }
                 }
             } else {
@@ -822,56 +823,6 @@ public class ChatActivity extends AppCompatActivity {
             }
         }
     }
-
-//    public void getGalleryImages() {
-//
-//        Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
-//        if (isSDPresent) {
-////            Yes, SD - card is present
-//            String ExternalStorageDirectoryPath = Environment
-//                    .getExternalStorageDirectory()
-//                    .getAbsolutePath();
-//            String targetPath = ExternalStorageDirectoryPath + "/DCIM/Camera/";
-////            Toast.makeText(getApplicationContext(), targetPath, Toast.LENGTH_LONG).show();
-//            File targetDirector = new File(targetPath);
-//
-//            if (targetDirector.listFiles() != null) {
-//                File[] files = targetDirector.listFiles();
-//                int length = files.length;
-//                if (length > 15) {
-//                    length = 15;
-//                }
-//                File file;
-//                for (int i = 0; i < length - 1; i++) {
-//                    file = files[i];
-//                    fileArray.add(file.getAbsolutePath());
-//                }
-//            }
-//        } else {
-//            // No, SD-card is not present
-//            String InternalStorageDirectoryPath = Environment
-//                    .getDataDirectory()
-//                    .getAbsolutePath();
-//
-//            String targetPath = InternalStorageDirectoryPath + "/DCIM/Camera/";
-//
-//            Toast.makeText(getApplicationContext(), targetPath, Toast.LENGTH_LONG).show();
-//            File targetDirector = new File(targetPath);
-//
-//            if (targetDirector.listFiles() != null) {
-//                File[] files = targetDirector.listFiles();
-//                int length = files.length;
-//                if (length > 15) {
-//                    length = 15;
-//                }
-//                File file;
-//                for (int i = 0; i < length - 1; i++) {
-//                    file = files[i];
-//                    fileArray.add(file.getAbsolutePath());
-//                }
-//            }
-//        }
-//    }
 
     public boolean checkPermissions() {
         if ((ContextCompat.checkSelfPermission(ChatActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(ChatActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
