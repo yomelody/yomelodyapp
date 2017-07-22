@@ -68,6 +68,7 @@
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/userProfileImageUpdate"
+                    android:saveEnabled="false"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
                     android:layout_below="@+id/tvMyAccount"
@@ -299,7 +300,7 @@
                     android:background="@android:color/transparent"
                     android:ems="10"
                     android:fontFamily="sans-serif-medium"
-                    android:hint=" New Password"
+                    android:hint=" ********"
                     android:focusableInTouchMode="true"
                     android:inputType="textPassword"
                     android:selectAllOnFocus="false"
@@ -351,7 +352,7 @@
                     android:background="@android:color/transparent"
                     android:ems="10"
                     android:fontFamily="sans-serif-medium"
-                    android:hint="Confirm password"
+                    android:hint="********"
                     android:focusableInTouchMode="true"
                     android:inputType="textPassword"
                     android:selectAllOnFocus="false"
