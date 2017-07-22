@@ -45,6 +45,7 @@ public class SettingsActivity extends AppCompatActivity {
         ivLogoContainer = (ImageView) findViewById(R.id.ivLogoContainer);
         userProfileImageSettings = (CircleImageView) findViewById(R.id.userProfileImageSettings);
         rlPrivacyPolicy = (RelativeLayout) findViewById(R.id.rlPrivacyPolicy);
+        rlTos = (RelativeLayout) findViewById(R.id.rlTos);
 
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userId = loginSharedPref.getString("userId", null);
@@ -106,25 +107,43 @@ public class SettingsActivity extends AppCompatActivity {
                 }
             });
 
+            rlTos.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(SettingsActivity.this,PrivacyPolicy.class);
+                    startActivity(intent);
+                }
+            });
+
+            rlSocialConnect.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    Intent intent = new Intent(getApplicationContext(), SocialActivity.class);
+                    startActivity(intent);
+
+                }
+            });
+
             tvSignOut.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
                     SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
                     editor.clear();
-                    editor.commit();
+                    editor.apply();
                     SharedPreferences.Editor tEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
                     tEditor.clear();
-                    tEditor.commit();
+                    tEditor.apply();
                     SharedPreferences.Editor fbeditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
                     fbeditor.clear();
-                    fbeditor.commit();
+                    fbeditor.apply();
                     LoginManager.getInstance().logOut();
                     HomeActivity.SignOut.setVisibility(View.INVISIBLE);
                     HomeActivity.SignIn.setVisibility(View.VISIBLE);
-                    /*Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);*/
+                    startActivity(intent);
                     SettingsActivity.this.recreate();
                 }
             });
@@ -166,7 +185,8 @@ public class SettingsActivity extends AppCompatActivity {
             rlTos.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    Intent intent = new Intent(SettingsActivity.this,PrivacyPolicy.class);
+                    startActivity(intent);
                 }
             });
 
@@ -186,19 +206,19 @@ public class SettingsActivity extends AppCompatActivity {
 
                     SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
                     editor.clear();
-                    editor.commit();
+                    editor.apply();
                     SharedPreferences.Editor tEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
                     tEditor.clear();
-                    tEditor.commit();
+                    tEditor.apply();
                     SharedPreferences.Editor fbeditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
                     fbeditor.clear();
-                    fbeditor.commit();
+                    fbeditor.apply();
                     LoginManager.getInstance().logOut();
                     HomeActivity.SignOut.setVisibility(View.INVISIBLE);
                     HomeActivity.SignIn.setVisibility(View.VISIBLE);
-                    /*Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);*/
+                    startActivity(intent);
                     SettingsActivity.this.recreate();
                 }
             });

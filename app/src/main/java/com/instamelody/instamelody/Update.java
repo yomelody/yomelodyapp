@@ -64,7 +64,7 @@ public class Update extends AppCompatActivity {
             btnClearPassUpdate, btnClearConfirmPassUpdate, btnClearDOBUpdate, btnClearPhoneUpdate;
     TextView tvDoneUpdate, errorFnameUpdate, errorUnameUpdate, errorPasswordUpdate, errorConfirmPassUpdate,
             errorDOBUpdate, tvDobUpdate, errorPhoneUpdate;
-    String userId, firstName, lastName, userNameLogin, profilePicLogin, dob,mobile,email,date;
+    String userId, firstName, lastName, userNameLogin, profilePicLogin, dob, mobile, email, date;
     CircleImageView userProfileImageUpdate;
     int statusNormal;
     private Bitmap bitmap;
@@ -82,11 +82,11 @@ public class Update extends AppCompatActivity {
         userId = loginSharedPref.getString("userId", null);
         firstName = loginSharedPref.getString("firstName", null);
         lastName = loginSharedPref.getString("lastName", null);
-        email = loginSharedPref.getString("emailFinal",null);
+        email = loginSharedPref.getString("emailFinal", null);
         userNameLogin = loginSharedPref.getString("userName", null);
         profilePicLogin = loginSharedPref.getString("profilePic", null);
         dob = loginSharedPref.getString("dob", null);
-        mobile =loginSharedPref.getString("mobile", null);
+        mobile = loginSharedPref.getString("mobile", null);
         statusNormal = loginSharedPref.getInt("status", 0);
 
         etuFirstName = (EditText) findViewById(R.id.etuFirstName);
@@ -109,7 +109,6 @@ public class Update extends AppCompatActivity {
         Picasso.with(Update.this).load(profilePicLogin).into(userProfileImageUpdate);
 
 
-
         View v = findViewById(R.id.activity_update);
         Drawable d = v.getBackground();
         d.setAlpha(200);
@@ -119,7 +118,8 @@ public class Update extends AppCompatActivity {
         tvDoneUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(Update.this, SettingsActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -164,6 +164,9 @@ public class Update extends AppCompatActivity {
                 etuPassWord.setEnabled(true);
                 etuConfirmPassWord.setEnabled(true);
                 etuPhone.setEnabled(true);
+                etuPassWord.setHint("New Password");
+                etuConfirmPassWord.setHint("Confirm Password");
+                userProfileImageUpdate.setEnabled(true);
 
                 View v1 = findViewById(R.id.activity_update);
                 Drawable d = v1.getBackground();
@@ -177,7 +180,7 @@ public class Update extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Update();
-                if (userProfileImageUpdate!= null){
+                if (userProfileImageUpdate != null) {
                     updateImage();
                 }
             }
@@ -191,9 +194,9 @@ public class Update extends AppCompatActivity {
         final String lastname = etuLastName.getText().toString().trim();
         final String username = etuUsername.getText().toString().trim();
         final String password = etuPassWord.getText().toString().trim();
-        if (password.equals("")){
-             password1 = password;
-        }else {
+        if (password.equals("")) {
+            password1 = password;
+        } else {
             password1 = etuPassWord.getText().toString().trim();
         }
 //        final String dob = tvDob.getText().toString().trim();
@@ -215,11 +218,11 @@ public class Update extends AppCompatActivity {
                     public void onResponse(String response) {
 
                         String successmsg = response.toString();
-                        Toast.makeText(Update.this, ""+successmsg, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Update.this, "Profile Updated", Toast.LENGTH_SHORT).show();
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
-                           String flag = jsonObject.getString("flag");
-                            if (flag.equals("success")){
+                            String flag = jsonObject.getString("flag");
+                            if (flag.equals("success")) {
                                 String msg = jsonObject.getString("msg");
 //                                Toast.makeText(Update.this, "" + msg, Toast.LENGTH_SHORT).show();
                             }
@@ -242,7 +245,7 @@ public class Update extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 // params.put(KEY,"admin@123");
-                params.put(USER_ID,userId);
+                params.put(USER_ID, userId);
                 params.put(KEY_FNAME, firstname);
                 params.put(KEY_LNAME, lastname);
                 params.put(KEY_EMAIL, email);
@@ -263,7 +266,7 @@ public class Update extends AppCompatActivity {
             @Override
             public void onResponse(NetworkResponse response) {
                 String resultResponse = new String(response.data);
-                Toast.makeText(getApplicationContext(), resultResponse, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Profile Picture Updated", Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override
