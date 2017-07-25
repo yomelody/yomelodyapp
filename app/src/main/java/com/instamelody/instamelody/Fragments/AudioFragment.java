@@ -221,9 +221,7 @@ public class AudioFragment extends Fragment {
                                 fetchSearchData();
                             } else if (strArtist != null) {
                                 fetchRecordingsFilterArtist();
-                            } else if (strInstruments!= null){
-                                fetchRecordingsFilterInstruments();
-                            }else{
+                            } else{
                                 fetchRecordingsFilter();
                             }
 
@@ -246,9 +244,7 @@ public class AudioFragment extends Fragment {
                                     fetchSearchData();
                                 } else if (strArtist != null) {
                                     fetchRecordingsFilterArtist();
-                                } else if (strInstruments!= null){
-                                    fetchRecordingsFilterInstruments();
-                                }else{
+                                } else{
                                     fetchRecordingsFilter();
                                 }
 //                                Toast.makeText(getActivity(), "beta: " + genreString, Toast.LENGTH_SHORT).show();
@@ -675,9 +671,7 @@ public class AudioFragment extends Fragment {
                 fetchSearchData();
             } else if (strArtist != null) {
                 fetchRecordingsFilterArtist();
-            } else if (strInstruments!= null){
-                fetchRecordingsFilterInstruments();
-            }else{
+            } else{
                 fetchRecordingsFilter();
             }
             return null;

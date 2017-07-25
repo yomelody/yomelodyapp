@@ -99,12 +99,12 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     ArrayList instrument_url_count = new ArrayList();
     ArrayList<String> fetch_url_arrayList = new ArrayList<>();
     static int duration1, currentPosition;
-  //  public static boolean playfrom_studio = false;
+    //  public static boolean playfrom_studio = false;
 
     public InstrumentListAdapter(ArrayList<MelodyInstruments> instrumentList, Context context) {
         this.instrumentList = instrumentList;
         this.context = context;
-     //   this.playfrom_studio=false;
+        //   this.playfrom_studio=false;
     }
 
     private boolean hasLoadButton = true;

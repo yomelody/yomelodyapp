@@ -809,8 +809,6 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
                 editorFilterInstruments.putString("stringFilterInstruments", Instruments);
                 editorFilterInstruments.apply();
-                AudioFragment af = new AudioFragment();
-                getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
 
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtFilterInstruments.getWindowToken(), 0);
