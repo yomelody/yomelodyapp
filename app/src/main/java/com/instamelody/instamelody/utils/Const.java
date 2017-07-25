@@ -8,7 +8,7 @@ public class Const {
 
     // web services
     public class ServiceType {
-        private static final String HOST_URL = "http://52.41.33.64/";
+        private static final String HOST_URL = "http://52.89.220.199/";
         private static final String BASE_URL = HOST_URL + "api/";
         public static final String LOGIN = BASE_URL + "login.php";
         public static final String REGISTER = BASE_URL + "registration.php";
@@ -33,6 +33,8 @@ public class Const {
         public static final String USER_CHAT_ID = BASE_URL + "user_chat_id.php";
         public static final String FOLLOWERS = BASE_URL + "followers.php";
         public static final String USERS_BIO = BASE_URL + "users_bio.php";
+        public static final String UPDATEPROFILE = BASE_URL + "updateprofile.php";
+
 //        public static final String USERS_BIO = BASE_URL + "uploads/melody/instruments/";
     }
 

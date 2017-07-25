@@ -1,6 +1,5 @@
 package com.instamelody.instamelody.Adapters;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -55,13 +54,15 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
 
     Context context;
     ArrayList<Contacts> contactsList = new ArrayList<>();
+    String rsList[];
     ArrayList<String> rList = new ArrayList<String>();
-    //    Set<String> recieverId = new HashSet<>();
+    //        Set<String> recieverId = new HashSet<>();
+    String senderID = "";
     String recieverId = "";
     String recieverName = "";
     String receiverToken = "";
     String recieverImage = "";
-
+    String recieverList;
     int Count = 0;
 
     public ContactsAdapter(Context context, ArrayList<Contacts> contactsList) {
@@ -77,7 +78,8 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
 
         public MyViewHolder(final View itemView) {
             super(itemView);
-
+            getItemCount();
+            rsList=new String[contactsList.size()];
             userProfileImage = (ImageView) itemView.findViewById(R.id.userProfileImage);
             tvRealName = (TextView) itemView.findViewById(R.id.tvRealName);
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
@@ -102,13 +104,28 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                         userId = twitterPref.getString("userId", null);
                     }
 
+                    senderID = userId;
+
                     if (grey_circle.getVisibility() == View.VISIBLE) {
                         grey_circle.setVisibility(View.GONE);
                         blue_circle.setVisibility(View.VISIBLE);
                         Count = Count + 1;
-                        recieverId = contactsList.get(getAdapterPosition()).getUser_id();
 
-//                        rList.add(Count - 1, recieverId);
+                        if(Count < 1){
+                            recieverId = contactsList.get(getAdapterPosition()).getUser_id();
+                        }else{
+                            recieverId = contactsList.get(getAdapterPosition()).getUser_id() + ",";
+                        }
+
+                        recieverId = contactsList.get(getAdapterPosition()).getUser_id();
+                        // rList.add(Count - 1, recieverId);
+                        rsList[Count - 1]=recieverId;
+                        // String recieverList = rList.toString();
+                        recieverList =Arrays.toString(rsList);
+//                        String str = recieverList.substring(0, recieverList.length());
+                        // recieverList=recieverList.re
+                        recieverList= recieverList.substring(1, recieverList.length()-1);
+                        Toast.makeText(context, recieverList, Toast.LENGTH_SHORT).show();
 
                         /*List<String> groupNameList = Arrays.asList(rid.split(","));
                         String listnames = "";
@@ -125,13 +142,16 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                         String lname = contactsList.get(getAdapterPosition()).getlName();
                         recieverName = fname + " " + lname;
                         recieverImage = contactsList.get(getAdapterPosition()).getUserProfileImage();
-                        receiverToken = contactsList.get(getAdapterPosition()).getDeviceToken();
+//                        receiverToken = contactsList.get(getAdapterPosition()).getDeviceToken();
                         if (Count >= 1) {
                             ContactsActivity.btnCancel.setVisibility(View.GONE);
                             ContactsActivity.btnOK.setVisibility(View.VISIBLE);
+                            recieverName = "New Group";
                         }
                         if (!userId.equals("")) {
                             getChatId(userId, recieverId);
+
+                            // rsList=new String[contactsList.size()];
                         } else {
                             Toast.makeText(context, "Logged in user null id Error", Toast.LENGTH_SHORT).show();
                         }
@@ -140,7 +160,14 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                         blue_circle.setVisibility(View.GONE);
                         grey_circle.setVisibility(View.VISIBLE);
                         Count = Count - 1;
-                        recieverId = receiverToken = "";
+                        rsList[getAdapterPosition()]="";
+                        //rList.remove(getAdapterPosition());
+                        String recieverList = Arrays.toString(rsList);
+                        recieverList= recieverList.substring(1, recieverList.length()-1);
+                        recieverId=recieverList;
+                        Toast.makeText(context, recieverList, Toast.LENGTH_SHORT).show();
+
+//                        receiverToken = "";
                         if (Count < 1) {
                             ContactsActivity.btnOK.setVisibility(View.GONE);
                             ContactsActivity.btnCancel.setVisibility(View.VISIBLE);
@@ -150,13 +177,15 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                         editor.putString("chatId", "");
                         editor.commit();
                     }
-
+                //    Toast.makeText(context,"sender"+senderID+"-"+ recieverList, Toast.LENGTH_SHORT).show();
                     SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
-                    editor.putString("receiverId", recieverId);
+                    editor.putString("senderId", senderID);
+                    editor.putString("receiverId", recieverList);
                     editor.putString("receiverName", recieverName);
                     editor.putString("receiverImage", recieverImage);
                     editor.commit();
                 }
+
             });
 
 //            if (rList == null) {

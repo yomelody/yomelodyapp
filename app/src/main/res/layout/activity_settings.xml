@@ -83,23 +83,61 @@
             android:layout_centerVertical="true">
 
             <RelativeLayout
-                android:id="@+id/ivLogoContainer"
+                android:id="@+id/rlLogoContainerSettings"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true">
 
                 <ImageView
+                    android:id="@+id/ivLogoContainer"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     app:srcCompat="@drawable/logo" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/userProfileImageSettings"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_centerHorizontal="true"
+                    android:visibility="gone" />
 
             </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/ivLogoContainer"
-                android:layout_marginTop="5dp">
+                android:layout_below="@+id/rlLogoContainerSettings"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/tvFirstNameSettings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/rlImageContainer"
+                    android:layout_centerHorizontal="true"
+                    android:text=""
+                    android:textColor="@android:color/background_light"
+                    android:textSize="20dp"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/tvUserNameSettings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tvFirstNameSettings"
+                    android:layout_centerHorizontal="true"
+                    android:text=""
+                    android:textColor="@android:color/background_light"
+                    android:visibility="visible" />
+            </RelativeLayout>
+
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rlLogoContainerSettings"
+                android:layout_marginTop="50dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -283,6 +321,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rlTos"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -313,6 +352,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rlPrivacyPolicy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 

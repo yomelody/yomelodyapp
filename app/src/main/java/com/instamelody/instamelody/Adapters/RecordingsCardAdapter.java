@@ -244,6 +244,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt");
                     shareIntent.putExtra(Intent.EXTRA_TEXT, RecordingURL);
                     shareIntent.setType("image/jpeg");
+                    shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(Intent.createChooser(shareIntent, "Hello."));
                 }
             });
@@ -286,6 +287,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     editor.commit();
 
                     Intent intent = new Intent(context, CommentsActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);
 
                 }
@@ -496,6 +498,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 holder.seekBarRecordings.setProgress(0);
             }
         });
+
 
 
 //        holder.tvIncludedCount.setText(String.valueOf(recordingList.get(listPosition).getTvIncludedCount()));
