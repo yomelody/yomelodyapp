@@ -8,7 +8,7 @@ public class Const {
 
     // web services
     public class ServiceType {
-        private static final String HOST_URL = "http://52.41.33.64/";
+        private static final String HOST_URL = "http://52.89.220.199/";
         private static final String BASE_URL = HOST_URL + "api/";
         public static final String LOGIN = BASE_URL + "login.php";
         public static final String REGISTER = BASE_URL + "registration.php";

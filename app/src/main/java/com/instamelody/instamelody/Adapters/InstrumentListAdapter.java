@@ -241,6 +241,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
+
+
         final MelodyInstruments instruments = instrumentList.get(listPosition);
         String abc = instrumentList.get(listPosition).getInstrumentFile();
 //        Toast.makeText(context, "" + abc, Toast.LENGTH_SHORT).show();
@@ -417,12 +419,19 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     }
 
     public void playAudio() throws IOException {
-//            killMediaPlayer();
+            killMediaPlayer();
         mp = new MediaPlayer();
+        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
 //        mp.setDataSource(audioFilePath);
         mp.setDataSource(instrumentFile);
-        mp.prepare();
-        mp.start();
+        mp.prepareAsync();
+        mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.start();
+            }
+        });
+
         duration1 = mp.getDuration();
         currentPosition = mp.getCurrentPosition();
     }
