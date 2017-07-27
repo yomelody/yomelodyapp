@@ -397,21 +397,15 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
 
     public void playAudio1() throws IOException {
-//        killMediaPlayer();
+        killMediaPlayer();
         audioFilePath =
                 Environment.getExternalStorageDirectory().getAbsolutePath()
                         + "/InstaMelody.mp3";
         mp = new MediaPlayer();
-        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mp.setDataSource(audioFilePath);
 //        mp.setDataSource(instrumentFile);
-        mp.prepareAsync();
-        mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                mp.start();
-            }
-        });
+        mp.prepare();
+        mp.start();
         //   mp.start();
         duration1 = mp.getDuration();
         currentPosition = mp.getCurrentPosition();
@@ -421,16 +415,17 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     public void playAudio() throws IOException {
             killMediaPlayer();
         mp = new MediaPlayer();
-        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+//        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
 //        mp.setDataSource(audioFilePath);
         mp.setDataSource(instrumentFile);
-        mp.prepareAsync();
-        mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                mp.start();
-            }
-        });
+        mp.prepare();
+        mp.start();
+//        mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+//            @Override
+//            public void onPrepared(MediaPlayer mp) {
+//                mp.start();
+//            }
+//        });
 
         duration1 = mp.getDuration();
         currentPosition = mp.getCurrentPosition();
