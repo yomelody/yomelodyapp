@@ -539,7 +539,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         killMediaPlayer();
 
         mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+    //    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.setDataSource(url);
         mediaPlayer.prepare();
         mediaPlayer.start();
