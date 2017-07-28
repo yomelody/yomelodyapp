@@ -35,6 +35,7 @@ public class Const {
         public static final String FOLLOWERS = BASE_URL + "followers.php";
         public static final String USERS_BIO = BASE_URL + "users_bio.php";
         public static final String UPDATEPROFILE = BASE_URL + "updateprofile.php";
+        public static final String SHAREFILE = BASE_URL + "sharefile.php";
 
 //        public static final String USERS_BIO = BASE_URL + "uploads/melody/instruments/";
     }

@@ -203,6 +203,7 @@
                             android:orientation="horizontal">
 
                             <RelativeLayout
+                                android:id="@+id/rlFX"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="0.33">
@@ -221,6 +222,7 @@
                             </RelativeLayout>
 
                             <RelativeLayout
+                                android:id="@+id/rlEQ"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="0.33">

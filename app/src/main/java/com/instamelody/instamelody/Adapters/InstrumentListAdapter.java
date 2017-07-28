@@ -1,75 +1,39 @@
 package com.instamelody.instamelody.Adapters;
 
 
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
-import android.support.annotation.LayoutRes;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.util.Pools;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.instamelody.instamelody.MainActivity;
-import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.R;
-import com.instamelody.instamelody.StudioActivity;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
-import okhttp3.internal.Util;
-
-import static android.R.attr.duration;
-import static android.R.attr.resumeWhilePausing;
 import static android.content.Context.MODE_PRIVATE;
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 import static com.facebook.FacebookSdk.getApplicationContext;
-import static com.instamelody.instamelody.R.attr.position;
-import static com.instamelody.instamelody.R.id.melodySlider;
-import static com.instamelody.instamelody.R.id.rlSeekbarTracer;
-import static com.instamelody.instamelody.R.id.visible;
 
 /**
  * Created by Saurabh Singh on 06/04/17
@@ -99,7 +63,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     ArrayList instrument_url_count = new ArrayList();
     ArrayList<String> fetch_url_arrayList = new ArrayList<>();
     static int duration1, currentPosition;
-    boolean playfrom_studio = false;
+    RelativeLayout rlFX,rlEQ,FXContext,EQContext;
 
     public InstrumentListAdapter(ArrayList<MelodyInstruments> instrumentList, Context context) {
         this.instrumentList = instrumentList;
@@ -154,6 +118,10 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             rlSync = (RelativeLayout) itemView.findViewById(R.id.rlSync);
             blue_circle = (ImageView) itemView.findViewById(R.id.blue_circle);
             grey_circle = (ImageView) itemView.findViewById(R.id.grey_circle);
+            rlFX = (RelativeLayout) itemView.findViewById(R.id.rlFX);
+            rlEQ = (RelativeLayout) itemView.findViewById(R.id.rlEQ);
+            FXContext = (RelativeLayout) itemView.findViewById(R.id.fxContent);
+            EQContext = (RelativeLayout) itemView.findViewById(R.id.eqContent);
 
 
             ivPause.setOnClickListener(new View.OnClickListener() {
@@ -216,6 +184,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     melodySlider.setProgress(0);
                 }
             });
+
 
 
         }
@@ -295,6 +264,21 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
 
         audioValue = instruments.getAudioType();
+        rlEQ.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                FXContext.setVisibility(View.GONE);
+                EQContext.setVisibility(View.VISIBLE);
+            }
+        });
+        rlFX.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FXContext.setVisibility(View.VISIBLE);
+                EQContext.setVisibility(View.GONE);
+            }
+        });
         holder.ivPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -102,7 +102,6 @@ public class AudioFragment extends Fragment {
     String userIdNormal, userIdFb, userIdTwitter;
     int statusNormal, statusFb, statusTwitter;
     ProgressDialog progressDialog;
-    ProgressBar pbr;
     LongOperation myTask = null;
     String strName, strSearch, strArtist, strInstruments;
     AudioBackGroupProcess LoadAudio=null;
@@ -113,7 +112,6 @@ public class AudioFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_audio, container, false);
-        pbr = (ProgressBar) view.findViewById(R.id.pbbar);
         setRetainInstance(true);
         return view;
     }
@@ -157,9 +155,9 @@ public class AudioFragment extends Fragment {
 
         if (strName == null && strSearch == null) {
             //new AudioBackGroupProcess().execute();
-            LoadAudio = new AudioBackGroupProcess();
-            LoadAudio.execute();
-            //fetchRecordings();
+           /* LoadAudio = new AudioBackGroupProcess();
+            LoadAudio.execute();*/
+            fetchRecordings();
         } else if (strSearch != null) {
             fetchSearchData();
         } else if (strArtist != null) {
@@ -619,12 +617,11 @@ public class AudioFragment extends Fragment {
 
     private class LongOperation extends AsyncTask<String, Void, String> {
         protected void onPreExecute() {
-           /* progressDialog = new ProgressDialog(getActivity());
+            progressDialog = new ProgressDialog(getActivity());
             progressDialog.setTitle("Processing...");
             progressDialog.setMessage("Please wait...");
             progressDialog.setCancelable(false);
-            progressDialog.show();*/
-            pbr.setVisibility(View.VISIBLE);
+            progressDialog.show();
         }
 
         protected String doInBackground(String... params) {
@@ -687,8 +684,7 @@ public class AudioFragment extends Fragment {
         }
 
         protected void onPostExecute(String result) {
-            pbr.setVisibility(View.GONE);
-            //progressDialog.dismiss();
+            progressDialog.dismiss();
         }
 
     }
@@ -699,7 +695,7 @@ public class AudioFragment extends Fragment {
             progressDialog.setMessage("Please wait...");
             progressDialog.setCancelable(false);
             progressDialog.show();
-            //pbr.setVisibility(View.VISIBLE);
+
         }
 
         protected String doInBackground(String... params) {
@@ -718,7 +714,6 @@ public class AudioFragment extends Fragment {
         }
 
         protected void onPostExecute(String result) {
-            //pbr.setVisibility(View.GONE);
             progressDialog.dismiss();
         }
 
