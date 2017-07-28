@@ -505,8 +505,10 @@ public class SignInActivity extends AppCompatActivity {
                         String errorMsg = "";
                         if (error instanceof TimeoutError || error instanceof NoConnectionError) {
                             errorMsg = "There is either no connection or it timed out.";
+                            btnLogIn.setEnabled(false);
                         } else if (error instanceof AuthFailureError) {
                             errorMsg = "AuthFailureError";
+                            btnLogIn.setEnabled(false);
                         } else if (error instanceof ServerError) {
                             errorMsg = "ServerError";
                         } else if (error instanceof NetworkError) {
@@ -515,6 +517,7 @@ public class SignInActivity extends AppCompatActivity {
                             errorMsg = "ParseError";
                         }
                         Toast.makeText(SignInActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+
                         Log.d("Error", errorMsg);
                     }
                 }) {
