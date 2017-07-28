@@ -177,7 +177,7 @@ public class StudioActivity extends AppCompatActivity {
     Timer myTimer;
     Chronometer chrono;
     ImageView audio_feed, grey_circle, blue_circle;
-    TextView tvPublic, tvDone, tvInfo, recording_date, melody_date, melody_detail;
+    TextView  tvPublic, tvDone, tvInfo, recording_date, melody_date, melody_detail;
     EditText subEtTopicName;
     Spinner sp;
     RadioGroup rgR;
@@ -262,7 +262,7 @@ public class StudioActivity extends AppCompatActivity {
         ivRecord_pause = (ImageView) findViewById(R.id.ivRecord_pause);
         profile_image = (CircleImageView) findViewById(R.id.profile_image);
         artist_name = (TextView) findViewById(R.id.artist_name);
-        //  recording_time = (TextView) findViewById(R.id.recording_time);
+      //  recording_time = (TextView) findViewById(R.id.recording_time);
         melody_detail = (TextView) findViewById(R.id.melody_detail);
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         firstName = loginSharedPref.getString("firstName", null);
@@ -291,8 +291,8 @@ public class StudioActivity extends AppCompatActivity {
         waveform_view = (com.instamelody.instamelody.utils.WaveformView) findViewById(R.id.waveform_view);
         mDecibelView = (TextView) findViewById(R.id.decibel_view);
         startTime = SystemClock.elapsedRealtime();
-        //  myTimer = new Timer();
-        //   timeElapsed = SystemClock.elapsedRealtime() - chrono.getBase();
+      //  myTimer = new Timer();
+     //   timeElapsed = SystemClock.elapsedRealtime() - chrono.getBase();
         rlInviteButton = (RelativeLayout) findViewById(R.id.rlInviteButton);
         rlPublic = (RelativeLayout) findViewById(R.id.rlPublic);
         recyclerViewInstruments = (RecyclerView) findViewById(R.id.recyclerViewInstruments);
@@ -317,6 +317,9 @@ public class StudioActivity extends AppCompatActivity {
         String dateString = sdf.format(date);
         recording_date.setText(dateString);
         melody_date.setText(dateString);
+
+
+
 
 
         Intent intent = getIntent();
@@ -1009,13 +1012,14 @@ public class StudioActivity extends AppCompatActivity {
         builder2.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                saveRecordings1();
-
-                //  new LongOperation().execute();
-
+              //  saveRecordings1();
+              //  myTask = new LongOperation();
+                new LongOperation().execute();
+          //      new LongOperation().execute();
+               // getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
                 // getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
-                //   dialog.cancel();
+             //   dialog.cancel();
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtTopicName.getWindowToken(), 0);
             }
@@ -1160,13 +1164,14 @@ public class StudioActivity extends AppCompatActivity {
     }
 
     public void recordAudio() {
-        AudioManager am1 = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        Log.i("WiredHeadsetOn = ", am1.isWiredHeadsetOn() + "");
-        if (am1.isWiredHeadsetOn() == true) {
-            Toast.makeText(this, "Headset is connected", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Headset not connected", Toast.LENGTH_SHORT).show();
-        }
+        AudioManager am1 = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        Log.i("WiredHeadsetOn = ", am1.isWiredHeadsetOn()+"");
+      if(am1.isWiredHeadsetOn()==true){
+          Toast.makeText(this, "Headset is connected", Toast.LENGTH_SHORT).show();
+      }
+      else{
+          Toast.makeText(this, "Headset not connected", Toast.LENGTH_SHORT).show();
+      }
         recorder = new MediaRecorder();
         //     recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -1533,13 +1538,12 @@ public class StudioActivity extends AppCompatActivity {
     }
 
 
-    public void uploadRecordings(final String id) {
+    private void uploadRecordings(final String id) {
+
 
         VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPLOAD_COVER_MELODY_FILE, new Response.Listener<NetworkResponse>() {
             @Override
             public void onResponse(NetworkResponse response) {
-
-                String urlRecording;
                 String resultResponse = new String(response.data);
 
                 Log.d("Server Data", resultResponse);
@@ -1553,12 +1557,7 @@ public class StudioActivity extends AppCompatActivity {
                     String flag2 = response1.getString("0");
                     Log.d("Result", flag2);
                     JSONObject r1 = response1.getJSONObject("0");
-                    if (r1.has("melody")) {
-                        urlRecording = r1.getString("melody");
-                    } else {
-                        urlRecording = r1.getString("recording");
-                    }
-
+                    urlRecording = r1.getString("recording");
                     if (flag.equals("success")) {
 
                         //adapter.notifyItemInserted(instrumentList.size()-1);
@@ -1578,11 +1577,10 @@ public class StudioActivity extends AppCompatActivity {
                             melodyInstruments.setUserName(userName);
                             melodyInstruments.setInstrumentFile(urlRecording);
 //                        melodyInstruments.setAudioType("recording");
-                            instrumentList.add(melodyInstruments);
-                            adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
-                            recyclerViewInstruments.setAdapter(adapter);
-                            adapter.notifyDataSetChanged();
-                        }
+                        instrumentList.add(melodyInstruments);
+                        //adapter.notifyItemInserted(instrumentList.size()-1);
+                        adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+                        adapter.notifyDataSetChanged();
 
                         if (progressDialog != null) {
                             if (progressDialog.isShowing()) {
@@ -1783,7 +1781,7 @@ public class StudioActivity extends AppCompatActivity {
 
 
         for (int i = 0; i < InstrumentCountSize; i++) {
-            Log.d("Instrument url----------------:", "" + instrumentList.get(i).getInstrumentFile());
+            Log.d("Instrument url----------------:",""+instrumentList.get(i).getInstrumentFile());
             mp = new MediaPlayer();
             mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mp.setDataSource(instrumentList.get(i).getInstrumentFile());
@@ -1868,10 +1866,10 @@ public class StudioActivity extends AppCompatActivity {
         }
 
         public void onPostExecute(String result) {
-            //    Toast.makeText(StudioActivity.this, value1 + "  " + "SAVE", Toast.LENGTH_SHORT).show();
+
 ////            adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
-////            adapter.notifyDataSetChanged();
 //            adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+//            adapter.notifyDataSetChanged();
 //            adapter.notifyDataSetChanged();
             frameSync.setVisibility(View.GONE);
             progressDialog.dismiss();
