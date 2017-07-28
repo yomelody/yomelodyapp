@@ -26,6 +26,8 @@ import com.instamelody.instamelody.CommentsActivity;
 import com.instamelody.instamelody.JoinActivity;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
+import com.instamelody.instamelody.Models.UserMelodyCard;
+import com.instamelody.instamelody.Models.UserMelodyPlay;
 import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;

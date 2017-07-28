@@ -1,11 +1,14 @@
 package com.instamelody.instamelody.Models;
 
+import android.graphics.Bitmap;
+
 /**
  * Created by Shubhansh Jaiswal on 25/01/17.
  */
 
 public class RecentImagesModel {
-    String name, filepath, bitmap;
+    String name, filepath;
+    Bitmap bitmap;
 
     public String getName() {
         return name;
@@ -23,11 +26,11 @@ public class RecentImagesModel {
         this.filepath = filepath;
     }
 
-    public String getBitmap() {
+    public Bitmap getBitmap() {
         return bitmap;
     }
 
-    public void setBitmap(String bitmap) {
+    public void setBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;
     }
 }
