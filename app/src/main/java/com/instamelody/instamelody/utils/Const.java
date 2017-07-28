@@ -14,6 +14,7 @@ public class Const {
         public static final String REGISTER = BASE_URL + "registration.php";
         public static final String GENERE = BASE_URL + "genere.php";
         public static final String MELODY = BASE_URL + "melody.php";
+        public static final String MY_MELODY = BASE_URL + "Mymelody.php";
         public static final String LIKESAPI = BASE_URL + "likes.php";
         public static final String ADD_RECORDINGS = BASE_URL + "Add_Recording.php";
         public static final String PLAY_COUNT = BASE_URL + "playcount.php";

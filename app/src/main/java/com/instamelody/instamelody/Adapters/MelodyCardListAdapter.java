@@ -29,6 +29,8 @@ import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
+import com.instamelody.instamelody.Models.UserMelodyCard;
+import com.instamelody.instamelody.Models.UserMelodyPlay;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
@@ -60,6 +62,8 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     static ArrayList<MelodyCard> melodyList = new ArrayList<>();
     ArrayList<String> mpids = new ArrayList<>();
     private static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
+    ArrayList<UserMelodyCard> userMelodyCardArrayList = new ArrayList<>();
+    ArrayList<UserMelodyPlay> userMelodyPlays = new ArrayList<>();
     String melodyName,fetchRecordingUrl;
 
     String USER_TYPE = "user_type";
@@ -86,6 +90,15 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         this.melodyList = melodyList;
         this.context = context;
     }
+
+    public MelodyCardListAdapter(ArrayList<UserMelodyCard> melodyList, ArrayList<UserMelodyPlay> melodyPools,Context context) {
+        this.userMelodyCardArrayList = melodyList;
+        this.userMelodyPlays = melodyPools;
+        this.context = context;
+    }
+
+
+
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -438,10 +451,6 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         {
             holder.ivDislikeButton.setVisibility(VISIBLE);
         }
-
-
-
-
 
     }
 
