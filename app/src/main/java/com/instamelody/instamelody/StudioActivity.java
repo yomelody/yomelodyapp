@@ -231,6 +231,7 @@ public class StudioActivity extends AppCompatActivity {
     ArrayList<String> urls;
     MediaPlayer[] media;
     List<MediaPlayer> mps = new ArrayList<MediaPlayer>();
+    public static boolean playfrom_studio = false;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -1398,8 +1399,7 @@ public class StudioActivity extends AppCompatActivity {
         progressDialog.setMessage("Please wait...");
         progressDialog.setCancelable(false);
         progressDialog.show();
-        MelodyInstruments mi = new MelodyInstruments();
-        final int instrumentId = mi.getInstrumentId();
+
 
 //        final CountDownLatch countDownLatch = new CountDownLatch(1);
 //        final Object[] responseHolder = new Object[1];
@@ -1449,7 +1449,7 @@ public class StudioActivity extends AppCompatActivity {
                             if (flag.equals("success")) {
                                 //   new LongOperation().execute();
 
-                                uploadRecordings(idUpload);
+                                uploadRecordings(melodyData.getString("id"));
 
                                 /*myTask = new LongOperation();
                                 myTask.execute();*/
@@ -1507,8 +1507,8 @@ public class StudioActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 // params.put(KEY,"admin@123");
-                params.put(ADMIN_INSTRUMENT_ID, String.valueOf(instrumentId));
-//                params.put(USER_INSTRUMENT_ID,null);
+                params.put(ADMIN_INSTRUMENT_ID, String.valueOf(MelodyInstruments.getInstrumentId()));
+                //  params.put(USER_INSTRUMENT_ID,null);
                 params.put(RECORDING_TYPE, value);
                 params.put(USER_ID, userId);
                 params.put(RECORDING_NAME, subEtTopicName.getText().toString().trim());
@@ -1624,7 +1624,6 @@ public class StudioActivity extends AppCompatActivity {
 
                                     SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("cover response", MODE_PRIVATE).edit();
                                     editor.putString("coverPicStudio", coverPic);
-
                                     editor.commit();
 
 
@@ -1778,8 +1777,11 @@ public class StudioActivity extends AppCompatActivity {
     public void playAudioRecycler() throws IOException {
         //This for loop modified by Abhishek
         //      InstrumentListAdapter.playfrom_studio = true;
-        //   adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+           playfrom_studio=true;
+           adapter = new InstrumentListAdapter(playfrom_studio, getApplicationContext());
         //     adapter.notifyDataSetChanged();
+
+
         for (int i = 0; i < InstrumentCountSize; i++) {
             Log.d("Instrument url----------------:", "" + instrumentList.get(i).getInstrumentFile());
             mp = new MediaPlayer();
