@@ -117,6 +117,7 @@ public class AudioFragment extends Fragment {
         setRetainInstance(true);
         return view;
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,14 +133,15 @@ public class AudioFragment extends Fragment {
 
         fetchGenreNames();
 
+        if (strName == null && strSearch == null) {
             fetchRecordings();
         } else if (strSearch != null) {
             fetchSearchData();
         } else if (strArtist != null) {
-        } else if (strInstruments!= null){
-            fetchRecordingsFilterInstruments();
-        }else{
-
+            fetchRecordingsFilterArtist();
+        } else{
+            fetchRecordingsFilter();
+        }
 
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);

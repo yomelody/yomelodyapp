@@ -141,9 +141,17 @@ public class ContactsActivity extends AppCompatActivity {
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                editor.putString("receiverId", "");
+                editor.putString("receiverName", "");
+                editor.putString("receiverImage", "");
+                editor.putString("chatId", "");
+                editor.commit();
+
                 finish();
                 String caller = getIntent().getStringExtra("Previous");
-                Intent intent = new Intent();
+                Intent intent;
                 if (caller == "chat") {
                     intent = new Intent(getApplicationContext(), ChatActivity.class);
                 } else {
@@ -158,11 +166,37 @@ public class ContactsActivity extends AppCompatActivity {
         {
             @Override
             public void onClick(View v) {
+
+                SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                editor.putString("receiverId", "");
+                editor.putString("receiverName", "");
+                editor.putString("receiverImage", "");
+                editor.putString("chatId", "");
+                editor.commit();
+
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
             }
         });
+    }
 
+    @Override
+    public void onBackPressed() {
+        SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+        editor.putString("receiverId", "");
+        editor.putString("receiverName", "");
+        editor.putString("receiverImage", "");
+        editor.putString("chatId", "");
+        editor.commit();
+        finish();
+        String caller = getIntent().getStringExtra("Previous");
+        Intent intent;
+        if (caller == "chat") {
+            intent = new Intent(getApplicationContext(), ChatActivity.class);
+        } else {
+            intent = new Intent(getApplicationContext(), MessengerActivity.class);
+        }
+        startActivity(intent);
     }
 
     public void getContacts() {

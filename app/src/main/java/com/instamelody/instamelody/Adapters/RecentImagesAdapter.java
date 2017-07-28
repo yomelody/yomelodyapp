@@ -4,6 +4,8 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,9 @@ import android.widget.ImageView;
 
 import com.instamelody.instamelody.Models.RecentImagesModel;
 import com.instamelody.instamelody.R;
+import com.squareup.picasso.Picasso;
+
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 /**
@@ -22,6 +27,7 @@ public class RecentImagesAdapter extends RecyclerView.Adapter<RecentImagesAdapte
 
     ArrayList<RecentImagesModel> fileList = new ArrayList<>();
     Context context;
+
     public RecentImagesAdapter(ArrayList<RecentImagesModel> filesArray, Context context) {
         this.fileList = filesArray;
         this.context = context;
@@ -53,8 +59,14 @@ public class RecentImagesAdapter extends RecyclerView.Adapter<RecentImagesAdapte
     @TargetApi(19)
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int listPosition) {
+
+
         Bitmap myBitmap = BitmapFactory.decodeFile(fileList.get(listPosition).getFilepath());
-        holder.galleryImages.setImageBitmap(Bitmap.createScaledBitmap(myBitmap, myBitmap.getWidth()/3, myBitmap.getHeight()/3, false));
+        holder.galleryImages.setImageBitmap(Bitmap.createScaledBitmap(myBitmap, myBitmap.getWidth() / 10, myBitmap.getHeight() / 10, false));
+        if (myBitmap != null) {
+            myBitmap.recycle();
+            myBitmap = null;
+        }
     }
 
     @Override
