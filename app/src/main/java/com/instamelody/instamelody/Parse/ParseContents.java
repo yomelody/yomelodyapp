@@ -1,13 +1,19 @@
 package com.instamelody.instamelody.Parse;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.security.keystore.KeyInfo;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.instamelody.instamelody.ChatActivity;
 import com.instamelody.instamelody.ContactsActivity;
+import com.instamelody.instamelody.Models.AudioModel;
+import com.instamelody.instamelody.Models.Chat;
 import com.instamelody.instamelody.Models.Comments;
 import com.instamelody.instamelody.Models.Contacts;
 import com.instamelody.instamelody.Models.Genres;
@@ -16,6 +22,9 @@ import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
+import com.instamelody.instamelody.Models.UserMelodyCard;
+import com.instamelody.instamelody.Models.UserMelodyPlay;
+import com.instamelody.instamelody.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -115,7 +124,7 @@ public class ParseContents {
                     for (int j = 0; j < instrumentArray.length(); j++) {
                         MelodyInstruments melodyInstruments = new MelodyInstruments();
                         JSONObject instrumentsJson = instrumentArray.getJSONObject(j);
-                        melodyInstruments.setInstrumentId(instrumentsJson.getInt(KEY_INSTRUMENT_ID));
+                        MelodyInstruments.setInstrumentId(instrumentsJson.getInt(KEY_INSTRUMENT_ID));
                         int a = instrumentsJson.getInt(KEY_INSTRUMENT_ID);
                         melodyInstruments.setInstrumentName(instrumentsJson.getString(KEY_INSTRUMENT_NAME));
                         melodyInstruments.setInstrumentType(instrumentsJson.getString(KEY_INSTRUMENT_TYPE));
