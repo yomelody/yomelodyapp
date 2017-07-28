@@ -29,6 +29,8 @@ import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
+import com.instamelody.instamelody.Models.UserMelodyCard;
+import com.instamelody.instamelody.Models.UserMelodyPlay;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
@@ -60,6 +62,8 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     static ArrayList<MelodyCard> melodyList = new ArrayList<>();
     ArrayList<String> mpids = new ArrayList<>();
     private static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
+    ArrayList<UserMelodyCard> userMelodyCardArrayList = new ArrayList<>();
+    ArrayList<UserMelodyPlay> userMelodyPlays = new ArrayList<>();
     String melodyName,fetchRecordingUrl;
 
     String USER_TYPE = "user_type";
@@ -86,6 +90,15 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         this.melodyList = melodyList;
         this.context = context;
     }
+
+    public MelodyCardListAdapter(ArrayList<UserMelodyCard> melodyList, ArrayList<UserMelodyPlay> melodyPools,Context context) {
+        this.userMelodyCardArrayList = melodyList;
+        this.userMelodyPlays = melodyPools;
+        this.context = context;
+    }
+
+
+
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -131,7 +144,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             rlshare=(RelativeLayout)itemView.findViewById(R.id.rlShare);
 
 
-           // MelodyName=tvMelodyName.getText().toString().trim();
+            // MelodyName=tvMelodyName.getText().toString().trim();
             ivPlay.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -439,10 +452,6 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             holder.ivDislikeButton.setVisibility(VISIBLE);
         }
 
-
-
-
-
     }
 
     @Override
@@ -488,7 +497,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                 //       Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
+                        //       Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
                         JSONObject jsonObject, respObject;
 
                         try {
@@ -496,7 +505,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
                                 respObject = jsonObject.getJSONObject(KEY_RESPONSE);
                                 String str = respObject.getString("play_count");
-                          //      Toast.makeText(context, "" + str, Toast.LENGTH_SHORT).show();
+                                //      Toast.makeText(context, "" + str, Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -506,7 +515,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                 //       Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
+                        //       Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
                         String errorMsg = error.toString();
                         Log.d("Error", errorMsg);
                     }
@@ -517,7 +526,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 params.put(USER_TYPE, "admin");
                 params.put(USERID, userId);
                 params.put(FILEID, pos);
-            //    params.put(TYPE, "admin_melody");
+                //    params.put(TYPE, "admin_melody");
                 params.put(TYPE, "melody");
                 return params;
             }
@@ -532,15 +541,16 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.setDataSource(url);
-        mediaPlayer.prepareAsync();
-        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                mp.start();
-            }
-        });
-        mediaPlayer.seekTo(playerPos);
+        mediaPlayer.prepare();
         mediaPlayer.start();
+//        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+//            @Override
+//            public void onPrepared(MediaPlayer mp) {
+//                mp.start();
+//            }
+//        });
+        mediaPlayer.seekTo(playerPos);
+      //  mediaPlayer.start();
         duration = mediaPlayer.getDuration();
     }
 

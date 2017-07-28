@@ -25,9 +25,6 @@ public class ActivityModel {
         return UserImgURL;
     }
 
-   /* public void setUserImgURL(String userImgURL) {
-        return UserImgURL;
-    }*/
 
     public int getId_() {
         return id_;
