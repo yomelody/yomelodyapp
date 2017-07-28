@@ -32,6 +32,8 @@ import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
+import com.instamelody.instamelody.Models.UserMelodyCard;
+import com.instamelody.instamelody.Models.UserMelodyPlay;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
@@ -71,6 +73,8 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     ArrayList<String> mpids = new ArrayList<>();
     private ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     private ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
+    ArrayList<UserMelodyCard> userMelodyList = new ArrayList<>();
+    ArrayList<UserMelodyPlay> melodyPools = new ArrayList<>();
     //String LIKE_MELODY_URL = "http://35.165.96.167/api/likes.php";
     String USER_TYPE = "user_type";
     String USER_ID = "user_id";
@@ -90,6 +94,12 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     public RecordingsCardAdapter(Context context, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools) {
         this.recordingList = recordingList;
         this.recordingsPools = recordingsPools;
+        this.context = context;
+    }
+
+    public RecordingsCardAdapter( ArrayList<UserMelodyCard> userMelodyList,  ArrayList<UserMelodyPlay> melodyPools ,Context context) {
+        this.userMelodyList = userMelodyList;
+        this.melodyPools = melodyPools;
         this.context = context;
     }
 

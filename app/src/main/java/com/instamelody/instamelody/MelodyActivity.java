@@ -103,8 +103,8 @@ public class MelodyActivity extends AppCompatActivity {
     private String USER_NAME = "username";
     private String KEY = "key";
     String genreString = "1";
-    String strArtist,strSearch,userId;
-    EditText subEtFilterName;
+    String strArtist,strSearch,userId,Instruments,BPM;
+    EditText subEtFilterName,subEtFilterInstruments,subEtFilterBPM;
 
 
     ImageView discover, message, ivBackButton, ivHomeButton, ivProfile,audio_feed,ivMelodyFilter;
@@ -309,6 +309,10 @@ public class MelodyActivity extends AppCompatActivity {
                         strName = arrayAdapter.getItem(which);
                         if (strName.equals("Artist")) {
                             openDialog();
+                        }else if(strName.equals("# of Instruments")){
+                            openDialogInstruments();
+                        } else if (strName.equals("BPM")){
+                            openDialogBPM();
                         } else {
                             AlertDialog.Builder builderInner = new AlertDialog.Builder(MelodyActivity.this);
                             builderInner.setMessage(strName);
@@ -581,7 +585,8 @@ public class MelodyActivity extends AppCompatActivity {
                 SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
                 editorFilterArtist.putString("stringFilterArtist", strArtist);
                 editorFilterArtist.apply();
-                fetchRecordingsFilterArtist();
+                AudioFragment af = new AudioFragment();
+                getFragmentManager().beginTransaction().replace(R.id.activity_melody, af).commit();
 
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtFilterName.getWindowToken(), 0);
@@ -599,6 +604,110 @@ public class MelodyActivity extends AppCompatActivity {
         });
 
         builder2.show();
+    }
+
+    private void openDialogInstruments() {
+        LayoutInflater inflater = LayoutInflater.from(MelodyActivity.this);
+        View subView = inflater.inflate(R.layout.dialog_layout, null);
+
+        subEtFilterInstruments = (EditText) subView.findViewById(R.id.dialogEtTopicName);
+
+        android.support.v7.app.AlertDialog.Builder builder3 = new android.support.v7.app.AlertDialog.Builder(this);
+        builder3.setTitle("Number of Instruments");
+        builder3.setMessage("Give Instruments Value to Filter");
+        builder3.setView(subView);
+
+        TextView title = new TextView(this);
+        title.setText("Instruments");
+        title.setBackgroundColor(Color.DKGRAY);
+        title.setPadding(10, 10, 10, 10);
+        title.setGravity(Gravity.CENTER);
+        title.setTextColor(Color.WHITE);
+        title.setTextSize(20);
+
+        builder3.setCustomTitle(title);
+
+        builder3.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //tvInfo.setText(subEtTopicName.getText().toString());
+                Instruments = subEtFilterInstruments.getText().toString().trim();
+                SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
+                editorFilterInstruments.putString("stringFilterInstruments", Instruments);
+                editorFilterInstruments.apply();
+
+                AudioFragment af = new AudioFragment();
+                getFragmentManager().beginTransaction().replace(R.id.activity_melody, af).commit();
+
+
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(subEtFilterInstruments.getWindowToken(), 0);
+
+            }
+        });
+
+        builder3.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(subEtFilterInstruments.getWindowToken(), 0);
+            }
+        });
+
+        builder3.show();
+    }
+
+    private void openDialogBPM() {
+        LayoutInflater inflater = LayoutInflater.from(MelodyActivity.this);
+        View subView = inflater.inflate(R.layout.dialog_layout, null);
+
+        subEtFilterBPM = (EditText) subView.findViewById(R.id.dialogEtTopicName);
+
+        android.support.v7.app.AlertDialog.Builder builder3 = new android.support.v7.app.AlertDialog.Builder(this);
+        builder3.setTitle("BPM");
+        builder3.setMessage("Give BPM Value to Filter");
+        builder3.setView(subView);
+
+        TextView title = new TextView(this);
+        title.setText("BPM");
+        title.setBackgroundColor(Color.DKGRAY);
+        title.setPadding(10, 10, 10, 10);
+        title.setGravity(Gravity.CENTER);
+        title.setTextColor(Color.WHITE);
+        title.setTextSize(20);
+
+        builder3.setCustomTitle(title);
+
+        builder3.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //tvInfo.setText(subEtTopicName.getText().toString());
+                BPM = subEtFilterBPM.getText().toString().trim();
+                SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
+                editorFilterBPM.putString("stringFilterBPM", BPM);
+                editorFilterBPM.apply();
+
+                AudioFragment af = new AudioFragment();
+                getFragmentManager().beginTransaction().replace(R.id.activity_melody, af).commit();
+
+
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(subEtFilterBPM.getWindowToken(), 0);
+
+            }
+        });
+
+        builder3.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(subEtFilterBPM.getWindowToken(), 0);
+            }
+        });
+
+        builder3.show();
     }
 
     public void fetchSearchData() {

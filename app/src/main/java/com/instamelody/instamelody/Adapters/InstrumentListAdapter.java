@@ -207,6 +207,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
+                    melodySlider.setProgress(0);
                 }
             });
 

@@ -22,6 +22,8 @@ import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
+import com.instamelody.instamelody.Models.UserMelodyCard;
+import com.instamelody.instamelody.Models.UserMelodyPlay;
 import com.instamelody.instamelody.R;
 
 import org.json.JSONArray;
@@ -416,6 +418,64 @@ public class ParseContents {
             e.printStackTrace();
         }
         return recordingList;
+    }
+
+    public ArrayList<UserMelodyCard> parseUserMelody(String response, ArrayList<UserMelodyCard> melodyList, ArrayList<UserMelodyPlay> melodyPools) {
+        JSONObject jsonObject;
+        JSONArray jsonArray, instrumentArray;
+
+        try {
+            jsonObject = new JSONObject(response);
+            if (jsonObject.getString(KEY_FLAG).equals("success")) {
+                jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    UserMelodyCard cardMelody = new UserMelodyCard();
+                    JSONObject cardJson = jsonArray.getJSONObject(i);
+                    cardMelody.setId(cardJson.getString("id"));
+                    cardMelody.setUsername(cardJson.getString("username"));
+                    cardMelody.setName(cardJson.getString("name"));
+                    cardMelody.setLogintype(cardJson.getString("logintype"));
+                    cardMelody.setProfile_url(cardJson.getString("profile_url"));
+                    cardMelody.setCover_url(cardJson.getString("cover_url"));
+
+                    instrumentArray = cardJson.getJSONArray("response");
+
+                    for (int j = 0; j < instrumentArray.length(); j++) {
+                        UserMelodyPlay u = new UserMelodyPlay();
+                        JSONObject instrumentJson = instrumentArray.getJSONObject(j);
+                        u.setMelodypackid(instrumentJson.getString("melodypackid"));
+                        u.setName(instrumentJson.getString("name"));
+                        u.setAdded_by(instrumentJson.getString("added_by"));
+                        u.setGenre(instrumentJson.getString("genre"));
+                        u.setDuration(instrumentJson.getString("duration"));
+                        u.setBpm(instrumentJson.getString("bpm"));
+                        u.setDuration(instrumentJson.getString("playcounts"));
+                        u.setLikescounts(instrumentJson.getString("likescounts"));
+                        u.setSharecounts(instrumentJson.getString("sharecounts"));
+                        u.setCommentscounts(instrumentJson.getString("commentscounts"));
+                        u.setMelodyurl(instrumentJson.getString("melodyurl"));
+                        u.setCover(instrumentJson.getString("cover"));
+                        u.setProfilepic(instrumentJson.getString("profilepic"));
+                        u.setDate(instrumentJson.getString("date"));
+                        if(instrumentJson.isNull("instrument")){
+                            Toast.makeText(mContext, "null", Toast.LENGTH_SHORT).show();
+                        }else{
+                            u.setInstrument(instrumentJson.getString("instrument"));
+                        }
+                        melodyPools.add(u);
+                    }
+                    melodyList.add(cardMelody);
+
+
+//                    card.setTvContributeDate(cardJson.getString("30/02/17"));
+//                    card.setTvContributeLength(cardJson.getString("recordings"));
+
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return melodyList;
     }
 
 
