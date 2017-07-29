@@ -1,13 +1,18 @@
 package com.instamelody.instamelody.Parse;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
+import android.security.keystore.KeyInfo;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.instamelody.instamelody.ChatActivity;
 import com.instamelody.instamelody.ContactsActivity;
+import com.instamelody.instamelody.Models.AudioModel;
+import com.instamelody.instamelody.Models.Chat;
 import com.instamelody.instamelody.Models.Comments;
 import com.instamelody.instamelody.Models.Contacts;
 import com.instamelody.instamelody.Models.Genres;
@@ -16,8 +21,7 @@ import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
-import com.instamelody.instamelody.Models.UserMelodyCard;
-import com.instamelody.instamelody.Models.UserMelodyPlay;
+import com.instamelody.instamelody.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,8 +69,6 @@ public class ParseContents {
     String KEY_COVER = "cover";
     String KEY_PROFILE_PIC = "profilepic";
     String KEY_DATE = "date";
-    String like_status = "like_status";
-    String melodyurl = "melodyurl";
 
     String KEY_INSTRUMENT_ID = "id";
     String KEY_INSTRUMENT_NAME = "instruments_name";
@@ -110,8 +112,6 @@ public class ParseContents {
                     card.setMelodyCover(cardJson.getString(KEY_COVER));
                     card.setUserProfilePic(cardJson.getString(KEY_PROFILE_PIC));
                     card.setMelodyCreated(cardJson.getString(KEY_DATE));
-                    card.setLikeStatus(cardJson.getInt(like_status));
-                    card.setMelodyURL(cardJson.getString(melodyurl));
 
                     instrumentArray = cardJson.getJSONArray(KEY_INSTRUMENTS);
                     for (int j = 0; j < instrumentArray.length(); j++) {
@@ -279,7 +279,13 @@ public class ParseContents {
         try {
             jsonObject = new JSONObject(response);
             if (jsonObject.getString(KEY_FLAG).equals("success")) {
-                jsonArray = jsonObject.getJSONArray(KEY_INFO);
+                String str = jsonObject.getString(KEY_INFO);
+                String s = str.substring(str.indexOf(":")+2, str.indexOf("}")-1);
+                if(!s.equals("your friend list is empty"))
+                {
+                    ContactsActivity.rlNoContacts.setVisibility(View.GONE);
+                }
+                jsonArray = jsonObject.getJSONArray(KEY_RESULT);
                 for (int i = 0; i < jsonArray.length(); i++) {
                     Contacts contacts = new Contacts();
                     JSONObject commentJson = jsonArray.getJSONObject(i);
@@ -291,8 +297,6 @@ public class ParseContents {
                     contacts.setUserName(commentJson.getString("username"));
                     chatList.add(contacts);
                 }
-            } else {
-                ContactsActivity.rlNoContacts.setVisibility(View.VISIBLE);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -366,45 +370,38 @@ public class ParseContents {
             if (jsonObject.getString(KEY_FLAG).equals("success")) {
                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                 for (int i = 0; i < jsonArray.length(); i++) {
-
                     RecordingsModel card = new RecordingsModel();
                     JSONObject cardJson = jsonArray.getJSONObject(i);
+                    card.setAddedBy(cardJson.getString("added_by"));
+                    card.setRecordingCreated(cardJson.getString("date_added"));
+                    card.setGenreId(cardJson.getString("genre"));
+                    card.setRecordingName(cardJson.getString("recording_topic"));
+                    card.setUserName(cardJson.getString("user_name"));
+                    card.setRecordingId(cardJson.getString("recording_id"));
+                    card.setPlayCount(cardJson.getInt("play_count"));
+                    card.setCommentCount(cardJson.getInt("comment_count"));
+                    card.setLikeCount(cardJson.getInt("like_count"));
+                    card.setShareCount(cardJson.getInt("share_count"));
+                    card.setRecordingCover(cardJson.getString("cover_url"));
+                    card.setUserProfilePic(cardJson.getString("profile_url"));
+                    card.setGenreName(cardJson.getString("genre_name"));
 
-                        card.setAddedBy(cardJson.getString("added_by"));
-                        card.setRecordingCreated(cardJson.getString("date_added"));
-                        card.setGenreId(cardJson.getString("genre"));
-                        card.setRecordingName(cardJson.getString("recording_topic"));
-                        card.setUserName(cardJson.getString("user_name"));
-                        card.setRecordingId(cardJson.getString("recording_id"));
-                        card.setPlayCount(cardJson.getInt("play_count"));
-                        card.setCommentCount(cardJson.getInt("comment_count"));
-                        card.setLikeCount(cardJson.getInt("like_count"));
-                        card.setLikeStatus(cardJson.getInt("like_status"));
-                        card.setrecordingurl(cardJson.getString("recording_url"));
-                        card.setShareCount(cardJson.getInt("share_count"));
-                        card.setRecordingCover(cardJson.getString("cover_url"));
-                        card.setUserProfilePic(cardJson.getString("profile_url"));
-                        card.setGenreName(cardJson.getString("genre_name"));
-
-                    if(!cardJson.getString("recordings").equals("null")) {
-                        instrumentArray = cardJson.getJSONArray("recordings");
-                        for (int j = 0; j < instrumentArray.length(); j++) {
-                            RecordingsPool rp = new RecordingsPool();
-                            JSONObject instrumentJson = instrumentArray.getJSONObject(j);
-                            rp.setAddedById(instrumentJson.getString("added_by_id"));
-                            rp.setUserName(instrumentJson.getString("user_name"));
-                            rp.setName(instrumentJson.getString("name"));
-                            rp.setCoverUrl(instrumentJson.getString("cover_url"));
-                            rp.setProfileUrl(instrumentJson.getString("profile_url"));
-                            rp.setDateAdded(instrumentJson.getString("date_added"));
-                            rp.setDuration(instrumentJson.getString("duration"));
-                            rp.setRecordingUrl(instrumentJson.getString("recording_url"));
-                            rp.setInstruments(instrumentJson.getString("instruments"));
-                            recordingsPools.add(rp);
-                        }
+                    instrumentArray = cardJson.getJSONArray("recordings");
+                    for (int j = 0; j < instrumentArray.length(); j++) {
+                        RecordingsPool rp = new RecordingsPool();
+                        JSONObject instrumentJson = instrumentArray.getJSONObject(j);
+                        rp.setAddedById(instrumentJson.getString("added_by_id"));
+                        rp.setUserName(instrumentJson.getString("user_name"));
+                        rp.setName(instrumentJson.getString("name"));
+                        rp.setCoverUrl(instrumentJson.getString("cover_url"));
+                        rp.setProfileUrl(instrumentJson.getString("profile_url"));
+                        rp.setDateAdded(instrumentJson.getString("date_added"));
+                        rp.setDuration(instrumentJson.getString("duration"));
+                        rp.setRecordingUrl(instrumentJson.getString("recording_url"));
+                        rp.setInstruments(instrumentJson.getString("instruments"));
+                        recordingsPools.add(rp);
                     }
-                        recordingList.add(card);
-
+                    recordingList.add(card);
 
 
 //                    card.setTvContributeDate(cardJson.getString("30/02/17"));
@@ -416,64 +413,6 @@ public class ParseContents {
             e.printStackTrace();
         }
         return recordingList;
-    }
-
-    public ArrayList<UserMelodyCard> parseUserMelody(String response, ArrayList<UserMelodyCard> melodyList, ArrayList<UserMelodyPlay> melodyPools) {
-        JSONObject jsonObject;
-        JSONArray jsonArray, instrumentArray;
-
-        try {
-            jsonObject = new JSONObject(response);
-            if (jsonObject.getString(KEY_FLAG).equals("success")) {
-                jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    UserMelodyCard cardMelody = new UserMelodyCard();
-                    JSONObject cardJson = jsonArray.getJSONObject(i);
-                    cardMelody.setId(cardJson.getString("id"));
-                    cardMelody.setUsername(cardJson.getString("username"));
-                    cardMelody.setName(cardJson.getString("name"));
-                    cardMelody.setLogintype(cardJson.getString("logintype"));
-                    cardMelody.setProfile_url(cardJson.getString("profile_url"));
-                    cardMelody.setCover_url(cardJson.getString("cover_url"));
-
-                    instrumentArray = cardJson.getJSONArray("response");
-
-                    for (int j = 0; j < instrumentArray.length(); j++) {
-                        UserMelodyPlay u = new UserMelodyPlay();
-                        JSONObject instrumentJson = instrumentArray.getJSONObject(j);
-                        u.setMelodypackid(instrumentJson.getString("melodypackid"));
-                        u.setName(instrumentJson.getString("name"));
-                        u.setAdded_by(instrumentJson.getString("added_by"));
-                        u.setGenre(instrumentJson.getString("genre"));
-                        u.setDuration(instrumentJson.getString("duration"));
-                        u.setBpm(instrumentJson.getString("bpm"));
-                        u.setDuration(instrumentJson.getString("playcounts"));
-                        u.setLikescounts(instrumentJson.getString("likescounts"));
-                        u.setSharecounts(instrumentJson.getString("sharecounts"));
-                        u.setCommentscounts(instrumentJson.getString("commentscounts"));
-                        u.setMelodyurl(instrumentJson.getString("melodyurl"));
-                        u.setCover(instrumentJson.getString("cover"));
-                        u.setProfilepic(instrumentJson.getString("profilepic"));
-                        u.setDate(instrumentJson.getString("date"));
-                        if(instrumentJson.isNull("instrument")){
-                            Toast.makeText(mContext, "null", Toast.LENGTH_SHORT).show();
-                        }else{
-                            u.setInstrument(instrumentJson.getString("instrument"));
-                        }
-                        melodyPools.add(u);
-                    }
-                    melodyList.add(cardMelody);
-
-
-//                    card.setTvContributeDate(cardJson.getString("30/02/17"));
-//                    card.setTvContributeLength(cardJson.getString("recordings"));
-
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return melodyList;
     }
 
 
