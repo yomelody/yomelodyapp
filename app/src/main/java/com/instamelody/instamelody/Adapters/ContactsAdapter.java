@@ -55,13 +55,13 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
 
     Context context;
     ArrayList<Contacts> contactsList = new ArrayList<>();
-    String rsList[];
+    String rsList[], newList[];
     String senderID = "";
     String recieverId = "";
-    String recieverList = "";
+    String recId = "";
     String recieverName = "";
     String recieverImage = "";
-    int Count = 0;
+    int Count = 0, nonNullCount = 0;
 
     public ContactsAdapter(Context context, ArrayList<Contacts> contactsList) {
         this.contactsList = contactsList;
@@ -107,18 +107,60 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                         blue_circle.setVisibility(View.VISIBLE);
                         Count = Count + 1;
                         recieverId = contactsList.get(getAdapterPosition()).getUser_id();
-                        rsList[Count - 1] = recieverId;
-                        StringBuilder sb = new StringBuilder();
-                        for (String item : rsList) {
-                            if (sb.length() > 0) {
-                                sb.append(',');
+                        rsList[getAdapterPosition()] = recieverId;
+                        recId = "";
+                        for (int i = 0; i < rsList.length; i++) {
+                            if (rsList[i] != null) {
+                                recId = recId + "," + rsList[i];
                             }
-                            sb.append(item);
                         }
-                        recieverList = sb.toString();
+
+                        if (recId.startsWith(",")) {
+                            recId = recId.substring(1, recId.length());
+                        }
+
+//                        for (int i = 0; i < rsList.length; i++) {
+//                            if (!rsList[i].equals(null)) {
+//                                nonNullCount = nonNullCount + 1;
+//                            }
+//                        }
+//
+//                        newList = new String[nonNullCount];
+//                        for (int i = 0; i < nonNullCount; i++) {
+//                            if (!rsList[i].equals(null)) {
+//                                newList[i] = nonNullCount + 1;
+//                            }
+//                        }
+
+//                        StringBuilder sb = new StringBuilder();
+//                        for (String item : rsList) {
+//                            if (sb.length() > 0) {
+//                                sb.append(',');
+//                            }
+//                            sb.append(item);
+//                        }
+//                        recieverId = sb.toString();
+//
+//                        String check = sb.toString();
+//                        if (check.contains(",null")) {
+//                            check.replaceAll(",null", "");
+//                        }
+//
+//                        StringBuilder sbs = new StringBuilder();
+//                        if (check.length() > 0) {
+//                            char prev = check.charAt(0);
+//                            sbs.append(prev);
+//                            for (int i = 1; i < check.length(); ++i) {
+//                                char cur = check.charAt(i);
+//                                if (cur != prev) {
+//                                    sbs.append(cur);
+//                                    prev = cur;
+//                                }
+//                            }
+//                        }
 
                         if (!userId.equals("")) {
-                            getChatId(userId, recieverId);
+                            getChatId(userId, recId);
                         } else {
                             Toast.makeText(context, "Logged in user null id Error", Toast.LENGTH_SHORT).show();
                         }
@@ -133,6 +175,9 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                             ContactsActivity.btnOK.setVisibility(View.VISIBLE);
                             if (Count > 1) {
                                 recieverName = "New Group";
+                                SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                                editor.putString("chatType", "group");
+                                editor.commit();
                             }
                         }
 
@@ -140,15 +185,56 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                         blue_circle.setVisibility(View.GONE);
                         grey_circle.setVisibility(View.VISIBLE);
                         Count = Count - 1;
+
+
                         rsList[getAdapterPosition()] = "null";
-                        StringBuilder sb = new StringBuilder();
-                        for (String item : rsList) {
-                            if (sb.length() > 0) {
-                                sb.append(',');
+                        // RemoveNullValue();
+
+                        recId = "";
+                        for (int i = 0; i < rsList.length; i++) {
+                            if (rsList[i] != null) {
+                                recId = recId + "," + rsList[i];
                             }
-                            sb.append(item);
                         }
-                        recieverList = sb.toString();
+                        if (recId.startsWith(",")) {
+                            recId = recId.substring(1, recId.length());
+                        }
+
+                       /* for(int i=0; i<rsList.length; i++){
+                            if(rsList[i]==null){
+                                rsList
+                            }
+                        }*/
+
+//                        rsList[getAdapterPosition()] = "null";
+//                        StringBuilder sb = new StringBuilder();
+//                        for (String item : rsList) {
+//                            if (sb.length() > 0 ) {
+//                                sb.append(',');
+//                            }
+//
+//                            sb.append(item);
+//                        }
+//
+//                        recId = sb.toString();
+
+//                        String check = sb.toString();
+//                        if (check.contains("null")) {
+//                            check.replaceAll("null", "");
+//                        }
+//
+//                        StringBuilder sbs = new StringBuilder();
+//                        if (check.length() > 0) {
+//                            char prev = check.charAt(0);
+//                            sbs.append(prev);
+//                            for (int i = 1; i < check.length(); ++i) {
+//                                char cur = check.charAt(i);
+//                                if (cur != prev) {
+//                                    sbs.append(cur);
+//                                    prev = cur;
+//                                }
+//                            }
+//                        }
 
                         if (Count < 1) {
                             ContactsActivity.btnOK.setVisibility(View.GONE);
@@ -159,15 +245,38 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                         editor.putString("chatId", "");
                         editor.commit();
                     }
+
+                    //RemoveNullValue();
+
+
+                    Toast.makeText(context, recId, Toast.LENGTH_SHORT).show();
                     SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                     editor.putString("senderId", senderID);
-                    editor.putString("receiverId", recieverList);
+                    editor.putString("receiverId", recId);
                     editor.putString("receiverName", recieverName);
                     editor.putString("receiverImage", recieverImage);
                     editor.commit();
                 }
             });
         }
+    }
+
+    public void RemoveNullValue() {
+
+        List<String> list = new ArrayList<String>(Arrays.asList(rsList));
+        list.removeAll(Collections.singleton("null"));
+        recId = "";
+        rsList = list.toArray(new String[list.size()]);
+        for (int i = 0; i < rsList.length; i++) {
+            if (rsList[i] != null) {
+                recId = recId + "," + rsList[i];
+            }
+        }
+        if (recId.startsWith(",")) {
+            recId = recId.substring(1, recId.length());
+        }
+        /*if(rsList.length <= 0)
+        rsList = new String[contactsList.size()];*/
     }
 
     @Override

@@ -71,9 +71,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static android.os.Environment.isExternalStorageEmulated;
 import static android.os.Environment.isExternalStorageRemovable;
@@ -130,6 +132,7 @@ public class ChatActivity extends AppCompatActivity {
     String username = "";
     String parent;
     String senderId = "";
+    String chatType = "";
 
     @TargetApi(18)
     @Override
@@ -172,9 +175,11 @@ public class ChatActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
         senderId = prefs.getString("senderId", null);
         receiverId = prefs.getString("receiverId", null);
+        RemoveNullValue();
         receiverName = prefs.getString("receiverName", null);
         receiverImage = prefs.getString("receiverImage", null);
         chatId = prefs.getString("chatId", null);
+        chatType = prefs.getString("chatType", null);
         tvUserName = (TextView) findViewById(R.id.tvUserName);
         tvUserName.setText(receiverName);
 
@@ -712,12 +717,21 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                if (receiverId.equals(user_Id)) {
-                    params.put(RECEIVER_ID, senderId);
-                    params.put(SENDER_ID, user_Id);
-                } else {
-                    params.put(RECEIVER_ID, receiverId);
-                    params.put(SENDER_ID, user_Id);
+
+                if(chatType.equals("group"))
+                {
+
+                    //////////////////////////////////////////////
+
+                }
+                else{
+                    if (receiverId.equals(user_Id)) {
+                        params.put(RECEIVER_ID, senderId);
+                        params.put(SENDER_ID, user_Id);
+                    } else {
+                        params.put(RECEIVER_ID, receiverId);
+                        params.put(SENDER_ID, user_Id);
+                    }
                 }
                 params.put(CHAT_ID, chatId);
                 params.put(TITLE, "message");
@@ -862,6 +876,17 @@ public class ChatActivity extends AppCompatActivity {
                     checkPermissions();
                 }
                 break;
+        }
+    }
+
+    public void RemoveNullValue() {
+
+        try {
+            receiverId = receiverId.replaceAll(",null", "");
+            String str = receiverId;
+            Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Log.e("exception", e.toString());
         }
     }
 }
