@@ -37,7 +37,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -56,11 +55,14 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
     Context context;
     ArrayList<Contacts> contactsList = new ArrayList<>();
     String rsList[];
+    ArrayList<String> rList = new ArrayList<String>();
+    //        Set<String> recieverId = new HashSet<>();
     String senderID = "";
     String recieverId = "";
-    String recieverList = "";
     String recieverName = "";
+    String receiverToken = "";
     String recieverImage = "";
+    String recieverList;
     int Count = 0;
 
     public ContactsAdapter(Context context, ArrayList<Contacts> contactsList) {
@@ -77,7 +79,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
         public MyViewHolder(final View itemView) {
             super(itemView);
             getItemCount();
-            rsList = new String[contactsList.size()];
+            rsList=new String[contactsList.size()];
             userProfileImage = (ImageView) itemView.findViewById(R.id.userProfileImage);
             tvRealName = (TextView) itemView.findViewById(R.id.tvRealName);
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
@@ -93,6 +95,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                     SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
                     SharedPreferences fbPref = context.getSharedPreferences("MyFbPref", MODE_PRIVATE);
                     SharedPreferences twitterPref = context.getSharedPreferences("TwitterPref", MODE_PRIVATE);
+
                     if (loginSharedPref.getString("userId", null) != null) {
                         userId = loginSharedPref.getString("userId", null);
                     } else if (fbPref.getString("userId", null) != null) {
@@ -100,56 +103,71 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                     } else if (twitterPref.getString("userId", null) != null) {
                         userId = twitterPref.getString("userId", null);
                     }
+
                     senderID = userId;
 
                     if (grey_circle.getVisibility() == View.VISIBLE) {
                         grey_circle.setVisibility(View.GONE);
                         blue_circle.setVisibility(View.VISIBLE);
                         Count = Count + 1;
-                        recieverId = contactsList.get(getAdapterPosition()).getUser_id();
-                        rsList[Count - 1] = recieverId;
-                        StringBuilder sb = new StringBuilder();
-                        for (String item : rsList) {
-                            if (sb.length() > 0) {
-                                sb.append(',');
-                            }
-                            sb.append(item);
-                        }
-                        recieverList = sb.toString();
 
-                        if (!userId.equals("")) {
-                            getChatId(userId, recieverId);
-                        } else {
-                            Toast.makeText(context, "Logged in user null id Error", Toast.LENGTH_SHORT).show();
+                        if(Count < 1){
+                            recieverId = contactsList.get(getAdapterPosition()).getUser_id();
+                        }else{
+                            recieverId = contactsList.get(getAdapterPosition()).getUser_id() + ",";
                         }
+
+                        recieverId = contactsList.get(getAdapterPosition()).getUser_id();
+                        // rList.add(Count - 1, recieverId);
+                        rsList[Count - 1]=recieverId;
+                        // String recieverList = rList.toString();
+                        recieverList =Arrays.toString(rsList);
+//                        String str = recieverList.substring(0, recieverList.length());
+                        // recieverList=recieverList.re
+                        recieverList= recieverList.substring(1, recieverList.length()-1);
+                        Toast.makeText(context, recieverList, Toast.LENGTH_SHORT).show();
+
+                        /*List<String> groupNameList = Arrays.asList(rid.split(","));
+                        String listnames = "";
+                        if (groupNameList.size() == 1) {
+                            tvUserName.setText(groupNameList.get(0));
+                        } else {
+                            for (int i = 1; i < groupNameList.size(); i++) {
+                                listnames = listnames + ", " + groupNameList.get(i);
+                            }
+                            tvUserName.setText(listnames);
+                        }*/
 
                         String fname = contactsList.get(getAdapterPosition()).getfName();
                         String lname = contactsList.get(getAdapterPosition()).getlName();
                         recieverName = fname + " " + lname;
                         recieverImage = contactsList.get(getAdapterPosition()).getUserProfileImage();
-
-                        if (Count > 0) {
+//                        receiverToken = contactsList.get(getAdapterPosition()).getDeviceToken();
+                        if (Count >= 1) {
                             ContactsActivity.btnCancel.setVisibility(View.GONE);
                             ContactsActivity.btnOK.setVisibility(View.VISIBLE);
-                            if (Count > 1) {
-                                recieverName = "New Group";
-                            }
+                            recieverName = "New Group";
+                        }
+                        if (!userId.equals("")) {
+                            getChatId(userId, recieverId);
+
+                            // rsList=new String[contactsList.size()];
+                        } else {
+                            Toast.makeText(context, "Logged in user null id Error", Toast.LENGTH_SHORT).show();
                         }
 
                     } else {
                         blue_circle.setVisibility(View.GONE);
                         grey_circle.setVisibility(View.VISIBLE);
                         Count = Count - 1;
-                        rsList[getAdapterPosition()] = "null";
-                        StringBuilder sb = new StringBuilder();
-                        for (String item : rsList) {
-                            if (sb.length() > 0) {
-                                sb.append(',');
-                            }
-                            sb.append(item);
-                        }
-                        recieverList = sb.toString();
+                        rsList[getAdapterPosition()]="";
+                        //rList.remove(getAdapterPosition());
+                        String recieverList = Arrays.toString(rsList);
+                        recieverList= recieverList.substring(1, recieverList.length()-1);
+                        recieverId=recieverList;
+                        Toast.makeText(context, recieverList, Toast.LENGTH_SHORT).show();
 
+//                        receiverToken = "";
                         if (Count < 1) {
                             ContactsActivity.btnOK.setVisibility(View.GONE);
                             ContactsActivity.btnCancel.setVisibility(View.VISIBLE);
@@ -159,6 +177,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                         editor.putString("chatId", "");
                         editor.commit();
                     }
+                //    Toast.makeText(context,"sender"+senderID+"-"+ recieverList, Toast.LENGTH_SHORT).show();
                     SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                     editor.putString("senderId", senderID);
                     editor.putString("receiverId", recieverList);
@@ -166,7 +185,14 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                     editor.putString("receiverImage", recieverImage);
                     editor.commit();
                 }
+
             });
+
+//            if (rList == null) {
+//                Toast.makeText(context, "null", Toast.LENGTH_SHORT).show();
+//            } else {
+//                Toast.makeText(context, rList.toString(), Toast.LENGTH_SHORT).show();
+//            }
         }
     }
 

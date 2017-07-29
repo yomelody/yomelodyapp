@@ -99,17 +99,12 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     ArrayList instrument_url_count = new ArrayList();
     ArrayList<String> fetch_url_arrayList = new ArrayList<>();
     static int duration1, currentPosition;
-    boolean playfrom_studio = false;
+    //  public static boolean playfrom_studio = false;
 
     public InstrumentListAdapter(ArrayList<MelodyInstruments> instrumentList, Context context) {
         this.instrumentList = instrumentList;
         this.context = context;
         //   this.playfrom_studio=false;
-    }
-
-    public InstrumentListAdapter(boolean playfromStudio, Context context) {
-        this.playfrom_studio = playfromStudio;
-        this.context = context;
     }
 
     private boolean hasLoadButton = true;
@@ -138,7 +133,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
         public MyViewHolder(View itemView) {
             super(itemView);
-
             userProfileImage = (ImageView) itemView.findViewById(R.id.userProfileImage);
             ivInstrumentCover = (ImageView) itemView.findViewById(R.id.ivInstrumentCover);
             tvInstrumentName = (TextView) itemView.findViewById(R.id.tvInstrumentName);
@@ -248,8 +242,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
-
-
         final MelodyInstruments instruments = instrumentList.get(listPosition);
         String abc = instrumentList.get(listPosition).getInstrumentFile();
 //        Toast.makeText(context, "" + abc, Toast.LENGTH_SHORT).show();
@@ -388,9 +380,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         Intent i = new Intent("fetchingInstruments");
         i.putStringArrayListExtra("instruments", instrument_url_count);
         LocalBroadcastManager.getInstance(context).sendBroadcast(i);
-        if (playfrom_studio == true) {
-            Toast.makeText(context, "hhjj", Toast.LENGTH_SHORT).show();
-        }
     }
 
     @Override
@@ -407,15 +396,21 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
 
     public void playAudio1() throws IOException {
-        killMediaPlayer();
+//        killMediaPlayer();
         audioFilePath =
                 Environment.getExternalStorageDirectory().getAbsolutePath()
                         + "/InstaMelody.mp3";
         mp = new MediaPlayer();
+        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mp.setDataSource(audioFilePath);
 //        mp.setDataSource(instrumentFile);
-        mp.prepare();
-        mp.start();
+        mp.prepareAsync();
+        mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.start();
+            }
+        });
         //   mp.start();
         duration1 = mp.getDuration();
         currentPosition = mp.getCurrentPosition();
@@ -423,23 +418,20 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     }
 
     public void playAudio() throws IOException {
-
-        killMediaPlayer();
+//            killMediaPlayer();
         mp = new MediaPlayer();
+//        mp.setDataSource(audioFilePath);
         mp.setDataSource(instrumentFile);
         mp.prepare();
         mp.start();
-
         duration1 = mp.getDuration();
         currentPosition = mp.getCurrentPosition();
-
     }
 
     private void killMediaPlayer() {
         if (mp != null) {
             try {
                 mp.release();
-                mp = null;
             } catch (Exception e) {
                 e.printStackTrace();
                 Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
@@ -542,6 +534,4 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 //            // tvDone.setEnabled(true);
 //        }
 //    }
-
-
 }

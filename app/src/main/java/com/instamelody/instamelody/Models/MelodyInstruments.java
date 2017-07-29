@@ -8,9 +8,7 @@ public class MelodyInstruments {
 
     //Used for storing instruments details
 
-
-
-    static int instrumentId;
+    int instrumentId;
     int melodyPacksId;
 
 
@@ -37,6 +35,13 @@ public class MelodyInstruments {
         this.audioType = audioType;
     }
 
+    public int getInstrumentId() {
+        return instrumentId;
+    }
+
+    public void setInstrumentId(int instrumentId) {
+        this.instrumentId = instrumentId;
+    }
 
     public String getInstrumentType() {
         return instrumentType;
@@ -137,13 +142,6 @@ public class MelodyInstruments {
 
     public void setInstrumentLength(String instrumentLength) {
         this.instrumentLength = instrumentLength;
-    }
-    public static int getInstrumentId() {
-        return instrumentId;
-    }
-
-    public static void setInstrumentId(int instrumentId) {
-        MelodyInstruments.instrumentId = instrumentId;
     }
 
 

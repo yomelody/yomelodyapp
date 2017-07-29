@@ -62,8 +62,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -107,8 +105,7 @@ public class ChatActivity extends AppCompatActivity {
     String TITLE = "title";
     String MESSAGE = "message";
 
-    ArrayList<String> fileArray = new ArrayList<>();
-    ArrayList<RecentImagesModel> fileInfo = new ArrayList<>();
+    ArrayList<RecentImagesModel> fileArray = new ArrayList<>();
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     EditText etMessage;
 
@@ -288,6 +285,7 @@ public class ChatActivity extends AppCompatActivity {
                 editor.putString("receiverId", "");
                 editor.putString("receiverName", "");
                 editor.putString("receiverImage", "");
+//                Log.d("rcvrimg", "receiverImage 2 has no value");
                 editor.putString("chatId", "");
                 editor.commit();
 
@@ -405,7 +403,7 @@ public class ChatActivity extends AppCompatActivity {
                     recycleImage.setItemViewCacheSize(10);
                     recycleImage.setDrawingCacheEnabled(true);
                     recycleImage.setItemAnimator(new DefaultItemAnimator());
-                    riAdapter = new RecentImagesAdapter(fileInfo, getApplicationContext());
+                    riAdapter = new RecentImagesAdapter(fileArray, getApplicationContext());
                     recycleImage.setAdapter(riAdapter);
 
                     rlBtnPhotoLibrary.setOnClickListener(new View.OnClickListener() {
@@ -613,7 +611,14 @@ public class ChatActivity extends AppCompatActivity {
                                         JSONObject chatJson = resultArray.getJSONObject(i);
                                         String id = chatJson.getString("id");
                                         message.setId(id);
+
                                         String senderID = chatJson.getString("senderID");
+//                                        String receiverID = chatJson.getString("receiverID");
+//                                        SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+//                                        editor.putString("receiverId", senderID);
+//                                        editor.putString("temp", receiverID);
+//                                        editor.commit();
+
                                         message.setSenderId(senderID);
                                         String sendat = chatJson.getString("sendat");
                                         message.setCreatedAt(sendat);
@@ -750,8 +755,8 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public void getGalleryImages() {
-
         if (isExternalStorageRemovable()) {
+
             String state = Environment.getExternalStorageState();
             if (Environment.MEDIA_MOUNTED.equals(state) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
                 String ExternalStorageDirectoryPath = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -762,10 +767,11 @@ public class ChatActivity extends AppCompatActivity {
                     File[] files = targetDirector.listFiles();
                     int last;
                     int length = files.length;
+                    last = length - 1;
                     if (length > 15) {
                         length = 15;
+                        last = length;
                     }
-                    last = length - 1;
                     File file;
 
                     for (int i = 0; i < length; i++) {
@@ -774,14 +780,9 @@ public class ChatActivity extends AppCompatActivity {
                         if (file.getAbsoluteFile().toString().trim().endsWith(".jpg")) {
                             rim.setName(file.getName());
                             rim.setFilepath(file.getAbsolutePath().toString().trim());
-                            Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-//                            ByteArrayOutputStream out = new ByteArrayOutputStream();
-//                            myBitmap.compress(Bitmap.CompressFormat.JPEG, 75, out);
-//                            Bitmap newBmp = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
-                            rim.setBitmap(myBitmap);
                             last = last - 1;
                         }
-                        fileInfo.add(rim);
+                        fileArray.add(rim);
                     }
                 }
             } else {
@@ -795,37 +796,26 @@ public class ChatActivity extends AppCompatActivity {
                 String ExternalStorageDirectoryPath = Environment.getExternalStorageDirectory().getAbsolutePath();
                 String InternalStoragePath = ExternalStorageDirectoryPath + "/DCIM/Camera/";
                 File targetDirector = new File(InternalStoragePath);
-                RecentImagesModel rim = new RecentImagesModel();
 
                 if (targetDirector.listFiles() != null) {
                     File[] files = targetDirector.listFiles();
                     int last;
                     int length = files.length;
+                    last = length - 1;
                     if (length > 15) {
                         length = 15;
+                        last = length;
                     }
-                    last = length - 1;
                     File file;
-
                     for (int i = 0; i < length; i++) {
-                        file = files[last];
-                        if (file.getAbsoluteFile().toString().trim().endsWith(".jpg")) {
-                            fileArray.add(file.getAbsolutePath());
-                            last = last - 1;
-                        }
-                    }
-
-                    for (int i = 0; i < length; i++) {
-
+                        RecentImagesModel rim = new RecentImagesModel();
                         file = files[last];
                         if (file.getAbsoluteFile().toString().trim().endsWith(".jpg")) {
                             rim.setName(file.getName());
                             rim.setFilepath(file.getAbsolutePath().toString().trim());
-                            Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                            rim.setBitmap(myBitmap);
                             last = last - 1;
                         }
-                        fileInfo.add(rim);
+                        fileArray.add(rim);
                     }
                 }
             } else {

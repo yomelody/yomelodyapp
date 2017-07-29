@@ -124,7 +124,7 @@ public class ParseContents {
                     for (int j = 0; j < instrumentArray.length(); j++) {
                         MelodyInstruments melodyInstruments = new MelodyInstruments();
                         JSONObject instrumentsJson = instrumentArray.getJSONObject(j);
-                        MelodyInstruments.setInstrumentId(instrumentsJson.getInt(KEY_INSTRUMENT_ID));
+                        melodyInstruments.setInstrumentId(instrumentsJson.getInt(KEY_INSTRUMENT_ID));
                         int a = instrumentsJson.getInt(KEY_INSTRUMENT_ID);
                         melodyInstruments.setInstrumentName(instrumentsJson.getString(KEY_INSTRUMENT_NAME));
                         melodyInstruments.setInstrumentType(instrumentsJson.getString(KEY_INSTRUMENT_TYPE));

@@ -124,9 +124,7 @@ public class MelodyPacksFragment extends Fragment {
 
         if (strName == null) {
             fetchMelodyPacks();
-        } else if (packId.equals("7")){
-            fetchUserMelody();
-        }else {
+        } else {
             fetchRecordingsFilter();
         }
 
@@ -452,7 +450,7 @@ public class MelodyPacksFragment extends Fragment {
                 RecyclerView.LayoutManager lm = new LinearLayoutManager(getActivity());
                 rv.setLayoutManager(lm);
                 rv.setItemAnimator(new DefaultItemAnimator());
-                if(tag.equals("My Melody")){
+                if(packId.equals("7")){
                  rv.setAdapter(adapter1);
                 }
                 else{
