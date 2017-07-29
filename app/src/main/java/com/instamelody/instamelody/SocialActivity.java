@@ -109,6 +109,10 @@ public class SocialActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_social);
 
+        if (fetchRecordingUrl == null){
+            Toast.makeText(this, "No Recording Found to Share", Toast.LENGTH_SHORT).show();
+        }
+
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
@@ -149,29 +153,35 @@ public class SocialActivity extends AppCompatActivity {
         switchFb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                AlertDialog.Builder builder1 = new AlertDialog.Builder(SocialActivity.this);
-                builder1.setMessage("Wants to share InstaMelody music on facebook??");
-                builder1.setCancelable(true);
+                if (fetchRecordingUrl == null){
+                    Toast.makeText(SocialActivity.this, "No Recording Found to Share", Toast.LENGTH_SHORT).show();
+                    switchFb.setEnabled(false);
+                }else {
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(SocialActivity.this);
+                    builder1.setMessage("Wants to share InstaMelody music on facebook??");
+                    builder1.setCancelable(true);
 
-                builder1.setPositiveButton(
-                        "Yes",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                FbShare();
-                            }
-                        });
+                    builder1.setPositiveButton(
+                            "Yes",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    FbShare();
+                                }
+                            });
 
-                builder1.setNegativeButton(
-                        "No",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                switchFb.setChecked(false);
-                                dialog.cancel();
-                            }
-                        });
+                    builder1.setNegativeButton(
+                            "No",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    switchFb.setChecked(false);
+                                    dialog.cancel();
+                                }
+                            });
 
-                AlertDialog alert11 = builder1.create();
-                alert11.show();
+                    AlertDialog alert11 = builder1.create();
+                    alert11.show();
+                }
+
 
             }
         });
@@ -179,50 +189,72 @@ public class SocialActivity extends AppCompatActivity {
         switchTwitter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder1 = new AlertDialog.Builder(SocialActivity.this);
-                builder1.setMessage("Wants to share InstaMelody music on twitter??");
-                builder1.setCancelable(true);
+                if (fetchRecordingUrl == null){
+                    Toast.makeText(SocialActivity.this, "No Recording Found to Share", Toast.LENGTH_SHORT).show();
+                    switchTwitter.setEnabled(false);
+                }else {
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(SocialActivity.this);
+                    builder1.setMessage("Wants to share InstaMelody music on twitter??");
+                    builder1.setCancelable(true);
 
-                builder1.setPositiveButton(
-                        "Yes",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
+                    builder1.setPositiveButton(
+                            "Yes",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
 //                                new newShortAsync().execute();
-                                TweetShare();
-                            }
-                        });
+                                    TweetShare();
+                                }
+                            });
 
-                builder1.setNegativeButton(
-                        "No",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                switchTwitter.setChecked(false);
-                                dialog.cancel();
-                            }
-                        });
+                    builder1.setNegativeButton(
+                            "No",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    switchTwitter.setChecked(false);
+                                    dialog.cancel();
+                                }
+                            });
 
-                AlertDialog alert11 = builder1.create();
-                alert11.show();
+                    AlertDialog alert11 = builder1.create();
+                    alert11.show();
+                }
+
+            }
+        });
+
+        switchSoundCloud.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (fetchRecordingUrl == null){
+                    Toast.makeText(SocialActivity.this, "No Recording found to share", Toast.LENGTH_SHORT).show();
+                    switchSoundCloud.setEnabled(false);
+                }
             }
         });
 
         switchGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                plus_one_button.setVisibility(View.VISIBLE);
-                plus_one_button.setEnabled(true);
-                plus_one_button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent shareIntent = new PlusShare.Builder(SocialActivity.this)
-                                .setType("text/plain")
-                                .setText("Welcome to the Google+ platform.")
-                                .setContentUrl(Uri.parse(fetchRecordingUrl))
-                                .getIntent();
+                if (fetchRecordingUrl == null){
+                    Toast.makeText(SocialActivity.this, "No Recording Found to Share", Toast.LENGTH_SHORT).show();
+                    switchGoogle.setEnabled(false);
+                }else {
+                    plus_one_button.setVisibility(View.VISIBLE);
+                    plus_one_button.setEnabled(true);
+                    plus_one_button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent shareIntent = new PlusShare.Builder(SocialActivity.this)
+                                    .setType("text/plain")
+                                    .setText("Welcome to the Google+ platform.")
+                                    .setContentUrl(Uri.parse(fetchRecordingUrl))
+                                    .getIntent();
 
-                        startActivityForResult(shareIntent, 0);
-                    }
-                });
+                            startActivityForResult(shareIntent, 0);
+                        }
+                    });
+                }
+
             }
         });
 
