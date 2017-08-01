@@ -5,10 +5,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.CardView;
@@ -17,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -26,10 +30,12 @@ import android.widget.Toast;
 
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.StudioActivity;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -95,8 +101,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         ImageView userProfileImage, ivInstrumentCover, ivPlay, ivPause;
-        TextView tvInstrumentName, tvUserName, tvInstrumentLength, tvBpmRate, tvSync;
+        TextView tvInstrumentName, tvUserName, tvInstrumentLength, tvBpmRate, tvSync,tvDoneFxEq,tvFxButton,tvEqButton;
         SeekBar melodySlider;
+        FrameLayout frameInstrument;
         RelativeLayout rlSeekbarTracer, rlSync;
         ImageView grey_circle, blue_circle;
         ProgressDialog progressDialog;
@@ -112,6 +119,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             tvInstrumentName = (TextView) itemView.findViewById(R.id.tvInstrumentName);
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
             tvInstrumentLength = (TextView) itemView.findViewById(R.id.tvInstrumentLength);
+            frameInstrument = (FrameLayout) itemView.findViewById(R.id.frameInstrument);
             tvBpmRate = (TextView) itemView.findViewById(R.id.tvBpmRate);
             ivPlay = (ImageView) itemView.findViewById(R.id.ivPlay);
             ivPause = (ImageView) itemView.findViewById(R.id.ivPause);
@@ -123,6 +131,16 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             blue_circle = (ImageView) itemView.findViewById(R.id.blue_circle);
             grey_circle = (ImageView) itemView.findViewById(R.id.grey_circle);
             loader = (ProgressBar) itemView.findViewById(R.id.loader);
+            /*fxContent = (RelativeLayout) itemView.findViewById(R.id.fxContent);
+            eqContent = (RelativeLayout) itemView.findViewById(R.id.eqContent);*/
+            fxContent = (RelativeLayout) itemView.findViewById(R.id.fxContent);
+            eqContent = (RelativeLayout) itemView.findViewById(R.id.eqContent);
+            tvDoneFxEq=(TextView) itemView.findViewById(R.id.tvDoneFxEq);
+            tvFxButton = (TextView) itemView.findViewById(R.id.tvFxButton);
+            tvEqButton = (TextView) itemView.findViewById(R.id.tvEqButton);
+            tvInstrumentLength = (TextView) itemView.findViewById(R.id.tvInstrumentLength);
+            tvInstrumentName = (TextView) itemView.findViewById(R.id.tvInstrumentName);
+            tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
 
             ivPause.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -252,7 +270,42 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         //This line commented by Abhishek
 
         audioValue = instruments.getAudioType();
-
+        holder.rlEQ.setOnClickListener(new View.OnClickListener() {
+                holder.frameInstrument.setVisibility(View.VISIBLE);
+                /*holder.eqContent.setVisibility(View.VISIBLE);*/
+                if(holder.eqContent.getVisibility()==View.VISIBLE)
+                {
+                    holder.eqContent.setVisibility(View.GONE);
+                    holder.fxContent.setVisibility(View.GONE);
+                    //frameInstrument.setVisibility(View.GONE);
+                }
+                else if(holder.eqContent.getVisibility()==View.GONE)
+                {
+                    holder.eqContent.setVisibility(View.VISIBLE);
+                    holder.fxContent.setVisibility(View.GONE);
+                    //frameInstrument.setVisibility(View.VISIBLE);
+                }
+        holder.rlFX.setOnClickListener(new View.OnClickListener() {
+                holder.frameInstrument.setVisibility(View.VISIBLE);
+                /*holder.fxContent.setVisibility(View.VISIBLE);*/
+                if(holder.fxContent.getVisibility()==View.VISIBLE)
+                {
+                    holder.fxContent.setVisibility(View.GONE);
+                    holder.eqContent.setVisibility(View.GONE);
+                    //frameInstrument.setVisibility(View.GONE);
+                }
+                else if(holder.fxContent.getVisibility()==View.GONE)
+                {
+                    holder.fxContent.setVisibility(View.VISIBLE);
+                    holder.eqContent.setVisibility(View.GONE);
+                    // frameInstrument.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        holder.tvDoneFxEq.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                holder.frameInstrument.setVisibility(View.GONE);
         holder.ivPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -319,7 +372,54 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         i.putStringArrayListExtra("instruments", instrument_url_count);
         LocalBroadcastManager.getInstance(context).sendBroadcast(i);
     }
+    private class InstrumentCover extends AsyncTask<String, Void, Bitmap> {
+        //ImageView bmImage;
 
+        public InstrumentCover() {
+            //StudioActivity.ivInstrumentCover = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            StudioActivity.ivInstrumentCover.setImageBitmap(result);
+        }
+    }
+    private class UserProfileCover extends AsyncTask<String, Void, Bitmap> {
+        //ImageView bmImage;
+
+        public UserProfileCover() {
+            //StudioActivity.ivInstrumentCover = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            StudioActivity.userProfileImage.setImageBitmap(result);
+        }
+    }
     @Override
     public int getItemCount() {
         //  rvLength = instrumentList.size();
