@@ -36,7 +36,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -55,7 +54,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -74,7 +72,6 @@ import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.utils.AppHelper;
-import com.instamelody.instamelody.utils.AudioDataReceivedListener;
 import com.instamelody.instamelody.utils.VolleyMultipartRequest;
 import com.instamelody.instamelody.utils.VolleySingleton;
 import com.squareup.picasso.Picasso;
@@ -84,15 +81,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -107,7 +101,6 @@ import java.util.TimerTask;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.provider.Contacts.SettingsColumns.KEY;
-import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ADD_RECORDINGS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
@@ -119,7 +112,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.UPLOAD_COVER_M
 
 public class StudioActivity extends AppCompatActivity {
 
-    int duration, idx;
+    int duration, idx,FxCount=0,EQCount=0;
     long startTime;
     long countUp, countUp_milli, timeElapsed;
     String asText;
@@ -198,7 +191,11 @@ public class StudioActivity extends AppCompatActivity {
     String melodyName, instrumentName;
     Switch switchPublic;
     RelativeLayout rlMelodyButton, rlRecordingButton, rlRedoButton, rlListeningButton, rlSetCover, rlInviteButton, rlPublic;
+    public static RelativeLayout eqContent,fxContent;
     FrameLayout frameTrans, frameSync;
+
+    public static ImageView ivInstrumentCover,userProfileImage;
+    public static TextView tvInstrumentName,tvInstrumentLength,tvUserName;
     ImageView ivBackButton, ivHomeButton, ivRecord, ivRecord_stop, ivRecord_play, ivRecord_pause, discover, message, ivProfile, ivNewRecordCover;
     CircleImageView profile_image;
     TextView artist_name, noMelodyNote;
@@ -257,6 +254,9 @@ public class StudioActivity extends AppCompatActivity {
         artist_name = (TextView) findViewById(R.id.artist_name);
         //  recording_time = (TextView) findViewById(R.id.recording_time);
         melody_detail = (TextView) findViewById(R.id.melody_detail);
+
+        /*ivInstrumentCover = (ImageView) findViewById(R.id.ivInstrumentCover);
+        userProfileImage=(ImageView) findViewById(R.id.userProfileImage);*/
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         firstName = loginSharedPref.getString("firstName", null);
         userNameLogin = loginSharedPref.getString("userName", null);
@@ -841,6 +841,42 @@ public class StudioActivity extends AppCompatActivity {
 
             }
         });
+        /*tvFxButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(fxContent.getVisibility()==View.VISIBLE)
+                {
+                    fxContent.setVisibility(View.GONE);
+                    eqContent.setVisibility(View.GONE);
+                    //frameInstrument.setVisibility(View.GONE);
+                }
+                else if(fxContent.getVisibility()==View.GONE)
+                {
+                    fxContent.setVisibility(View.VISIBLE);
+                    eqContent.setVisibility(View.GONE);
+                   // frameInstrument.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        tvEqButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(eqContent.getVisibility()==View.VISIBLE)
+                {
+                    eqContent.setVisibility(View.GONE);
+                    fxContent.setVisibility(View.GONE);
+                    //frameInstrument.setVisibility(View.GONE);
+                }
+                else if(eqContent.getVisibility()==View.GONE)
+                {
+                    eqContent.setVisibility(View.VISIBLE);
+                    fxContent.setVisibility(View.GONE);
+                    //frameInstrument.setVisibility(View.VISIBLE);
+                }
+            }
+        });*/
 
 
         // To get preferred buffer size and sampling rate.
@@ -1560,7 +1596,7 @@ public class StudioActivity extends AppCompatActivity {
                         editor.commit();
 
 
-                    }
+
                     if (flag.equals("success")) {
                         VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPLOAD_COVER_MELODY_FILE, new Response.Listener<NetworkResponse>() {
                             @Override
@@ -1821,8 +1857,8 @@ public class StudioActivity extends AppCompatActivity {
             progressDialog.dismiss();
         }
 
-    }
 
+    }
 
     @Override
     protected void onDestroy() {
