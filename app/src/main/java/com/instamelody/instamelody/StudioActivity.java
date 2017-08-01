@@ -1380,12 +1380,17 @@ public class StudioActivity extends AppCompatActivity {
     }
 
 
-    private void saveRecordings1() {
-        final String recName = subEtTopicName.getText().toString().trim();
-//        final String genre = String.valueOf(sp.getSelectedItemPosition());
-        final String genre = selectedGenre;
-        final String recType = value;
-        final String duration = Long.toString(elapsedMillis);
+    public void saveRecordings1() {
+//        final String recName = subEtTopicName.getText().toString().trim();
+////      final String genre = String.valueOf(sp.getSelectedItemPosition());
+//        final String genre = selectedGenre;
+//        final String recType = value;
+//        final String duration = Long.toString(elapsedMillis);
+        progressDialog = new ProgressDialog(StudioActivity.this);
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
 
         MelodyInstruments mi = new MelodyInstruments();
         final int instrumentId = mi.getInstrumentId();
