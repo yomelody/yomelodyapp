@@ -133,19 +133,6 @@ public class AudioFragment extends Fragment {
         strBPM = FilterBPM.getString("stringFilterBPM", null);
 
         fetchGenreNames();
-
-        SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-        SharedPreferences twitterPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
-        SharedPreferences fbPref = getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
-
-        if (loginSharedPref.getString("userId", null) != null) {
-            userId = loginSharedPref.getString("userId", null);
-        } else if (fbPref.getString("userId", null) != null) {
-            userId = fbPref.getString("userId", null);
-        } else if (twitterPref.getString("userId", null) != null) {
-            userId = twitterPref.getString("userId", null);
-        }
-
         if (strName == null && strSearch == null) {
             fetchRecordings();
         } else if (strSearch != null) {
@@ -159,6 +146,20 @@ public class AudioFragment extends Fragment {
         } else {
             fetchRecordingsFilter();
         }
+
+        SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+        SharedPreferences twitterPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
+        }
+
+
 
         adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
     }
@@ -480,7 +481,7 @@ public class AudioFragment extends Fragment {
 
 //                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
 
-                        Log.d("ReturnData1", response);
+                        Log.d("ReturnData2", response);
                         recordingList.clear();
                         recordingsPools.clear();
                         new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
@@ -736,6 +737,8 @@ public class AudioFragment extends Fragment {
                 fetchRecordingsFilterArtist();
             } else if (strInstruments != null) {
                 fetchRecordingsFilterInstruments();
+            }else if(strBPM != null){
+                fetchRecordingsFilterBPM();
             } else {
                 fetchRecordingsFilter();
             }

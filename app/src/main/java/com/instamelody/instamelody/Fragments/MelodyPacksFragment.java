@@ -100,13 +100,14 @@ public class MelodyPacksFragment extends Fragment {
 
         //     new Loader().execute();
         fetchGenreNames();
+        fetchMelodyPacks();
 //        ParseContents pc = new ParseContents(getActivity());
 //        pc.parseGenres(resp,genresArrayList);
 //        genresArrayList=pc.getGenreList();
 
 
         adapter = new MelodyCardListAdapter(melodyList, getActivity());
-        adapter1 = new UserMelodyAdapter(userMelodyList,melodyPools,getActivity());
+        adapter1 = new UserMelodyAdapter(userMelodyList, melodyPools, getActivity());
 
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
@@ -431,7 +432,7 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(ID, userId);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
-                params.put(FILE_TYPE, "user_recording");
+                params.put(FILE_TYPE, "user_melody");
                 params.put(FILTER_TYPE, strName);
                 params.put(FILTER, "extrafilter");
                 return params;
@@ -450,10 +451,9 @@ public class MelodyPacksFragment extends Fragment {
                 RecyclerView.LayoutManager lm = new LinearLayoutManager(getActivity());
                 rv.setLayoutManager(lm);
                 rv.setItemAnimator(new DefaultItemAnimator());
-                if(packId.equals("7")){
-                 rv.setAdapter(adapter1);
-                }
-                else{
+                if (packId.equals("7")) {
+                    rv.setAdapter(adapter1);
+                } else {
                     rv.setAdapter(adapter);
                 }
 
