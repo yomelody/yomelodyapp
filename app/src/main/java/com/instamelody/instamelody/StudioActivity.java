@@ -1390,7 +1390,7 @@ public class StudioActivity extends AppCompatActivity {
 
     public void saveRecordings1() {
 //        final String recName = subEtTopicName.getText().toString().trim();
-////        final String genre = String.valueOf(sp.getSelectedItemPosition());
+////      final String genre = String.valueOf(sp.getSelectedItemPosition());
 //        final String genre = selectedGenre;
 //        final String recType = value;
 //        final String duration = Long.toString(elapsedMillis);
