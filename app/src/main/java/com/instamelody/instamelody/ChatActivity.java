@@ -67,6 +67,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -98,7 +99,9 @@ public class ChatActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     ArrayList<Message> chatList = new ArrayList<>();// list of messages
-
+    ArrayList<String> fileArray = new ArrayList<>();
+    ArrayList<RecentImagesModel> fileInfo = new ArrayList<>();
+    ArrayList<String> groupList = new ArrayList<>();
     String CHECK_FILE_URL = "http://35.165.96.167/api/ShareAudioChat.php";
     String DEVICE_TYPE = "device_type";
     String SENDER_ID = "senderID";
@@ -109,8 +112,6 @@ public class ChatActivity extends AppCompatActivity {
     String TITLE = "title";
     String MESSAGE = "message";
 
-    ArrayList<String> fileArray = new ArrayList<>();
-    ArrayList<RecentImagesModel> fileInfo = new ArrayList<>();
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     EditText etMessage;
 
@@ -133,6 +134,7 @@ public class ChatActivity extends AppCompatActivity {
     String parent;
     String senderId = "";
     String chatType = "";
+    String group = "";
 
     @TargetApi(18)
     @Override
@@ -158,19 +160,6 @@ public class ChatActivity extends AppCompatActivity {
             userId = twitterPref.getString("userId", null);
             username = twitterPref.getString("userName", null);
         }
-
-//        SharedPreferences chatPrefs = getSharedPreferences("MessengerData", MODE_PRIVATE);
-//        id= chatPrefs.getString("id", null);
-//        senderId = chatPrefs.getString("senderId", null);
-//        senderName = chatPrefs.getString("senderName", null);
-//        receiverId = chatPrefs.getString("receiverId", null);
-//        receiverName = chatPrefs.getString("receiverName", null);
-//        coverPic = chatPrefs.getString("coverPic", null);
-//        profilePic = chatPrefs.getString("profilePic", null);
-//        message = chatPrefs.getString("message", null);
-//        chatId = chatPrefs.getString("chatId", null);
-//        isRead = chatPrefs.getString("isRead", null);
-//        sendAt = chatPrefs.getString("sendAt", null);
 
         SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
         senderId = prefs.getString("senderId", null);
@@ -200,10 +189,6 @@ public class ChatActivity extends AppCompatActivity {
 //        final String temp = packPref.getString("PackPresent", null);
 
         getChatMsgs(chatId);
-
-//        if (temp.equals("true")) {
-//            sendMessage("hello", userId, temp);
-//        }
 
         etMessage = (EditText) findViewById(R.id.etMessage);
         etMessage.setHintTextColor(Color.parseColor("#7B888F"));
@@ -684,7 +669,7 @@ public class ChatActivity extends AppCompatActivity {
                     public void onResponse(String response) {
 
                         String str = response;
-                        Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
                         getChatMsgs(chatId);
 //                        cAdapter.notifyDataSetChanged();
 //                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
@@ -718,21 +703,25 @@ public class ChatActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
 
-                if(chatType.equals("group"))
-                {
-
-                    //////////////////////////////////////////////
-
-                }
-                else{
+                if (chatType.equals("group")) {
+                    if (senderId.equals(user_Id)) {
+                        params.put(RECEIVER_ID, receiverId);
+                    } else {
+                        group = senderId + "," + receiverId;
+                        groupList = new ArrayList<>(Arrays.asList(group.split(",")));
+                        groupList.remove(groupList.indexOf(user_Id));
+                        String s = groupList.toString().replaceAll(", ", ",");
+                        receiverId = s.substring(1, s.length() - 1).trim();
+                        params.put(RECEIVER_ID, receiverId);
+                    }
+                } else {
                     if (receiverId.equals(user_Id)) {
                         params.put(RECEIVER_ID, senderId);
-                        params.put(SENDER_ID, user_Id);
                     } else {
                         params.put(RECEIVER_ID, receiverId);
-                        params.put(SENDER_ID, user_Id);
                     }
                 }
+                params.put(SENDER_ID, user_Id);
                 params.put(CHAT_ID, chatId);
                 params.put(TITLE, "message");
                 params.put(MESSAGE, message);
@@ -824,18 +813,12 @@ public class ChatActivity extends AppCompatActivity {
                     for (int i = 0; i < length; i++) {
                         file = files[last];
                         if (file.getAbsoluteFile().toString().trim().endsWith(".jpg")) {
-                            fileArray.add(file.getAbsolutePath());
-                            last = last - 1;
-                        }
-                    }
-
-                    for (int i = 0; i < length; i++) {
-
-                        file = files[last];
-                        if (file.getAbsoluteFile().toString().trim().endsWith(".jpg")) {
                             rim.setName(file.getName());
                             rim.setFilepath(file.getAbsolutePath().toString().trim());
                             Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+//                            ByteArrayOutputStream out = new ByteArrayOutputStream();
+//                            myBitmap.compress(Bitmap.CompressFormat.JPEG, 75, out);
+//                            Bitmap newBmp = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
                             rim.setBitmap(myBitmap);
                             last = last - 1;
                         }
@@ -883,8 +866,6 @@ public class ChatActivity extends AppCompatActivity {
 
         try {
             receiverId = receiverId.replaceAll(",null", "");
-            String str = receiverId;
-            Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Log.e("exception", e.toString());
         }

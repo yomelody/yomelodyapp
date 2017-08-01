@@ -173,12 +173,14 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                         if (Count > 0) {
                             ContactsActivity.btnCancel.setVisibility(View.GONE);
                             ContactsActivity.btnOK.setVisibility(View.VISIBLE);
+                            SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                             if (Count > 1) {
                                 recieverName = "New Group";
-                                SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                                 editor.putString("chatType", "group");
-                                editor.commit();
+                            }else{
+                                editor.putString("chatType", "single");
                             }
+                            editor.commit();
                         }
 
                     } else {
