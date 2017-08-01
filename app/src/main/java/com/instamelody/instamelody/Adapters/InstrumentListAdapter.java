@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -65,9 +66,16 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
     ProgressBar loader;
     RelativeLayout loader_v;
+    boolean isPlayfrom_studio;
 
     public InstrumentListAdapter(ArrayList<MelodyInstruments> instrumentList, Context context) {
         this.instrumentList = instrumentList;
+        this.context = context;
+
+    }
+
+    public InstrumentListAdapter(boolean playfrom_studio, Context context) {
+        this.playfrom_studio = playfrom_studio;
         this.context = context;
 
     }
@@ -93,7 +101,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         ImageView grey_circle, blue_circle;
         ProgressDialog progressDialog;
         public MediaPlayer mp;
-        int   duration1, currentPosition;
+        int duration1, currentPosition;
         CardView card_melody;
 
 
@@ -177,7 +185,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             });
 
 
-
         }
 
 
@@ -245,21 +252,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         //This line commented by Abhishek
 
         audioValue = instruments.getAudioType();
-        rlEQ.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                FXContext.setVisibility(View.GONE);
-                EQContext.setVisibility(View.VISIBLE);
-            }
-        });
-        rlFX.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FXContext.setVisibility(View.VISIBLE);
-                EQContext.setVisibility(View.GONE);
-            }
-        });
         holder.ivPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

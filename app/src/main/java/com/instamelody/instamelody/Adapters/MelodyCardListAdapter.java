@@ -79,7 +79,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     String FILEID = "fileid";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";
-    String Topic = "topic";
+    String Topic = "topic",TempRecordingid = "0";
     RecordingsPool recordingsPool;
     Context context;
     MediaPlayer mediaPlayer;
@@ -96,11 +96,11 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         this.context = context;
     }
 
-    public MelodyCardListAdapter(ArrayList<UserMelodyCard> melodyList, ArrayList<UserMelodyPlay> melodyPools,Context context) {
-        this.userMelodyCardArrayList = melodyList;
-        this.userMelodyPlays = melodyPools;
-        this.context = context;
-    }
+//    public MelodyCardListAdapter(ArrayList<UserMelodyCard> melodyList, ArrayList<UserMelodyPlay> melodyPools,Context context) {
+//        this.userMelodyCardArrayList = melodyList;
+//        this.userMelodyPlays = melodyPools;
+//        this.context = context;
+//    }
 
 
 
