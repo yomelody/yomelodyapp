@@ -841,44 +841,7 @@ public class StudioActivity extends AppCompatActivity {
 
             }
         });
-        /*tvFxButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if(fxContent.getVisibility()==View.VISIBLE)
-                {
-                    fxContent.setVisibility(View.GONE);
-                    eqContent.setVisibility(View.GONE);
-                    //frameInstrument.setVisibility(View.GONE);
-                }
-                else if(fxContent.getVisibility()==View.GONE)
-                {
-                    fxContent.setVisibility(View.VISIBLE);
-                    eqContent.setVisibility(View.GONE);
-                   // frameInstrument.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-        tvEqButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if(eqContent.getVisibility()==View.VISIBLE)
-                {
-                    eqContent.setVisibility(View.GONE);
-                    fxContent.setVisibility(View.GONE);
-                    //frameInstrument.setVisibility(View.GONE);
-                }
-                else if(eqContent.getVisibility()==View.GONE)
-                {
-                    eqContent.setVisibility(View.VISIBLE);
-                    fxContent.setVisibility(View.GONE);
-                    //frameInstrument.setVisibility(View.VISIBLE);
-                }
-            }
-        });*/
-
-
+        
         // To get preferred buffer size and sampling rate.
         AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
         String rate = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
