@@ -35,6 +35,7 @@ import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
 import com.instamelody.instamelody.StudioActivity;
+import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -86,7 +87,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     String Key_shared_by_user = "shared_by_user";
     String Key_shared_with = "shared_with";
     String Key_file_type = "file_type";
-    ProgressDialog progressDialog;
+
 
     public MelodyCardListAdapter(ArrayList<MelodyCard> melodyList, Context context) {
         this.melodyList = melodyList;
@@ -101,7 +102,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         Button btnMelodyAdd;
         SeekBar melodySlider;
         RelativeLayout rlSeekbarTracer, rlLike, rlPlay, rlComment, rlshare;
-
+        ProgressDialog progressDialog;
 
         public MyViewHolder(final View itemView) {
             super(itemView);
@@ -136,85 +137,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 
 
             // MelodyName=tvMelodyName.getText().toString().trim();
-            ivPlay.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-//
-//                    progressDialog = new ProgressDialog(v.getContext());
-//                    progressDialog.setMessage("Loading...");
-//                    progressDialog.show();
 
-                    mediaPlayer = new MediaPlayer();
-                    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                    ivPlay.setVisibility(GONE);
-                    ivPause.setVisibility(VISIBLE);
-                    melodySlider.setVisibility(VISIBLE);
-                    rlSeekbarTracer.setVisibility(VISIBLE);
-
-                    String position, userId;
-                    SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-                    userId = loginSharedPref.getString("userId", null);
-                    position = Integer.toString(getAdapterPosition() + 1);
-
-                    if (userId != null) {
-                        String play = tvPlayCount.getText().toString().trim();
-                        int playValue = Integer.parseInt(play) + 1;
-                        play = String.valueOf(playValue);
-                        tvPlayCount.setText(play);
-
-                        fetchViewCount(userId, position);
-                        ParseContents pc = new ParseContents(context);
-                        instrumentList = pc.getInstruments();
-                        if (getAdapterPosition() < instrumentList.size()) {
-                            audioUrl = instrumentList.get(getAdapterPosition()).getInstrumentFile();
-                        }
-
-                    } else {
-                        ParseContents pc = new ParseContents(context);
-                        instrumentList = pc.getInstruments();
-                        if (getAdapterPosition() < instrumentList.size()) {
-                            audioUrl = instrumentList.get(getAdapterPosition()).getInstrumentFile();
-                        }
-                    }
-                    try {
-                        playAudio(audioUrl);
-                        primarySeekBarProgressUpdater();
-                        audioUrl = "";
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
-
-                    }
-                    mediaPlayer.seekTo(length);
-                    mediaPlayer.start();
-                    if(mediaPlayer.equals(duration)){
-                        try {
-                            playAudio(audioUrl);
-                            primarySeekBarProgressUpdater();
-                        }catch (IOException e){
-                            e.printStackTrace();
-                        }
-                        catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-
-
-
-
-                }
-            });
-            ivPause.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ivPlay.setVisibility(VISIBLE);
-                    ivPause.setVisibility(GONE);
-                    mediaPlayer.pause();
-                    length = mediaPlayer.getCurrentPosition();
-                    melodySlider.setProgress(0);
-                }
-            });
 
             rlLike.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -373,6 +296,19 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 //                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) rlSeekbarTracer.getLayoutParams();
 //                    params.width = (40 + (progress * rate));
 //                    rlSeekbarTracer.setLayoutParams(params);
+
+                    int mCurrentPosition = mediaPlayer.getCurrentPosition() / 1000;
+                    int mDuration = mediaPlayer.getDuration() / 1000;
+                    //   UtilsRecording utilRecording = new UtilsRecording();
+                    //   int progress1 = utilRecording.getProgressPercentage(mCurrentPosition, mDuration);
+
+                    if (mediaPlayer != null && fromUser) {
+                        int playPositionInMilliseconds = mediaPlayer.getDuration() / 100 * melodySlider.getProgress();
+                        mediaPlayer.seekTo(playPositionInMilliseconds);
+//                        seekBar.setProgress(progress);
+                    } else {
+                        // the event was fired from code and you shouldn't call player.seekTo()
+                    }
                 }
 
                 @Override
@@ -400,7 +336,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 
         private void primarySeekBarProgressUpdater() {
             Handler mHandler1 = new Handler();
-            melodySlider.setProgress((int) (((float) mediaPlayer.getCurrentPosition() / duration) * 100));// This math construction give a percentage of "was playing"/"song length"
+            melodySlider.setProgress((int) (((float) mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
             if (mediaPlayer.isPlaying()) {
                 Runnable notification = new Runnable() {
                     public void run() {
@@ -420,7 +356,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     }
 
     @Override
-    public void onBindViewHolder(final MyViewHolder holder, int listPosition) {
+    public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
         MelodyCard melody = melodyList.get(listPosition);
         profile = melody.getUserProfilePic();
         cover = melody.getMelodyCover();
@@ -451,7 +387,130 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         } else {
             holder.ivDislikeButton.setVisibility(VISIBLE);
         }
+        holder.ivPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//
+                holder.progressDialog = new ProgressDialog(v.getContext());
+                holder.progressDialog.setMessage("Loading...");
+                holder.progressDialog.show();
 
+
+                holder.melodySlider.setVisibility(VISIBLE);
+                holder.rlSeekbarTracer.setVisibility(VISIBLE);
+
+                String position, userId;
+                SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+                userId = loginSharedPref.getString("userId", null);
+                position = Integer.toString(listPosition + 1);
+
+                if (userId != null) {
+                    String play = holder.tvPlayCount.getText().toString().trim();
+                    int playValue = Integer.parseInt(play) + 1;
+                    play = String.valueOf(playValue);
+                    holder.tvPlayCount.setText(play);
+
+                    fetchViewCount(userId, position);
+                    ParseContents pc = new ParseContents(context);
+                    instrumentList = pc.getInstruments();
+                    if (listPosition < instrumentList.size()) {
+                        audioUrl = instrumentList.get(listPosition).getInstrumentFile();
+                    }
+
+                } else {
+                    ParseContents pc = new ParseContents(context);
+                    instrumentList = pc.getInstruments();
+                    if (listPosition < instrumentList.size()) {
+                        audioUrl = instrumentList.get(listPosition).getInstrumentFile();
+                    }
+                }
+//                    try {
+//                        playAudio(audioUrl);
+//                        primarySeekBarProgressUpdater();
+//                        audioUrl = "";
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                        Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
+//
+//                    }
+
+                if (mediaPlayer != null) {
+                    if (mediaPlayer.isPlaying()) {
+                        mediaPlayer.stop();
+                        mediaPlayer.reset();
+                        mediaPlayer.release();
+                        mediaPlayer=null;
+                        holder.ivPause.setVisibility(GONE);
+
+                    }
+
+                }
+
+                mediaPlayer = new MediaPlayer();
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                try {
+                    mediaPlayer.setDataSource(audioUrl);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                mediaPlayer.prepareAsync();
+                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mediaPlayer) {
+                        holder.progressDialog.dismiss();
+
+                        mediaPlayer.start();
+                        holder.primarySeekBarProgressUpdater();
+                        holder.ivPlay.setVisibility(GONE);
+                        holder.ivPause.setVisibility(VISIBLE);
+                    }
+                });
+                mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                    @Override
+                    public boolean onError(MediaPlayer MediaPlayer, int what, int extra) {
+                        holder.progressDialog.dismiss();
+                        return false;
+                    }
+                });
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mediaPlayer) {
+                        duration = mediaPlayer.getDuration();
+                        holder.progressDialog.dismiss();
+                    }
+                });
+
+
+                //        mediaPlayer.seekTo(length);
+                //      mediaPlayer.start();
+//                    if (mediaPlayer.equals(duration)) {
+//                        try {
+//                            playAudio(audioUrl);
+//                            primarySeekBarProgressUpdater();
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//
+//                    }
+
+
+            }
+        });
+
+
+        holder.ivPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                holder.ivPlay.setVisibility(VISIBLE);
+                holder.ivPause.setVisibility(GONE);
+                mediaPlayer.pause();
+                length = mediaPlayer.getCurrentPosition();
+                holder.melodySlider.setProgress(0);
+            }
+        });
 
     }
 

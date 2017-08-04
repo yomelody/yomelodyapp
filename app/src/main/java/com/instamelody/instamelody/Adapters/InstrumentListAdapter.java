@@ -99,7 +99,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         ImageView grey_circle, blue_circle;
         ProgressDialog progressDialog;
         public MediaPlayer mp;
-        int   duration1, currentPosition;
+        int duration1, currentPosition;
         CardView card_melody;
 
 

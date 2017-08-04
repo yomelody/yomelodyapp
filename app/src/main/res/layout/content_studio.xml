@@ -494,7 +494,6 @@
                     android:layout_gravity="end|bottom"
                     android:layout_marginRight="80dp"
                     android:paddingBottom="1dp"
-                    android:visibility="visible"
                     app:srcCompat="@drawable/red_mike" />
 
                 <ImageView
