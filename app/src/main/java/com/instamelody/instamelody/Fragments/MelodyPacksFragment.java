@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TabHost;
 import android.widget.Toast;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
@@ -35,6 +34,10 @@ import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
+
+import com.instamelody.instamelody.Models.UserMelodyCard;
+import com.instamelody.instamelody.Models.UserMelodyPlay;
+
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
 
@@ -69,7 +72,15 @@ public class MelodyPacksFragment extends Fragment {
     String KEY = "key";
     String GENRE = "genere";
     String genreString = "1";
-    String USER_ID = "user_id";
+
+            String USER_ID = "users_id";
+    String USERS_ID = "users_id";
+    private String KEY_SEARCH = "search";
+    private String USER_NAME = "username";
+    private String COUNT = "count";
+
+
+
     ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     String KEY_MSG = "msg";
     String packName;
@@ -277,23 +288,39 @@ public class MelodyPacksFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                if (userId != null) {
+
+                if (packId.equals("7")) {
+                    params.put(USERS_ID, userId);
+                    params.put(FILE_TYPE, "user_melody");
+                } else if (userId != null) {
                     params.put(users_id, userId);
-                    params.put(GENRE, "0");
+                    params.put(GENRE, packId);
+                    params.put(FILE_TYPE, "admin_melody");
                 } else {
                     params.put(GENRE, packId);
-                }
-                SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-                String userId = loginSharedPref.getString("userId", null);
-                if (userId != null) {
+                    params.put(FILE_TYPE, "admin_melody");
+
+                    if (userId != null) {
+                        params.put(users_id, userId);
+                        params.put(GENRE, "0");
+                    } else {
+                        params.put(GENRE, packId);
+
+                    }
+                    SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+                    String userId = loginSharedPref.getString("userId", null);
+                    if (userId != null) {
 //                    params.put(USER_ID, userId);
+                    }
+
                 }
                 return params;
             }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+
+        } ;
+            RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         requestQueue.add(stringRequest);
-    }
+        }
 
 
     public void fetchRecordingsFilter() {
@@ -390,4 +417,3 @@ public class MelodyPacksFragment extends Fragment {
         }
     }
 }
-

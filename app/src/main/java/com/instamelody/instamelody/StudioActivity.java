@@ -594,10 +594,6 @@ public class StudioActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (userId != null && melodyPackId != null) {
                     openDialog();
-                    mShouldContinue=false;
-                    if(mRecordingThread.isAlive()){
-                        mRecordingThread.stopRunning();
-                    }
                     ivRecord.setVisibility(View.VISIBLE);
                     ivRecord.setEnabled(true);
                 } else if (userId == null) {
@@ -618,7 +614,6 @@ public class StudioActivity extends AppCompatActivity {
 
                 if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
 
-
                         if (checkPermissions()) {
                             ivRecord.setVisibility(View.GONE);
                             rlMelodyButton.setVisibility(View.GONE);
@@ -636,7 +631,6 @@ public class StudioActivity extends AppCompatActivity {
                                     catch (Throwable e){
                                         e.printStackTrace();
                                     }
-
                                 }
                                 else{
                                     mRecordingThread.stopRunning();
@@ -1383,6 +1377,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+                params.put(FILE_TYPE,"admin_melody");
                 params.put(KEY, "admin@123");
                 return params;
             }
@@ -1687,7 +1682,6 @@ public class StudioActivity extends AppCompatActivity {
                             instrumentList.add(melodyInstruments);
                             adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
                             recyclerViewInstruments.setAdapter(adapter);
-                            mRecordingThread.stopRunning();
                             adapter.notifyDataSetChanged();
                             ivRecord_play.setVisibility(View.INVISIBLE);
                             rlRedoButton.setVisibility(View.INVISIBLE);
