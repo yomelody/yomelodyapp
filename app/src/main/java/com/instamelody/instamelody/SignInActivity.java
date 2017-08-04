@@ -435,7 +435,7 @@ public class SignInActivity extends AppCompatActivity {
 
         final String email = etEmail.getText().toString().trim();
         final String password = etPassword.getText().toString().trim();
-        Log.d("DeviceToken", DeviceToken);
+//        Log.d("DeviceToken", DeviceToken);
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, LOGIN,
                 new Response.Listener<String>() {

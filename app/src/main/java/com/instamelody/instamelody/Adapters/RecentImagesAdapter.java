@@ -17,6 +17,7 @@ import com.instamelody.instamelody.R;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -41,12 +42,12 @@ public class RecentImagesAdapter extends RecyclerView.Adapter<RecentImagesAdapte
             super(mView);
             this.galleryImages = (ImageView) mView.findViewById(R.id.galleryImages);
 
-//            galleryImages.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    fileList.get(getAdapterPosition()).
-//                }
-//            });
+            galleryImages.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    fileList.get(getAdapterPosition()).getFilepath();
+                }
+            });
         }
     }
 
@@ -59,14 +60,7 @@ public class RecentImagesAdapter extends RecyclerView.Adapter<RecentImagesAdapte
     @TargetApi(19)
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int listPosition) {
-
-
-        Bitmap myBitmap = BitmapFactory.decodeFile(fileList.get(listPosition).getFilepath());
-        holder.galleryImages.setImageBitmap(Bitmap.createScaledBitmap(myBitmap, myBitmap.getWidth() / 10, myBitmap.getHeight() / 10, false));
-        if (myBitmap != null) {
-            myBitmap.recycle();
-            myBitmap = null;
-        }
+        Picasso.with(context).load(new File(fileList.get(listPosition).getFilepath())).into(holder.galleryImages);
     }
 
     @Override
