@@ -29,7 +29,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
-import com.instamelody.instamelody.Adapters.UserMelodyAdapter;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
@@ -37,7 +36,6 @@ import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Models.UserMelodyCard;
 import com.instamelody.instamelody.Models.UserMelodyPlay;
-import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
 
 import org.json.JSONArray;
@@ -51,8 +49,6 @@ import java.util.Map;
 import static android.content.Context.MODE_PRIVATE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
-import static com.instamelody.instamelody.utils.Const.ServiceType.MY_MELODY;
-import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
 /**
  * Created by Shubhansh Jaiswal on 11/29/2016.

@@ -39,7 +39,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.CommentsAdapter;
 import com.instamelody.instamelody.Models.Comments;
-import com.instamelody.instamelody.Parse.ParseContents;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
