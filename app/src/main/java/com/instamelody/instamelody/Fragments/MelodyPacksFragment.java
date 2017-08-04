@@ -307,14 +307,16 @@ public class MelodyPacksFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 if (packId.equals("7")) {
-
                     params.put(USER_ID, userId);
                     params.put(FILE_TYPE, "user_melody");
+                    params.put(GENRE,packId);
                 } else if (userId != null) {
                     params.put(users_id, userId);
                     params.put(GENRE, packId);
+                    params.put(FILE_TYPE,"admin_melody");
                 } else {
                     params.put(GENRE, packId);
+                    params.put(FILE_TYPE,"admin_melody");
                 }
                 SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
                 String userId = loginSharedPref.getString("userId", null);
