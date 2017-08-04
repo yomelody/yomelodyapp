@@ -390,21 +390,22 @@ public class ParseContents {
                     card.setRecordingCover(cardJson.getString("cover_url"));
                     card.setUserProfilePic(cardJson.getString("profile_url"));
                     card.setGenreName(cardJson.getString("genre_name"));
-
-                    instrumentArray = cardJson.getJSONArray("recordings");
-                    for (int j = 0; j < instrumentArray.length(); j++) {
-                        RecordingsPool rp = new RecordingsPool();
-                        JSONObject instrumentJson = instrumentArray.getJSONObject(j);
-                        rp.setAddedById(instrumentJson.getString("added_by_id"));
-                        rp.setUserName(instrumentJson.getString("user_name"));
-                        rp.setName(instrumentJson.getString("name"));
-                        rp.setCoverUrl(instrumentJson.getString("cover_url"));
-                        rp.setProfileUrl(instrumentJson.getString("profile_url"));
-                        rp.setDateAdded(instrumentJson.getString("date_added"));
-                        rp.setDuration(instrumentJson.getString("duration"));
-                        rp.setRecordingUrl(instrumentJson.getString("recording_url"));
-                        rp.setInstruments(instrumentJson.getString("instruments"));
-                        recordingsPools.add(rp);
+                    if (!cardJson.getString("recordings").equals("null")) {
+                        instrumentArray = cardJson.getJSONArray("recordings");
+                        for (int j = 0; j < instrumentArray.length(); j++) {
+                            RecordingsPool rp = new RecordingsPool();
+                            JSONObject instrumentJson = instrumentArray.getJSONObject(j);
+                            rp.setAddedById(instrumentJson.getString("added_by_id"));
+                            rp.setUserName(instrumentJson.getString("user_name"));
+                            rp.setName(instrumentJson.getString("name"));
+                            rp.setCoverUrl(instrumentJson.getString("cover_url"));
+                            rp.setProfileUrl(instrumentJson.getString("profile_url"));
+                            rp.setDateAdded(instrumentJson.getString("date_added"));
+                            rp.setDuration(instrumentJson.getString("duration"));
+                            rp.setRecordingUrl(instrumentJson.getString("recording_url"));
+                            rp.setInstruments(instrumentJson.getString("instruments"));
+                            recordingsPools.add(rp);
+                        }
                     }
                     recordingList.add(card);
 
@@ -457,9 +458,9 @@ public class ParseContents {
                         u.setCover(instrumentJson.getString("cover"));
                         u.setProfilepic(instrumentJson.getString("profilepic"));
                         u.setDate(instrumentJson.getString("date"));
-                        if(instrumentJson.isNull("instrument")){
+                        if (instrumentJson.isNull("instrument")) {
                             Toast.makeText(mContext, "null", Toast.LENGTH_SHORT).show();
-                        }else{
+                        } else {
                             u.setInstrument(instrumentJson.getString("instrument"));
                         }
                         melodyPools.add(u);

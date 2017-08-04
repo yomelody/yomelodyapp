@@ -61,6 +61,7 @@ import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
+import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
 import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
 /**
@@ -133,15 +134,16 @@ public class AudioFragment extends Fragment {
         strBPM = FilterBPM.getString("stringFilterBPM", null);
 
         fetchGenreNames();
+
         if (strName == null && strSearch == null) {
             fetchRecordings();
         } else if (strSearch != null) {
             fetchSearchData();
         } else if (strArtist != null) {
             fetchRecordingsFilterArtist();
-        } else if (strInstruments != null) {
+        } else if (strInstruments != null && strName.equals("# of Instruments")) {
             fetchRecordingsFilterInstruments();
-        }else if(strBPM != null){
+        }else if(strBPM != null && strName.equals("BPM")){
             fetchRecordingsFilterBPM();
         } else {
             fetchRecordingsFilter();
@@ -214,9 +216,9 @@ public class AudioFragment extends Fragment {
                                 fetchSearchData();
                             } else if (strArtist != null) {
                                 fetchRecordingsFilterArtist();
-                            } else if (strInstruments != null) {
+                            } else if (strInstruments != null && strName.equals("# of Instruments")) {
                                 fetchRecordingsFilterInstruments();
-                            }else if(strBPM != null){
+                            }else if(strBPM != null && strName.equals("BPM")){
                                 fetchRecordingsFilterBPM();
                             } else {
                                 fetchRecordingsFilter();
@@ -241,9 +243,9 @@ public class AudioFragment extends Fragment {
                                     fetchSearchData();
                                 } else if (strArtist != null) {
                                     fetchRecordingsFilterArtist();
-                                } else if (strInstruments != null) {
+                                } else if (strInstruments != null && strName.equals("# of Instruments")) {
                                     fetchRecordingsFilterInstruments();
-                                }else if(strBPM != null){
+                                }else if(strBPM != null && strName.equals("BPM")){
                                     fetchRecordingsFilterBPM();
                                 } else {
                                     fetchRecordingsFilter();
@@ -735,9 +737,9 @@ public class AudioFragment extends Fragment {
                 fetchSearchData();
             } else if (strArtist != null) {
                 fetchRecordingsFilterArtist();
-            } else if (strInstruments != null) {
+            } else if (strInstruments != null && strName.equals("# of Instruments")) {
                 fetchRecordingsFilterInstruments();
-            }else if(strBPM != null){
+            }else if(strBPM != null && strName.equals("BPM")){
                 fetchRecordingsFilterBPM();
             } else {
                 fetchRecordingsFilter();

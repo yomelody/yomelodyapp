@@ -531,7 +531,6 @@ public class DiscoverActivity extends AppCompatActivity {
                 fetchRecordingsFilterArtist();
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtFilterName.getWindowToken(), 0);
-
             }
         });
 

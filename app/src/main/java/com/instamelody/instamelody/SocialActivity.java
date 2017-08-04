@@ -109,10 +109,6 @@ public class SocialActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_social);
 
-        if (fetchRecordingUrl == null){
-            Toast.makeText(this, "No Recording Found to Share", Toast.LENGTH_SHORT).show();
-        }
-
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
@@ -153,10 +149,10 @@ public class SocialActivity extends AppCompatActivity {
         switchFb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (fetchRecordingUrl == null){
+                if (fetchRecordingUrl == null) {
                     Toast.makeText(SocialActivity.this, "No Recording Found to Share", Toast.LENGTH_SHORT).show();
                     switchFb.setEnabled(false);
-                }else {
+                } else {
                     AlertDialog.Builder builder1 = new AlertDialog.Builder(SocialActivity.this);
                     builder1.setMessage("Wants to share InstaMelody music on facebook??");
                     builder1.setCancelable(true);
@@ -181,18 +177,16 @@ public class SocialActivity extends AppCompatActivity {
                     AlertDialog alert11 = builder1.create();
                     alert11.show();
                 }
-
-
             }
         });
 
         switchTwitter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fetchRecordingUrl == null){
+                if (fetchRecordingUrl == null) {
                     Toast.makeText(SocialActivity.this, "No Recording Found to Share", Toast.LENGTH_SHORT).show();
                     switchTwitter.setEnabled(false);
-                }else {
+                } else {
                     AlertDialog.Builder builder1 = new AlertDialog.Builder(SocialActivity.this);
                     builder1.setMessage("Wants to share InstaMelody music on twitter??");
                     builder1.setCancelable(true);
@@ -225,7 +219,7 @@ public class SocialActivity extends AppCompatActivity {
         switchSoundCloud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fetchRecordingUrl == null){
+                if (fetchRecordingUrl == null) {
                     Toast.makeText(SocialActivity.this, "No Recording found to share", Toast.LENGTH_SHORT).show();
                     switchSoundCloud.setEnabled(false);
                 }
@@ -235,10 +229,10 @@ public class SocialActivity extends AppCompatActivity {
         switchGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fetchRecordingUrl == null){
+                if (fetchRecordingUrl == null) {
                     Toast.makeText(SocialActivity.this, "No Recording Found to Share", Toast.LENGTH_SHORT).show();
                     switchGoogle.setEnabled(false);
-                }else {
+                } else {
                     plus_one_button.setVisibility(View.VISIBLE);
                     plus_one_button.setEnabled(true);
                     plus_one_button.setOnClickListener(new View.OnClickListener() {
