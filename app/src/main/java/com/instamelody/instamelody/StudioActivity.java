@@ -12,15 +12,18 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Path;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -183,7 +186,7 @@ public class StudioActivity extends AppCompatActivity {
     static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     public boolean isRecording = false;
     MediaPlayer mediaPlayer;
-    private static String audioFilePath;
+    public static String audioFilePath;
     private static String instrumentFilePath;
     Uri audioUri;
 
@@ -199,10 +202,7 @@ public class StudioActivity extends AppCompatActivity {
     RelativeLayout rlMelodyButton, rlRecordingButton, rlRedoButton, rlListeningButton, rlSetCover, rlInviteButton, rlPublic;
     public static RelativeLayout eqContent,fxContent;
     FrameLayout frameTrans, frameSync;
-
-    public static ImageView ivInstrumentCover,userProfileImage;
-    public static TextView tvInstrumentName,tvInstrumentLength,tvUserName;
-    ImageView ivBackButton, ivHomeButton, ivRecord, ivRecord_stop, ivRecord_play, ivRecord_pause, discover, message, ivProfile, ivNewRecordCover;
+  static   ImageView ivBackButton, ivHomeButton, ivRecord, ivRecord_stop, ivRecord_play, ivRecord_pause, discover, message, ivProfile, ivNewRecordCover;
     CircleImageView profile_image;
     TextView artist_name, noMelodyNote;
     RecyclerView recyclerViewInstruments;
@@ -229,6 +229,10 @@ public class StudioActivity extends AppCompatActivity {
     MediaPlayer[] media;
     List<MediaPlayer> mps = new ArrayList<MediaPlayer>();
     public static boolean playfrom_studio = false;
+    String recordingDuration;
+    long stop_rec_time;
+    String time_stop;
+    int count = 0;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -587,6 +591,12 @@ public class StudioActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (userId != null && melodyPackId != null) {
                     openDialog();
+                    mShouldContinue=false;
+                    if(mRecordingThread.isAlive()){
+                        mRecordingThread.stopRunning();
+                    }
+                    ivRecord.setVisibility(View.VISIBLE);
+                    ivRecord.setEnabled(true);
                 } else if (userId == null) {
                     Intent i = new Intent(getApplicationContext(), SignInActivity.class);
                     startActivity(i);
@@ -605,33 +615,48 @@ public class StudioActivity extends AppCompatActivity {
 
                 if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
 
-                    if (checkPermissions()) {
-                        ivRecord.setVisibility(View.GONE);
-                        rlMelodyButton.setVisibility(View.GONE);
-                        ivRecord_stop.setVisibility(View.VISIBLE);
-                        rlRecordingButton.setVisibility(View.VISIBLE);
-                        waveform_view.setVisibility(View.VISIBLE);
-                        try {
-                            recordAudio();
-                            playAudioRecycler();
-                            Log.d("Instrument count", "" + instruments_count.size());
-                            mRecordingThread.start();
-                            chrono.setBase(SystemClock.elapsedRealtime());
-                            chrono.start();
 
-                        } catch (IllegalStateException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        if (checkPermissions()) {
+                            ivRecord.setVisibility(View.GONE);
+                            rlMelodyButton.setVisibility(View.GONE);
+                            ivRecord_stop.setVisibility(View.VISIBLE);
+                            rlRecordingButton.setVisibility(View.VISIBLE);
+                            waveform_view.setVisibility(View.VISIBLE);
+                            try {
+                                recordAudio();
+                                playAudioRecycler();
+                                Log.d("Instrument count", "" + instruments_count.size());
+                                if(!mRecordingThread.isAlive()){
+                                    try{
+                                        mRecordingThread.start();
+                                    }
+                                    catch (Throwable e){
+                                        e.printStackTrace();
+                                    }
 
-                        //   mRecordingThread.start();
+                                }
+                                else{
+                                    mRecordingThread.stopRunning();
+                                }
+
+
+                                chrono.setBase(SystemClock.elapsedRealtime());
+                                chrono.start();
+
+                            } catch (IllegalStateException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            //   mRecordingThread.start();
 
 //                    primarySeekBarProgressUpdater();
-                        //                 chrono.start();
-                    } else {
-                        setPermissions();
-                    }
+                            //                 chrono.start();
+                        } else {
+                            setPermissions();
+                        }
+
 
                 } else {
                     ivRecord.setVisibility(View.GONE);
@@ -705,6 +730,18 @@ public class StudioActivity extends AppCompatActivity {
                 tvDone.setEnabled(true);
                 chrono.stop();
                 /*m_handler.removeCallbacks(m_handlerTask);*/
+                try {
+                    InputStream inputStream =
+                            getContentResolver().openInputStream(Uri.fromFile(new File(audioFilePath)));
+                    soundBytes = new byte[inputStream.available()];
+                    soundBytes = toByteArray(inputStream);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                recordingDuration = getDuration(new File(audioFilePath));
+                stop_rec_time = SystemClock.elapsedRealtime() - chrono.getBase();
+                time_stop = formateMilliSeccond(stop_rec_time);
 
             }
         });
@@ -744,6 +781,45 @@ public class StudioActivity extends AppCompatActivity {
                 timeWhenStopped = 0;*/
                 chrono.setBase(SystemClock.elapsedRealtime());
                 chrono.start();
+//                Log.d("Duration of file",""+ Long.valueOf(recordingDuration));
+//                Log.d("stop duration", ""+Long.valueOf(time_stop));
+//                String[] x=time_stop.split(":");
+//                Log.d("after split", x[1]);
+//                long x = mediaPlayer.getDuration();
+//                long y = mediaPlayer.getCurrentPosition();
+//                Log.d("Duration", "" + x);
+//                Log.d("Current position", "" + y);
+//                final long endTime = 10112;
+//                new CountDownTimer(endTime, 10) {
+//                    public void onTick(long millisUntilFinished) {
+//
+//                        if (mediaPlayer.getCurrentPosition() >= endTime) {
+//                            mediaPlayer.stop();
+//                        }
+//
+//                    }
+//
+//                    public void onFinish() {
+//
+//
+//                    }
+//                }.start();
+
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        mediaPlayer.stop();
+                        chrono.stop();
+                        ivRecord_pause.setVisibility(View.INVISIBLE);
+                        rlListeningButton.setVisibility(View.INVISIBLE);
+                        ivRecord_play.setVisibility(View.VISIBLE);
+                        rlRedoButton.setVisibility(View.VISIBLE);
+                        if (mRecordingThread != null) {
+                            mRecordingThread.stopRunning();
+                            mRecordingThread = null;
+                        }
+                    }
+                });
             }
         });
 
@@ -869,6 +945,44 @@ public class StudioActivity extends AppCompatActivity {
         return true;
     }
 
+    private static String getDuration(File file) {
+        MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+        mediaMetadataRetriever.setDataSource(file.getAbsolutePath());
+        String durationStr = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+        return formateMilliSeccond(Long.parseLong(durationStr));
+    }
+
+    public static String formateMilliSeccond(long milliseconds) {
+        String finalTimerString = "";
+        String secondsString = "";
+
+        // Convert total duration into time
+        int hours = (int) (milliseconds / (1000 * 60 * 60));
+        int minutes = (int) (milliseconds % (1000 * 60 * 60)) / (1000 * 60);
+        int seconds = (int) ((milliseconds % (1000 * 60 * 60)) % (1000 * 60) / 1000);
+
+        // Add hours if there
+        if (hours > 0) {
+            finalTimerString = hours + ":";
+        }
+
+        // Prepending 0 to seconds if it is one digit
+        if (seconds < 10) {
+            secondsString = "0" + seconds;
+        } else {
+            secondsString = "" + seconds;
+        }
+
+        finalTimerString = finalTimerString + minutes + ":" + secondsString;
+
+        //      return  String.format("%02d Min, %02d Sec",
+        //                TimeUnit.MILLISECONDS.toMinutes(milliseconds),
+        //                TimeUnit.MILLISECONDS.toSeconds(milliseconds) -
+        //                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliseconds)));
+
+        // return timer string
+        return finalTimerString;
+    }
 
     private void primarySeekBarProgressUpdater() {
 
@@ -1173,16 +1287,6 @@ public class StudioActivity extends AppCompatActivity {
         recorder.setOutputFile(audioFilePath);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 
-
-        try {
-            InputStream inputStream =
-                    getContentResolver().openInputStream(Uri.fromFile(new File(audioFilePath)));
-
-            soundBytes = new byte[inputStream.available()];
-            soundBytes = toByteArray(inputStream);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         try {
             recorder.prepare();
@@ -1512,7 +1616,7 @@ public class StudioActivity extends AppCompatActivity {
                 params.put(USER_ID, userId);
                 params.put(RECORDING_NAME, subEtTopicName.getText().toString().trim());
                 params.put(RECORDING_GENRE, selectedGenre);
-                params.put(RECORDING_DURATION, Long.toString(elapsedMillis));
+                params.put(RECORDING_DURATION, recordingDuration);
                 params.put(SHARE_PUBLIC, switchFlag);
                 params.put(RECORDING_BPM, "128");
                 return params;
@@ -1540,7 +1644,6 @@ public class StudioActivity extends AppCompatActivity {
 
                 String urlRecording;
                 String resultResponse = new String(response.data);
-
                 Log.d("Server Data", resultResponse);
                 SharedPreferences loginSharedPref = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
                 String userName = loginSharedPref.getString("userName", null);
@@ -1580,7 +1683,18 @@ public class StudioActivity extends AppCompatActivity {
                             instrumentList.add(melodyInstruments);
                             adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
                             recyclerViewInstruments.setAdapter(adapter);
+                            mRecordingThread.stopRunning();
                             adapter.notifyDataSetChanged();
+                            ivRecord_play.setVisibility(View.INVISIBLE);
+                            rlRedoButton.setVisibility(View.INVISIBLE);
+                            rlMelodyButton.setVisibility(View.VISIBLE);
+
+
+
+                            //   StudioActivity.this.ivRecord.setVisibility(View.VISIBLE);
+                /*waveform_view.setVisibility(View.GONE);
+                recording_time.setText("00:00:00");*/
+                            // StudioActivity.this.recreate();
                         }
 
                         if (progressDialog != null) {
@@ -1588,10 +1702,10 @@ public class StudioActivity extends AppCompatActivity {
                                 progressDialog.dismiss();
                             }
                         }
-                        InputMethodManager inputManager = (InputMethodManager)
-                                getSystemService(Context.INPUT_METHOD_SERVICE);
-                        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                                InputMethodManager.HIDE_NOT_ALWAYS);
+//                        InputMethodManager inputManager = (InputMethodManager)
+//                                getSystemService(Context.INPUT_METHOD_SERVICE);
+//                        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+//                                InputMethodManager.HIDE_NOT_ALWAYS);
 
                         SharedPreferences.Editor recEditor = getApplication().getSharedPreferences("Recording_MelodyDataResponse", MODE_PRIVATE).edit();
                         recEditor.clear();
@@ -1624,8 +1738,6 @@ public class StudioActivity extends AppCompatActivity {
                                     SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("cover response", MODE_PRIVATE).edit();
                                     editor.putString("coverPicStudio", coverPic);
                                     editor.commit();
-
-
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -1662,7 +1774,6 @@ public class StudioActivity extends AppCompatActivity {
                                 params.put(FILE1, new DataPart("CoverImg.jpg", AppHelper.getFileDataFromDrawable(getBaseContext(), ivNewRecordCover.getDrawable()), "image/jpeg"));
                                 return params;
                             }
-
 
                         };
 
@@ -1776,7 +1887,7 @@ public class StudioActivity extends AppCompatActivity {
     public void playAudioRecycler() throws IOException {
         //This for loop modified by Abhishek
         //      InstrumentListAdapter.playfrom_studio = true;
-        playfrom_studio=true;
+        playfrom_studio = true;
         adapter = new InstrumentListAdapter(playfrom_studio, getApplicationContext());
         //     adapter.notifyDataSetChanged();
 
