@@ -13,61 +13,61 @@
         android:background="#FFFFFF"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true">
-
-        <ImageView
-            android:id="@+id/ivBackButton"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:padding="8dp"
-            android:layout_centerVertical="true"
-            android:src="@drawable/left_arrow" />
-
         <RelativeLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_centerHorizontal="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true">
 
-            <TextView
-                android:id="@+id/appBarMainText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <ImageView
+                android:id="@+id/ivBackButton"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
                 android:layout_centerVertical="true"
-                android:text="Messenger"
-                android:textColor="@android:color/black"
-                android:textSize="16sp"
-                android:textStyle="normal|bold" />
+                android:padding="8dp"
+                android:src="@drawable/left_arrow" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true">
+
+                <TextView
+                    android:id="@+id/appBarMainText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="Messenger"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:textStyle="normal|bold" />
+
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/ivNewChat"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="8dp"
+                android:padding="8dp"
+                android:src="@drawable/edit" />
+
+            <ImageView
+                android:id="@+id/ivHomeButton"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/ivBackButton"
+                android:layout_toRightOf="@+id/ivBackButton"
+                android:padding="8dp"
+                android:src="@drawable/menu_dots" />
 
         </RelativeLayout>
-
-        <ImageView
-            android:id="@+id/ivNewChat"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:padding="8dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="8dp"
-            android:src="@drawable/edit" />
-
-        <ImageView
-            android:id="@+id/ivHomeButton"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:padding="8dp"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/ivBackButton"
-            android:layout_toRightOf="@+id/ivBackButton"
-            android:src="@drawable/menu_dots" />
-
-    </RelativeLayout>
 
     </android.support.design.widget.AppBarLayout>
 
@@ -79,6 +79,35 @@
         android:textAlignment="center">
 
         <RelativeLayout
+            android:id="@+id/rlSelectedImage"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:layout_above="@+id/relativeLayout3"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/ivSelectedImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:scaleType="fitCenter"
+                android:background="@drawable/facebook"/>
+
+            <FrameLayout
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/delete_image">
+
+            </FrameLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/relativeLayout3"
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:layout_alignParentBottom="true"
@@ -128,7 +157,6 @@
                     android:textColor="#7B888F"
                     android:textSize="15sp"
                     android:textStyle="normal" />
-
             </RelativeLayout>
 
             <RelativeLayout
@@ -149,10 +177,10 @@
                         android:id="@+id/ivAdjust"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:padding="8dp"
                         android:layout_centerVertical="true"
                         android:layout_marginEnd="6dp"
                         android:layout_marginRight="6dp"
+                        android:padding="8dp"
                         android:visibility="visible"
                         app:srcCompat="@drawable/setting" />
 
@@ -164,9 +192,9 @@
                         android:layout_marginRight="8dp"
                         android:gravity="center"
                         android:text="Send"
-                        android:textStyle="bold"
                         android:textColor="#3B6EFE"
                         android:textSize="16sp"
+                        android:textStyle="bold"
                         android:visibility="gone" />
 
                 </RelativeLayout>
