@@ -251,8 +251,6 @@ public class SignInActivity extends AppCompatActivity {
                                 fbEditor.putInt("status", 1);
                                 fbEditor.commit();
                                 registerSpecialFB();
-                                Intent i = new Intent(SignInActivity.this, HomeActivity.class);
-                                startActivity(i);
                             }
                         });
 
@@ -435,7 +433,7 @@ public class SignInActivity extends AppCompatActivity {
 
         final String email = etEmail.getText().toString().trim();
         final String password = etPassword.getText().toString().trim();
-        Log.d("DeviceToken", DeviceToken);
+//        Log.d("DeviceToken", DeviceToken);
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, LOGIN,
                 new Response.Listener<String>() {
@@ -505,8 +503,10 @@ public class SignInActivity extends AppCompatActivity {
                         String errorMsg = "";
                         if (error instanceof TimeoutError || error instanceof NoConnectionError) {
                             errorMsg = "There is either no connection or it timed out.";
+                            btnLogIn.setEnabled(false);
                         } else if (error instanceof AuthFailureError) {
                             errorMsg = "AuthFailureError";
+                            btnLogIn.setEnabled(false);
                         } else if (error instanceof ServerError) {
                             errorMsg = "ServerError";
                         } else if (error instanceof NetworkError) {
@@ -515,6 +515,7 @@ public class SignInActivity extends AppCompatActivity {
                             errorMsg = "ParseError";
                         }
                         Toast.makeText(SignInActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+
                         Log.d("Error", errorMsg);
                     }
                 }) {

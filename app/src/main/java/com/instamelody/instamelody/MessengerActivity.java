@@ -27,7 +27,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.MessengerAdapter;
 import com.instamelody.instamelody.Models.Chat;
-import com.instamelody.instamelody.Parse.ParseContents;
 
 import org.json.JSONArray;
 import org.json.JSONException;

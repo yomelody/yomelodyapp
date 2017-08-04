@@ -300,7 +300,7 @@
                     android:background="@android:color/transparent"
                     android:ems="10"
                     android:fontFamily="sans-serif-medium"
-                    android:hint=" ********"
+                    android:hint="********"
                     android:focusableInTouchMode="true"
                     android:inputType="textPassword"
                     android:selectAllOnFocus="false"

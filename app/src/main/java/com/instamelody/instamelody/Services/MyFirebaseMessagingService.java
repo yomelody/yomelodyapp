@@ -52,28 +52,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
     }
 
-    private void handleNotification(String result) {
+    private void handleNotification(String message) {
         if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) {// app is in foreground, broadcast the push message
+
+            // app is in foreground, broadcast the push message
             Intent pushNotification = new Intent(PUSH_NOTIFICATION);
-//            String message = "";
-//            String senderName = "";
-            String chatId = "";
-            try {
-                JSONObject json = new JSONObject(result);
-//                message = json.getString("message");
-//                senderName = json.getString("sender_name");
-                chatId = json.getString("chat_id");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-//            pushNotification.putExtra("message", message);
-//            pushNotification.putExtra("senderName",senderName);
-            pushNotification.putExtra("chatId", chatId);
+            pushNotification.putExtra("message", message);
             LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-//            play notification sound
             NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
             notificationUtils.playNotificationSound();
             flagSoundPlayedAlready = "true";
+
         } else {
             // If the app is in background, firebase itself handles the notification
         }
@@ -82,35 +71,34 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private void handleDataMessage(JSONObject json) {
         Log.e("fbs", "push json: " + json.toString());
         try {
-            JSONObject bodyObj = json.getJSONObject("body");
-////            String file_id = messageObj.getString("file_id");
-//            String senderid = messageObj.getString("senderid");
-//            String sender_name = messageObj.getString("sender_name");
-//            String message = messageObj.getString("message");
-//            String chat_id = messageObj.getString("chat_id");
-//            String title = "One Message Received";
-//            String imageUrl = messageObj.getString("image");
-//            String file_id = json.getString("file_id");
+            JSONObject data = json.getJSONObject("data");
+            JSONObject body = data.getJSONObject("body");
 
-//            String file_id = json.getString("file_id");
-            String senderid = json.getString("senderid");
-            String sender_name = json.getString("sender_name");
-            String message = json.getString("message");
-            String chat_id = json.getString("chat_id");
-            String title = "One Message Received";
-//            String imageUrl = json.getString("image");
-            String imageUrl = "https://vignette2.wikia.nocookie.net/kochikame/images/0/0a/Ryotsu_%28manga_-_colour%29.jpg/revision/latest?cb=20140814094000";
+            String message = body.getString("message");
+            String senderId = body.getString("senderid");
+            String senderName = body.getString("sender_name");
+            String chatId = body.getString("chat_id");
+            String fileUrl = body.getString("file_url");
+            String title = body.getString("title");
 
-//            Log.e("fbs", "file_id: " + file_id);
-            Log.e("fbs", "sender_name " + sender_name);
-            Log.e("fbs", "senderid: " + senderid);
+//            String title = data.getString("title");
+//            boolean isBackground = data.getBoolean("is_background");
+//            String timestamp = data.getString("timestamp");
+//            JSONObject payload = data.getJSONObject("payload");
+
             Log.e("fbs", "message: " + message);
-            Log.e("fbs", "chat_id: " + chat_id);
-            Log.e("fbs", "image: " + imageUrl);
+//            Log.e("fbs", "file_id: " + file_id);
+            Log.e("fbs", "senderId: " + senderId);
+            Log.e("fbs", "senderName " + senderName);
+            Log.e("fbs", "chatId: " + chatId);
+            Log.e("fbs", "fileUrl: " + fileUrl);
+            Log.e("fbs", "title: " + title);
 
             if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) { // app is in foreground, broadcast the push message
                 Intent pushNotification = new Intent(PUSH_NOTIFICATION);
-                pushNotification.putExtra("message", message);
+                pushNotification.putExtra("chatId", chatId);
+//                pushNotification.putExtra("message", message);
+//                pushNotification.putExtra("fileUrl", fileUrl);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
                 // play notification sound
                 if (flagSoundPlayedAlready.equals("false")) {
@@ -119,13 +107,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 }
             } else { // app is in background, show the notification in notification tray
                 Intent resultIntent = new Intent(getApplicationContext(), ChatActivity.class);
-                resultIntent.putExtra("sender_name", sender_name);
+                resultIntent.putExtra("sender_name", senderName);
                 resultIntent.putExtra("message", message);
-                resultIntent.putExtra("chat_id", chat_id);
-                if (TextUtils.isEmpty(imageUrl)) { // check for image attachment
-                    showNotificationMessage(getApplicationContext(), title, senderid, sender_name, message, chat_id, /*file_id,*/ resultIntent);
+                resultIntent.putExtra("chat_id", chatId);
+                if (TextUtils.isEmpty(fileUrl)) { // check for image attachment
+                    showNotificationMessage(getApplicationContext(), title, senderId, senderName, message, chatId, /*file_id,*/ resultIntent);
                 } else { // image is present, show notification with image
-                    showNotificationMessageWithBigImage(getApplicationContext(), title, senderid, sender_name, message, chat_id, /*file_id,*/ resultIntent, imageUrl);
+                    showNotificationMessageWithBigImage(getApplicationContext(), title, senderId, senderName, message, chatId, /*file_id,*/ resultIntent, fileUrl);
                 }
             }
         } catch (JSONException e) {

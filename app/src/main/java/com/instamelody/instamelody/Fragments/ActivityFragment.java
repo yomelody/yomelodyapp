@@ -64,6 +64,7 @@ import java.util.concurrent.TimeUnit;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.facebook.FacebookSdk.getApplicationContext;
+import static com.instamelody.instamelody.R.id.btnAudio;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ACTIVITY;
 import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 import static com.instamelody.instamelody.utils.RMethod.getServerDiffrenceDate;
