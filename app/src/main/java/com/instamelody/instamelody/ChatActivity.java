@@ -491,10 +491,6 @@ public class ChatActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (this.requestCode == requestCode && resultCode == RESULT_OK && null != data) {
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            if (bitmap != null) {
-                bitmap.compress(Bitmap.CompressFormat.JPEG,70,stream);
-            }
             rlSelectedImage.setVisibility(View.VISIBLE);
             ivSelectedImage.setImageBitmap(bitmap);
         }
@@ -503,7 +499,7 @@ public class ChatActivity extends AppCompatActivity {
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
                 rlSelectedImage.setVisibility(View.VISIBLE);
-                ivSelectedImage.setImageBitmap(bitmap);
+                ivSelectedImage.setImageBitmap(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 4, bitmap.getHeight() / 4, false));
             } catch (IOException e) {
                 e.printStackTrace();
             }
