@@ -2,7 +2,6 @@ package com.instamelody.instamelody.Fragments;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,7 +29,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
-import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Adapters.UserMelodyAdapter;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.MelodyCard;
@@ -312,9 +310,11 @@ public class MelodyPacksFragment extends Fragment {
                     params.put(GENRE,packId);
                 } else if (userId != null) {
                     params.put(users_id, userId);
+                    params.put(FILE_TYPE,"admin_melody");
                     params.put(GENRE, packId);
                     params.put(FILE_TYPE,"admin_melody");
                 } else {
+                    params.put(FILE_TYPE,"admin_melody");
                     params.put(GENRE, packId);
                     params.put(FILE_TYPE,"admin_melody");
                 }
