@@ -101,7 +101,7 @@
                 android:layout_height="90dp"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
-                android:background="@drawable/delete_image">
+                >
 
             </FrameLayout>
         </RelativeLayout>
