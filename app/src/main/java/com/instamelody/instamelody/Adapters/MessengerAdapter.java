@@ -69,17 +69,11 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
 
                     senderId = chatList.get(getAdapterPosition()).getSenderID();
                     receiverId = chatList.get(getAdapterPosition()).getReceiverID();
-                    SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
-                    if(receiverId.contains(",")){
-                        editor.putString("chatType", "group");
-                    }else{
-                        editor.putString("chatType", "single");
-                    }
-                    editor.commit();
                     receiverName = chatList.get(getAdapterPosition()).getReceiverName();
                     receiverImage = chatList.get(getAdapterPosition()).getUserProfileImage();
                     chatID = chatList.get(getAdapterPosition()).getChatID();
 
+                    SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                     editor.putString("senderId", senderId);
                     editor.putString("receiverId", receiverId);
                     editor.putString("receiverName", receiverName);

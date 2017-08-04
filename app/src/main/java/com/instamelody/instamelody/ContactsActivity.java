@@ -104,12 +104,9 @@ public class ContactsActivity extends AppCompatActivity {
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
                 intent.putExtra("from", "ContactsActivity");
                 startActivity(intent);
-
-
             }
         });
 

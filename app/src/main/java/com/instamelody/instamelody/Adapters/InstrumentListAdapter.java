@@ -5,8 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -21,7 +19,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -29,17 +26,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.instamelody.instamelody.Models.MelodyInstruments;
-import com.instamelody.instamelody.Models.MelodyMixing;
-import com.instamelody.instamelody.Models.MixingData;
 import com.instamelody.instamelody.R;
-import com.instamelody.instamelody.StudioActivity;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.facebook.FacebookSdk.getApplicationContext;
@@ -87,9 +79,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         //   this.playfrom_studio=false;
     }
 
-    public InstrumentListAdapter(Boolean playfrom_studio, Context context) {
+    public InstrumentListAdapter(boolean playfromStudio, Context context) {
+        this.playfrom_studio = playfromStudio;
         this.context = context;
-        this.playfrom_studio = false;
     }
 
     private boolean hasLoadButton = true;
@@ -122,12 +114,12 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
         public MyViewHolder(View itemView) {
             super(itemView);
+
             userProfileImage = (ImageView) itemView.findViewById(R.id.userProfileImage);
             ivInstrumentCover = (ImageView) itemView.findViewById(R.id.ivInstrumentCover);
             tvInstrumentName = (TextView) itemView.findViewById(R.id.tvInstrumentName);
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
             tvInstrumentLength = (TextView) itemView.findViewById(R.id.tvInstrumentLength);
-            frameInstrument = (FrameLayout) itemView.findViewById(R.id.frameInstrument);
             tvBpmRate = (TextView) itemView.findViewById(R.id.tvBpmRate);
             ivPlay = (ImageView) itemView.findViewById(R.id.ivPlay);
             ivPause = (ImageView) itemView.findViewById(R.id.ivPause);
@@ -218,7 +210,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    melodySlider.setProgress(0);
                 }
             });
 
@@ -253,6 +244,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
+
+
         final MelodyInstruments instruments = instrumentList.get(listPosition);
         String abc = instrumentList.get(listPosition).getInstrumentFile();
 //        Toast.makeText(context, "" + abc, Toast.LENGTH_SHORT).show();
@@ -641,17 +634,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 //                Toast.makeText(context, "" + iter.next(), Toast.LENGTH_SHORT).show();
 //                        Log.d("count", (String) iter.next());
 
-            }
-        }*/
-
-        //  Commented by Abhishek
-//        Iterator iter = instrument_url_count.iterator();
-//        while (iter.hasNext()) {
-//            fetch_url_arrayList.add((String) iter.next());
-//        }
-//        Log.d("collection", "" + instrument_url_count);
-
-
         Intent i = new Intent("fetchingInstruments");
         i.putStringArrayListExtra("instruments", instrument_url_count);
         LocalBroadcastManager.getInstance(context).sendBroadcast(i);
@@ -681,9 +663,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             //StudioActivity.ivInstrumentCover.setImageBitmap(result);
         }
     }
-
-    private class UserProfileCover extends AsyncTask<String, Void, Bitmap> {
-        //ImageView bmImage;
 
         public UserProfileCover() {
             //StudioActivity.ivInstrumentCover = bmImage;
@@ -720,165 +699,4 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     }
 
 
-    public void playAudio1() throws IOException {
-//        killMediaPlayer();
-        audioFilePath =
-                Environment.getExternalStorageDirectory().getAbsolutePath()
-                        + "/InstaMelody.mp3";
-        mp = new MediaPlayer();
-        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mp.setDataSource(audioFilePath);
-//        mp.setDataSource(instrumentFile);
-        mp.prepareAsync();
-        mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                mp.start();
-            }
-        });
-        //   mp.start();
-        duration1 = mp.getDuration();
-        currentPosition = mp.getCurrentPosition();
-
-    }
-
-    public void playAudio() throws IOException {
-//            killMediaPlayer();
-        mp = new MediaPlayer();
-//        mp.setDataSource(audioFilePath);
-        mp.setDataSource(instrumentFile);
-        mp.prepare();
-        mp.start();
-        duration1 = mp.getDuration();
-        currentPosition = mp.getCurrentPosition();
-    }
-
-    private void killMediaPlayer() {
-        if (mp != null) {
-            try {
-                mp.release();
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    public static ArrayList<MelodyInstruments> returnInstrumentsList() {
-        return instrumentList;
-    }
-
-    private void initControls() {
-        try {
-
-            volumeSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @Override
-                public void onStopTrackingTouch(SeekBar arg0) {
-                }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar arg0) {
-                }
-
-                @Override
-                public void onProgressChanged(SeekBar arg0, int progress, boolean arg2) {
-                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    //Commented by Abhishek
-//
-//    class DownloadInstruments extends AsyncTask<String, String, String> {
-//
-//        /**
-//         * Before starting background thread
-//         */
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-//            System.out.println("Starting download");
-//
-//            pDialog = new ProgressDialog(context);
-//            pDialog.setMessage("Loading melody Packs ...");
-//            pDialog.setIndeterminate(false);
-//            pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//            pDialog.setCancelable(false);
-////            pDialog.show();
-//
-//        }
-//
-//        /**
-//         * Downloading file in background thread
-//         */
-//        @Override
-//        protected String doInBackground(String... url) {
-//            int count;
-//            OutputStream output;
-//            try {
-//                for (int i = 0; i < instrument_url_count.size(); i++) {
-//                    //{
-//                    URL aurl = new URL((String) instrument_url_count.get(i));
-//
-//                    URLConnection connection = aurl.openConnection();
-//                    connection.connect();
-//                    // getting file length
-//                    int lengthOfFile = connection.getContentLength();
-//
-//                    // input stream to read file - with 8k buffer
-//                    InputStream input = new BufferedInputStream(aurl.openStream());
-//
-//                    Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
-//
-//
-//                    if (isSDPresent) {
-//                        // yes SD-card is present
-//                        output = new FileOutputStream("sdcard/InstaMelody/Downloads/Melodies/" + i + ".mp3");
-//                    } else {
-//                        // Sorry
-//                        output = new FileOutputStream(getApplicationContext().getFilesDir() + "/InstaMelody/Downloads/Melodies/" + i + ".mp3");
-//                    }
-//
-//                    // Output stream to write file
-//
-//                    byte data[] = new byte[1024];
-//
-//                    long total = 0;
-//                    while ((count = input.read(data)) != -1) {
-//                        total += count;
-//                        publishProgress("" + (int) ((total * 100) / lengthOfFile));
-//                        output.write(data, 0, count);
-//                    }
-//
-//                    // flushing output
-//                    output.flush();
-//
-//                    // closing streams
-//                    output.close();
-//                    input.close();
-//                    //   i++;
-//                }
-//                // }
-//
-//
-//            } catch (Exception e) {
-//                Log.d("Error: ", e.getMessage());
-//            }
-//            return null;
-//        }
-//
-//        /**
-//         * After completing background task
-//         **/
-//        @Override
-//        protected void onPostExecute(String file_url) {
-//            System.out.println("Downloaded");
-//            pDialog.dismiss();
-////            frameSync.setVisibility(View.GONE);
-//            // tvDone.setEnabled(true);
-//        }
-//    }
 }

@@ -1,24 +1,19 @@
 package com.instamelody.instamelody.Adapters;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import java.util.ArrayList;
 import java.util.List;
-
 import de.hdodenhof.circleimageview.CircleImageView;
-
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.R;
 
 /**
  * Created by Shubhansh Jaiswal on 11/26/2016.
- * <p>
+ *
  * this has no use in app till now.
  */
 
@@ -27,18 +22,16 @@ public class MelodyCardAdapter extends RecyclerView.Adapter<MelodyCardAdapter.Vi
 
     private List<MelodyCard> melodyAddedList, melodyList;
     private String[] mDataSet;
-    private int[] mDataSetTypes;
+     private int[] mDataSetTypes;
 
     public static final int ListMelody = 0;
     public static final int ListAddedMelody = 1;
-
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public ViewHolder(View v) {
             super(v);
         }
     }
-
 
     public class MelodyListViewHolder extends ViewHolder {
         public TextView tvUserName, tvMelodyName, tvMelodyLength, tvBpmRate, tvInstrumentsUsed, tvMelodyGenre, tvMelodyDate;
@@ -108,7 +101,7 @@ public class MelodyCardAdapter extends RecyclerView.Adapter<MelodyCardAdapter.Vi
         }
     }
 
-    public MelodyCardAdapter(String[] dataSet, int[] dataSetTypes) {
+    public MelodyCardAdapter(String[] dataSet,int[] dataSetTypes) {
         mDataSet = dataSet;
         mDataSetTypes = dataSetTypes;
     }
@@ -122,7 +115,8 @@ public class MelodyCardAdapter extends RecyclerView.Adapter<MelodyCardAdapter.Vi
         } else if (viewType == ListAddedMelody) {
             v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_melody_added, viewGroup, false);
             return new AddedMelodyListViewHolder(v);
-        } else {
+        }
+      else{
             v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_melody_list, viewGroup, false);
             return new MelodyListViewHolder(v);
         }
