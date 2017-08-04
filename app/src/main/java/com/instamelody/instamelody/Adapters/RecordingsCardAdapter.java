@@ -1,8 +1,12 @@
 package com.instamelody.instamelody.Adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
@@ -24,15 +28,17 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.CommentsActivity;
 import com.instamelody.instamelody.JoinActivity;
+import com.instamelody.instamelody.Models.Genres;
+import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
-import com.instamelody.instamelody.Models.UserMelodyCard;
-import com.instamelody.instamelody.Models.UserMelodyPlay;
+import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,7 +54,6 @@ import static android.view.View.VISIBLE;
 import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LIKESAPI;
 import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
-import static com.instamelody.instamelody.utils.Const.ServiceType.SHAREFILE;
 
 /**
  * Created by Saurabh Singh on 12//2016.
@@ -58,16 +63,14 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.SHAREFILE;
 
 public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAdapter.MyViewHolder> {
 
-    String genreName, mpid, MelodyName, profile,CommentLikeStatus="0",Recordingid,TempRecordingid="0";
+    String genreName, mpid, MelodyName, profile;
     static String instrumentFile;
     static MediaPlayer mp;
-    int duration1=0, currentPosition;
-    int length,TempLength=0;
+    int duration1, currentPosition;
+    int length;
     ArrayList<String> mpids = new ArrayList<>();
     private ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     private ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
-    ArrayList<UserMelodyCard> userMelodyList = new ArrayList<>();
-    ArrayList<UserMelodyPlay> melodyPools = new ArrayList<>();
     //String LIKE_MELODY_URL = "http://35.165.96.167/api/likes.php";
     String USER_TYPE = "user_type";
     String USER_ID = "user_id";
@@ -87,12 +90,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     public RecordingsCardAdapter(Context context, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools) {
         this.recordingList = recordingList;
         this.recordingsPools = recordingsPools;
-        this.context = context;
-    }
-
-    public RecordingsCardAdapter( ArrayList<UserMelodyCard> userMelodyList,  ArrayList<UserMelodyPlay> melodyPools ,Context context) {
-        this.userMelodyList = userMelodyList;
-        this.melodyPools = melodyPools;
         this.context = context;
     }
 
@@ -209,7 +206,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             int likeValue = Integer.parseInt(like) - 1;
                             like = String.valueOf(likeValue);
                             tvLikeCount.setText(like);
-                            CommentLikeStatus = "0";
                             fetchLikeState(userId, position, "0", MelodyName);
 
 
@@ -220,7 +216,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             int likeValue = Integer.parseInt(like) + 1;
                             like = String.valueOf(likeValue);
                             tvLikeCount.setText(like);
-                            CommentLikeStatus = "1";
                             fetchLikeState(userId, position, "1", MelodyName);
                         }
                     } else {
@@ -246,13 +241,11 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     Intent shareIntent = new Intent();
                     shareIntent.setAction(Intent.ACTION_SEND);
                     shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                    shareIntent.setType("text/plain");
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt"+"\n"+RecordingURL);
-
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt");
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, RecordingURL);
+                    shareIntent.setType("image/jpeg");
                     shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(Intent.createChooser(shareIntent, "Hello."));
-                    SetMelodyShare("","","");
-
                 }
             });
             ivCommentButton.setOnClickListener(new View.OnClickListener() {
@@ -260,9 +253,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 public void onClick(View view) {
                     Toast.makeText(context, "comment", Toast.LENGTH_SHORT).show();
                     String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID;
-                    RecordingsModel recording = recordingList.get(getAdapterPosition());
-                    String RecordingURL = recording.getrecordingurl();
-                    String CoverUrl = recording.getUserProfilePic();
+
                     //instruments = tvInstrumentsUsed.getText().toString().trim();
                     //bpm = tvBpmRate.getText().toString().trim();
                     genre = tvRecordingGenres.getText().toString().trim();
@@ -293,10 +284,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 //                    editor.putString("bitmapCover", cover);
                     editor.putString("melodyID", melodyID);
                     editor.putString("fileType", "user_recording");
-                    editor.putString("RecordingURL", RecordingURL);
-                    editor.putString("LikeStatus", CommentLikeStatus);
-                    editor.putString("CoverUrl", CoverUrl);
-
                     editor.commit();
 
                     Intent intent = new Intent(context, CommentsActivity.class);
@@ -360,9 +347,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 };
                 mHandler1.postDelayed(notification, 100);
             }
-
         }
-
     }
 
     @Override
@@ -387,7 +372,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         TextView tvRecordingName = holder.tvRecordingName;
         TextView tvContributeLength = holder.tvContributeLength;
         TextView tvRecordingDate = holder.tvRecordingDate;
-        final TextView tvViewCount = holder.tvViewCount;
+        TextView tvViewCount = holder.tvViewCount;
         TextView tvLikeCount = holder.tvLikeCount;
         TextView tvCommentCount = holder.tvCommentCount;
         TextView tvShareCount = holder.tvShareCount;
@@ -444,7 +429,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
 
         Picasso.with(holder.ivRecordingCover.getContext()).load(recordingsPools.get(listPosition).getCoverUrl()).into(holder.ivRecordingCover);
-
 //        Picasso.with(holder.userProfileImage.getContext()).load(recordingsPools.get(listPosition).getProfileUrl()).into(holder.userProfileImage);
         Picasso.with(holder.userProfileImage.getContext()).load(recordingList.get(listPosition).getUserProfilePic()).into(holder.userProfileImage);
 //        tvRecordingGenres.setText(recordingList.get(listPosition).getGenreName());
@@ -477,29 +461,10 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             public void onClick(View v) {
 //                holder.seekBarRecordings.setVisibility(View.VISIBLE);
                 holder.ivStationPause.setVisibility(View.VISIBLE);
-                String userId="";
-                SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-                userId = loginSharedPref.getString("userId", null);
                 try {
                     RecordingsPool recordingsPool = recordingsPools.get(listPosition);
                     instrumentFile = recordingsPool.getRecordingUrl();
                     Integer s = listPosition + 1;
-                    RecordingsModel recording = recordingList.get(listPosition);
-                    Recordingid=recording.getRecordingId();
-
-
-                    if(!TempRecordingid.equals(Recordingid))
-                    {
-                        //holder.seekBarRecordings.refreshDrawableState();
-                        holder.seekBarRecordings.setProgress(0);
-                        fetchViewCount(userId,Recordingid);
-                        String play = tvViewCount.getText().toString().trim();
-                        int playValue = Integer.parseInt(play) + 1;
-                        play = String.valueOf(playValue);
-                        tvViewCount.setText(play);
-                        TempRecordingid=Recordingid;
-                        length=0;
-                    }
 
                     if (getItemCount() >= s && instrumentFile != null) {
                         playAudio();
@@ -530,7 +495,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 holder.ivStationPause.setVisibility(v.GONE);
                 mp.pause();
                 length = mp.getCurrentPosition();
-                TempLength=length;
                 holder.seekBarRecordings.setProgress(0);
             }
         });
@@ -608,7 +572,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
     public void SetMelodyShare(final String file_id, final String shared_by_user, final String shared_with) {
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, SHAREFILE,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, PLAY_COUNT,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -639,55 +603,11 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 params.put(FILE_ID, file_id);
                 params.put(Key_shared_by_user, shared_by_user);
                 params.put(Key_shared_with, shared_with);
-                params.put(Key_file_type, "user_recording");
+                params.put(Key_file_type, "admin_melody");
                 return params;
             }
         };
         RequestQueue requestQueue1 = Volley.newRequestQueue(context);
         requestQueue1.add(stringRequest);
     }
-    public void fetchViewCount(final String userId, final String pos) {
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, PLAY_COUNT,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        //       Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
-                        JSONObject jsonObject, respObject;
-
-                        try {
-                            jsonObject = new JSONObject(response);
-                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
-                                respObject = jsonObject.getJSONObject(KEY_RESPONSE);
-                                String str = respObject.getString("play_count");
-                                //      Toast.makeText(context, "" + str, Toast.LENGTH_SHORT).show();
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        //       Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
-                        String errorMsg = error.toString();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put(USER_TYPE, "user");
-                params.put(USERID, userId);
-                params.put(FILEID, pos);
-                //    params.put(TYPE, "admin_melody");
-                params.put(TYPE, "recording");
-                return params;
-            }
-        };
-        RequestQueue requestQueue1 = Volley.newRequestQueue(context);
-        requestQueue1.add(stringRequest);
-    }
-
 }

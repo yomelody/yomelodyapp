@@ -28,6 +28,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.ContactsAdapter;
 import com.instamelody.instamelody.Models.Contacts;
+import com.instamelody.instamelody.Parse.ParseContents;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -103,12 +104,9 @@ public class ContactsActivity extends AppCompatActivity {
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
                 intent.putExtra("from", "ContactsActivity");
                 startActivity(intent);
-
-
             }
         });
 
