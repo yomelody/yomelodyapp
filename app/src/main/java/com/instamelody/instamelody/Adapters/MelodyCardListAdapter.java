@@ -103,8 +103,6 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 //    }
 
 
-
-
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvUserName, tvMelodyName, tvMelodyLength, tvBpmRate, tvInstrumentsUsed, tvMelodyGenre, tvMelodyDate, tv7, tv8, tv9;

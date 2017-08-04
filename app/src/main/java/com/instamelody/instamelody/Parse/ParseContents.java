@@ -385,8 +385,7 @@ public class ParseContents {
                         card.setRecordingCover(cardJson.getString("cover_url"));
                         card.setUserProfilePic(cardJson.getString("profile_url"));
                         card.setGenreName(cardJson.getString("genre_name"));
-
-                    if(!cardJson.getString("recordings").equals("null")) {
+                    if (!cardJson.getString("recordings").equals("null")) {
                         instrumentArray = cardJson.getJSONArray("recordings");
                         for (int j = 0; j < instrumentArray.length(); j++) {
                             RecordingsPool rp = new RecordingsPool();
@@ -455,9 +454,9 @@ public class ParseContents {
                         u.setCover(instrumentJson.getString("cover"));
                         u.setProfilepic(instrumentJson.getString("profilepic"));
                         u.setDate(instrumentJson.getString("date"));
-                        if(instrumentJson.isNull("instrument")){
+                        if (instrumentJson.isNull("instrument")) {
                             Toast.makeText(mContext, "null", Toast.LENGTH_SHORT).show();
-                        }else{
+                        } else {
                             u.setInstrument(instrumentJson.getString("instrument"));
                         }
                         melodyPools.add(u);

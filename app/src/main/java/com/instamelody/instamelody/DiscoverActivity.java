@@ -76,9 +76,9 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
 public class DiscoverActivity extends AppCompatActivity {
 
-    ImageView discover, message, ivBackButton, audio_feed, ivFilterDiscover, ivHomeDiscover;
+    ImageView discover, message, ivBackButton, audio_feed, ivFilterDiscover, ivHomeDiscover,ivProfile;
     Button appBarSearchDiscoverBtn;
-    EditText subEtFilterName,subEtFilterInstruments, subEtFilterBPM;;
+    EditText subEtFilterName,subEtFilterInstruments, subEtFilterBPM;
     TextView appBarMainTextDiscover;
     TabHost host;
     private static RecyclerView.Adapter adapter;
@@ -123,6 +123,7 @@ public class DiscoverActivity extends AppCompatActivity {
         discover = (ImageView) findViewById(R.id.discover);
         message = (ImageView) findViewById(R.id.message);
         audio_feed = (ImageView) findViewById(R.id.audio_feed);
+        ivProfile = (ImageView) findViewById(R.id.ivProfile);
 
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userId = loginSharedPref.getString("userId", null);
@@ -324,6 +325,14 @@ public class DiscoverActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        ivProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(DiscoverActivity.this,ProfileActivity.class);
+                startActivity(i);
+            }
+        });
     }
 
     public void fetchGenreNames() {
@@ -522,7 +531,6 @@ public class DiscoverActivity extends AppCompatActivity {
                 fetchRecordingsFilterArtist();
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtFilterName.getWindowToken(), 0);
-
             }
         });
 
