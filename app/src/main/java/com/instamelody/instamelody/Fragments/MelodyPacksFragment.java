@@ -74,7 +74,7 @@ public class MelodyPacksFragment extends Fragment {
     String KEY = "key";
     String GENRE = "genere";
     String genreString = "1";
-    String USER_ID = "userid";
+    String USER_ID = "users_id";
     private String KEY_SEARCH = "search";
     private String USER_NAME = "username";
     private String COUNT = "count";
@@ -309,14 +309,14 @@ public class MelodyPacksFragment extends Fragment {
                 if (packId.equals("7")) {
                     params.put(USER_ID, userId);
                     params.put(FILE_TYPE, "user_melody");
-                    params.put(GENRE,packId);
+                    params.put(GENRE, "7");
                 } else if (userId != null) {
                     params.put(users_id, userId);
                     params.put(GENRE, packId);
-                    params.put(FILE_TYPE,"admin_melody");
+                    params.put(FILE_TYPE, "admin_melody");
                 } else {
                     params.put(GENRE, packId);
-                    params.put(FILE_TYPE,"admin_melody");
+                    params.put(FILE_TYPE, "admin_melody");
                 }
                 SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
                 String userId = loginSharedPref.getString("userId", null);
@@ -636,12 +636,7 @@ public class MelodyPacksFragment extends Fragment {
                 RecyclerView.LayoutManager lm = new LinearLayoutManager(getActivity());
                 rv.setLayoutManager(lm);
                 rv.setItemAnimator(new DefaultItemAnimator());
-                if (tag.equals("7")) {
-                    rv.setAdapter(adapter1);
-                } else {
-                    rv.setAdapter(adapter);
-                }
-
+                rv.setAdapter(adapter);
                 return rv;
             }
         };
