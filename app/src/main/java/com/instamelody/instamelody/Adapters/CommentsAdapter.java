@@ -3,23 +3,16 @@ package com.instamelody.instamelody.Adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.instamelody.instamelody.CommentsActivity;
 import com.instamelody.instamelody.Models.Comments;
-import com.instamelody.instamelody.Models.MelodyCard;
-import com.instamelody.instamelody.Models.RecordingsModel;
-import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
 import com.squareup.picasso.Picasso;
-import static com.instamelody.instamelody.utils.RMethod.getServerDiffrenceDate;
-
 import static com.instamelody.instamelody.utils.RMethod.getServerDiffrenceDate;
 
 import java.util.ArrayList;

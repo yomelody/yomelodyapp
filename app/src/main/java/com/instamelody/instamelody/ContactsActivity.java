@@ -28,7 +28,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.ContactsAdapter;
 import com.instamelody.instamelody.Models.Contacts;
-import com.instamelody.instamelody.Parse.ParseContents;
 
 import java.util.ArrayList;
 import java.util.HashMap;

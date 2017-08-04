@@ -1,7 +1,6 @@
 package com.instamelody.instamelody;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -43,14 +42,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
-import com.instamelody.instamelody.Fragments.AudioFragment;
 import com.instamelody.instamelody.Fragments.BioFragment;
 import com.instamelody.instamelody.Fragments.ProfileActivityFragment;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Models.UserDetails;
-import com.instamelody.instamelody.Parse.ParseContents;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
