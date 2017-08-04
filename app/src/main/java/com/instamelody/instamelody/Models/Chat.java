@@ -11,7 +11,18 @@ import java.util.Date;
 
 public class Chat {
 
-    String id, senderID, senderName, receiverID, receiverName, coverPick, userProfileImage, message, chatID, isRead, sendAt;
+    String id;
+    String senderID;
+    String senderName;
+    String receiverID;
+    String receiverName;
+    String groupName;
+    String coverPick;
+    String userProfileImage;
+    String message;
+    String chatID;
+    String isRead;
+    String sendAt;
 
     public String getId() {
         return id;
@@ -51,6 +62,14 @@ public class Chat {
 
     public void setReceiverName(String receiverName) {
         this.receiverName = receiverName;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 
     public String getCoverPick() {

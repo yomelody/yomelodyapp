@@ -37,11 +37,14 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.USER_CHAT_ID;
@@ -54,16 +57,13 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
 
     Context context;
     ArrayList<Contacts> contactsList = new ArrayList<>();
-    String rsList[];
-    ArrayList<String> rList = new ArrayList<String>();
-    //        Set<String> recieverId = new HashSet<>();
+    String rsList[], newList[];
     String senderID = "";
     String recieverId = "";
+    String recId = "";
     String recieverName = "";
-    String receiverToken = "";
     String recieverImage = "";
-    String recieverList;
-    int Count = 0;
+    int Count = 0, nonNullCount = 0;
 
     public ContactsAdapter(Context context, ArrayList<Contacts> contactsList) {
         this.contactsList = contactsList;
@@ -79,7 +79,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
         public MyViewHolder(final View itemView) {
             super(itemView);
             getItemCount();
-            rsList=new String[contactsList.size()];
+            rsList = new String[contactsList.size()];
             userProfileImage = (ImageView) itemView.findViewById(R.id.userProfileImage);
             tvRealName = (TextView) itemView.findViewById(R.id.tvRealName);
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
@@ -95,7 +95,6 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                     SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
                     SharedPreferences fbPref = context.getSharedPreferences("MyFbPref", MODE_PRIVATE);
                     SharedPreferences twitterPref = context.getSharedPreferences("TwitterPref", MODE_PRIVATE);
-
                     if (loginSharedPref.getString("userId", null) != null) {
                         userId = loginSharedPref.getString("userId", null);
                     } else if (fbPref.getString("userId", null) != null) {
@@ -103,71 +102,83 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                     } else if (twitterPref.getString("userId", null) != null) {
                         userId = twitterPref.getString("userId", null);
                     }
-
                     senderID = userId;
 
                     if (grey_circle.getVisibility() == View.VISIBLE) {
                         grey_circle.setVisibility(View.GONE);
                         blue_circle.setVisibility(View.VISIBLE);
                         Count = Count + 1;
+                        recieverId = contactsList.get(getAdapterPosition()).getUser_id();
+                        rsList[getAdapterPosition()] = recieverId;
+                        recId = "";
 
-                        if(Count < 1){
-                            recieverId = contactsList.get(getAdapterPosition()).getUser_id();
-                        }else{
-                            recieverId = contactsList.get(getAdapterPosition()).getUser_id() + ",";
+                        for (int i = 0; i < rsList.length; i++) {
+                            if (rsList[i] != null) {
+                                recId = recId + "," + rsList[i];
+                            }
                         }
 
-                        recieverId = contactsList.get(getAdapterPosition()).getUser_id();
-                        // rList.add(Count - 1, recieverId);
-                        rsList[Count - 1]=recieverId;
-                        // String recieverList = rList.toString();
-                        recieverList =Arrays.toString(rsList);
-//                        String str = recieverList.substring(0, recieverList.length());
-                        // recieverList=recieverList.re
-                        recieverList= recieverList.substring(1, recieverList.length()-1);
-                        Toast.makeText(context, recieverList, Toast.LENGTH_SHORT).show();
+                        if (recId.contains(",null")) {
+                            String REGEX = ",null";
+                            Pattern p = Pattern.compile(REGEX);
+                            Matcher m = p.matcher(recId);
+                            recId = m.replaceAll("");
+                        }
 
-                        /*List<String> groupNameList = Arrays.asList(rid.split(","));
-                        String listnames = "";
-                        if (groupNameList.size() == 1) {
-                            tvUserName.setText(groupNameList.get(0));
+                        if (recId.startsWith(",")) {
+                            recId = recId.substring(1, recId.length());
+                        }
+
+                        if (!userId.equals("")) {
+                            getChatId(userId, recId);
                         } else {
-                            for (int i = 1; i < groupNameList.size(); i++) {
-                                listnames = listnames + ", " + groupNameList.get(i);
-                            }
-                            tvUserName.setText(listnames);
-                        }*/
+                            Toast.makeText(context, "Logged in user null id Error", Toast.LENGTH_SHORT).show();
+                        }
 
                         String fname = contactsList.get(getAdapterPosition()).getfName();
                         String lname = contactsList.get(getAdapterPosition()).getlName();
                         recieverName = fname + " " + lname;
                         recieverImage = contactsList.get(getAdapterPosition()).getUserProfileImage();
-//                        receiverToken = contactsList.get(getAdapterPosition()).getDeviceToken();
-                        if (Count >= 1) {
+
+                        if (Count > 0) {
                             ContactsActivity.btnCancel.setVisibility(View.GONE);
                             ContactsActivity.btnOK.setVisibility(View.VISIBLE);
-                            recieverName = "New Group";
-                        }
-                        if (!userId.equals("")) {
-                            getChatId(userId, recieverId);
-
-                            // rsList=new String[contactsList.size()];
-                        } else {
-                            Toast.makeText(context, "Logged in user null id Error", Toast.LENGTH_SHORT).show();
+                            SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                            if (Count > 1) {
+                                recieverName = "New Group";
+                                editor.putString("receiverName", recieverName);
+                                editor.putString("chatType", "group");
+                            }else{
+                                editor.putString("chatType", "single");
+                            }
+                            editor.commit();
                         }
 
                     } else {
                         blue_circle.setVisibility(View.GONE);
                         grey_circle.setVisibility(View.VISIBLE);
                         Count = Count - 1;
-                        rsList[getAdapterPosition()]="";
-                        //rList.remove(getAdapterPosition());
-                        String recieverList = Arrays.toString(rsList);
-                        recieverList= recieverList.substring(1, recieverList.length()-1);
-                        recieverId=recieverList;
-                        Toast.makeText(context, recieverList, Toast.LENGTH_SHORT).show();
 
-//                        receiverToken = "";
+                        rsList[getAdapterPosition()] = "null";
+
+                        recId = "";
+                        for (int i = 0; i < rsList.length; i++) {
+                            if (rsList[i] != "null") {
+                                recId = recId + "," + rsList[i];
+                            }
+                        }
+
+                        if (recId.contains(",null")) {
+                            String REGEX = ",null";
+                            Pattern p = Pattern.compile(REGEX);
+                            Matcher m = p.matcher(recId);
+                            recId = m.replaceAll("");
+                        }
+
+                        if (recId.startsWith(",")) {
+                            recId = recId.substring(1, recId.length());
+                        }
+
                         if (Count < 1) {
                             ContactsActivity.btnOK.setVisibility(View.GONE);
                             ContactsActivity.btnCancel.setVisibility(View.VISIBLE);
@@ -177,22 +188,16 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                         editor.putString("chatId", "");
                         editor.commit();
                     }
-                //    Toast.makeText(context,"sender"+senderID+"-"+ recieverList, Toast.LENGTH_SHORT).show();
+
+                    Toast.makeText(context, recId, Toast.LENGTH_SHORT).show();
                     SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                     editor.putString("senderId", senderID);
-                    editor.putString("receiverId", recieverList);
+                    editor.putString("receiverId", recId);
                     editor.putString("receiverName", recieverName);
                     editor.putString("receiverImage", recieverImage);
                     editor.commit();
                 }
-
             });
-
-//            if (rList == null) {
-//                Toast.makeText(context, "null", Toast.LENGTH_SHORT).show();
-//            } else {
-//                Toast.makeText(context, rList.toString(), Toast.LENGTH_SHORT).show();
-//            }
         }
     }
 

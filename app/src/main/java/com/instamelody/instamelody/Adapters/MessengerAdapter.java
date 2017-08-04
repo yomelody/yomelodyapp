@@ -29,7 +29,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
 
     ArrayList<Chat> chatList = new ArrayList<>();
     Context context;
-    String receiverId = "", chatID = "", receiverName = "", receiverImage = "", senderId = "", userId;
+    String receiverId = "", chatID = "", receiverName = "", groupName = "", receiverImage = "", senderId = "", userId;
 
     public MessengerAdapter(ArrayList<Chat> chatList, Context context) {
         this.chatList = chatList;
@@ -70,13 +70,21 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
                     senderId = chatList.get(getAdapterPosition()).getSenderID();
                     receiverId = chatList.get(getAdapterPosition()).getReceiverID();
                     receiverName = chatList.get(getAdapterPosition()).getReceiverName();
+                    groupName = chatList.get(getAdapterPosition()).getGroupName();
+                    SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                    if (receiverId.contains(",")) {
+                        editor.putString("chatType", "group");
+                        editor.putString("receiverName", groupName);
+                    } else {
+                        editor.putString("chatType", "single");
+                        editor.putString("receiverName", receiverName);
+                    }
+                    editor.commit();
+                    receiverName = chatList.get(getAdapterPosition()).getReceiverName();
                     receiverImage = chatList.get(getAdapterPosition()).getUserProfileImage();
                     chatID = chatList.get(getAdapterPosition()).getChatID();
-
-                    SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                     editor.putString("senderId", senderId);
                     editor.putString("receiverId", receiverId);
-                    editor.putString("receiverName", receiverName);
                     editor.putString("receiverImage", receiverImage);
                     editor.putString("chatId", chatID);
                     editor.commit();
@@ -119,7 +127,11 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
     public void onBindViewHolder(final MyViewHolder holder, int listPosition) {
 
         Chat chat = chatList.get(listPosition);
-        holder.tvUserName.setText(chat.getReceiverName());
+        if (receiverId.contains(",")) {
+            holder.tvUserName.setText(chat.getGroupName());
+        } else {
+            holder.tvUserName.setText(chat.getReceiverName());
+        }
         holder.tvMsg.setText(chat.getMessage());
         holder.tvTime.setText(chat.getSendAt());
         Picasso.with(holder.userProfileImage.getContext()).load(chat.getUserProfileImage()).into(holder.userProfileImage);
