@@ -69,7 +69,7 @@ public class MelodyPacksFragment extends Fragment {
     String KEY = "key";
     String GENRE = "genere";
     String genreString = "1";
-    String USER_ID = "userid";
+    String USER_ID = "users_id";
     String USERS_ID = "users_id";
     private String KEY_SEARCH = "search";
     private String USER_NAME = "username";
@@ -631,12 +631,7 @@ public class MelodyPacksFragment extends Fragment {
                 RecyclerView.LayoutManager lm = new LinearLayoutManager(getActivity());
                 rv.setLayoutManager(lm);
                 rv.setItemAnimator(new DefaultItemAnimator());
-                if (tag.equals("7")) {
-                    rv.setAdapter(adapter1);
-                } else {
-                    rv.setAdapter(adapter);
-                }
-
+                rv.setAdapter(adapter);
                 return rv;
             }
         };
