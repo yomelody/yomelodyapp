@@ -36,6 +36,7 @@ import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Models.UserMelodyCard;
 import com.instamelody.instamelody.Models.UserMelodyPlay;
+import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
 
 import org.json.JSONArray;
@@ -69,6 +70,7 @@ public class MelodyPacksFragment extends Fragment {
     String GENRE = "genere";
     String genreString = "1";
     String USER_ID = "userid";
+    String USERS_ID = "users_id";
     private String KEY_SEARCH = "search";
     private String USER_NAME = "username";
     private String COUNT = "count";
@@ -301,18 +303,15 @@ public class MelodyPacksFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 if (packId.equals("7")) {
-                    params.put(USER_ID, userId);
+                    params.put(USERS_ID, userId);
                     params.put(FILE_TYPE, "user_melody");
-                    params.put(GENRE,packId);
                 } else if (userId != null) {
                     params.put(users_id, userId);
-                    params.put(FILE_TYPE,"admin_melody");
                     params.put(GENRE, packId);
-                    params.put(FILE_TYPE,"admin_melody");
+                    params.put(FILE_TYPE, "admin_melody");
                 } else {
-                    params.put(FILE_TYPE,"admin_melody");
                     params.put(GENRE, packId);
-                    params.put(FILE_TYPE,"admin_melody");
+                    params.put(FILE_TYPE, "admin_melody");
                 }
                 SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
                 String userId = loginSharedPref.getString("userId", null);

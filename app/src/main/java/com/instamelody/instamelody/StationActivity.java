@@ -52,6 +52,7 @@ import android.widget.TextView;
 
 import com.instamelody.instamelody.Fragments.ActivityFragment;
 import com.instamelody.instamelody.Models.RecordingsPool;
+import com.instamelody.instamelody.Parse.ParseContents;
 
 import org.json.JSONArray;
 import org.json.JSONException;

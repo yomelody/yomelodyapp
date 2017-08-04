@@ -29,6 +29,7 @@ import com.instamelody.instamelody.CommentsActivity;
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.RecordingsPool;
+import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
 import com.instamelody.instamelody.StudioActivity;

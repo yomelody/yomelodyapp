@@ -43,6 +43,7 @@ import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
+import com.instamelody.instamelody.Parse.ParseContents;
 
 import org.json.JSONArray;
 import org.json.JSONException;

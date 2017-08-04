@@ -48,6 +48,7 @@ import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Models.UserDetails;
+import com.instamelody.instamelody.Parse.ParseContents;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;

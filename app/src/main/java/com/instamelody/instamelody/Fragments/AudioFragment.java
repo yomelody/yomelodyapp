@@ -34,6 +34,7 @@ import com.instamelody.instamelody.Models.AudioModel;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
+import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
 
 import org.json.JSONArray;
