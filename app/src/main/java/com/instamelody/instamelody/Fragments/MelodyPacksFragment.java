@@ -301,7 +301,7 @@ public class MelodyPacksFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                if (packId.equals("7")) {
+                if (packId.equals("7") && userId != null) {
                     params.put(USER_ID, userId);
                     params.put(FILE_TYPE, "user_melody");
                 } else if (userId != null) {

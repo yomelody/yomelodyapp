@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class Message implements Serializable {
 
@@ -72,12 +73,12 @@ public class Message implements Serializable {
         String val = "";
 
         try {
-            Date date = dateFormat.parse(created_At);
-            String oDate = String.valueOf(date);
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date oldDate = dateFormat.parse(created_At);
+            String oDate = String.valueOf(oldDate);
             Calendar c = Calendar.getInstance();
             Date currentDate = c.getTime();
-
-            long diff = currentDate.getTime() - date.getTime();
+            long diff = currentDate.getTime() - oldDate.getTime();
             long seconds = diff / 1000;
             long minutes = seconds / 60;
             long hours = minutes / 60;
@@ -108,7 +109,7 @@ public class Message implements Serializable {
                 else {
                     time = s2 + s3 + " AM";
                 }
-                val = month + " " + dates + " " + time;
+                val = month + " " + dates + ", " + time;
 
             } else {
                 String day = oDate.substring(0, oDate.indexOf(" "));
@@ -133,7 +134,7 @@ public class Message implements Serializable {
                 else {
                     s1 = s2 + s3 + " AM";
                 }
-                val = day + " " + s1;
+                val = day + ", " + s1;
             }
         } catch (ParseException e) {
             e.printStackTrace();

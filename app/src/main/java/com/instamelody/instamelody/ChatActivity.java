@@ -61,7 +61,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -352,6 +351,8 @@ public class ChatActivity extends AppCompatActivity {
                     inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                             InputMethodManager.HIDE_NOT_ALWAYS);
 
+                    getChatMsgs(chatId);
+
                 } else {
                     Toast.makeText(getApplicationContext(), "Log in to Chat", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
@@ -594,6 +595,7 @@ public class ChatActivity extends AppCompatActivity {
 
                         chatList.clear();
                         cAdapter.notifyDataSetChanged();
+//                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
                         JSONObject jsonObject;
 
                         try {
@@ -674,10 +676,9 @@ public class ChatActivity extends AppCompatActivity {
 
                         String str = response;
 //                        Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
-                        getChatMsgs(chatId);
+//                        getChatMsgs(chatId);
 //                        cAdapter.notifyDataSetChanged();
 //                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
-
                     }
                 },
                 new Response.ErrorListener() {

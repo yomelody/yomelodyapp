@@ -67,8 +67,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     ArrayList instrument_url_count = new ArrayList();
     ArrayList<String> fetch_url_arrayList = new ArrayList<>();
     static int duration1, currentPosition;
-    private SeekBar volumeSeekbar = null;
-    private AudioManager audioManager = null;
     int InstrumentId=0,Volume=0,Base=0,Treble=0,Pan=0,Pitch=0,Reverb=0,Compression=0,Delay=0,Tempo=0;
     Boolean playfrom_studio = false;
     MelodyMixing melodyMixing=new MelodyMixing();
@@ -114,6 +112,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         public MediaPlayer mp;
         int duration1, currentPosition;
         CardView card_melody;
+        AudioManager audioManager;
+
 
 
         public MyViewHolder(View itemView) {
@@ -157,7 +157,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             sbPan = (SeekBar)itemView.findViewById(R.id.sbPan);
             sbPitch = (SeekBar)itemView.findViewById(R.id.sbPitch);
 
-
+            audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
             ivPause.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -295,6 +295,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 //            holder.primarySeekBarProgressUpdater();
 //        }
         // initControls();
+        //holder.volumeSeekbar.setMax(holder.audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
 
         audioValue = instruments.getAudioType();
         holder.rlEQ.setOnClickListener(new View.OnClickListener() {
@@ -364,6 +365,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 }
                 melodyMixing.setVocalsound(list);
                 aa= melodyMixing.getVocalsound();
+                holder.audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
             }
 
         });

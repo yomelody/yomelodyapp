@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Created by Shubhansh Jaiswal on 04/05/17.
@@ -127,10 +128,10 @@ public class Chat {
         String val = "";
 
         try {
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date oldDate = dateFormat.parse(send_at);
             Calendar c = Calendar.getInstance();
             Date currentDate = c.getTime();
-
             long diff = currentDate.getTime() - oldDate.getTime();
             long seconds = diff / 1000;
             long minutes = seconds / 60;
