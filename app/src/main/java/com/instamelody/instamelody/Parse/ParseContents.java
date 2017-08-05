@@ -113,24 +113,26 @@ public class ParseContents {
                     card.setLikeStatus(cardJson.getInt(like_status));
                     card.setMelodyURL(cardJson.getString(melodyurl));
 
-                    instrumentArray = cardJson.getJSONArray(KEY_INSTRUMENTS);
-                    for (int j = 0; j < instrumentArray.length(); j++) {
-                        MelodyInstruments melodyInstruments = new MelodyInstruments();
-                        JSONObject instrumentsJson = instrumentArray.getJSONObject(j);
-                        MelodyInstruments.setInstrumentId(instrumentsJson.getInt(KEY_INSTRUMENT_ID));
-                        int a = instrumentsJson.getInt(KEY_INSTRUMENT_ID);
-                        melodyInstruments.setInstrumentName(instrumentsJson.getString(KEY_INSTRUMENT_NAME));
-                        melodyInstruments.setInstrumentType(instrumentsJson.getString(KEY_INSTRUMENT_TYPE));
-                        melodyInstruments.setMelodyPacksId(instrumentsJson.getInt(KEY_MELODY_PACK_ID));
-                        melodyInstruments.setInstrumentBpm(instrumentsJson.getString(KEY_INSTRUMENT_BPM));
-                        melodyInstruments.setInstrumentFileSize(instrumentsJson.getString(KEY_INSTRUMENT_FILE_SIZE));
-                        melodyInstruments.setInstrumentFile(instrumentsJson.getString(KEY_INSTRUMENT_URL));
-                        melodyInstruments.setInstrumentLength(instrumentsJson.getString(KEY_INSTRUMENT_DURATION));
-                        melodyInstruments.setInstrumentCreated(instrumentsJson.getString(KEY_INSTRUMENT_DATE));
-                        melodyInstruments.setUserProfilePic(instrumentsJson.getString(KEY_INSTRUMENT_PROFILE_PIC));
-                        melodyInstruments.setInstrumentCover(instrumentsJson.getString(KEY_INSTRUMENT_COVER_PIC));
-                        melodyInstruments.setUserName(instrumentsJson.getString(KEY_INSTRUMENT_USERNAME));
-                        instrumentList.add(melodyInstruments);
+                    if(!cardJson.getString("instruments").equals("null")) {
+                        instrumentArray = cardJson.getJSONArray(KEY_INSTRUMENTS);
+                        for (int j = 0; j < instrumentArray.length(); j++) {
+                            MelodyInstruments melodyInstruments = new MelodyInstruments();
+                            JSONObject instrumentsJson = instrumentArray.getJSONObject(j);
+                            MelodyInstruments.setInstrumentId(instrumentsJson.getInt(KEY_INSTRUMENT_ID));
+                            int a = instrumentsJson.getInt(KEY_INSTRUMENT_ID);
+                            melodyInstruments.setInstrumentName(instrumentsJson.getString(KEY_INSTRUMENT_NAME));
+                            melodyInstruments.setInstrumentType(instrumentsJson.getString(KEY_INSTRUMENT_TYPE));
+                            melodyInstruments.setMelodyPacksId(instrumentsJson.getInt(KEY_MELODY_PACK_ID));
+                            melodyInstruments.setInstrumentBpm(instrumentsJson.getString(KEY_INSTRUMENT_BPM));
+                            melodyInstruments.setInstrumentFileSize(instrumentsJson.getString(KEY_INSTRUMENT_FILE_SIZE));
+                            melodyInstruments.setInstrumentFile(instrumentsJson.getString(KEY_INSTRUMENT_URL));
+                            melodyInstruments.setInstrumentLength(instrumentsJson.getString(KEY_INSTRUMENT_DURATION));
+                            melodyInstruments.setInstrumentCreated(instrumentsJson.getString(KEY_INSTRUMENT_DATE));
+                            melodyInstruments.setUserProfilePic(instrumentsJson.getString(KEY_INSTRUMENT_PROFILE_PIC));
+                            melodyInstruments.setInstrumentCover(instrumentsJson.getString(KEY_INSTRUMENT_COVER_PIC));
+                            melodyInstruments.setUserName(instrumentsJson.getString(KEY_INSTRUMENT_USERNAME));
+                            instrumentList.add(melodyInstruments);
+                        }
                     }
                     instrumentsList = instrumentList;
                     melodyList.add(card);
