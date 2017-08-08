@@ -85,6 +85,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     String Key_shared_with = "shared_with";
     String Key_file_type = "file_type";
     Context context;
+    String userId="";
 
     public RecordingsCardAdapter(Context context, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools) {
         this.recordingList = recordingList;
@@ -137,6 +138,18 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
             SharedPreferences editorGenre = getApplicationContext().getSharedPreferences("prefGenreName", MODE_PRIVATE);
             genreName = editorGenre.getString("GenreName", null);
+
+            SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+            SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+            SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+
+            if (loginSharedPref.getString("userId", null) != null) {
+                userId = loginSharedPref.getString("userId", null);
+            } else if (fbPref.getString("userId", null) != null) {
+                userId = fbPref.getString("userId", null);
+            } else if (twitterPref.getString("userId", null) != null) {
+                userId = twitterPref.getString("userId", null);
+            }
 
             ivJoin.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -192,11 +205,10 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             rlLike.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String position, userId;
-                    SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-                    userId = loginSharedPref.getString("userId", null);
+                    String position;
+
                     String MelodyName;
-                    if (userId != null) {
+                    if (userId != null ) {
                         //Toast.makeText(context, "like", Toast.LENGTH_SHORT).show();
                         //position = mpids.get(getAdapterPosition() + 1);
 

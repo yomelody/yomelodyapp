@@ -48,6 +48,7 @@ import java.util.Map;
 import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.instamelody.instamelody.Adapters.InstrumentListAdapter.audioUrl;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LIKESAPI;
 import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
@@ -88,7 +89,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     String Key_shared_by_user = "shared_by_user";
     String Key_shared_with = "shared_with";
     String Key_file_type = "file_type";
-
+    String userId="";
 
     public MelodyCardListAdapter(ArrayList<MelodyCard> melodyList, Context context) {
         this.melodyList = melodyList;
@@ -145,16 +146,24 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             rlComment = (RelativeLayout) itemView.findViewById(R.id.rlComment);
             rlshare = (RelativeLayout) itemView.findViewById(R.id.rlShare);
 
+            SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+            SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+            SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
 
+            if (loginSharedPref.getString("userId", null) != null) {
+                userId = loginSharedPref.getString("userId", null);
+            } else if (fbPref.getString("userId", null) != null) {
+                userId = fbPref.getString("userId", null);
+            } else if (twitterPref.getString("userId", null) != null) {
+                userId = twitterPref.getString("userId", null);
+            }
             // MelodyName=tvMelodyName.getText().toString().trim();
 
 
             rlLike.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String position, userId;
-                    SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-                    userId = loginSharedPref.getString("userId", null);
+                    String position;
                     String MelodyName;
                     //String positions = mpids.get(getAdapterPosition() + 1);
                     if (userId != null) {
