@@ -670,5 +670,4 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         requestQueue1.add(stringRequest);
     }
 
-
 }

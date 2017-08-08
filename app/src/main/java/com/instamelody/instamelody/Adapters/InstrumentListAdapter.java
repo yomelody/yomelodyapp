@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.StudioActivity;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
@@ -46,7 +47,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     static String audioUrl;
     private static String audioFilePath;
     private static String instrumentFile;
-
+    int duration1, currentPosition;
     int length;
     String coverPicStudio;
     int statusNormal, statusFb, statusTwitter;
@@ -99,7 +100,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         ImageView grey_circle, blue_circle;
         ProgressDialog progressDialog;
         public MediaPlayer mp;
-        int duration1, currentPosition;
+
         CardView card_melody;
 
 
@@ -158,8 +159,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
-                    int mCurrentPosition = mp.getCurrentPosition() / 1000;
-                    int mDuration = mp.getDuration() / 1000;
+                    int mCurrentPosition = currentPosition / 1000;
+                    int mDuration = duration1 / 1000;
                     UtilsRecording utilRecording = new UtilsRecording();
                     int progress1 = utilRecording.getProgressPercentage(mCurrentPosition, mDuration);
 
@@ -291,8 +292,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 holder.mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
-                        holder.duration1 = holder.mp.getDuration();
-                        holder.currentPosition = holder.mp.getCurrentPosition();
+                        duration1 = holder.mp.getDuration();
+                        currentPosition = holder.mp.getCurrentPosition();
                         holder.progressDialog.dismiss();
                     }
                 });
@@ -301,6 +302,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
             }
         });
+
 
         holder.ivPause.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -312,6 +314,39 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 holder.melodySlider.setProgress(0);
             }
         });
+
+//        StudioActivity.ivBackButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                //       if (holder.mp != null) {
+//                if (holder.mp != null) {
+//                    try {
+//                        holder.mp.reset();
+//                        holder.mp.release();
+//                    } catch (Throwable e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//                //   }
+//
+//            }
+//        });
+//        StudioActivity.ivHomeButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                //         if (holder.mp != null) {
+//                if (holder.mp != null) {
+//                    try {
+//                        holder.mp.reset();
+//                        holder.mp.release();
+//                    } catch (Throwable e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//                //     }
+//
+//            }
+//        });
 
 
         Intent i = new Intent("fetchingInstruments");

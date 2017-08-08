@@ -208,7 +208,7 @@ public class StudioActivity extends AppCompatActivity {
     Switch switchPublic;
     RelativeLayout rlMelodyButton, rlRecordingButton, rlRedoButton, rlListeningButton, rlSetCover, rlInviteButton, rlPublic;
     FrameLayout frameTrans, frameSync;
-  static   ImageView ivBackButton, ivHomeButton, ivRecord, ivRecord_stop, ivRecord_play, ivRecord_pause, discover, message, ivProfile, ivNewRecordCover;
+    public static ImageView ivBackButton, ivHomeButton, ivRecord, ivRecord_stop, ivRecord_play, ivRecord_pause, discover, message, ivProfile, ivNewRecordCover;
     CircleImageView profile_image;
     TextView artist_name, noMelodyNote;
     RecyclerView recyclerViewInstruments;
@@ -359,7 +359,6 @@ public class StudioActivity extends AppCompatActivity {
                 for (int i = 0; i < instrumentList.size(); i++) {
                     MelodyInstruments instruments = instrumentList.get(i);
                     instrumentName = instruments.getInstrumentName();
-
 
                 }
 
@@ -542,8 +541,16 @@ public class StudioActivity extends AppCompatActivity {
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                try {
+                    mp.reset();
+                    mediaPlayer.reset();
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+
                 finish();
                 //     killMediaPlayer();
+                onStop();
             }
         });
 
@@ -551,8 +558,15 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //  killMediaPlayer();
+                try {
+                    mp.reset();
+                    mediaPlayer.reset();
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
+                onStop();
             }
         });
 
@@ -614,45 +628,43 @@ public class StudioActivity extends AppCompatActivity {
 
                 if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
 
-                        if (checkPermissions()) {
-                            ivRecord.setVisibility(View.GONE);
-                            rlMelodyButton.setVisibility(View.GONE);
-                            ivRecord_stop.setVisibility(View.VISIBLE);
-                            rlRecordingButton.setVisibility(View.VISIBLE);
-                            waveform_view.setVisibility(View.VISIBLE);
-                            try {
-                                recordAudio();
-                                playAudioRecycler();
-                                Log.d("Instrument count", "" + instruments_count.size());
-                                if(!mRecordingThread.isAlive()){
-                                    try{
-                                        mRecordingThread.start();
-                                    }
-                                    catch (Throwable e){
-                                        e.printStackTrace();
-                                    }
+                    if (checkPermissions()) {
+                        ivRecord.setVisibility(View.GONE);
+                        rlMelodyButton.setVisibility(View.GONE);
+                        ivRecord_stop.setVisibility(View.VISIBLE);
+                        rlRecordingButton.setVisibility(View.VISIBLE);
+                        waveform_view.setVisibility(View.VISIBLE);
+                        try {
+                            recordAudio();
+                            playAudioRecycler();
+                            Log.d("Instrument count", "" + instruments_count.size());
+                            if (!mRecordingThread.isAlive()) {
+                                try {
+                                    mRecordingThread.start();
+                                } catch (Throwable e) {
+                                    e.printStackTrace();
                                 }
-                                else{
-                                    mRecordingThread.stopRunning();
-                                }
-
-
-                                chrono.setBase(SystemClock.elapsedRealtime());
-                                chrono.start();
-
-                            } catch (IllegalStateException e) {
-                                e.printStackTrace();
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                            } else {
+                                mRecordingThread.stopRunning();
                             }
 
-                            //   mRecordingThread.start();
+
+                            chrono.setBase(SystemClock.elapsedRealtime());
+                            chrono.start();
+
+                        } catch (IllegalStateException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        //   mRecordingThread.start();
 
 //                    primarySeekBarProgressUpdater();
-                            //                 chrono.start();
-                        } else {
-                            setPermissions();
-                        }
+                        //                 chrono.start();
+                    } else {
+                        setPermissions();
+                    }
 
 
                 } else {
@@ -1377,7 +1389,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(FILE_TYPE,"admin_melody");
+                params.put(FILE_TYPE, "admin_melody");
                 params.put(KEY, "admin@123");
                 return params;
             }
@@ -1686,7 +1698,6 @@ public class StudioActivity extends AppCompatActivity {
                             ivRecord_play.setVisibility(View.INVISIBLE);
                             rlRedoButton.setVisibility(View.INVISIBLE);
                             rlMelodyButton.setVisibility(View.VISIBLE);
-
 
 
                             //   StudioActivity.this.ivRecord.setVisibility(View.VISIBLE);
@@ -2100,6 +2111,37 @@ public class StudioActivity extends AppCompatActivity {
         return out.toByteArray();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mp != null || mediaPlayer != null) {
+            try {
+                mp.reset();
+                mediaPlayer.reset();
+                mp.release();
+                mediaPlayer.prepare();
+
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mp != null || mediaPlayer != null) {
+            try {
+                mp.reset();
+                mediaPlayer.reset();
+                mp.release();
+                mediaPlayer.prepare();
+
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
 
 
