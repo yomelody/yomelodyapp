@@ -1,6 +1,7 @@
 package com.instamelody.instamelody;
 
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -42,12 +43,14 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
+import com.instamelody.instamelody.Fragments.AudioFragment;
 import com.instamelody.instamelody.Fragments.BioFragment;
 import com.instamelody.instamelody.Fragments.ProfileActivityFragment;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Models.UserDetails;
+import com.instamelody.instamelody.Parse.ParseContents;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -100,7 +103,6 @@ public class ProfileActivity extends AppCompatActivity {
     private String FILTER = "filter";
     private String KEY_SEARCH = "search";
     private String USER_NAME = "username";
-    private String COUNT = "count";
 
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
@@ -113,9 +115,9 @@ public class ProfileActivity extends AppCompatActivity {
     TextView tvNameInProf, tvUserNameInProf, tv_records, tv_fans, tv_following;
     String Name, userName, profilePic, coverPic, followStatus;
     String userId, showProfileUserId;
-    String strName, strSearch, strArtist, strInstruments, strBPM;
-    String artistName, Instruments, BPM;
-    EditText subEtFilterName, subEtFilterInstruments, subEtFilterBPM;
+    String strName, strSearch, strArtist;
+    String artistName;
+    EditText subEtFilterName;
     SearchView search1;
     ProgressDialog progressDialog;
     LongOperation myTask = null;
@@ -132,10 +134,6 @@ public class ProfileActivity extends AppCompatActivity {
         strName = filterPref.getString("stringFilter", null);
         SharedPreferences filterPrefArtist = this.getSharedPreferences("FilterPrefArtist", MODE_PRIVATE);
         strArtist = filterPrefArtist.getString("stringFilterArtist", null);
-        SharedPreferences FilterInstruments = this.getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE);
-        strInstruments = FilterInstruments.getString("stringFilterInstruments", null);
-        SharedPreferences FilterBPM = this.getSharedPreferences("FilterPrefBPM", MODE_PRIVATE);
-        strBPM = FilterBPM.getString("stringFilterBPM", null);
 
         search1 = (SearchView) findViewById(R.id.searchOnProf);
         btnAudio = (Button) findViewById(R.id.btnAudio);
@@ -199,6 +197,7 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
 
+
         if (showProfileUserId != null) {
             fetchUserBio();
             fetchGenreNames();
@@ -226,7 +225,7 @@ public class ProfileActivity extends AppCompatActivity {
 //                searchMenuItem.setVisible(position == 0);
                 rlSearch.setVisibility(View.INVISIBLE);
                 search1.setVisibility(View.VISIBLE);
-                ((EditText) search1.findViewById(android.support.v7.appcompat.R.id.search_src_text))
+                ((EditText)  search1.findViewById(android.support.v7.appcompat.R.id.search_src_text))
                         .setHintTextColor(getResources().getColor(R.color.colorSearch));
                 btnCancel.setVisibility(View.VISIBLE);
             }
@@ -260,10 +259,6 @@ public class ProfileActivity extends AppCompatActivity {
                         strName = arrayAdapter.getItem(which);
                         if (strName.equals("Artist")) {
                             openDialog();
-                        } else if (strName.equals("# of Instruments")) {
-                            openDialogInstruments();
-                        } else if (strName.equals("BPM")) {
-                            openDialogBPM();
                         } else {
                             AlertDialog.Builder builderInner = new AlertDialog.Builder(ProfileActivity.this);
                             builderInner.setMessage(strName);
@@ -472,92 +467,92 @@ public class ProfileActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        String records, fans, followers;
-                        String str = response;
-                        JSONObject jsonObject;
-                        JSONArray jsonArray;
-                        try {
-                            jsonObject = new JSONObject(response);
-                            if (jsonObject.getString(KEY_FLAG).equals(SUCCESS)) {
-                                jsonArray = jsonObject.getJSONArray(KEY_RESULT);
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    UserDetails userDetails = new UserDetails();
-                                    JSONObject userJson = jsonArray.getJSONObject(i);
-                                    Name = userJson.getString("fname") + " " + userJson.getString("lname");
-                                    if (!Name.equals("")) {
-                                        tvNameInProf.setText(Name);
-                                    }
-                                    userName = userJson.getString("username");
-                                    if (!userName.equals("")) {
-                                        tvUserNameInProf.setText("@" + userName);
-                                    }
-                                    followStatus = userJson.getString("follow_status");
-                                    if (showProfileUserId.equals(userId)) {
-                                        if (rlFollow.getVisibility() == View.VISIBLE) {
-                                            rlFollow.setVisibility(View.GONE);
+                            String records, fans, followers;
+                            String str = response;
+                            JSONObject jsonObject;
+                            JSONArray jsonArray;
+                            try {
+                                jsonObject = new JSONObject(response);
+                                if (jsonObject.getString(KEY_FLAG).equals(SUCCESS)) {
+                                    jsonArray = jsonObject.getJSONArray(KEY_RESULT);
+                                    for (int i = 0; i < jsonArray.length(); i++) {
+                                        UserDetails userDetails = new UserDetails();
+                                        JSONObject userJson = jsonArray.getJSONObject(i);
+                                        Name = userJson.getString("fname") + " " + userJson.getString("lname");
+                                        if (!Name.equals("")) {
+                                            tvNameInProf.setText(Name);
                                         }
-                                        if (rlMessage.getVisibility() == View.VISIBLE) {
-                                            rlMessage.setVisibility(View.GONE);
+                                        userName = userJson.getString("username");
+                                        if (!userName.equals("")) {
+                                            tvUserNameInProf.setText("@" + userName);
                                         }
-                                    } else {
+                                        followStatus = userJson.getString("follow_status");
+                                        if (showProfileUserId.equals(userId)) {
+                                            if (rlFollow.getVisibility() == View.VISIBLE) {
+                                                rlFollow.setVisibility(View.GONE);
+                                            }
+                                            if (rlMessage.getVisibility() == View.VISIBLE) {
+                                                rlMessage.setVisibility(View.GONE);
+                                            }
+                                        } else {
 //                                        if (rlMessage.getVisibility() == View.GONE) {
 //                                            rlMessage.setVisibility(View.VISIBLE);
 //                                        }
-                                        if (rlFollow.getVisibility() == View.GONE) {
-                                            rlFollow.setVisibility(View.VISIBLE);
-                                            if (!followStatus.equals("")) {
-                                                if (followStatus.equals("0")) {
-                                                    ivFollow.setVisibility(View.VISIBLE);
-                                                    rlMessage.setVisibility(View.GONE);
-                                                } else if (followStatus.equals("1")) {
-                                                    ivUnfollow.setVisibility(View.VISIBLE);
-                                                    rlMessage.setVisibility(View.VISIBLE);
+                                            if (rlFollow.getVisibility() == View.GONE) {
+                                                rlFollow.setVisibility(View.VISIBLE);
+                                                if (!followStatus.equals("")) {
+                                                    if (followStatus.equals("0")) {
+                                                        ivFollow.setVisibility(View.VISIBLE);
+                                                        rlMessage.setVisibility(View.GONE);
+                                                    } else if (followStatus.equals("1")) {
+                                                        ivUnfollow.setVisibility(View.VISIBLE);
+                                                        rlMessage.setVisibility(View.VISIBLE);
+                                                    }
                                                 }
                                             }
                                         }
-                                    }
-                                    records = userJson.getString("records");
-                                    if (!records.equals("")) {
-                                        tv_records.setText(records);
-                                    } else {
-                                        tv_records.setText(0);
-                                    }
-                                    fans = userJson.getString("fans");
-                                    if (!fans.equals("")) {
-                                        tv_fans.setText(fans);
-                                    } else {
-                                        tv_fans.setText(0);
-                                    }
-                                    followers = userJson.getString("followers");
-                                    if (!followers.equals("")) {
-                                        tv_following.setText(followers);
-                                    } else {
-                                        tv_following.setText(0);
-                                    }
+                                        records = userJson.getString("records");
+                                        if (!records.equals("")) {
+                                            tv_records.setText(records);
+                                        } else {
+                                            tv_records.setText(0);
+                                        }
+                                        fans = userJson.getString("fans");
+                                        if (!fans.equals("")) {
+                                            tv_fans.setText(fans);
+                                        } else {
+                                            tv_fans.setText(0);
+                                        }
+                                        followers = userJson.getString("followers");
+                                        if (!followers.equals("")) {
+                                            tv_following.setText(followers);
+                                        } else {
+                                            tv_following.setText(0);
+                                        }
 
-                                    profilePic = userJson.getString("profilepic");
-                                    userProfileImageInProf.setVisibility(View.VISIBLE);
-                                    Picasso.with(ProfileActivity.this).load(profilePic).into(userProfileImageInProf);
-                                    coverPic = userJson.getString("coverpic");
-                                    Picasso.with(ProfileActivity.this).load(coverPic).into(userCover);
+                                        profilePic = userJson.getString("profilepic");
+                                        userProfileImageInProf.setVisibility(View.VISIBLE);
+                                        Picasso.with(ProfileActivity.this).load(profilePic).into(userProfileImageInProf);
+                                        coverPic = userJson.getString("coverpic");
+                                        Picasso.with(ProfileActivity.this).load(coverPic).into(userCover);
 
-                                    userDetails.setId(userJson.getString("id"));
-                                    userDetails.setUsername(userJson.getString("username"));
-                                    userDetails.setFname(userJson.getString("fname"));
-                                    userDetails.setLname(userJson.getString("lname"));
-                                    userDetails.setEmail(userJson.getString("email"));
-                                    userDetails.setMobile(userJson.getString("mobile"));
-                                    userDetails.setDob(userJson.getString("dob"));
-                                    userDetails.setLogintype(userJson.getString("logintype"));
-                                    userDetails.setLogin_with(userJson.getString("login_with"));
-                                    userDetails.setProfilepic(userJson.getString("profilepic"));
-                                    userDetails.setCoverpic(userJson.getString("coverpic"));
-                                    userDetails.setRegisterdate(userJson.getString("registerdate"));
-                                    userDetails.setFollowers(userJson.getString("followers"));
-                                    userDetails.setFans(userJson.getString("fans"));
-                                    userDetails.setRecords(userJson.getString("records"));
-                                    userDetails.setDevicetoken(userJson.getString("devicetoken"));
-                                    userDetails.setDiscrisption(userJson.getString("discrisption"));
+                                        userDetails.setId(userJson.getString("id"));
+                                        userDetails.setUsername(userJson.getString("username"));
+                                        userDetails.setFname(userJson.getString("fname"));
+                                        userDetails.setLname(userJson.getString("lname"));
+                                        userDetails.setEmail(userJson.getString("email"));
+                                        userDetails.setMobile(userJson.getString("mobile"));
+                                        userDetails.setDob(userJson.getString("dob"));
+                                        userDetails.setLogintype(userJson.getString("logintype"));
+                                        userDetails.setLogin_with(userJson.getString("login_with"));
+                                        userDetails.setProfilepic(userJson.getString("profilepic"));
+                                        userDetails.setCoverpic(userJson.getString("coverpic"));
+                                        userDetails.setRegisterdate(userJson.getString("registerdate"));
+                                        userDetails.setFollowers(userJson.getString("followers"));
+                                        userDetails.setFans(userJson.getString("fans"));
+                                        userDetails.setRecords(userJson.getString("records"));
+                                        userDetails.setDevicetoken(userJson.getString("devicetoken"));
+                                        userDetails.setDiscrisption(userJson.getString("discrisption"));
 
 //                                    if (userJson.getString("id") == userId) {
 //                                        SharedPreferences prefUserDetails = getApplicationContext().getSharedPreferences("prefUserDetails", MODE_PRIVATE);
@@ -572,11 +567,11 @@ public class ProfileActivity extends AppCompatActivity {
 //                                        String json = mPrefs.getString("MyObject", "");
 //                                        MyObject obj = gson.fromJson(json, MyObject.class);
 //                                    }
+                                    }
                                 }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
 
                     }
                 },
@@ -1030,132 +1025,6 @@ public class ProfileActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
-    public void fetchRecordingsFilterInstruments() {
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        String rs = response.toString();
-                        try {
-                            JSONObject jsonObject = new JSONObject(rs);
-                            String flag = jsonObject.getString("flag");
-//                            Toast.makeText(getActivity(), "" + flag, Toast.LENGTH_SHORT).show();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
-
-                        Log.d("ReturnData1", response);
-                        recordingList.clear();
-                        recordingsPools.clear();
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
-                        adapter.notifyDataSetChanged();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        String errorMsg = "";
-                        if (error instanceof TimeoutError) {
-                            errorMsg = "Internet connection timed out";
-                        } else if (error instanceof NoConnectionError) {
-//                            errorMsg = "There is no connection";
-                        } else if (error instanceof AuthFailureError) {
-                            errorMsg = "AuthFailureError";
-                        } else if (error instanceof ServerError) {
-                            errorMsg = "We are facing problem in connecting to server";
-                        } else if (error instanceof NetworkError) {
-                            errorMsg = "We are facing problem in connecting to network";
-                        } else if (error instanceof ParseError) {
-                            errorMsg = "ParseError";
-                        }
-//                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
-                params.put(KEY, STATION);
-                params.put(GENRE, genreString);
-                params.put(FILE_TYPE, "user_recording");
-                params.put(FILTER_TYPE, "Instruments");
-                params.put(COUNT, strInstruments);
-                params.put(FILTER, "extrafilter");
-                return params;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        requestQueue.add(stringRequest);
-    }
-
-    public void fetchRecordingsFilterBPM() {
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        String rs = response.toString();
-                        try {
-                            JSONObject jsonObject = new JSONObject(rs);
-                            String flag = jsonObject.getString("flag");
-//                            Toast.makeText(getActivity(), "" + flag, Toast.LENGTH_SHORT).show();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
-
-                        Log.d("ReturnData4", response);
-                        recordingList.clear();
-                        recordingsPools.clear();
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
-                        adapter.notifyDataSetChanged();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        String errorMsg = "";
-                        if (error instanceof TimeoutError) {
-                            errorMsg = "Internet connection timed out";
-                        } else if (error instanceof NoConnectionError) {
-//                            errorMsg = "There is no connection";
-                        } else if (error instanceof AuthFailureError) {
-                            errorMsg = "AuthFailureError";
-                        } else if (error instanceof ServerError) {
-                            errorMsg = "We are facing problem in connecting to server";
-                        } else if (error instanceof NetworkError) {
-                            errorMsg = "We are facing problem in connecting to network";
-                        } else if (error instanceof ParseError) {
-                            errorMsg = "ParseError";
-                        }
-//                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
-                params.put(KEY, STATION);
-                params.put(GENRE, genreString);
-                params.put(FILE_TYPE, "user_recording");
-                params.put(FILTER_TYPE, strName);
-                params.put(COUNT, strBPM);
-                params.put(FILTER, "extrafilter");
-                return params;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        requestQueue.add(stringRequest);
-    }
-
     private void openDialog() {
         LayoutInflater inflater = LayoutInflater.from(ProfileActivity.this);
         View subView = inflater.inflate(R.layout.dialog_layout, null);
@@ -1202,105 +1071,5 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         builder2.show();
-    }
-
-    private void openDialogInstruments() {
-        LayoutInflater inflater = LayoutInflater.from(ProfileActivity.this);
-        View subView = inflater.inflate(R.layout.dialog_layout, null);
-
-        subEtFilterInstruments = (EditText) subView.findViewById(R.id.dialogEtTopicName);
-
-        android.support.v7.app.AlertDialog.Builder builder3 = new android.support.v7.app.AlertDialog.Builder(this);
-        builder3.setTitle("Number of Instruments");
-        builder3.setMessage("Give Instruments Value to Filter");
-        builder3.setView(subView);
-
-        TextView title = new TextView(this);
-        title.setText("Instruments");
-        title.setBackgroundColor(Color.DKGRAY);
-        title.setPadding(10, 10, 10, 10);
-        title.setGravity(Gravity.CENTER);
-        title.setTextColor(Color.WHITE);
-        title.setTextSize(20);
-
-        builder3.setCustomTitle(title);
-
-        builder3.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //tvInfo.setText(subEtTopicName.getText().toString());
-                Instruments = subEtFilterInstruments.getText().toString().trim();
-                SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
-                editorFilterInstruments.putString("stringFilterInstruments", Instruments);
-                editorFilterInstruments.apply();
-                fetchRecordingsFilterInstruments();
-
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(subEtFilterInstruments.getWindowToken(), 0);
-
-            }
-        });
-
-        builder3.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(subEtFilterInstruments.getWindowToken(), 0);
-            }
-        });
-
-        builder3.show();
-    }
-
-    private void openDialogBPM() {
-        LayoutInflater inflater = LayoutInflater.from(ProfileActivity.this);
-        View subView = inflater.inflate(R.layout.dialog_layout, null);
-
-        subEtFilterBPM = (EditText) subView.findViewById(R.id.dialogEtTopicName);
-
-        android.support.v7.app.AlertDialog.Builder builder3 = new android.support.v7.app.AlertDialog.Builder(this);
-        builder3.setTitle("BPM");
-        builder3.setMessage("Give BPM Value to Filter");
-        builder3.setView(subView);
-
-        TextView title = new TextView(this);
-        title.setText("BPM");
-        title.setBackgroundColor(Color.DKGRAY);
-        title.setPadding(10, 10, 10, 10);
-        title.setGravity(Gravity.CENTER);
-        title.setTextColor(Color.WHITE);
-        title.setTextSize(20);
-
-        builder3.setCustomTitle(title);
-
-        builder3.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //tvInfo.setText(subEtTopicName.getText().toString());
-                BPM = subEtFilterBPM.getText().toString().trim();
-                SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
-                editorFilterBPM.putString("stringFilterBPM", BPM);
-                editorFilterBPM.apply();
-
-                fetchRecordingsFilterBPM();
-
-
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(subEtFilterBPM.getWindowToken(), 0);
-
-            }
-        });
-
-        builder3.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(subEtFilterBPM.getWindowToken(), 0);
-            }
-        });
-
-        builder3.show();
     }
 }

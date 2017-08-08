@@ -1,5 +1,6 @@
 package com.instamelody.instamelody;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -15,6 +16,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -23,6 +25,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.SearchView;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,9 +43,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
+import com.instamelody.instamelody.Fragments.AudioFragment;
 import com.instamelody.instamelody.Models.Genres;
+import com.instamelody.instamelody.Models.RecordingsData;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
+import com.instamelody.instamelody.Parse.ParseContents;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,6 +66,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.instamelody.instamelody.R.id.appBarMainText;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
@@ -69,9 +76,9 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
 public class DiscoverActivity extends AppCompatActivity {
 
-    ImageView discover, message, ivBackButton, audio_feed, ivFilterDiscover, ivHomeDiscover,ivProfile;
+    ImageView discover, message, ivBackButton, audio_feed, ivFilterDiscover, ivHomeDiscover;
     Button appBarSearchDiscoverBtn;
-    EditText subEtFilterName,subEtFilterInstruments, subEtFilterBPM;
+    EditText subEtFilterName;
     TextView appBarMainTextDiscover;
     TabHost host;
     private static RecyclerView.Adapter adapter;
@@ -89,7 +96,6 @@ public class DiscoverActivity extends AppCompatActivity {
     private String FILTER = "filter";
     private String USER_NAME = "username";
     private String KEY_SEARCH = "search";
-    private String COUNT = "count";
 
     String KEY_GENRE_NAME = "name";
     String KEY_GENRE_ID = "id";
@@ -97,9 +103,9 @@ public class DiscoverActivity extends AppCompatActivity {
     String KEY_RESPONSE = "response";//JSONArray
     String genreString = "1";
     String userId, userNameLogin;
-    String strName, strSearch,strArtist, strInstruments, strBPM;
+    String strName, strSearch;
     String titleString;
-    String userIdNormal, userIdFb, userIdTwitter, artistName,Instruments, BPM;;
+    String userIdNormal, userIdFb, userIdTwitter, artistName;
     int statusNormal, statusFb, statusTwitter;
     ProgressDialog progressDialog;
     LongOperation myTask = null;
@@ -116,7 +122,6 @@ public class DiscoverActivity extends AppCompatActivity {
         discover = (ImageView) findViewById(R.id.discover);
         message = (ImageView) findViewById(R.id.message);
         audio_feed = (ImageView) findViewById(R.id.audio_feed);
-        ivProfile = (ImageView) findViewById(R.id.ivProfile);
 
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userId = loginSharedPref.getString("userId", null);
@@ -127,15 +132,6 @@ public class DiscoverActivity extends AppCompatActivity {
         SharedPreferences loginTwitterSharedPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
         userIdTwitter = loginTwitterSharedPref.getString("userId", null);
         statusTwitter = loginTwitterSharedPref.getInt("status", 0);
-
-        SharedPreferences filterPref = this.getSharedPreferences("FilterPref", MODE_PRIVATE);
-        strName = filterPref.getString("stringFilter", null);
-        SharedPreferences filterPrefArtist = this.getSharedPreferences("FilterPrefArtist", MODE_PRIVATE);
-        strArtist = filterPrefArtist.getString("stringFilterArtist", null);
-        SharedPreferences FilterInstruments = this.getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE);
-        strInstruments = FilterInstruments.getString("stringFilterInstruments", null);
-        SharedPreferences FilterBPM = this.getSharedPreferences("FilterPrefBPM", MODE_PRIVATE);
-        strBPM = FilterBPM.getString("stringFilterBPM", null);
 
         if (statusNormal == 1) {
             userId = userIdNormal;
@@ -242,10 +238,6 @@ public class DiscoverActivity extends AppCompatActivity {
                         strName = arrayAdapter.getItem(which);
                         if (strName.equals("Artist")) {
                             openDialog();
-                        } else if (strName.equals("# of Instruments")) {
-                            openDialogInstruments();
-                        } else if (strName.equals("BPM")) {
-                            openDialogBPM();
                         } else {
                             AlertDialog.Builder builderInner = new AlertDialog.Builder(DiscoverActivity.this);
                             builderInner.setMessage(strName);
@@ -316,14 +308,6 @@ public class DiscoverActivity extends AppCompatActivity {
                 ((EditText) search2.findViewById(android.support.v7.appcompat.R.id.search_src_text))
                         .setTextColor(getResources().getColor(R.color.colorSearch));
                 return false;
-            }
-        });
-
-        ivProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(DiscoverActivity.this,ProfileActivity.class);
-                startActivity(i);
             }
         });
     }
@@ -524,6 +508,7 @@ public class DiscoverActivity extends AppCompatActivity {
                 fetchRecordingsFilterArtist();
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtFilterName.getWindowToken(), 0);
+
             }
         });
 
@@ -537,106 +522,6 @@ public class DiscoverActivity extends AppCompatActivity {
         });
 
         builder2.show();
-    }
-
-    private void openDialogInstruments() {
-        LayoutInflater inflater = LayoutInflater.from(DiscoverActivity.this);
-        View subView = inflater.inflate(R.layout.dialog_layout, null);
-
-        subEtFilterInstruments = (EditText) subView.findViewById(R.id.dialogEtTopicName);
-
-        android.support.v7.app.AlertDialog.Builder builder3 = new android.support.v7.app.AlertDialog.Builder(this);
-        builder3.setTitle("Number of Instruments");
-        builder3.setMessage("Give Instruments Value to Filter");
-        builder3.setView(subView);
-
-        TextView title = new TextView(this);
-        title.setText("Instruments");
-        title.setBackgroundColor(Color.DKGRAY);
-        title.setPadding(10, 10, 10, 10);
-        title.setGravity(Gravity.CENTER);
-        title.setTextColor(Color.WHITE);
-        title.setTextSize(20);
-
-        builder3.setCustomTitle(title);
-
-        builder3.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //tvInfo.setText(subEtTopicName.getText().toString());
-                Instruments = subEtFilterInstruments.getText().toString().trim();
-                SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
-                editorFilterInstruments.putString("stringFilterInstruments", Instruments);
-                editorFilterInstruments.apply();
-                fetchRecordingsFilterInstruments();
-
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(subEtFilterInstruments.getWindowToken(), 0);
-
-            }
-        });
-
-        builder3.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(subEtFilterInstruments.getWindowToken(), 0);
-            }
-        });
-
-        builder3.show();
-    }
-
-    private void openDialogBPM() {
-        LayoutInflater inflater = LayoutInflater.from(DiscoverActivity.this);
-        View subView = inflater.inflate(R.layout.dialog_layout, null);
-
-        subEtFilterBPM = (EditText) subView.findViewById(R.id.dialogEtTopicName);
-
-        android.support.v7.app.AlertDialog.Builder builder3 = new android.support.v7.app.AlertDialog.Builder(this);
-        builder3.setTitle("BPM");
-        builder3.setMessage("Give BPM Value to Filter");
-        builder3.setView(subView);
-
-        TextView title = new TextView(this);
-        title.setText("BPM");
-        title.setBackgroundColor(Color.DKGRAY);
-        title.setPadding(10, 10, 10, 10);
-        title.setGravity(Gravity.CENTER);
-        title.setTextColor(Color.WHITE);
-        title.setTextSize(20);
-
-        builder3.setCustomTitle(title);
-
-        builder3.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //tvInfo.setText(subEtTopicName.getText().toString());
-                BPM = subEtFilterBPM.getText().toString().trim();
-                SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
-                editorFilterBPM.putString("stringFilterBPM", BPM);
-                editorFilterBPM.apply();
-
-                fetchRecordingsFilterBPM();
-
-
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(subEtFilterBPM.getWindowToken(), 0);
-
-            }
-        });
-
-        builder3.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(subEtFilterBPM.getWindowToken(), 0);
-            }
-        });
-
-        builder3.show();
     }
 
     public void fetchRecordingsFilterArtist() {
@@ -759,132 +644,6 @@ public class DiscoverActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
                 params.put(KEY_SEARCH, strSearch);
-                return params;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        requestQueue.add(stringRequest);
-    }
-
-    public void fetchRecordingsFilterInstruments() {
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        String rs = response.toString();
-                        try {
-                            JSONObject jsonObject = new JSONObject(rs);
-                            String flag = jsonObject.getString("flag");
-//                            Toast.makeText(getActivity(), "" + flag, Toast.LENGTH_SHORT).show();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
-
-                        Log.d("ReturnData1", response);
-                        recordingList.clear();
-                        recordingsPools.clear();
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
-                        adapter.notifyDataSetChanged();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        String errorMsg = "";
-                        if (error instanceof TimeoutError) {
-                            errorMsg = "Internet connection timed out";
-                        } else if (error instanceof NoConnectionError) {
-//                            errorMsg = "There is no connection";
-                        } else if (error instanceof AuthFailureError) {
-                            errorMsg = "AuthFailureError";
-                        } else if (error instanceof ServerError) {
-                            errorMsg = "We are facing problem in connecting to server";
-                        } else if (error instanceof NetworkError) {
-                            errorMsg = "We are facing problem in connecting to network";
-                        } else if (error instanceof ParseError) {
-                            errorMsg = "ParseError";
-                        }
-//                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
-                params.put(KEY, STATION);
-                params.put(GENRE, genreString);
-                params.put(FILE_TYPE, "user_recording");
-                params.put(FILTER_TYPE, "Instruments");
-                params.put(COUNT, strInstruments);
-                params.put(FILTER, "extrafilter");
-                return params;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        requestQueue.add(stringRequest);
-    }
-
-    public void fetchRecordingsFilterBPM() {
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        String rs = response.toString();
-                        try {
-                            JSONObject jsonObject = new JSONObject(rs);
-                            String flag = jsonObject.getString("flag");
-//                            Toast.makeText(getActivity(), "" + flag, Toast.LENGTH_SHORT).show();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
-
-                        Log.d("ReturnData4", response);
-                        recordingList.clear();
-                        recordingsPools.clear();
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
-                        adapter.notifyDataSetChanged();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        String errorMsg = "";
-                        if (error instanceof TimeoutError) {
-                            errorMsg = "Internet connection timed out";
-                        } else if (error instanceof NoConnectionError) {
-//                            errorMsg = "There is no connection";
-                        } else if (error instanceof AuthFailureError) {
-                            errorMsg = "AuthFailureError";
-                        } else if (error instanceof ServerError) {
-                            errorMsg = "We are facing problem in connecting to server";
-                        } else if (error instanceof NetworkError) {
-                            errorMsg = "We are facing problem in connecting to network";
-                        } else if (error instanceof ParseError) {
-                            errorMsg = "ParseError";
-                        }
-//                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
-                params.put(KEY, STATION);
-                params.put(GENRE, genreString);
-                params.put(FILE_TYPE, "user_recording");
-                params.put(FILTER_TYPE, strName);
-                params.put(COUNT, strBPM);
-                params.put(FILTER, "extrafilter");
                 return params;
             }
         };

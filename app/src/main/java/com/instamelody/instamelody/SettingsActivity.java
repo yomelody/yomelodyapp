@@ -12,7 +12,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.facebook.login.LoginManager;
-import com.instamelody.instamelody.Fragments.SubscriptionsFragment;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -121,16 +120,6 @@ public class SettingsActivity extends AppCompatActivity {
                 public void onClick(View view) {
 
                     Intent intent = new Intent(getApplicationContext(), SocialActivity.class);
-                    startActivity(intent);
-
-                }
-            });
-
-            rlSubscription.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
                     startActivity(intent);
 
                 }
