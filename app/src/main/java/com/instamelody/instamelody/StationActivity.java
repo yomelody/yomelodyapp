@@ -170,12 +170,13 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
             public void onClick(View v) {
                 btnActivity.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnAudio.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                btnActivity.setEnabled(false);
+                btnAudio.setEnabled(false);
+                btnActivity.setEnabled(true);
+
                 //new FetchActivityDetails().execute(userId);
 
                 AudioFragment af = new AudioFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
-                btnActivity.setEnabled(true);
 
 
             }
@@ -187,6 +188,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
                 btnAudio.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnActivity.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                btnActivity.setEnabled(false);
+                btnAudio.setEnabled(true);
 
                 ActivityFragment actf = new ActivityFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_station, actf).commit();
@@ -232,6 +235,12 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
                 editorFilterString.clear();
                 editorFilterString.apply();
+                SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
+                editorFilterArtist.putString("stringFilterArtist", artistName);
+                editorFilterArtist.apply();
+                SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
+                editorFilterInstruments.putString("stringFilterInstruments", Instruments);
+                editorFilterInstruments.apply();
                 AudioFragment af = new AudioFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
                 return false;
@@ -344,6 +353,15 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                             SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
                             editorSearchString.clear();
                             editorSearchString.apply();
+                            SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
+                            editorFilterArtist.putString("stringFilterArtist", artistName);
+                            editorFilterArtist.apply();
+                            SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
+                            editorFilterInstruments.putString("stringFilterInstruments", Instruments);
+                            editorFilterInstruments.apply();
+                            SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
+                            editorFilterBPM.clear();
+                            editorFilterBPM.apply();
                             builderInner.setTitle("Your Selected Item is");
                             AudioFragment af = new AudioFragment();
                             getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
@@ -712,7 +730,6 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
         protected String doInBackground(String... params) {
             AudioFragment aud_fag = new AudioFragment();
-            aud_fag.fetchRecordings();
             aud_fag.fetchGenreNames();
             aud_fag.fetchRecordingsFilter();
             /*adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList, recordingsPools);
@@ -758,6 +775,19 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
                 editorFilterArtist.putString("stringFilterArtist", artistName);
                 editorFilterArtist.apply();
+
+                SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                editorFilterString.putString("stringFilter", strName);
+                editorFilterString.apply();
+
+                SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
+                editorFilterBPM.clear();
+                editorFilterBPM.apply();
+
+                SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
+                editorFilterInstruments.clear();
+                editorFilterInstruments.apply();
+
                 AudioFragment af = new AudioFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
 
@@ -808,6 +838,18 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
                 editorFilterInstruments.putString("stringFilterInstruments", Instruments);
                 editorFilterInstruments.apply();
+
+                SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                editorFilterString.putString("stringFilter", strName);
+                editorFilterString.apply();
+
+                SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
+                editorFilterBPM.clear();
+                editorFilterBPM.apply();
+
+                SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
+                editorFilterArtist.putString("stringFilterArtist", artistName);
+                editorFilterArtist.apply();
 
                 AudioFragment af = new AudioFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
@@ -860,6 +902,18 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
                 editorFilterBPM.putString("stringFilterBPM", BPM);
                 editorFilterBPM.apply();
+
+                SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                editorFilterString.putString("stringFilter", strName);
+                editorFilterString.apply();
+
+                SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
+                editorFilterArtist.putString("stringFilterArtist", artistName);
+                editorFilterArtist.apply();
+
+                SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
+                editorFilterInstruments.putString("stringFilterInstruments", Instruments);
+                editorFilterInstruments.apply();
 
                 AudioFragment af = new AudioFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();

@@ -1,8 +1,10 @@
 package com.instamelody.instamelody.Adapters;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
@@ -105,7 +107,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         ImageView ivJoin, ivStationPlay, ivStationPause;
         SeekBar seekBarRecordings;
         RelativeLayout rlProfilePic, rlLike;
-
+        ProgressDialog progressDialog;
         public MyViewHolder(View itemView) {
             super(itemView);
 
@@ -444,7 +446,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
 
         Picasso.with(holder.ivRecordingCover.getContext()).load(recordingsPools.get(listPosition).getCoverUrl()).into(holder.ivRecordingCover);
-
 //        Picasso.with(holder.userProfileImage.getContext()).load(recordingsPools.get(listPosition).getProfileUrl()).into(holder.userProfileImage);
         Picasso.with(holder.userProfileImage.getContext()).load(recordingList.get(listPosition).getUserProfilePic()).into(holder.userProfileImage);
 //        tvRecordingGenres.setText(recordingList.get(listPosition).getGenreName());
@@ -476,50 +477,83 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             @Override
             public void onClick(View v) {
 //                holder.seekBarRecordings.setVisibility(View.VISIBLE);
+                holder.progressDialog = new ProgressDialog(v.getContext());
+                holder.progressDialog.setMessage("Loading...");
+                holder.progressDialog.show();
+
                 holder.ivStationPause.setVisibility(View.VISIBLE);
-                String userId="";
-                SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-                userId = loginSharedPref.getString("userId", null);
-                try {
-                    RecordingsPool recordingsPool = recordingsPools.get(listPosition);
-                    instrumentFile = recordingsPool.getRecordingUrl();
-                    Integer s = listPosition + 1;
-                    RecordingsModel recording = recordingList.get(listPosition);
-                    Recordingid=recording.getRecordingId();
+                //  try {
+                RecordingsPool recordingsPool = recordingsPools.get(listPosition);
+                instrumentFile = recordingsPool.getRecordingUrl();
+                Integer s = listPosition + 1;
 
+                if (getItemCount() >= listPosition+1 && instrumentFile != null) {
+                    if (mp != null) {
+                        if (mp.isPlaying()) {
+                            mp.stop();
+                            mp.reset();
+                            mp.release();
+                            mp=null;
+                            holder.ivStationPause.setVisibility(GONE);
 
-                    if(!TempRecordingid.equals(Recordingid))
-                    {
-                        //holder.seekBarRecordings.refreshDrawableState();
-                        holder.seekBarRecordings.setProgress(0);
-                        fetchViewCount(userId,Recordingid);
-                        String play = tvViewCount.getText().toString().trim();
-                        int playValue = Integer.parseInt(play) + 1;
-                        play = String.valueOf(playValue);
-                        tvViewCount.setText(play);
-                        TempRecordingid=Recordingid;
-                        length=0;
+                        }
                     }
-
-                    if (getItemCount() >= s && instrumentFile != null) {
-                        playAudio();
-                        holder.primarySeekBarProgressUpdater();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                mp.seekTo(length);
-                mp.start();
-
-                if (mp.equals(duration1)) {
+                    mp = new MediaPlayer();
+                    mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
                     try {
-                        playAudio();
-                        holder.primarySeekBarProgressUpdater();
+                        mp.setDataSource(instrumentFile);
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    mp.prepareAsync();
+                    mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            holder.progressDialog.dismiss();
+
+                            mp.start();
+                            holder.primarySeekBarProgressUpdater();
+                            holder.ivStationPlay.setVisibility(GONE);
+                            holder.ivStationPause.setVisibility(VISIBLE);
+                        }
+                    });
+                    mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                        @Override
+                        public boolean onError(MediaPlayer mp, int what, int extra) {
+                            holder.progressDialog.dismiss();
+                            return false;
+                        }
+                    });
+                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            duration1 = mp.getDuration();
+                            currentPosition = mp.getCurrentPosition();
+                            holder.progressDialog.dismiss();
+                        }
+                    });
+
+
+                    //   }
+
+
+                    //   playAudio();
+                    //   holder.primarySeekBarProgressUpdater();
                 }
+                //     }
+
+                //     mp.seekTo(length);
+                //     mp.start();
+
+//                if (mp.equals(duration1)) {
+//                    try {
+//                        playAudio();
+//                        holder.primarySeekBarProgressUpdater();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
             }
         });
 
@@ -530,7 +564,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 holder.ivStationPause.setVisibility(v.GONE);
                 mp.pause();
                 length = mp.getCurrentPosition();
-                TempLength=length;
                 holder.seekBarRecordings.setProgress(0);
             }
         });
@@ -546,17 +579,17 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     }
 
 
-    public void playAudio() throws IOException {
-        killMediaPlayer();
-
-        mp = new MediaPlayer();
-//        mp.setDataSource(audioFilePath);
-        mp.setDataSource(instrumentFile);
-        mp.prepare();
-        mp.start();
-        duration1 = mp.getDuration();
-        currentPosition = mp.getCurrentPosition();
-    }
+//    public void playAudio() throws IOException {
+//        killMediaPlayer();
+//
+//        mp = new MediaPlayer();
+////        mp.setDataSource(audioFilePath);
+//        mp.setDataSource(instrumentFile);
+//        mp.prepare();
+//        mp.start();
+//        duration1 = mp.getDuration();
+//        currentPosition = mp.getCurrentPosition();
+//    }
 
     private void killMediaPlayer() {
         if (mp != null) {
@@ -576,7 +609,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
                         }
                     },
                     new Response.ErrorListener() {
@@ -689,5 +722,4 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         RequestQueue requestQueue1 = Volley.newRequestQueue(context);
         requestQueue1.add(stringRequest);
     }
-
 }

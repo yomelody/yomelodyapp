@@ -128,6 +128,20 @@ public class AudioFragment extends Fragment {
 
         fetchGenreNames();
 
+        if (strName == null && strSearch == null) {
+            fetchRecordings();
+        } else if (strSearch != null) {
+            fetchSearchData();
+        } else if (strArtist != null) {
+            fetchRecordingsFilterArtist();
+        } else if (strInstruments != null && strName.equals("# of Instruments")) {
+            fetchRecordingsFilterInstruments();
+        }else if(strBPM != null && strName.equals("BPM")){
+            fetchRecordingsFilterBPM();
+        } else {
+            fetchRecordingsFilter();
+        }
+
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
         SharedPreferences fbPref = getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
@@ -140,19 +154,7 @@ public class AudioFragment extends Fragment {
             userId = twitterPref.getString("userId", null);
         }
 
-        if (strName == null && strSearch == null) {
-            fetchRecordings();
-        } else if (strSearch != null) {
-            fetchSearchData();
-        } else if (strArtist != null) {
-            fetchRecordingsFilterArtist();
-        } else if (strInstruments != null) {
-            fetchRecordingsFilterInstruments();
-        }else if(strBPM != null){
-            fetchRecordingsFilterBPM();
-        } else {
-            fetchRecordingsFilter();
-        }
+
 
         adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
     }
@@ -207,9 +209,9 @@ public class AudioFragment extends Fragment {
                                 fetchSearchData();
                             } else if (strArtist != null) {
                                 fetchRecordingsFilterArtist();
-                            } else if (strInstruments != null) {
+                            } else if (strInstruments != null && strName.equals("# of Instruments")) {
                                 fetchRecordingsFilterInstruments();
-                            }else if(strBPM != null){
+                            }else if(strBPM != null && strName.equals("BPM")){
                                 fetchRecordingsFilterBPM();
                             } else {
                                 fetchRecordingsFilter();
@@ -234,9 +236,9 @@ public class AudioFragment extends Fragment {
                                     fetchSearchData();
                                 } else if (strArtist != null) {
                                     fetchRecordingsFilterArtist();
-                                } else if (strInstruments != null) {
+                                } else if (strInstruments != null && strName.equals("# of Instruments")) {
                                     fetchRecordingsFilterInstruments();
-                                }else if(strBPM != null){
+                                }else if(strBPM != null && strName.equals("BPM")){
                                     fetchRecordingsFilterBPM();
                                 } else {
                                     fetchRecordingsFilter();
@@ -355,10 +357,7 @@ public class AudioFragment extends Fragment {
                         recordingsPools.clear();
                         new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
-
                     }
-
-
                 },
                 new Response.ErrorListener() {
                     @Override
@@ -477,7 +476,7 @@ public class AudioFragment extends Fragment {
 
 //                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
 
-                        Log.d("ReturnData1", response);
+                        Log.d("ReturnData2", response);
                         recordingList.clear();
                         recordingsPools.clear();
                         new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
@@ -677,6 +676,7 @@ public class AudioFragment extends Fragment {
             progressDialog.setMessage("Please wait...");
             progressDialog.setCancelable(false);
             progressDialog.show();
+
         }
 
         protected String doInBackground(String... params) {
@@ -730,9 +730,9 @@ public class AudioFragment extends Fragment {
                 fetchSearchData();
             } else if (strArtist != null) {
                 fetchRecordingsFilterArtist();
-            } else if (strInstruments != null) {
+            } else if (strInstruments != null && strName.equals("# of Instruments")) {
                 fetchRecordingsFilterInstruments();
-            }else if(strBPM != null){
+            }else if(strBPM != null && strName.equals("BPM")){
                 fetchRecordingsFilterBPM();
             } else {
                 fetchRecordingsFilter();
@@ -741,8 +741,6 @@ public class AudioFragment extends Fragment {
         }
 
         protected void onPostExecute(String result) {
-            progressDialog.dismiss();
-
 
             progressDialog.dismiss();
         }

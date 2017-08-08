@@ -100,7 +100,7 @@ public class ParseContents {
                     card.setMelodyName(cardJson.getString(KEY_MELODY_NAME));
                     card.setGenreId(cardJson.getString(KEY_GENRE_ID));
                     card.setGenreName(cardJson.getString(KEY_GENRE_NAME));
-//                    card.setMelodyLength(cardJson.getString(KEY_DURATION));
+                    card.setMelodyLength(cardJson.getString(KEY_DURATION));
                     card.setInstrumentCount(cardJson.getString(KEY_INSTRUMENT_COUNT));
                     card.setMelodyBpm(cardJson.getString(KEY_BPM));
                     card.setPlayCount(cardJson.getInt(KEY_PLAY_COUNTS));
