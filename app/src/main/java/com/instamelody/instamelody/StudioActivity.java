@@ -594,8 +594,8 @@ public class StudioActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (userId != null && melodyPackId != null) {
                     openDialog();
-                    mShouldContinue=false;
-                    if(mRecordingThread.isAlive()){
+                    ivRecord.setVisibility(View.VISIBLE);
+                    ivRecord.setEnabled(true);
                         mRecordingThread.stopRunning();
                     }
                     ivRecord.setVisibility(View.VISIBLE);
@@ -636,11 +636,11 @@ public class StudioActivity extends AppCompatActivity {
                                 catch (Throwable e){
                                     e.printStackTrace();
                                 }
-
                             }
                             else{
                                 mRecordingThread.stopRunning();
                             }
+
 
 
                             chrono.setBase(SystemClock.elapsedRealtime());
@@ -1383,6 +1383,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+                params.put(FILE_TYPE,"admin_melody");
                 params.put(KEY, "admin@123");
                 return params;
             }

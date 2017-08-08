@@ -361,7 +361,10 @@ public class AudioFragment extends Fragment {
                         recordingsPools.clear();
                         new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
+
                     }
+
+
                 },
                 new Response.ErrorListener() {
                     @Override
@@ -671,6 +674,8 @@ public class AudioFragment extends Fragment {
                 fetchSearchData();
             } else if (strArtist != null) {
                 fetchRecordingsFilterArtist();
+            }else if(strBPM != null){
+                fetchRecordingsFilterBPM();
             } else{
                 fetchRecordingsFilter();
             }

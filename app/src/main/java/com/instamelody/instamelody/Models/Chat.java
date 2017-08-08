@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Created by Shubhansh Jaiswal on 04/05/17.
@@ -11,7 +12,18 @@ import java.util.Date;
 
 public class Chat {
 
-    String id, senderID, senderName, receiverID, receiverName, coverPick, userProfileImage, message, chatID, isRead, sendAt;
+    String id;
+    String senderID;
+    String senderName;
+    String receiverID;
+    String receiverName;
+    String groupName;
+    String coverPick;
+    String userProfileImage;
+    String message;
+    String chatID;
+    String isRead;
+    String sendAt;
 
     public String getId() {
         return id;
@@ -51,6 +63,14 @@ public class Chat {
 
     public void setReceiverName(String receiverName) {
         this.receiverName = receiverName;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 
     public String getCoverPick() {
@@ -108,10 +128,10 @@ public class Chat {
         String val = "";
 
         try {
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date oldDate = dateFormat.parse(send_at);
             Calendar c = Calendar.getInstance();
             Date currentDate = c.getTime();
-
             long diff = currentDate.getTime() - oldDate.getTime();
             long seconds = diff / 1000;
             long minutes = seconds / 60;

@@ -251,8 +251,6 @@ public class SignInActivity extends AppCompatActivity {
                                 fbEditor.putInt("status", 1);
                                 fbEditor.commit();
                                 registerSpecialFB();
-                                Intent i = new Intent(SignInActivity.this, HomeActivity.class);
-                                startActivity(i);
                             }
                         });
 

@@ -1,13 +1,12 @@
 package com.instamelody.instamelody;
 
 import android.annotation.TargetApi;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
@@ -27,6 +26,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.fabric.sdk.android.Fabric;
+
+import static com.instamelody.instamelody.utils.Const.PUSH_NOTIFICATION;
 
 /**
  * Created by Shubhansh Jaiswal on 11/29/2016.
@@ -59,27 +60,25 @@ public class HomeActivity extends AppCompatActivity {
     RelativeLayout rlMessenger;
     Bitmap bitmap;
     public static HomeActivity fa;
-    TextView tvFirstName, tvUserName;
+    TextView tvFirstName, tvUserName, message_count;
     String Name, userName, profilePic, fbEmail, profilepic2, fbFirstName, fbUserName, fbLastName, fbProfilePic, name2, userName2, galleryPrfPic, fbId;
     String firstName, lastName, userNameLogin, profilePicLogin;
     int statusNormal, statusFb, statusTwitter;
     CircleImageView userProfileImage;
+    int count = 0;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
 
     @TargetApi(16)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        HandelLogin obj = new HandelLogin();
-
-
-
-
 
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_home);
+//        HandelLogin obj = new HandelLogin();
 
         rlMessenger = (RelativeLayout) findViewById(R.id.rlMessenger);
         Settings = (Button) findViewById(R.id.btn_settings);
@@ -91,7 +90,25 @@ public class HomeActivity extends AppCompatActivity {
         ivProfile = (ImageView) findViewById(R.id.ivLogoContainer);
         tvFirstName = (TextView) findViewById(R.id.tvFirstName);
         tvUserName = (TextView) findViewById(R.id.tvUserName);
+        message_count = (TextView) findViewById(R.id.message_count);
         userProfileImage = (CircleImageView) findViewById(R.id.userProfileImage);
+
+
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                if (intent.getAction().equals(PUSH_NOTIFICATION)) {
+                    // new push notification is received
+                    count = count + 1;
+                    message_count.setVisibility(View.VISIBLE);
+                    message_count.setText(count);
+                    SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                    editor.putString("messageCount", String.valueOf(count));
+                    editor.commit();
+                }
+            }
+        };
 
 //        Bitmap bitmap = getIntent().getParcelableExtra("BitmapImage");
 //        Toast.makeText(this, ""+bitmap, Toast.LENGTH_LONG).show();
