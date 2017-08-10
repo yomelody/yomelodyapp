@@ -960,6 +960,10 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
         editorFilterInstruments.clear();
         editorFilterInstruments.apply();
+
+        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+        editorSearchString.clear();
+        editorSearchString.apply();
     }
     private class FetchActivityDetails extends AsyncTask<String, Void, String> {
         protected void onPreExecute() {
