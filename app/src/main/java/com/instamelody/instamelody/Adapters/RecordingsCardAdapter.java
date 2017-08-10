@@ -89,6 +89,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     String Key_shared_with = "shared_with";
     String Key_file_type = "file_type";
     Context context;
+    String userId="";
     private RecyclerView.ViewHolder lastModifiedHoled = null;
 
     public RecordingsCardAdapter(Context context, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools) {
