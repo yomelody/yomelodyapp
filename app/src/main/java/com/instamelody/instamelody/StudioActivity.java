@@ -541,16 +541,9 @@ public class StudioActivity extends AppCompatActivity {
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    mp.reset();
-                    mediaPlayer.reset();
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-
                 finish();
-                //     killMediaPlayer();
-                onStop();
+                //killMediaPlayer();
+                //   onStop();
             }
         });
 
@@ -558,15 +551,9 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //  killMediaPlayer();
-                try {
-                    mp.reset();
-                    mediaPlayer.reset();
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
-                onStop();
+                //    onStop();
             }
         });
 
@@ -900,8 +887,14 @@ public class StudioActivity extends AppCompatActivity {
                     alertDialog.setMessage("As a moderator feel free to make public or private anytime");
                     alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            switchPublic.setChecked(true);
-                            switchFlag = "1";
+                            if (switchFlag == "1") {
+                                switchPublic.setChecked(false);
+                                switchFlag = "0";
+                            } else {
+                                switchPublic.setChecked(true);
+                                switchFlag = "1";
+                            }
+
                         }
                     });
                     alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -940,6 +933,7 @@ public class StudioActivity extends AppCompatActivity {
         String rate = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
         String size = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
         Log.d("Buffer Size & sample rate", "Size :" + size + " & Rate: " + rate);
+
 
     }
 
@@ -991,7 +985,7 @@ public class StudioActivity extends AppCompatActivity {
         //                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliseconds)));
 
         // return timer string
-        return finalTimerString;
+        return String.valueOf(seconds);
     }
 
     private void primarySeekBarProgressUpdater() {
@@ -1677,9 +1671,6 @@ public class StudioActivity extends AppCompatActivity {
                         //adapter.notifyItemInserted(instrumentList.size()-1);
                         if (r1.has("melody")) {
                             tvDone.setEnabled(false);
-                            Toast.makeText(StudioActivity.this, "Saved as Melody", Toast.LENGTH_SHORT).show();
-                        } else {
-                            tvDone.setEnabled(false);
                             MelodyInstruments melodyInstruments = new MelodyInstruments();
                             melodyInstruments.setInstrumentName(packName);
                             melodyInstruments.setInstrumentBpm(bpm);
@@ -1698,8 +1689,20 @@ public class StudioActivity extends AppCompatActivity {
                             ivRecord_play.setVisibility(View.INVISIBLE);
                             rlRedoButton.setVisibility(View.INVISIBLE);
                             rlMelodyButton.setVisibility(View.VISIBLE);
+                            switchPublic.setChecked(false);
+                            switchFlag = "0";
+                        } else {
 
-
+                            tvDone.setEnabled(false);
+                            adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+                            recyclerViewInstruments.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                            ivRecord_play.setVisibility(View.INVISIBLE);
+                            rlRedoButton.setVisibility(View.INVISIBLE);
+                            rlMelodyButton.setVisibility(View.VISIBLE);
+                            switchPublic.setChecked(false);
+                            switchFlag = "0";
+                            Toast.makeText(StudioActivity.this, "Saved as Recording", Toast.LENGTH_SHORT).show();
                             //   StudioActivity.this.ivRecord.setVisibility(View.VISIBLE);
                 /*waveform_view.setVisibility(View.GONE);
                 recording_time.setText("00:00:00");*/
@@ -2111,37 +2114,38 @@ public class StudioActivity extends AppCompatActivity {
         return out.toByteArray();
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (mp != null || mediaPlayer != null) {
-            try {
-                mp.reset();
-                mediaPlayer.reset();
-                mp.release();
-                mediaPlayer.prepare();
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        if (mp != null || mediaPlayer != null) {
+//            try {
+//                mp.reset();
+//                mediaPlayer.reset();
+//                mp.release();
+//                mediaPlayer.prepare();
+//
+//            } catch (Throwable e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (mp != null || mediaPlayer != null) {
-            try {
-                mp.reset();
-                mediaPlayer.reset();
-                mp.release();
-                mediaPlayer.prepare();
-
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        if (mp != null || mediaPlayer != null) {
+//            if (mp.isPlaying() || mediaPlayer.isPlaying()) {
+//                try {
+//                    mp.reset();
+//                    mediaPlayer.reset();
+//
+//                } catch (Throwable e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//        }
+//    }
 }
 
 

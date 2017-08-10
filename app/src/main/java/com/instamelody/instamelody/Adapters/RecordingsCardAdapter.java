@@ -68,7 +68,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
     String genreName, mpid, MelodyName, profile;
     static String instrumentFile;
-     MediaPlayer mp;
+    MediaPlayer mp;
     int duration1, currentPosition;
     int length;
     ArrayList<String> mpids = new ArrayList<>();
@@ -89,6 +89,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     String Key_shared_with = "shared_with";
     String Key_file_type = "file_type";
     Context context;
+    private RecyclerView.ViewHolder lastModifiedHoled = null;
 
     public RecordingsCardAdapter(Context context, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools) {
         this.recordingList = recordingList;
@@ -106,6 +107,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         SeekBar seekBarRecordings;
         RelativeLayout rlProfilePic, rlLike;
         ProgressDialog progressDialog;
+
         public MyViewHolder(View itemView) {
             super(itemView);
 
@@ -468,69 +470,76 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 holder.progressDialog.show();
 
                 holder.ivStationPause.setVisibility(View.VISIBLE);
-              //  try {
-                    RecordingsPool recordingsPool = recordingsPools.get(listPosition);
-                    instrumentFile = recordingsPool.getRecordingUrl();
-                    Integer s = listPosition + 1;
+                //  try {
+                RecordingsPool recordingsPool = recordingsPools.get(listPosition);
+                instrumentFile = recordingsPool.getRecordingUrl();
+                Integer s = listPosition + 1;
 
-                    if (getItemCount() >= listPosition+1 && instrumentFile != null) {
-                        if (mp != null) {
-                            if (mp.isPlaying()) {
-                                mp.stop();
-                                mp.reset();
-                                mp.release();
-                                mp=null;
-                                holder.ivStationPause.setVisibility(GONE);
-
+                if (getItemCount() >= listPosition + 1 && instrumentFile != null) {
+                    if (mp != null) {
+                        if (mp.isPlaying()) {
+                            mp.stop();
+                            mp.reset();
+                            mp.release();
+                            mp = null;
+                            if (lastModifiedHoled != null) {
+                                int lastPosition = lastModifiedHoled.getAdapterPosition();
+                                lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
+                                lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
+                           /* lastModifiedHoled.itemView.setBackgroundColor(Color.TRANSPARENT);
+                            lastModifiedHoled.txtIndustry.setTextColor(context.getResources().getColor(R.color.text_color_blue));*/
+                                notifyItemChanged(lastPosition);
                             }
+
                         }
-                            mp = new MediaPlayer();
-                            mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                            try {
-                                mp.setDataSource(instrumentFile);
-
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            mp.prepareAsync();
-                            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                @Override
-                                public void onPrepared(MediaPlayer mp) {
-                                    holder.progressDialog.dismiss();
-
-                                    mp.start();
-                                    holder.primarySeekBarProgressUpdater();
-                                    holder.ivStationPlay.setVisibility(GONE);
-                                    holder.ivStationPause.setVisibility(VISIBLE);
-                                }
-                            });
-                            mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                                @Override
-                                public boolean onError(MediaPlayer mp, int what, int extra) {
-                                    holder.progressDialog.dismiss();
-                                    return false;
-                                }
-                            });
-                            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                @Override
-                                public void onCompletion(MediaPlayer mp) {
-                                    duration1 = mp.getDuration();
-                                    currentPosition = mp.getCurrentPosition();
-                                    holder.progressDialog.dismiss();
-                                }
-                            });
-
-
-                     //   }
-
-
-                     //   playAudio();
-                     //   holder.primarySeekBarProgressUpdater();
                     }
-           //     }
+                    mp = new MediaPlayer();
+                    mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    try {
+                        mp.setDataSource(instrumentFile);
 
-           //     mp.seekTo(length);
-           //     mp.start();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    mp.prepareAsync();
+                    mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            holder.progressDialog.dismiss();
+                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(GONE);
+                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(VISIBLE);
+                            mp.start();
+                            holder.primarySeekBarProgressUpdater();
+
+                        }
+                    });
+                    mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                        @Override
+                        public boolean onError(MediaPlayer mp, int what, int extra) {
+                            holder.progressDialog.dismiss();
+                            return false;
+                        }
+                    });
+                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            duration1 = mp.getDuration();
+                            currentPosition = mp.getCurrentPosition();
+                            holder.progressDialog.dismiss();
+                        }
+                    });
+                    lastModifiedHoled = holder;
+
+                    //   }
+
+
+                    //   playAudio();
+                    //   holder.primarySeekBarProgressUpdater();
+                }
+                //     }
+
+                //     mp.seekTo(length);
+                //     mp.start();
 
 //                if (mp.equals(duration1)) {
 //                    try {
@@ -553,7 +562,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 holder.seekBarRecordings.setProgress(0);
             }
         });
-
 
 
 //        holder.tvIncludedCount.setText(String.valueOf(recordingList.get(listPosition).getTvIncludedCount()));
