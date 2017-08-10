@@ -69,7 +69,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     ArrayList<UserMelodyCard> userMelodyCardArrayList = new ArrayList<>();
     ArrayList<UserMelodyPlay> userMelodyPlays = new ArrayList<>();
     String melodyName,fetchRecordingUrl;
-
+    RecyclerView.LayoutManager layoutManager;
     String USER_TYPE = "user_type";
     String USER_ID = "user_id";
     String FILE_ID = "file_id";
@@ -90,7 +90,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     String Key_shared_with = "shared_with";
     String Key_file_type = "file_type";
     String userId="";
-
+    private RecyclerView.ViewHolder lastModifiedHoled = null;
     public MelodyCardListAdapter(ArrayList<MelodyCard> melodyList, Context context) {
         this.melodyList = melodyList;
         this.context = context;
@@ -158,6 +158,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 userId = twitterPref.getString("userId", null);
             }
             // MelodyName=tvMelodyName.getText().toString().trim();
+
 
 
             rlLike.setOnClickListener(new View.OnClickListener() {
@@ -379,7 +380,8 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
-        MelodyCard melody = melodyList.get(listPosition);
+        final MelodyCard melody = melodyList.get(listPosition);
+
         profile = melody.getUserProfilePic();
         cover = melody.getMelodyCover();
         SharedPreferences.Editor editor1 = context.getSharedPreferences("commentData1", MODE_PRIVATE).edit();
@@ -402,13 +404,16 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         holder.tvCommentCount.setText(String.valueOf(melody.getCommentCount()));
         holder.tvShareCount.setText(String.valueOf(melody.getShareCount()));
 
-        int likeStatus = melodyList.get(listPosition).getLikeStatus();
+        final int likeStatus = melodyList.get(listPosition).getLikeStatus();
         if (likeStatus == 0) {
             holder.ivDislikeButton.setVisibility(GONE);
             //holder.ivLikeButton.setVisibility(VISIBLE);
         } else {
             holder.ivDislikeButton.setVisibility(VISIBLE);
         }
+
+
+
         holder.ivPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -462,11 +467,29 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         mediaPlayer.reset();
                         mediaPlayer.release();
                         mediaPlayer=null;
-                        holder.ivPause.setVisibility(GONE);
+                        //holder.ivPause.setVisibility(GONE);
+
+                        if (lastModifiedHoled != null) {
+                            int lastPosition = lastModifiedHoled.getAdapterPosition();
+                            lastModifiedHoled.itemView.findViewById(R.id.ivPlay).setVisibility(VISIBLE);
+                           /* lastModifiedHoled.itemView.setBackgroundColor(Color.TRANSPARENT);
+                            lastModifiedHoled.txtIndustry.setTextColor(context.getResources().getColor(R.color.text_color_blue));*/
+                            notifyItemChanged(lastPosition);
+                        }
+
+
+
+                        /*View view = null;
+                        holder.ivPause.setVisibility(VISIBLE);
+                        view = holder.recyclerView.getChildAt(1);
+                        holder.ivPause = (ImageView) view.findViewById(R.id.ivPause);
+                        holder.ivPause.setVisibility(VISIBLE);*/
+
 
                     }
 
                 }
+
 
                 mediaPlayer = new MediaPlayer();
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -503,6 +526,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     }
                 });
 
+                lastModifiedHoled = holder;
 
                 //        mediaPlayer.seekTo(length);
                 //      mediaPlayer.start();
@@ -534,8 +558,18 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             }
         });
 
+
     }
 
+    public MyViewHolder getViewHolder(int position){
+        MyViewHolder holder = null;
+        /**
+         Find ViewHolder here...
+         If Found initialize the holder..
+         holder = ?
+         **/
+        return holder;
+    }
     @Override
     public int getItemCount() {
         return melodyList.size();

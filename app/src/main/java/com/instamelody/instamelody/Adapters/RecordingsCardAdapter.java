@@ -478,6 +478,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         }
 
 
+
 //        tvContributeLength.setText(recordingList.get(listPosition).getTvContributeLength());
         holder.tvRecordingDate.setText(recordingList.get(listPosition).getRecordingCreated());
         //    tvContributeDate.setText(recordingList.get(listPosition).getTvContributeDate());
