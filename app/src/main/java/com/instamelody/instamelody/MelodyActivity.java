@@ -87,6 +87,7 @@ public class MelodyActivity extends AppCompatActivity {
     private MenuItem searchMenuItem;
     ArrayList<Genres> genresArrayList = new ArrayList<>();
     String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
+    String KEY_GENRE_NAME = "name";
     int clicked_button = 0;
     String KEY_GENRE_ID = "id";
     String KEY_FLAG = "flag";

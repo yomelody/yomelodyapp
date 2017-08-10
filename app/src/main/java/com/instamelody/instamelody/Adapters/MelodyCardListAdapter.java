@@ -1,6 +1,5 @@
 package com.instamelody.instamelody.Adapters;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -29,13 +28,13 @@ import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.CommentsActivity;
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
-import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
+import com.instamelody.instamelody.Models.UserMelodyCard;
+import com.instamelody.instamelody.Models.UserMelodyPlay;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
 import com.instamelody.instamelody.StudioActivity;
-import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -49,6 +48,7 @@ import java.util.Map;
 import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.instamelody.instamelody.Adapters.InstrumentListAdapter.audioUrl;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LIKESAPI;
 import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
@@ -66,9 +66,10 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     static ArrayList<MelodyCard> melodyList = new ArrayList<>();
     ArrayList<String> mpids = new ArrayList<>();
     private static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
+    ArrayList<UserMelodyCard> userMelodyCardArrayList = new ArrayList<>();
+    ArrayList<UserMelodyPlay> userMelodyPlays = new ArrayList<>();
     String melodyName, fetchRecordingUrl;
-    String audioUrl1;
-
+    RecyclerView.LayoutManager layoutManager;
     String USER_TYPE = "user_type";
     String USER_ID = "user_id";
     String FILE_ID = "file_id";
@@ -82,12 +83,14 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     RecordingsPool recordingsPool;
     Context context;
     MediaPlayer mediaPlayer;
-    int playerPos;
+    int playerPos, TempLength = 0;
     int duration, length;
-    String mpid, MelodyName;
+    String mpid, MelodyName, TempRecordingid = "0", Recordingid;
     String Key_shared_by_user = "shared_by_user";
     String Key_shared_with = "shared_with";
     String Key_file_type = "file_type";
+    String userId = "";
+    private RecyclerView.ViewHolder lastModifiedHoled = null;
 
 
     public MelodyCardListAdapter(ArrayList<MelodyCard> melodyList, Context context) {
@@ -96,6 +99,12 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     }
 
     public MelodyCardListAdapter(ArrayList<UserMelodyCard> melodyList, ArrayList<UserMelodyPlay> melodyPools, Context context) {
+        this.userMelodyCardArrayList = melodyList;
+        this.userMelodyPlays = melodyPools;
+        this.context = context;
+    }
+
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvUserName, tvMelodyName, tvMelodyLength, tvBpmRate, tvInstrumentsUsed, tvMelodyGenre, tvMelodyDate, tv7, tv8, tv9;
@@ -137,16 +146,24 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             rlComment = (RelativeLayout) itemView.findViewById(R.id.rlComment);
             rlshare = (RelativeLayout) itemView.findViewById(R.id.rlShare);
 
+            SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+            SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+            SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
 
+            if (loginSharedPref.getString("userId", null) != null) {
+                userId = loginSharedPref.getString("userId", null);
+            } else if (fbPref.getString("userId", null) != null) {
+                userId = fbPref.getString("userId", null);
+            } else if (twitterPref.getString("userId", null) != null) {
+                userId = twitterPref.getString("userId", null);
+            }
             // MelodyName=tvMelodyName.getText().toString().trim();
 
 
             rlLike.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String position, userId;
-                    SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-                    userId = loginSharedPref.getString("userId", null);
+                    String position;
                     String MelodyName;
                     //String positions = mpids.get(getAdapterPosition() + 1);
                     if (userId != null) {
@@ -201,11 +218,11 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     Intent shareIntent = new Intent();
                     shareIntent.setAction(Intent.ACTION_SEND);
                     shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Testing");
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, RecordingURL);
-                    shareIntent.setType("image/jpeg");
+                    shareIntent.setType("text/plain");
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt" + "\n" + RecordingURL);
+
+                    shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(Intent.createChooser(shareIntent, "Hello."));
-                    ((Activity) context).startActivityForResult(Intent.createChooser(shareIntent, "Hello."), 1);
                     SetMelodyShare("", "", "");
 
                 }
@@ -331,6 +348,9 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     Intent intent = new Intent(v.getContext(), StudioActivity.class);
                     intent.putExtra("clickPosition", position);
                     v.getContext().startActivity(intent);
+                    if (mediaPlayer != null) {
+                        mediaPlayer.reset();
+                    }
                 }
             });
 
@@ -359,7 +379,8 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
-        MelodyCard melody = melodyList.get(listPosition);
+        final MelodyCard melody = melodyList.get(listPosition);
+
         profile = melody.getUserProfilePic();
         cover = melody.getMelodyCover();
         SharedPreferences.Editor editor1 = context.getSharedPreferences("commentData1", MODE_PRIVATE).edit();
@@ -382,17 +403,19 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         holder.tvCommentCount.setText(String.valueOf(melody.getCommentCount()));
         holder.tvShareCount.setText(String.valueOf(melody.getShareCount()));
 
-        int likeStatus = melodyList.get(listPosition).getLikeStatus();
+        final int likeStatus = melodyList.get(listPosition).getLikeStatus();
         if (likeStatus == 0) {
             holder.ivDislikeButton.setVisibility(GONE);
             //holder.ivLikeButton.setVisibility(VISIBLE);
         } else {
             holder.ivDislikeButton.setVisibility(VISIBLE);
         }
+
+
         holder.ivPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//
+
                 holder.progressDialog = new ProgressDialog(v.getContext());
                 holder.progressDialog.setMessage("Loading...");
                 holder.progressDialog.show();
@@ -441,12 +464,31 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         mediaPlayer.stop();
                         mediaPlayer.reset();
                         mediaPlayer.release();
-                        mediaPlayer=null;
-                        holder.ivPause.setVisibility(GONE);
+                        mediaPlayer = null;
+                        //holder.ivPause.setVisibility(GONE);
+
+                        if (lastModifiedHoled != null) {
+                            int lastPosition = lastModifiedHoled.getAdapterPosition();
+                            lastModifiedHoled.itemView.findViewById(R.id.ivPlay).setVisibility(VISIBLE);
+                            lastModifiedHoled.itemView.findViewById(R.id.ivPause).setVisibility(GONE);
+                           /* lastModifiedHoled.itemView.setBackgroundColor(Color.TRANSPARENT);
+                            lastModifiedHoled.txtIndustry.setTextColor(context.getResources().getColor(R.color.text_color_blue));*/
+                            notifyItemChanged(lastPosition);
+                        }
+
+
+
+                        /*View view = null;
+                        holder.ivPause.setVisibility(VISIBLE);
+                        view = holder.recyclerView.getChildAt(1);
+                        holder.ivPause = (ImageView) view.findViewById(R.id.ivPause);
+                        holder.ivPause.setVisibility(VISIBLE);*/
+
 
                     }
 
                 }
+
 
                 mediaPlayer = new MediaPlayer();
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -461,11 +503,11 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     @Override
                     public void onPrepared(MediaPlayer mediaPlayer) {
                         holder.progressDialog.dismiss();
-
+                        lastModifiedHoled.itemView.findViewById(R.id.ivPlay).setVisibility(GONE);
+                        lastModifiedHoled.itemView.findViewById(R.id.ivPause).setVisibility(VISIBLE);
                         mediaPlayer.start();
                         holder.primarySeekBarProgressUpdater();
-                        holder.ivPlay.setVisibility(GONE);
-                        holder.ivPause.setVisibility(VISIBLE);
+
                     }
                 });
                 mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
@@ -483,6 +525,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     }
                 });
 
+                lastModifiedHoled = holder;
 
                 //        mediaPlayer.seekTo(length);
                 //      mediaPlayer.start();
@@ -514,6 +557,17 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             }
         });
 
+
+    }
+
+    public MyViewHolder getViewHolder(int position) {
+        MyViewHolder holder = null;
+        /**
+         Find ViewHolder here...
+         If Found initialize the holder..
+         holder = ?
+         **/
+        return holder;
     }
 
     @Override
@@ -671,6 +725,5 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         RequestQueue requestQueue1 = Volley.newRequestQueue(context);
         requestQueue1.add(stringRequest);
     }
-
 
 }

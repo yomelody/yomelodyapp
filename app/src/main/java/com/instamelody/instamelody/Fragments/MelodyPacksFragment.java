@@ -69,7 +69,7 @@ public class MelodyPacksFragment extends Fragment {
     String GENRE = "genere";
     String genreString = "1";
 
-            String USER_ID = "users_id";
+    String USER_ID = "users_id";
     String USERS_ID = "users_id";
     private String KEY_SEARCH = "search";
     private String USER_NAME = "username";
@@ -317,16 +317,16 @@ public class MelodyPacksFragment extends Fragment {
                 String userId = loginSharedPref.getString("userId", null);
                 if (userId != null) {
 //                    params.put(USER_ID, userId);
-                    }
-
                 }
                 return params;
             }
 
-        } ;
-            RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+
+
+    } ;
+    RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         requestQueue.add(stringRequest);
-        }
+}
 
     public void fetchMelodyFilter() {
 
@@ -640,27 +640,27 @@ public class MelodyPacksFragment extends Fragment {
         };
     }
 
-    class AsyncData extends AsyncTask<Void, Void, Void> {
+class AsyncData extends AsyncTask<Void, Void, Void> {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // init progressdialog
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        // init progressdialog
 
-        }
-
-
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            // get data
-            return null;
-        }
-
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            // dismiss dialog
-        }
     }
+
+
+    @Override
+    protected Void doInBackground(Void... arg0) {
+        // get data
+        return null;
+    }
+
+
+    @Override
+    protected void onPostExecute(Void result) {
+        super.onPostExecute(result);
+        // dismiss dialog
+    }
+}
 }
