@@ -67,6 +67,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     ArrayList<String> mpids = new ArrayList<>();
     private static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     String melodyName, fetchRecordingUrl;
+    String audioUrl1;
 
     String USER_TYPE = "user_type";
     String USER_ID = "user_id";
@@ -94,6 +95,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         this.context = context;
     }
 
+    public MelodyCardListAdapter(ArrayList<UserMelodyCard> melodyList, ArrayList<UserMelodyPlay> melodyPools, Context context) {
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvUserName, tvMelodyName, tvMelodyLength, tvBpmRate, tvInstrumentsUsed, tvMelodyGenre, tvMelodyDate, tv7, tv8, tv9;

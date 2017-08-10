@@ -119,6 +119,7 @@ public class MelodyPacksFragment extends Fragment {
             userId = twitterPref.getString("userId", null);
             //MelodyUser=userId;
         }
+
         //     new Loader().execute();
         fetchGenreNames();
         if (strName == null && strSearch == null) {
@@ -137,6 +138,8 @@ public class MelodyPacksFragment extends Fragment {
         adapter = new MelodyCardListAdapter(melodyList, getActivity());
 
 
+      /*  if (strName == null) {
+        }*/
         RecordingsFragment rf = new RecordingsFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.melodyPackFragment, rf);

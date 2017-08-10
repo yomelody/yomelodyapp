@@ -1385,6 +1385,7 @@ public class StudioActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(FILE_TYPE,"admin_melody");
                 params.put(KEY, "admin@123");
+                params.put(FILE_TYPE,"admin_melody");
                 return params;
             }
         };
