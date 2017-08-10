@@ -1,5 +1,7 @@
 package com.instamelody.instamelody;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
@@ -10,9 +12,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.instamelody.instamelody.Fragments.SubscriptionsFragment;
+import com.instamelody.instamelody.Models.RecordingsModel;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -26,10 +30,11 @@ public class SettingsActivity extends AppCompatActivity {
     TextView tvDone, tvSignIn, tvSignOut, tvFirstNameSettings, tvUserNameSettings;
     SeekBar seekBarDisc;
     ImageView ivLogoContainer;
-    RelativeLayout rlSocialConnect, rlSubscription, rlMyAccount, rlTos, rlPrivacyPolicy;
+    RelativeLayout rlSocialConnect, rlSubscription, rlMyAccount, rlTos, rlPrivacyPolicy,rlInviteContacts;
     String userId, firstName, lastName, userNameLogin, profilePicLogin;
     CircleImageView userProfileImageSettings;
     int statusNormal;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +43,7 @@ public class SettingsActivity extends AppCompatActivity {
         rlSocialConnect = (RelativeLayout) findViewById(R.id.rlSocialConnect);
         rlSubscription = (RelativeLayout) findViewById(R.id.rlSubscription);
         rlMyAccount = (RelativeLayout) findViewById(R.id.rlMyAccount);
+        rlInviteContacts = (RelativeLayout)findViewById(R.id.rlInviteContacts);
         tvDone = (TextView) findViewById(R.id.tvDone);
         tvSignIn = (TextView) findViewById(R.id.tvSignIn);
         tvSignOut = (TextView) findViewById(R.id.tvSignOut);
@@ -136,6 +142,18 @@ public class SettingsActivity extends AppCompatActivity {
                 }
             });
 
+            rlInviteContacts.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("text/plain");
+                    intent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store?hl=en");
+                    intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Check out this site!");
+                    startActivity(Intent.createChooser(intent, "Share"));
+                }
+            });
+
             tvSignOut.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -169,6 +187,15 @@ public class SettingsActivity extends AppCompatActivity {
                     Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
                     startActivity(intent);
 
+                }
+            });
+
+            rlInviteContacts.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(SettingsActivity.this, "Sign in Share InstaMelody Application", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+                    startActivity(intent);
                 }
             });
 

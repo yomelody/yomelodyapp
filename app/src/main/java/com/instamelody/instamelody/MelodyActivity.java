@@ -87,7 +87,7 @@ public class MelodyActivity extends AppCompatActivity {
     private MenuItem searchMenuItem;
     String strArtist, userId, Instruments, BPM, artistName;
     EditText subEtFilterName, subEtFilterInstruments, subEtFilterBPM;
-
+    int clicked_button = 0;
 
     ImageView discover, message, ivBackButton, ivHomeButton, ivProfile, audio_feed, ivMelodyFilter;
     SearchView searchView, search1;
@@ -155,7 +155,7 @@ public class MelodyActivity extends AppCompatActivity {
                 btnMelodyPacks.setBackgroundColor(Color.parseColor("#FFFFFF"));
                 btnRecordings.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnSubscriptions.setBackgroundColor(Color.parseColor("#E4E4E4"));
-
+                clicked_button = 0;
                 MelodyPacksFragment mpf = new MelodyPacksFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
             }
@@ -167,7 +167,7 @@ public class MelodyActivity extends AppCompatActivity {
                 btnMelodyPacks.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnRecordings.setBackgroundColor(Color.parseColor("#FFFFFF"));
                 btnSubscriptions.setBackgroundColor(Color.parseColor("#E4E4E4"));
-
+                clicked_button = 1;
                 RecordingsFragment rf = new RecordingsFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_melody, rf).commit();
             }
@@ -180,7 +180,7 @@ public class MelodyActivity extends AppCompatActivity {
                 btnMelodyPacks.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnRecordings.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnSubscriptions.setBackgroundColor(Color.parseColor("#FFFFFF"));
-
+                clicked_button = 2;
                 SubscriptionsFragment subf = new SubscriptionsFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_melody, subf).commit();
             }
@@ -261,6 +261,7 @@ public class MelodyActivity extends AppCompatActivity {
         ivMelodyFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                Toast.makeText(MelodyActivity.this, "" + clicked_button, Toast.LENGTH_SHORT).show();
                 AlertDialog.Builder builderSingle = new AlertDialog.Builder(MelodyActivity.this);
 //                builderSingle.setIcon(R.drawable.ic_launcher);
                 builderSingle.setTitle("Filter Audio");
@@ -284,6 +285,7 @@ public class MelodyActivity extends AppCompatActivity {
                 builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+
                         strName = arrayAdapter.getItem(which);
                         if (strName.equals("Artist")) {
                             openDialog();
@@ -310,10 +312,15 @@ public class MelodyActivity extends AppCompatActivity {
                             editorFilterBPM.clear();
                             editorFilterBPM.apply();
                             builderInner.setTitle("Your Selected Item is");
+                            if (clicked_button == 0) {
+                                MelodyPacksFragment mpf = new MelodyPacksFragment();
+                                getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
 
-                            MelodyPacksFragment mpf = new MelodyPacksFragment();
-                            getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
+                            } else if (clicked_button == 1) {
+                                RecordingsFragment rf = new RecordingsFragment();
+                                getFragmentManager().beginTransaction().replace(R.id.activity_melody, rf).commit();
 
+                            }
 
                         }
                     }
@@ -478,9 +485,13 @@ public class MelodyActivity extends AppCompatActivity {
                 editorFilterInstruments.clear();
                 editorFilterInstruments.apply();
 
-
-                MelodyPacksFragment mpf = new MelodyPacksFragment();
-                getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
+                if (clicked_button == 0) {
+                    MelodyPacksFragment mpf = new MelodyPacksFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
+                } else if (clicked_button == 1) {
+                    RecordingsFragment rf = new RecordingsFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.activity_melody, rf).commit();
+                }
 
 
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -544,8 +555,13 @@ public class MelodyActivity extends AppCompatActivity {
                 editorFilterArtist.apply();
 
 
-                MelodyPacksFragment mpf = new MelodyPacksFragment();
-                getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
+                if (clicked_button == 0) {
+                    MelodyPacksFragment mpf = new MelodyPacksFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
+                } else if (clicked_button == 1) {
+                    RecordingsFragment rf = new RecordingsFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.activity_melody, rf).commit();
+                }
 
 
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -609,8 +625,13 @@ public class MelodyActivity extends AppCompatActivity {
                 editorFilterInstruments.apply();
 
 
-                MelodyPacksFragment mpf = new MelodyPacksFragment();
-                getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
+                if (clicked_button == 0) {
+                    MelodyPacksFragment mpf = new MelodyPacksFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
+                } else if (clicked_button == 1) {
+                    RecordingsFragment rf = new RecordingsFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.activity_melody, rf).commit();
+                }
 
 
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);

@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -36,12 +37,15 @@ import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
 import com.instamelody.instamelody.StudioActivity;
 import com.squareup.picasso.Picasso;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -64,7 +68,8 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     private static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     ArrayList<UserMelodyCard> userMelodyCardArrayList = new ArrayList<>();
     ArrayList<UserMelodyPlay> userMelodyPlays = new ArrayList<>();
-    String melodyName,fetchRecordingUrl;
+    String melodyName, fetchRecordingUrl;
+    String audioUrl1;
 
     String USER_TYPE = "user_type";
     String USER_ID = "user_id";
@@ -75,13 +80,13 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     String FILEID = "fileid";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";
-    String Topic ="topic";
+    String Topic = "topic";
     RecordingsPool recordingsPool;
     Context context;
     MediaPlayer mediaPlayer;
     int playerPos;
     int duration, length;
-    String mpid,MelodyName;
+    String mpid, MelodyName;
     String Key_shared_by_user = "shared_by_user";
     String Key_shared_with = "shared_with";
     String Key_file_type = "file_type";
@@ -91,7 +96,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         this.context = context;
     }
 
-    public MelodyCardListAdapter(ArrayList<UserMelodyCard> melodyList, ArrayList<UserMelodyPlay> melodyPools,Context context) {
+    public MelodyCardListAdapter(ArrayList<UserMelodyCard> melodyList, ArrayList<UserMelodyPlay> melodyPools, Context context) {
         this.userMelodyCardArrayList = melodyList;
         this.userMelodyPlays = melodyPools;
         this.context = context;
@@ -105,7 +110,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         ImageView userProfileImage, ivMelodyCover, ivPlay, ivPause, ivLikeButton, ivDislikeButton, ivPlayButton;
         Button btnMelodyAdd;
         SeekBar melodySlider;
-        RelativeLayout rlSeekbarTracer, rlLike, rlPlay, rlComment,rlshare;
+        RelativeLayout rlSeekbarTracer, rlLike, rlPlay, rlComment, rlshare;
 
 
         public MyViewHolder(final View itemView) {
@@ -137,7 +142,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             rlLike = (RelativeLayout) itemView.findViewById(R.id.rlLike);
             rlPlay = (RelativeLayout) itemView.findViewById(R.id.rlPlay);
             rlComment = (RelativeLayout) itemView.findViewById(R.id.rlComment);
-            rlshare=(RelativeLayout)itemView.findViewById(R.id.rlShare);
+            rlshare = (RelativeLayout) itemView.findViewById(R.id.rlShare);
 
 
             // MelodyName=tvMelodyName.getText().toString().trim();
@@ -221,8 +226,8 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 //                        position = Integer.toString(getAdapterPosition() + 1);
                         //position = mpids.get(getAdapterPosition());
                         MelodyCard melody = melodyList.get(getAdapterPosition());
-                        MelodyName=melody.getMelodyName();
-                        position =melody.getMelodyPackId();
+                        MelodyName = melody.getMelodyName();
+                        position = melody.getMelodyPackId();
                         if (ivDislikeButton.getVisibility() == VISIBLE) {
                             ivLikeButton.setVisibility(VISIBLE);
                             ivDislikeButton.setVisibility(GONE);
@@ -230,7 +235,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                             int likeValue = Integer.parseInt(like) - 1;
                             like = String.valueOf(likeValue);
                             tvLikeCount.setText(like);
-                            fetchLikeState(userId, position, "0",MelodyName);
+                            fetchLikeState(userId, position, "0", MelodyName);
 
                         } else if (ivDislikeButton.getVisibility() == GONE) {
 
@@ -240,7 +245,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                             int likeValue = Integer.parseInt(like) + 1;
                             like = String.valueOf(likeValue);
                             tvLikeCount.setText(like);
-                            fetchLikeState(userId, position, "1",MelodyName);
+                            fetchLikeState(userId, position, "1", MelodyName);
                         }
                     } else {
                         Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
@@ -250,7 +255,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 }
             });
 
-            rlshare.setOnClickListener(new View.OnClickListener(){
+            rlshare.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
@@ -261,10 +266,10 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));*/
 
                     MelodyCard melody = melodyList.get(getAdapterPosition());
-                    MelodyName=melody.getMelodyName();
+                    MelodyName = melody.getMelodyName();
 
                     MelodyCard recording = melodyList.get(getAdapterPosition());
-                    String RecordingURL=recording.getMelodyURL();
+                    String RecordingURL = recording.getMelodyURL();
 
                     Intent shareIntent = new Intent();
                     shareIntent.setAction(Intent.ACTION_SEND);
@@ -273,8 +278,8 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     shareIntent.putExtra(Intent.EXTRA_TEXT, RecordingURL);
                     shareIntent.setType("image/jpeg");
                     context.startActivity(Intent.createChooser(shareIntent, "Hello."));
-                    ((Activity) context).startActivityForResult(Intent.createChooser(shareIntent, "Hello."),1);
-                    SetMelodyShare("","","");
+                    ((Activity) context).startActivityForResult(Intent.createChooser(shareIntent, "Hello."), 1);
+                    SetMelodyShare("", "", "");
 
                 }
 
@@ -437,14 +442,11 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         holder.tvCommentCount.setText(String.valueOf(melody.getCommentCount()));
         holder.tvShareCount.setText(String.valueOf(melody.getShareCount()));
 
-        int likeStatus=melodyList.get(listPosition).getLikeStatus();
-        if(likeStatus==0)
-        {
+        int likeStatus = melodyList.get(listPosition).getLikeStatus();
+        if (likeStatus == 0) {
             holder.ivDislikeButton.setVisibility(GONE);
             //holder.ivLikeButton.setVisibility(VISIBLE);
-        }
-        else
-        {
+        } else {
             holder.ivDislikeButton.setVisibility(VISIBLE);
         }
 
@@ -456,7 +458,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     }
 
     public void fetchLikeState(final String userId, final String pos, final String likeState, String LikeMelodyName) {
-        MelodyName=LikeMelodyName;
+        MelodyName = LikeMelodyName;
         StringRequest stringRequest = new StringRequest(Request.Method.POST, LIKESAPI,
                 new Response.Listener<String>() {
                     @Override
@@ -546,7 +548,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 //            }
 //        });
         mediaPlayer.seekTo(playerPos);
-      //  mediaPlayer.start();
+        //  mediaPlayer.start();
         duration = mediaPlayer.getDuration();
     }
 
@@ -565,7 +567,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         return melodyList;
     }
 
-    public void SetMelodyShare(final String file_id, final String shared_by_user,final String shared_with) {
+    public void SetMelodyShare(final String file_id, final String shared_by_user, final String shared_with) {
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, PLAY_COUNT,
                 new Response.Listener<String>() {

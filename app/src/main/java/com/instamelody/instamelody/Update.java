@@ -82,6 +82,7 @@ public class Update extends AppCompatActivity {
     String password1;
     DatePickerDialog dpd;
     String formatedDate;
+    String pswd;
     int day, month, year;
 
     @Override
@@ -283,9 +284,6 @@ public class Update extends AppCompatActivity {
                     errorConfirmPassUpdate.setText("Password didn't match!");
                 } else {
                     updateData();
-                    if (userProfileImageUpdate != null) {
-                        updateImage();
-                    }
                 }
             }
         });
@@ -296,8 +294,8 @@ public class Update extends AppCompatActivity {
         final String lastname = etuLastName.getText().toString().trim();
         final String username = etuUsername.getText().toString().trim();
         final String password = etuPassWord.getText().toString().trim();
-        if (password.equals("")) {
-            password1 = password;
+        if (password == null) {
+            password1 = pswd;
         } else {
             password1 = etuPassWord.getText().toString().trim();
         }
@@ -326,6 +324,9 @@ public class Update extends AppCompatActivity {
                             String flag = jsonObject.getString("flag");
                             if (flag.equals("success")) {
                                 String msg = jsonObject.getString("msg");
+                                if (userProfileImageUpdate != null) {
+                                    updateImage();
+                                }
 //                                Toast.makeText(Update.this, "" + msg, Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
@@ -366,7 +367,7 @@ public class Update extends AppCompatActivity {
             @Override
             public void onResponse(NetworkResponse response) {
                 String resultResponse = new String(response.data);
-                Toast.makeText(getApplicationContext(), "Profile Picture Updated", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), "Profile Picture Updated", Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override

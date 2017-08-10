@@ -114,6 +114,36 @@ public class RecordingsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         fetchGenreNames();
+        SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
+        strName = filterPref.getString("stringFilter", null);
+        SharedPreferences searchPref = getActivity().getSharedPreferences("SearchPref", MODE_PRIVATE);
+        strSearch = searchPref.getString("stringSearch", null);
+        SharedPreferences filterPrefArtist = getActivity().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE);
+        strArtist = filterPrefArtist.getString("stringFilterArtist", null);
+        SharedPreferences FilterInstruments = getActivity().getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE);
+        strInstruments = FilterInstruments.getString("stringFilterInstruments", null);
+        SharedPreferences FilterBPM = getActivity().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE);
+        strBPM = FilterBPM.getString("stringFilterBPM", null);
+
+        SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+        userId = loginSharedPref.getString("userId", null);
+
+        SharedPreferences loginFbSharedPref = getActivity().getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+        userIdFb = loginFbSharedPref.getString("userId", null);
+        statusFb = loginFbSharedPref.getInt("status", 0);
+        SharedPreferences loginTwitterSharedPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        userIdTwitter = loginTwitterSharedPref.getString("userId", null);
+        statusTwitter = loginTwitterSharedPref.getInt("status", 0);
+
+
+
+        if (statusNormal == 1) {
+            userId = userIdNormal;
+        } else if (statusFb == 1) {
+            userId = userIdFb;
+        } else if (statusTwitter == 1) {
+            userId = userIdTwitter;
+        }
 
         if (strName == null && strSearch == null) {
             fetchRecordings();
@@ -128,34 +158,7 @@ public class RecordingsFragment extends Fragment {
         } else {
             fetchRecordingsFilter();
         }
-        SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-        userId = loginSharedPref.getString("userId", null);
 
-        SharedPreferences loginFbSharedPref = getActivity().getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
-        userIdFb = loginFbSharedPref.getString("userId", null);
-        statusFb = loginFbSharedPref.getInt("status", 0);
-        SharedPreferences loginTwitterSharedPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
-        userIdTwitter = loginTwitterSharedPref.getString("userId", null);
-        statusTwitter = loginTwitterSharedPref.getInt("status", 0);
-
-        SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
-        strName = filterPref.getString("stringFilter", null);
-        SharedPreferences searchPref = getActivity().getSharedPreferences("SearchPref", MODE_PRIVATE);
-        strSearch = searchPref.getString("stringSearch", null);
-        SharedPreferences filterPrefArtist = getActivity().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE);
-        strArtist = filterPrefArtist.getString("stringFilterArtist", null);
-        SharedPreferences FilterInstruments = getActivity().getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE);
-        strInstruments = FilterInstruments.getString("stringFilterInstruments", null);
-        SharedPreferences FilterBPM = getActivity().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE);
-        strBPM = FilterBPM.getString("stringFilterBPM", null);
-
-        if (statusNormal == 1) {
-            userId = userIdNormal;
-        } else if (statusFb == 1) {
-            userId = userIdFb;
-        } else if (statusTwitter == 1) {
-            userId = userIdTwitter;
-        }
 
         new DownloadFileFromURL();
         adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
@@ -531,6 +534,9 @@ public class RecordingsFragment extends Fragment {
                             JSONObject jsonObject = new JSONObject(rs);
                             String flag = jsonObject.getString("flag");
 //                            Toast.makeText(getActivity(), "" + flag, Toast.LENGTH_SHORT).show();
+                            if (flag.equals("unsuccess")){
+                                Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT).show();
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -747,6 +753,10 @@ public class RecordingsFragment extends Fragment {
 
             progressDialog.dismiss();
         }
+
+    }
+
+    public void SharedPrefClear(){
 
     }
 }

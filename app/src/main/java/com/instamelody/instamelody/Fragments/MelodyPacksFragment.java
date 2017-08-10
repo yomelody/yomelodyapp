@@ -110,6 +110,20 @@ public class MelodyPacksFragment extends Fragment {
         SharedPreferences FilterBPM = getActivity().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE);
         strBPM = FilterBPM.getString("stringFilterBPM", null);
 
+        SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+        SharedPreferences twitterPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+            //MelodyUser=userId;
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
+            //MelodyUser=userId;
+        }
+
         //     new Loader().execute();
         fetchGenreNames();
         if (strName == null && strSearch == null) {
@@ -128,25 +142,13 @@ public class MelodyPacksFragment extends Fragment {
         adapter = new MelodyCardListAdapter(melodyList, getActivity());
 
 
-        SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-        SharedPreferences twitterPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
-        SharedPreferences fbPref = getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
 
-        if (loginSharedPref.getString("userId", null) != null) {
-            userId = loginSharedPref.getString("userId", null);
-        } else if (fbPref.getString("userId", null) != null) {
-            userId = fbPref.getString("userId", null);
-            //MelodyUser=userId;
-        } else if (twitterPref.getString("userId", null) != null) {
-            userId = twitterPref.getString("userId", null);
-            //MelodyUser=userId;
-        }
 
-        if (strName == null) {
+      /*  if (strName == null) {
             fetchMelodyPacks();
         } else {
             fetchMelodyFilter();
-        }
+        }*/
 
         RecordingsFragment rf = new RecordingsFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -306,10 +308,9 @@ public class MelodyPacksFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                if (packId.equals("7")) {
+                if (packId.equals("7") && userId != null) {
                     params.put(USER_ID, userId);
                     params.put(FILE_TYPE, "user_melody");
-                    params.put(GENRE, "7");
                 } else if (userId != null) {
                     params.put(users_id, userId);
                     params.put(GENRE, packId);

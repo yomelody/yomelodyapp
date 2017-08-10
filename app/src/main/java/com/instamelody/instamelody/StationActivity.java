@@ -855,7 +855,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 editorFilterBPM.apply();
 
                 SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
-                editorFilterArtist.putString("stringFilterArtist", artistName);
+                editorFilterArtist.clear();
                 editorFilterArtist.apply();
 
                 AudioFragment af = new AudioFragment();
@@ -942,6 +942,24 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         });
 
         builder3.show();
+    }
+
+    public void clearSharePref(){
+        SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
+        editorFilterBPM.clear();
+        editorFilterBPM.apply();
+
+        SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
+        editorFilterArtist.clear();
+        editorFilterArtist.apply();
+
+        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+        editorFilterString.clear();
+        editorFilterString.apply();
+
+        SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
+        editorFilterInstruments.clear();
+        editorFilterInstruments.apply();
     }
     private class FetchActivityDetails extends AsyncTask<String, Void, String> {
         protected void onPreExecute() {
