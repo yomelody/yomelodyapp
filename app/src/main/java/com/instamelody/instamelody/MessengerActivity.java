@@ -175,12 +175,6 @@ public class MessengerActivity extends AppCompatActivity {
                         adapter.notifyDataSetChanged();
                         recyclerView.smoothScrollToPosition(adapter.getItemCount());
 
-                        String recName = "";
-                        String profilePic = "";
-                        String chat_id = "";
-                        String rcvrId = "";
-                        String sndrId = "";
-
                         JSONObject jsonObject;
                         JSONArray jsonArray;
                         try {
@@ -195,6 +189,7 @@ public class MessengerActivity extends AppCompatActivity {
                                     chat.setSenderName(commentJson.getString("sender_name"));
                                     chat.setReceiverID(commentJson.getString("receiverID"));
                                     chat.setReceiverName(commentJson.getString("receiver_name"));
+                                    chat.setGroupName(commentJson.getString("group_name"));
                                     chat.setCoverPick(commentJson.getString("coverPick"));
                                     chat.setUserProfileImage(commentJson.getString("profilePick"));
                                     chat.setMessage(commentJson.getString("message"));

@@ -352,6 +352,8 @@ public class ChatActivity extends AppCompatActivity {
                     inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                             InputMethodManager.HIDE_NOT_ALWAYS);
 
+                    getChatMsgs(chatId);
+
                 } else {
                     Toast.makeText(getApplicationContext(), "Log in to Chat", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
@@ -499,7 +501,7 @@ public class ChatActivity extends AppCompatActivity {
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
                 rlSelectedImage.setVisibility(View.VISIBLE);
-                ivSelectedImage.setImageBitmap(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 4, bitmap.getHeight() / 4, false));
+                ivSelectedImage.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -594,6 +596,7 @@ public class ChatActivity extends AppCompatActivity {
 
                         chatList.clear();
                         cAdapter.notifyDataSetChanged();
+//                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
                         JSONObject jsonObject;
 
                         try {
@@ -674,10 +677,9 @@ public class ChatActivity extends AppCompatActivity {
 
                         String str = response;
 //                        Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
-                        getChatMsgs(chatId);
+//                        getChatMsgs(chatId);
 //                        cAdapter.notifyDataSetChanged();
 //                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
-
                     }
                 },
                 new Response.ErrorListener() {
@@ -710,6 +712,7 @@ public class ChatActivity extends AppCompatActivity {
                 if (chatType.equals("group")) {
                     if (senderId.equals(user_Id)) {
                         params.put(RECEIVER_ID, receiverId);
+                        params.put("groupName", tvUserName.getText().toString().trim());
                     } else {
                         group = senderId + "," + receiverId;
                         groupList = new ArrayList<>(Arrays.asList(group.split(",")));
@@ -717,6 +720,7 @@ public class ChatActivity extends AppCompatActivity {
                         String s = groupList.toString().replaceAll(", ", ",");
                         receiverId = s.substring(1, s.length() - 1).trim();
                         params.put(RECEIVER_ID, receiverId);
+                        params.put("groupName", tvUserName.getText().toString().trim());
                     }
                 } else {
                     if (receiverId.equals(user_Id)) {
