@@ -116,6 +116,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_station);
 
+        clearSharePrefStation();
+
 
         message = (ImageView) findViewById(R.id.message);
         discover = (ImageView) findViewById(R.id.discover);
@@ -172,6 +174,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 btnAudio.setBackgroundColor(Color.parseColor("#FFFFFF"));
                 btnActivity.setEnabled(false);
                 //new FetchActivityDetails().execute(userId);
+                clearSharePrefStation();
 
                 AudioFragment af = new AudioFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
@@ -187,6 +190,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
                 btnAudio.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnActivity.setBackgroundColor(Color.parseColor("#FFFFFF"));
+
+                clearSharePrefStation();
 
                 ActivityFragment actf = new ActivityFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_station, actf).commit();
@@ -213,6 +218,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 rlSearch.setVisibility(View.VISIBLE);
                 search1.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
+
+                clearSharePrefStation();
 
 //                Toast.makeText(StationActivity.this, "" + searchContent, Toast.LENGTH_SHORT).show();
             }
@@ -372,12 +379,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
-        editorFilterString.clear();
-        editorFilterString.apply();
-        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
-        editorSearchString.clear();
-        editorSearchString.apply();
+        clearSharePrefStation();
 
     }
 
@@ -569,12 +571,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
-        editorFilterString.clear();
-        editorFilterString.apply();
-        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
-        editorSearchString.clear();
-        editorSearchString.apply();
+        clearSharePrefStation();
 
     }
 
@@ -827,7 +824,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     }
     }
 
-    public void clearSharePref(){
+    public void clearSharePrefStation(){
         SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
         editorFilterBPM.clear();
         editorFilterBPM.apply();
