@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -36,7 +37,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -62,8 +62,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ByteArrayPool;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.FacebookSdk;
@@ -76,7 +74,6 @@ import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.utils.AppHelper;
-import com.instamelody.instamelody.utils.AudioDataReceivedListener;
 import com.instamelody.instamelody.utils.VolleyMultipartRequest;
 import com.instamelody.instamelody.utils.VolleySingleton;
 import com.squareup.picasso.Picasso;
@@ -86,15 +83,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -105,15 +99,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.provider.Contacts.SettingsColumns.KEY;
-import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ADD_RECORDINGS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
@@ -190,7 +179,7 @@ public class StudioActivity extends AppCompatActivity {
     static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     public boolean isRecording = false;
     MediaPlayer mediaPlayer;
-    private static String audioFilePath;
+    public static String audioFilePath;
     private static String instrumentFilePath;
     Uri audioUri;
 
@@ -205,7 +194,7 @@ public class StudioActivity extends AppCompatActivity {
     Switch switchPublic;
     RelativeLayout rlMelodyButton, rlRecordingButton, rlRedoButton, rlListeningButton, rlSetCover, rlInviteButton, rlPublic;
     FrameLayout frameTrans, frameSync;
-    ImageView ivBackButton, ivHomeButton, ivRecord, ivRecord_stop, ivRecord_play, ivRecord_pause, discover, message, ivProfile, ivNewRecordCover;
+    public static ImageView ivBackButton, ivHomeButton, ivRecord, ivRecord_stop, ivRecord_play, ivRecord_pause, discover, message, ivProfile, ivNewRecordCover;
     CircleImageView profile_image;
     TextView artist_name, noMelodyNote;
     RecyclerView recyclerViewInstruments;
@@ -232,6 +221,10 @@ public class StudioActivity extends AppCompatActivity {
     MediaPlayer[] media;
     List<MediaPlayer> mps = new ArrayList<MediaPlayer>();
     public static boolean playfrom_studio = false;
+    String recordingDuration;
+    long stop_rec_time;
+    String time_stop;
+    int count = 0;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -352,7 +345,6 @@ public class StudioActivity extends AppCompatActivity {
                 for (int i = 0; i < instrumentList.size(); i++) {
                     MelodyInstruments instruments = instrumentList.get(i);
                     instrumentName = instruments.getInstrumentName();
-
 
                 }
 
@@ -536,7 +528,8 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
-                //     killMediaPlayer();
+                //killMediaPlayer();
+                //   onStop();
             }
         });
 
@@ -546,6 +539,7 @@ public class StudioActivity extends AppCompatActivity {
                 //  killMediaPlayer();
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
+                //    onStop();
             }
         });
 
@@ -587,6 +581,8 @@ public class StudioActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (userId != null && melodyPackId != null) {
                     openDialog();
+                    ivRecord.setVisibility(View.VISIBLE);
+                    ivRecord.setEnabled(true);
                 } else if (userId == null) {
                     Intent i = new Intent(getApplicationContext(), SignInActivity.class);
                     startActivity(i);
@@ -603,7 +599,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
 
                     if (checkPermissions()) {
                         ivRecord.setVisibility(View.GONE);
@@ -615,7 +611,17 @@ public class StudioActivity extends AppCompatActivity {
                             recordAudio();
                             playAudioRecycler();
                             Log.d("Instrument count", "" + instruments_count.size());
-                            mRecordingThread.start();
+                            if (!mRecordingThread.isAlive()) {
+                                try {
+                                    mRecordingThread.start();
+                                } catch (Throwable e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                mRecordingThread.stopRunning();
+                            }
+
+
                             chrono.setBase(SystemClock.elapsedRealtime());
                             chrono.start();
 
@@ -632,6 +638,7 @@ public class StudioActivity extends AppCompatActivity {
                     } else {
                         setPermissions();
                     }
+
 
                 } else {
                     ivRecord.setVisibility(View.GONE);
@@ -705,6 +712,18 @@ public class StudioActivity extends AppCompatActivity {
                 tvDone.setEnabled(true);
                 chrono.stop();
                 /*m_handler.removeCallbacks(m_handlerTask);*/
+                try {
+                    InputStream inputStream =
+                            getContentResolver().openInputStream(Uri.fromFile(new File(audioFilePath)));
+                    soundBytes = new byte[inputStream.available()];
+                    soundBytes = toByteArray(inputStream);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                recordingDuration = getDuration(new File(audioFilePath));
+                stop_rec_time = SystemClock.elapsedRealtime() - chrono.getBase();
+                time_stop = formateMilliSeccond(stop_rec_time);
 
             }
         });
@@ -744,6 +763,45 @@ public class StudioActivity extends AppCompatActivity {
                 timeWhenStopped = 0;*/
                 chrono.setBase(SystemClock.elapsedRealtime());
                 chrono.start();
+//                Log.d("Duration of file",""+ Long.valueOf(recordingDuration));
+//                Log.d("stop duration", ""+Long.valueOf(time_stop));
+//                String[] x=time_stop.split(":");
+//                Log.d("after split", x[1]);
+//                long x = mediaPlayer.getDuration();
+//                long y = mediaPlayer.getCurrentPosition();
+//                Log.d("Duration", "" + x);
+//                Log.d("Current position", "" + y);
+//                final long endTime = 10112;
+//                new CountDownTimer(endTime, 10) {
+//                    public void onTick(long millisUntilFinished) {
+//
+//                        if (mediaPlayer.getCurrentPosition() >= endTime) {
+//                            mediaPlayer.stop();
+//                        }
+//
+//                    }
+//
+//                    public void onFinish() {
+//
+//
+//                    }
+//                }.start();
+
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        mediaPlayer.stop();
+                        chrono.stop();
+                        ivRecord_pause.setVisibility(View.INVISIBLE);
+                        rlListeningButton.setVisibility(View.INVISIBLE);
+                        ivRecord_play.setVisibility(View.VISIBLE);
+                        rlRedoButton.setVisibility(View.VISIBLE);
+                        if (mRecordingThread != null) {
+                            mRecordingThread.stopRunning();
+                            mRecordingThread = null;
+                        }
+                    }
+                });
             }
         });
 
@@ -815,8 +873,14 @@ public class StudioActivity extends AppCompatActivity {
                     alertDialog.setMessage("As a moderator feel free to make public or private anytime");
                     alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            switchPublic.setChecked(true);
-                            switchFlag = "1";
+                            if (switchFlag == "1") {
+                                switchPublic.setChecked(false);
+                                switchFlag = "0";
+                            } else {
+                                switchPublic.setChecked(true);
+                                switchFlag = "1";
+                            }
+
                         }
                     });
                     alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -856,6 +920,7 @@ public class StudioActivity extends AppCompatActivity {
         String size = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
         Log.d("Buffer Size & sample rate", "Size :" + size + " & Rate: " + rate);
 
+
     }
 
     private boolean StopMediaPlayer(MediaPlayer mp) {
@@ -870,6 +935,44 @@ public class StudioActivity extends AppCompatActivity {
         return true;
     }
 
+    private static String getDuration(File file) {
+        MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+        mediaMetadataRetriever.setDataSource(file.getAbsolutePath());
+        String durationStr = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+        return formateMilliSeccond(Long.parseLong(durationStr));
+    }
+
+    public static String formateMilliSeccond(long milliseconds) {
+        String finalTimerString = "";
+        String secondsString = "";
+
+        // Convert total duration into time
+        int hours = (int) (milliseconds / (1000 * 60 * 60));
+        int minutes = (int) (milliseconds % (1000 * 60 * 60)) / (1000 * 60);
+        int seconds = (int) ((milliseconds % (1000 * 60 * 60)) % (1000 * 60) / 1000);
+
+        // Add hours if there
+        if (hours > 0) {
+            finalTimerString = hours + ":";
+        }
+
+        // Prepending 0 to seconds if it is one digit
+        if (seconds < 10) {
+            secondsString = "0" + seconds;
+        } else {
+            secondsString = "" + seconds;
+        }
+
+        finalTimerString = finalTimerString + minutes + ":" + secondsString;
+
+        //      return  String.format("%02d Min, %02d Sec",
+        //                TimeUnit.MILLISECONDS.toMinutes(milliseconds),
+        //                TimeUnit.MILLISECONDS.toSeconds(milliseconds) -
+        //                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliseconds)));
+
+        // return timer string
+        return String.valueOf(seconds);
+    }
 
     private void primarySeekBarProgressUpdater() {
 
@@ -1176,16 +1279,6 @@ public class StudioActivity extends AppCompatActivity {
 
 
         try {
-            InputStream inputStream =
-                    getContentResolver().openInputStream(Uri.fromFile(new File(audioFilePath)));
-
-            soundBytes = new byte[inputStream.available()];
-            soundBytes = toByteArray(inputStream);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
             recorder.prepare();
             recorder.start();
 
@@ -1276,6 +1369,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+                params.put(FILE_TYPE, "admin_melody");
                 params.put(KEY, "admin@123");
                 return params;
             }
@@ -1326,7 +1420,7 @@ public class StudioActivity extends AppCompatActivity {
                 // input stream to read file - with 8k buffer
                 InputStream input = new BufferedInputStream(aurl.openStream(), 8192);
 
-                Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+                Boolean isSDPresent = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
 
                 OutputStream output;
                 if (isSDPresent) {
@@ -1390,7 +1484,7 @@ public class StudioActivity extends AppCompatActivity {
 
     public void saveRecordings1() {
 //        final String recName = subEtTopicName.getText().toString().trim();
-////        final String genre = String.valueOf(sp.getSelectedItemPosition());
+////      final String genre = String.valueOf(sp.getSelectedItemPosition());
 //        final String genre = selectedGenre;
 //        final String recType = value;
 //        final String duration = Long.toString(elapsedMillis);
@@ -1513,7 +1607,7 @@ public class StudioActivity extends AppCompatActivity {
                 params.put(USER_ID, userId);
                 params.put(RECORDING_NAME, subEtTopicName.getText().toString().trim());
                 params.put(RECORDING_GENRE, selectedGenre);
-                params.put(RECORDING_DURATION, Long.toString(elapsedMillis));
+                params.put(RECORDING_DURATION, recordingDuration);
                 params.put(SHARE_PUBLIC, switchFlag);
                 params.put(RECORDING_BPM, "128");
                 return params;
@@ -1541,7 +1635,6 @@ public class StudioActivity extends AppCompatActivity {
 
                 String urlRecording;
                 String resultResponse = new String(response.data);
-
                 Log.d("Server Data", resultResponse);
                 SharedPreferences loginSharedPref = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
                 String userName = loginSharedPref.getString("userName", null);
@@ -1564,9 +1657,6 @@ public class StudioActivity extends AppCompatActivity {
                         //adapter.notifyItemInserted(instrumentList.size()-1);
                         if (r1.has("melody")) {
                             tvDone.setEnabled(false);
-                            Toast.makeText(StudioActivity.this, "Saved as Melody", Toast.LENGTH_SHORT).show();
-                        } else {
-                            tvDone.setEnabled(false);
                             MelodyInstruments melodyInstruments = new MelodyInstruments();
                             melodyInstruments.setInstrumentName(packName);
                             melodyInstruments.setInstrumentBpm(bpm);
@@ -1582,6 +1672,27 @@ public class StudioActivity extends AppCompatActivity {
                             adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
                             recyclerViewInstruments.setAdapter(adapter);
                             adapter.notifyDataSetChanged();
+                            ivRecord_play.setVisibility(View.INVISIBLE);
+                            rlRedoButton.setVisibility(View.INVISIBLE);
+                            rlMelodyButton.setVisibility(View.VISIBLE);
+                            switchPublic.setChecked(false);
+                            switchFlag = "0";
+                        } else {
+
+                            tvDone.setEnabled(false);
+                            adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+                            recyclerViewInstruments.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                            ivRecord_play.setVisibility(View.INVISIBLE);
+                            rlRedoButton.setVisibility(View.INVISIBLE);
+                            rlMelodyButton.setVisibility(View.VISIBLE);
+                            switchPublic.setChecked(false);
+                            switchFlag = "0";
+                            Toast.makeText(StudioActivity.this, "Saved as Recording", Toast.LENGTH_SHORT).show();
+                            //   StudioActivity.this.ivRecord.setVisibility(View.VISIBLE);
+                /*waveform_view.setVisibility(View.GONE);
+                recording_time.setText("00:00:00");*/
+                            // StudioActivity.this.recreate();
                         }
 
                         if (progressDialog != null) {
@@ -1589,10 +1700,10 @@ public class StudioActivity extends AppCompatActivity {
                                 progressDialog.dismiss();
                             }
                         }
-                        InputMethodManager inputManager = (InputMethodManager)
-                                getSystemService(Context.INPUT_METHOD_SERVICE);
-                        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                                InputMethodManager.HIDE_NOT_ALWAYS);
+//                        InputMethodManager inputManager = (InputMethodManager)
+//                                getSystemService(Context.INPUT_METHOD_SERVICE);
+//                        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+//                                InputMethodManager.HIDE_NOT_ALWAYS);
 
                         SharedPreferences.Editor recEditor = getApplication().getSharedPreferences("Recording_MelodyDataResponse", MODE_PRIVATE).edit();
                         recEditor.clear();
@@ -1625,8 +1736,6 @@ public class StudioActivity extends AppCompatActivity {
                                     SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("cover response", MODE_PRIVATE).edit();
                                     editor.putString("coverPicStudio", coverPic);
                                     editor.commit();
-
-
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -1663,7 +1772,6 @@ public class StudioActivity extends AppCompatActivity {
                                 params.put(FILE1, new DataPart("CoverImg.jpg", AppHelper.getFileDataFromDrawable(getBaseContext(), ivNewRecordCover.getDrawable()), "image/jpeg"));
                                 return params;
                             }
-
 
                         };
 
@@ -1777,7 +1885,7 @@ public class StudioActivity extends AppCompatActivity {
     public void playAudioRecycler() throws IOException {
         //This for loop modified by Abhishek
         //      InstrumentListAdapter.playfrom_studio = true;
-        playfrom_studio=true;
+        playfrom_studio = true;
         adapter = new InstrumentListAdapter(playfrom_studio, getApplicationContext());
         //     adapter.notifyDataSetChanged();
 
@@ -1992,6 +2100,38 @@ public class StudioActivity extends AppCompatActivity {
         return out.toByteArray();
     }
 
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        if (mp != null || mediaPlayer != null) {
+//            try {
+//                mp.reset();
+//                mediaPlayer.reset();
+//                mp.release();
+//                mediaPlayer.prepare();
+//
+//            } catch (Throwable e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
+
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        if (mp != null || mediaPlayer != null) {
+//            if (mp.isPlaying() || mediaPlayer.isPlaying()) {
+//                try {
+//                    mp.reset();
+//                    mediaPlayer.reset();
+//
+//                } catch (Throwable e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//        }
+//    }
 }
 
 

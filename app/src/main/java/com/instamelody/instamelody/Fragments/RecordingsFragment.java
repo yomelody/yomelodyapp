@@ -146,7 +146,7 @@ public class RecordingsFragment extends Fragment {
 
                         JSONObject jsonObject, genreJson;
                         JSONArray jsonArray;
-                        String titleString, genreId;
+                        String titleString,genreId;
                         TabHost.TabSpec spec;
                         final TabHost host = (TabHost) getActivity().findViewById(R.id.tabHostRecordings);
                         host.setup();
@@ -179,10 +179,10 @@ public class RecordingsFragment extends Fragment {
                             public void onTabChanged(String arg0) {
                                 genreString = arg0;
                                 int currentTab = host.getCurrentTab();
-                                if (currentTab == 0) {
-                                    genreString = "";
-                                } else {
-                                    genreString = genresArrayList.get(currentTab).getId();
+                                if (currentTab==0){
+                                    genreString= "";
+                                }else {
+                                  genreString = genresArrayList.get(currentTab).getId();
                                 }
 //                                genreString = String.valueOf(currentTab).trim();
                                 fetchRecordings();
@@ -218,7 +218,7 @@ public class RecordingsFragment extends Fragment {
 
                         Log.d("ReturnData", response);
                         recordingList.clear();
-                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
+                        new ParseContents(getActivity()).parseAudio(response, recordingList,recordingsPools);
                         adapter.notifyDataSetChanged();
                     }
                 },

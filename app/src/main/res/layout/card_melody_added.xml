@@ -10,6 +10,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <ProgressBar
+            android:id="@+id/loader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="15dp"
+            />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -60,7 +68,7 @@
                                     android:layout_height="35dp"
                                     android:layout_centerHorizontal="true"
                                     android:layout_centerVertical="true"
-                                    android:src="@drawable/ic_launcher" />
+                                />
 
                             </RelativeLayout>
 
@@ -344,467 +352,558 @@
                 </LinearLayout>
             </RelativeLayout>
 
-            <RelativeLayout
-                android:id="@+id/fxContent"
+            <FrameLayout
+                android:id="@+id/frameInstrument"
                 android:layout_width="match_parent"
-                android:layout_height="175dp"
-                android:background="#FFFFFF"
+                android:layout_height="192dp"
                 android:visibility="gone">
 
-                <LinearLayout
+                <RelativeLayout
+                    android:id="@+id/BelowFramId"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#FFFFFF">
+
+                    <RelativeLayout
+                        android:id="@+id/fxContent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#FFFFFF"
+                        android:visibility="gone">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:orientation="horizontal">
+
+                            <RelativeLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.5">
+
+                                <LinearLayout
+                                    android:id="@+id/a"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical">
+
+                                    <RelativeLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="0dp"
+                                        android:layout_weight="0.30">
+
+                                        <TextView
+                                            android:id="@+id/tvPan"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginLeft="10dp"
+                                            android:layout_marginTop="4dp"
+                                            android:text="Pan"
+                                            android:textColor="#4B7AFF"
+                                            android:textSize="14dp" />
+
+                                        <SeekBar
+                                            android:id="@+id/sbPan"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/tvPan"
+                                            android:max="40"
+                                            android:progress="20"
+                                            android:progressDrawable="@drawable/seekbar_fxeq"
+                                            android:thumb="@drawable/slider_fxeq_thumb" />
+
+                                        <RelativeLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/sbPan">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_marginLeft="10dp"
+                                                android:text="L"
+                                                android:textColor="#4B7AFF"
+                                                android:textSize="14dp" />
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_alignParentRight="true"
+                                                android:layout_marginRight="10dp"
+                                                android:text="R"
+                                                android:textColor="#4B7AFF"
+                                                android:textSize="14dp" />
+                                        </RelativeLayout>
+                                    </RelativeLayout>
+
+                                    <RelativeLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="0dp"
+                                        android:layout_weight="0.30">
+
+                                        <TextView
+                                            android:id="@+id/tvPitch"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginLeft="10dp"
+                                            android:layout_marginTop="4dp"
+                                            android:text="Pitch"
+                                            android:textColor="#4B7AFF"
+                                            android:textSize="14dp" />
+
+                                        <SeekBar
+                                            android:id="@+id/sbPitch"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/tvPitch"
+                                            android:max="40"
+                                            android:progress="20"
+                                            android:progressDrawable="@drawable/seekbar_fxeq"
+                                            android:thumb="@drawable/slider_fxeq_thumb" />
+
+                                        <RelativeLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/sbPitch">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_marginLeft="10dp"
+                                                android:text="-"
+                                                android:textColor="#4B7AFF"
+                                                android:textSize="14dp" />
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_alignParentRight="true"
+                                                android:layout_marginRight="10dp"
+                                                android:text="+"
+                                                android:textColor="#4B7AFF"
+                                                android:textSize="14dp" />
+                                        </RelativeLayout>
+                                    </RelativeLayout>
+
+                                    <RelativeLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="0dp"
+                                        android:layout_weight="0.30">
+
+                                        <TextView
+                                            android:id="@+id/tvReverb"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginLeft="10dp"
+                                            android:layout_marginTop="4dp"
+                                            android:text="Reverb"
+                                            android:textColor="#4B7AFF"
+                                            android:textSize="14dp" />
+
+                                        <SeekBar
+                                            android:id="@+id/sbReverb"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/tvReverb"
+                                            android:max="40"
+                                            android:progress="20"
+                                            android:progressDrawable="@drawable/seekbar_fxeq"
+                                            android:thumb="@drawable/slider_fxeq_thumb" />
+
+                                        <RelativeLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/sbReverb">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_marginLeft="10dp"
+                                                android:text="-"
+                                                android:textColor="#4B7AFF"
+                                                android:textSize="14dp" />
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_alignParentRight="true"
+                                                android:layout_marginRight="10dp"
+                                                android:text="+"
+                                                android:textColor="#4B7AFF"
+                                                android:textSize="14dp" />
+                                        </RelativeLayout>
+                                    </RelativeLayout>
+                                </LinearLayout>
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.5">
+
+                                <LinearLayout
+                                    android:id="@+id/b"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical">
+
+                                    <RelativeLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="0dp"
+                                        android:layout_weight="0.30">
+
+                                        <TextView
+                                            android:id="@+id/tvCompression"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginLeft="10dp"
+                                            android:layout_marginTop="4dp"
+                                            android:text="Compression"
+                                            android:textColor="#4B7AFF"
+                                            android:textSize="14dp" />
+
+                                        <SeekBar
+                                            android:id="@+id/sbCompression"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/tvCompression"
+                                            android:max="40"
+                                            android:progress="20"
+                                            android:progressDrawable="@drawable/seekbar_fxeq"
+                                            android:thumb="@drawable/slider_fxeq_thumb" />
+
+                                        <RelativeLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/sbCompression">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_marginLeft="10dp"
+                                                android:text="-"
+                                                android:textColor="#4B7AFF" />
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_alignParentRight="true"
+                                                android:layout_marginRight="10dp"
+                                                android:text="+"
+                                                android:textColor="#4B7AFF" />
+                                        </RelativeLayout>
+                                    </RelativeLayout>
+
+                                    <RelativeLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="0dp"
+                                        android:layout_weight="0.30">
+
+                                        <TextView
+                                            android:id="@+id/tvDelay"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginLeft="10dp"
+                                            android:layout_marginTop="4dp"
+                                            android:text="Delay"
+                                            android:textColor="#4B7AFF"
+                                            android:textSize="14dp" />
+
+                                        <SeekBar
+                                            android:id="@+id/sbDelay"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/tvDelay"
+                                            android:max="40"
+                                            android:progress="20"
+                                            android:progressDrawable="@drawable/seekbar_fxeq"
+                                            android:thumb="@drawable/slider_fxeq_thumb" />
+
+                                        <RelativeLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/sbDelay">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_marginLeft="10dp"
+                                                android:text="-"
+                                                android:textColor="#4B7AFF" />
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_alignParentRight="true"
+                                                android:layout_marginRight="10dp"
+                                                android:text="+"
+                                                android:textColor="#4B7AFF" />
+                                        </RelativeLayout>
+                                    </RelativeLayout>
+
+                                    <RelativeLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="0dp"
+                                        android:layout_weight="0.30">
+
+                                        <TextView
+                                            android:id="@+id/tvTempo"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginLeft="10dp"
+                                            android:layout_marginTop="4dp"
+                                            android:text="Tempo (BPM)"
+                                            android:textColor="#4B7AFF"
+                                            android:textSize="14dp" />
+
+                                        <SeekBar
+                                            android:id="@+id/sbTempo"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/tvTempo"
+                                            android:max="40"
+                                            android:progress="20"
+                                            android:progressDrawable="@drawable/seekbar_fxeq"
+                                            android:thumb="@drawable/slider_fxeq_thumb" />
+
+                                        <RelativeLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/sbTempo">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_marginLeft="10dp"
+                                                android:text="-"
+                                                android:textColor="#4B7AFF" />
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_alignParentRight="true"
+                                                android:layout_marginRight="10dp"
+                                                android:text="+"
+                                                android:textColor="#4B7AFF" />
+                                        </RelativeLayout>
+                                    </RelativeLayout>
+                                </LinearLayout>
+                            </RelativeLayout>
+                        </LinearLayout>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/eqContent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#FFFFFF"
+                        android:visibility="gone">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:orientation="horizontal">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="10dp">
+
+                                <LinearLayout
+                                    android:id="@+id/d"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical">
+
+                                    <RelativeLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="0dp"
+                                        android:layout_weight="0.30">
+
+                                        <TextView
+                                            android:id="@+id/tvVolume"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginLeft="10dp"
+                                            android:layout_marginTop="4dp"
+                                            android:text="Volume"
+                                            android:textColor="#4B7AFF"
+                                            android:textSize="14dp" />
+
+                                        <SeekBar
+                                            android:id="@+id/sbVolume"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/tvVolume"
+                                            android:max="16"
+                                            android:progress="8"
+                                            android:progressDrawable="@drawable/seekbar_fxeq"
+                                            android:thumb="@drawable/slider_fxeq_thumb" />
+
+                                        <RelativeLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/sbVolume">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_marginLeft="10dp"
+                                                android:text="-"
+                                                android:textColor="#4B7AFF"
+                                                android:textSize="14dp" />
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_alignParentRight="true"
+                                                android:layout_marginRight="10dp"
+                                                android:text="+"
+                                                android:textColor="#4B7AFF"
+                                                android:textSize="14dp" />
+                                        </RelativeLayout>
+                                    </RelativeLayout>
+
+                                    <RelativeLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="0dp"
+                                        android:layout_weight="0.30">
+
+                                        <TextView
+                                            android:id="@+id/tvTreble"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginLeft="10dp"
+                                            android:layout_marginTop="4dp"
+                                            android:text="Treble"
+                                            android:textColor="#4B7AFF"
+                                            android:textSize="14dp" />
+
+                                        <SeekBar
+                                            android:id="@+id/sbTreble"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/tvTreble"
+                                            android:max="40"
+                                            android:progress="20"
+                                            android:progressDrawable="@drawable/seekbar_fxeq"
+                                            android:thumb="@drawable/slider_fxeq_thumb" />
+
+                                        <RelativeLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/sbTreble">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_marginLeft="10dp"
+                                                android:text="-"
+                                                android:textColor="#4B7AFF"
+                                                android:textSize="14dp" />
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_alignParentRight="true"
+                                                android:layout_marginRight="10dp"
+                                                android:text="+"
+                                                android:textColor="#4B7AFF"
+                                                android:textSize="14dp" />
+                                        </RelativeLayout>
+                                    </RelativeLayout>
+
+                                    <RelativeLayout
+                                        android:id="@+id/basemainisd"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="0dp"
+                                        android:layout_weight="0.30">
+
+                                        <TextView
+                                            android:id="@+id/tvBase"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginLeft="10dp"
+                                            android:layout_marginTop="4dp"
+                                            android:text="Base"
+                                            android:textColor="#4B7AFF"
+                                            android:textSize="14dp" />
+
+                                        <SeekBar
+                                            android:id="@+id/sbBase"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/tvBase"
+                                            android:max="40"
+                                            android:progress="20"
+                                            android:progressDrawable="@drawable/seekbar_fxeq"
+                                            android:thumb="@drawable/slider_fxeq_thumb" />
+
+                                        <RelativeLayout
+                                            android:id="@+id/Baserelativeid"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/sbBase">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_marginLeft="10dp"
+                                                android:text="-"
+                                                android:textColor="#4B7AFF"
+                                                android:textSize="14dp" />
+
+                                            <TextView
+                                                android:id="@+id/Baseids"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_alignParentRight="true"
+                                                android:layout_marginRight="10dp"
+                                                android:text="+"
+                                                android:textColor="#4B7AFF"
+                                                android:textSize="14dp" />
+                                        </RelativeLayout>
+                                    </RelativeLayout>
+                                </LinearLayout>
+                            </RelativeLayout>
+
+                        </LinearLayout>
+
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rlDoneFxEqs"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:orientation="horizontal">
+                    android:layout_below="@+id/BelowFramId"
 
-                    <RelativeLayout
-                        android:layout_width="0dp"
+                    android:layout_gravity="bottom|right">
+
+                    <TextView
+                        android:id="@+id/tvDoneFxEq"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.5">
+                        android:paddingRight="35dp"
+                        android:text="Done"
+                        android:textColor="#3B6EFF"
+                        android:textSize="16sp"
+                        android:textStyle="normal|bold" />
 
-                        <LinearLayout
-                            android:id="@+id/a"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical">
+                </RelativeLayout>
 
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="0.33">
+            </FrameLayout>
 
-                                <TextView
-                                    android:id="@+id/tvPan"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginLeft="10dp"
-                                    android:layout_marginTop="4dp"
-                                    android:text="Pan"
-                                    android:textColor="#4B7AFF"
-                                    android:textSize="16dp" />
-
-                                <SeekBar
-                                    android:id="@+id/sbPan"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/tvPan" />
-
-                                <RelativeLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/sbPan">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginLeft="10dp"
-                                        android:text="L"
-                                        android:textColor="#4B7AFF" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_alignParentRight="true"
-                                        android:layout_marginRight="10dp"
-                                        android:text="R"
-                                        android:textColor="#4B7AFF" />
-                                </RelativeLayout>
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="0.33">
-
-                                <TextView
-                                    android:id="@+id/tvPitch"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginLeft="10dp"
-                                    android:layout_marginTop="4dp"
-                                    android:text="Pitch"
-                                    android:textColor="#4B7AFF"
-                                    android:textSize="16dp" />
-
-                                <SeekBar
-                                    android:id="@+id/sbPitch"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/tvPitch" />
-
-                                <RelativeLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/sbPitch">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginLeft="10dp"
-                                        android:text="-"
-                                        android:textColor="#4B7AFF" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_alignParentRight="true"
-                                        android:layout_marginRight="10dp"
-                                        android:text="+"
-                                        android:textColor="#4B7AFF" />
-                                </RelativeLayout>
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="0.33">
-
-                                <TextView
-                                    android:id="@+id/tvReverb"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginLeft="10dp"
-                                    android:layout_marginTop="4dp"
-                                    android:text="Reverb"
-                                    android:textColor="#4B7AFF"
-                                    android:textSize="16dp" />
-
-                                <SeekBar
-                                    android:id="@+id/sbReverb"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/tvReverb" />
-
-                                <RelativeLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/sbReverb">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginLeft="10dp"
-                                        android:text="-"
-                                        android:textColor="#4B7AFF" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_alignParentRight="true"
-                                        android:layout_marginRight="10dp"
-                                        android:text="+"
-                                        android:textColor="#4B7AFF" />
-                                </RelativeLayout>
-                            </RelativeLayout>
-                        </LinearLayout>
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5">
-
-                        <LinearLayout
-                            android:id="@+id/b"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical">
-
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="0.33">
-
-                                <TextView
-                                    android:id="@+id/tvCompression"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginLeft="10dp"
-                                    android:layout_marginTop="4dp"
-                                    android:text="Compression"
-                                    android:textColor="#4B7AFF"
-                                    android:textSize="16dp" />
-
-                                <SeekBar
-                                    android:id="@+id/sbCompression"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/tvCompression" />
-
-                                <RelativeLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/sbCompression">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginLeft="10dp"
-                                        android:text="-"
-                                        android:textColor="#4B7AFF" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_alignParentRight="true"
-                                        android:layout_marginRight="10dp"
-                                        android:text="+"
-                                        android:textColor="#4B7AFF" />
-                                </RelativeLayout>
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="0.33">
-
-                                <TextView
-                                    android:id="@+id/tvDelay"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginLeft="10dp"
-                                    android:layout_marginTop="4dp"
-                                    android:text="Delay"
-                                    android:textColor="#4B7AFF"
-                                    android:textSize="16dp" />
-
-                                <SeekBar
-                                    android:id="@+id/sbDelay"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/tvDelay" />
-
-                                <RelativeLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/sbDelay">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginLeft="10dp"
-                                        android:text="-"
-                                        android:textColor="#4B7AFF" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_alignParentRight="true"
-                                        android:layout_marginRight="10dp"
-                                        android:text="+"
-                                        android:textColor="#4B7AFF" />
-                                </RelativeLayout>
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="0.33">
-
-                                <TextView
-                                    android:id="@+id/tvTempo"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginLeft="10dp"
-                                    android:layout_marginTop="4dp"
-                                    android:text="Tempo (BPM)"
-                                    android:textColor="#4B7AFF"
-                                    android:textSize="16dp" />
-
-                                <SeekBar
-                                    android:id="@+id/sbTempo"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/tvTempo" />
-
-                                <RelativeLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/sbTempo">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginLeft="10dp"
-                                        android:text="-"
-                                        android:textColor="#4B7AFF" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_alignParentRight="true"
-                                        android:layout_marginRight="10dp"
-                                        android:text="+"
-                                        android:textColor="#4B7AFF" />
-                                </RelativeLayout>
-                            </RelativeLayout>
-                        </LinearLayout>
-                    </RelativeLayout>
-                </LinearLayout>
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/eqContent"
-                android:layout_width="match_parent"
-                android:layout_height="175dp"
-                android:background="#FFFFFF"
-                android:visibility="gone">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:orientation="horizontal">
-
-                    <RelativeLayout
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5">
-
-                        <LinearLayout
-                            android:id="@+id/d"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical">
-
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="0.33">
-
-                                <TextView
-                                    android:id="@+id/tvVolume"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginLeft="10dp"
-                                    android:layout_marginTop="4dp"
-                                    android:text="Volume"
-                                    android:textColor="#4B7AFF"
-                                    android:textSize="16dp" />
-
-                                <SeekBar
-                                    android:id="@+id/sbVolume"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/tvVolume" />
-
-                                <RelativeLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/sbVolume">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginLeft="10dp"
-                                        android:text="-"
-                                        android:textColor="#4B7AFF" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_alignParentRight="true"
-                                        android:layout_marginRight="10dp"
-                                        android:text="+"
-                                        android:textColor="#4B7AFF" />
-                                </RelativeLayout>
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="0.33">
-
-                                <TextView
-                                    android:id="@+id/tvTreble"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginLeft="10dp"
-                                    android:layout_marginTop="4dp"
-                                    android:text="Treble"
-                                    android:textColor="#4B7AFF"
-                                    android:textSize="16dp" />
-
-                                <SeekBar
-                                    android:id="@+id/sbTreble"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/tvTreble" />
-
-                                <RelativeLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/sbTreble">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginLeft="10dp"
-                                        android:text="-"
-                                        android:textColor="#4B7AFF" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_alignParentRight="true"
-                                        android:layout_marginRight="10dp"
-                                        android:text="+"
-                                        android:textColor="#4B7AFF" />
-                                </RelativeLayout>
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="0.33">
-
-                                <TextView
-                                    android:id="@+id/tvBase"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginLeft="10dp"
-                                    android:layout_marginTop="4dp"
-                                    android:text="Base"
-                                    android:textColor="#4B7AFF"
-                                    android:textSize="16dp" />
-
-                                <SeekBar
-                                    android:id="@+id/sbBase"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/tvBase" />
-
-                                <RelativeLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/sbBase">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginLeft="10dp"
-                                        android:text="-"
-                                        android:textColor="#4B7AFF" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_alignParentRight="true"
-                                        android:layout_marginRight="10dp"
-                                        android:text="+"
-                                        android:textColor="#4B7AFF" />
-                                </RelativeLayout>
-                            </RelativeLayout>
-                        </LinearLayout>
-                    </RelativeLayout>
-
-                </LinearLayout>
-            </RelativeLayout>
 
         </LinearLayout>
+
     </android.support.v7.widget.CardView>
+
+
 </LinearLayout>

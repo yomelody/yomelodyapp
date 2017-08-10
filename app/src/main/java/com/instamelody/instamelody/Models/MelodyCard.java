@@ -1,9 +1,5 @@
 package com.instamelody.instamelody.Models;
 
-import android.net.Uri;
-
-import java.net.URL;
-
 /**
  * Created by Shubhansh Jaiswal on 12/2/2016.
  */
@@ -177,12 +173,19 @@ public class MelodyCard {
 
     public void setMelodyLength(String melodyLength) {
 
-        int secs;
+        int secs=0;
         if (melodyLength.equals(null)) {
             melodyLength = "0";
             secs = Integer.parseInt(melodyLength);
         } else {
-            secs = Integer.parseInt(melodyLength);
+            try{
+                secs = Integer.parseInt(melodyLength);
+            }
+            catch (Throwable e)
+            {
+                e.printStackTrace();
+            }
+
         }
         int mins = 0, hours = 0;
         if (secs > 0) {

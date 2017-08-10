@@ -2,8 +2,6 @@ package com.instamelody.instamelody.Fragments;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,9 +13,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
@@ -33,39 +30,17 @@ import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.ActivityCardAdapter;
 import com.instamelody.instamelody.Models.ActivityModel;
 import com.instamelody.instamelody.R;
-import com.instamelody.instamelody.SignInActivity;
-import com.instamelody.instamelody.StationActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
 import static android.content.Context.MODE_PRIVATE;
-import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ACTIVITY;
-import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 import static com.instamelody.instamelody.utils.RMethod.getServerDiffrenceDate;
 
 /**
@@ -102,9 +77,20 @@ public class ActivityFragment extends Fragment {
         recyclerView.setLayoutManager(lmactivity);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         arraylist = new ArrayList<ActivityModel>();
-        String position, userId;
+        String position, userId="";
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-        userId = loginSharedPref.getString("userId", null);
+        SharedPreferences twitterPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+            //MelodyUser=userId;
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
+            //MelodyUser=userId;
+        }
 
 
         if(userId!=null) {

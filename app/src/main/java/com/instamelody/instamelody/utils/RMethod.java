@@ -72,3 +72,13 @@ public class RMethod {
         return val;
     }
 }
+
+
+/*
+* SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+simpleDateFormat.setTimeZone(TimeZone.getTimeZone("EST"));
+Date date = simpleDateFormat.parse("2013-06-19 00:13:21");
+
+TimeZone destTz = TimeZone.getTimeZone("yourtimezone");
+simpleDateFormat.setTimeZone(destTz);
+String result = simpleDateFormat.format(date);*/

@@ -13,13 +13,10 @@ import android.widget.TextView;
 import com.instamelody.instamelody.CommentsActivity;
 import com.instamelody.instamelody.Models.Comments;
 import com.instamelody.instamelody.Models.MelodyCard;
-import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
 import com.squareup.picasso.Picasso;
-import static com.instamelody.instamelody.utils.RMethod.getServerDiffrenceDate;
-
 import static com.instamelody.instamelody.utils.RMethod.getServerDiffrenceDate;
 
 import java.util.ArrayList;
@@ -53,7 +50,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MyView
             tvUsername = (TextView) itemView.findViewById(R.id.tvUsername);
             tvMsg = (TextView) itemView.findViewById(R.id.tvMsg);
 
-
             userProfileImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -64,7 +60,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MyView
                     view.getContext().startActivity(intent);
                 }
             });
-
         }
     }
 
@@ -97,7 +92,5 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MyView
         val=getServerDiffrenceDate(send_at);
         return val;
     }
-
-
 
 }

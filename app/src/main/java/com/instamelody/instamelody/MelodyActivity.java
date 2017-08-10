@@ -17,7 +17,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,47 +29,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TabHost;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkError;
-import com.android.volley.NoConnectionError;
-import com.android.volley.ParseError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.ServerError;
-import com.android.volley.TimeoutError;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Fragments.AudioFragment;
 import com.instamelody.instamelody.Fragments.MelodyPacksFragment;
 import com.instamelody.instamelody.Fragments.RecordingsFragment;
 import com.instamelody.instamelody.Fragments.SubscriptionsFragment;
-import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
-import com.instamelody.instamelody.Parse.ParseContents;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.SequenceInputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
-import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
 
 /**
@@ -79,36 +48,18 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
 public class MelodyActivity extends AppCompatActivity {
 
-    public Button btnMelodyPacks, btnRecordings, btnSubscriptions, melodySearchButton,btnCancel;
-    RelativeLayout rlMelodySearchButton,rlMelodySearch;
+    public Button btnMelodyPacks, btnRecordings, btnSubscriptions, melodySearchButton, btnCancel;
+    RelativeLayout rlMelodySearchButton, rlMelodySearch;
     AppBarLayout appBarMelody;
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
     private MenuItem searchMenuItem;
-    ArrayList<Genres> genresArrayList = new ArrayList<>();
-    String GENRE_NAMES_URL = "http://35.165.96.167/api/genere.php";
-    String KEY_GENRE_NAME = "name";
-    String KEY_GENRE_ID = "id";
-    String KEY_FLAG = "flag";
-    String KEY_RESPONSE = "response";//JSONArray
-    String resp = "";
-    String SUCCESS = "success";
-    private String ID = "id";
-    private String GENRE = "genere";
-    private String STATION = "station";
-    private String FILE_TYPE = "file_type";
-    private String FILTER_TYPE = "filter_type";
-    private String FILTER = "filter";
-    private String KEY_SEARCH = "search";
-    private String USER_NAME = "username";
-    private String KEY = "key";
-    String genreString = "1";
-    String strArtist,strSearch,userId,Instruments,BPM;
-    EditText subEtFilterName,subEtFilterInstruments,subEtFilterBPM;
+    String strArtist, userId, Instruments, BPM, artistName;
+    EditText subEtFilterName, subEtFilterInstruments, subEtFilterBPM;
+    int clicked_button = 0;
 
-
-    ImageView discover, message, ivBackButton, ivHomeButton, ivProfile,audio_feed,ivMelodyFilter;
-    SearchView searchView,search1;
+    ImageView discover, message, ivBackButton, ivHomeButton, ivProfile, audio_feed, ivMelodyFilter;
+    SearchView searchView, search1;
     String searchGet;
     String strName;
     TextView appBarMainText;
@@ -124,10 +75,10 @@ public class MelodyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_melody);
 
+        clearSharePrefMelody();
+
         SharedPreferences filterPref = this.getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
-        SharedPreferences filterPrefArtist = this.getSharedPreferences("FilterPrefArtist", MODE_PRIVATE);
-        strArtist = filterPrefArtist.getString("stringFilterArtist", null);
 
         Bundle bundle = getIntent().getExtras();
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
@@ -141,7 +92,6 @@ public class MelodyActivity extends AppCompatActivity {
         } else if (twitterPref.getString("userId", null) != null) {
             userId = twitterPref.getString("userId", null);
         }
-
 
         search1 = (SearchView) findViewById(R.id.searchMelody);
         btnMelodyPacks = (Button) findViewById(R.id.btnMelodyPacks);
@@ -176,7 +126,8 @@ public class MelodyActivity extends AppCompatActivity {
                 btnMelodyPacks.setBackgroundColor(Color.parseColor("#FFFFFF"));
                 btnRecordings.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnSubscriptions.setBackgroundColor(Color.parseColor("#E4E4E4"));
-
+                clicked_button = 0;
+                clearSharePrefMelody();
                 MelodyPacksFragment mpf = new MelodyPacksFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
             }
@@ -188,7 +139,8 @@ public class MelodyActivity extends AppCompatActivity {
                 btnMelodyPacks.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnRecordings.setBackgroundColor(Color.parseColor("#FFFFFF"));
                 btnSubscriptions.setBackgroundColor(Color.parseColor("#E4E4E4"));
-
+                clicked_button = 1;
+                clearSharePrefMelody();
                 RecordingsFragment rf = new RecordingsFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_melody, rf).commit();
             }
@@ -201,7 +153,7 @@ public class MelodyActivity extends AppCompatActivity {
                 btnMelodyPacks.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnRecordings.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnSubscriptions.setBackgroundColor(Color.parseColor("#FFFFFF"));
-
+                clicked_button = 2;
                 SubscriptionsFragment subf = new SubscriptionsFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_melody, subf).commit();
             }
@@ -222,7 +174,7 @@ public class MelodyActivity extends AppCompatActivity {
                 appBarMainText.setVisibility(View.GONE);
                 ivMelodyFilter.setVisibility(View.GONE);
                 search1.setVisibility(View.VISIBLE);
-                ((EditText)  search1.findViewById(android.support.v7.appcompat.R.id.search_src_text))
+                ((EditText) search1.findViewById(android.support.v7.appcompat.R.id.search_src_text))
                         .setHintTextColor(getResources().getColor(R.color.colorSearch));
                 btnCancel.setVisibility(View.VISIBLE);
             }
@@ -244,7 +196,6 @@ public class MelodyActivity extends AppCompatActivity {
                 ivMelodyFilter.setVisibility(View.VISIBLE);
                 search1.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
-
             }
         });
 
@@ -266,15 +217,15 @@ public class MelodyActivity extends AppCompatActivity {
                 SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
                 editorFilterString.clear();
                 editorFilterString.apply();
-//                fetchSearchData();
-                AudioFragment af = new AudioFragment();
-                getFragmentManager().beginTransaction().replace(R.id.activity_melody, af).commit();
+
+                MelodyPacksFragment mpf = new MelodyPacksFragment();
+                getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                ((EditText)  search1.findViewById(android.support.v7.appcompat.R.id.search_src_text))
+                ((EditText) search1.findViewById(android.support.v7.appcompat.R.id.search_src_text))
                         .setTextColor(getResources().getColor(R.color.colorSearch));
                 return false;
             }
@@ -283,6 +234,7 @@ public class MelodyActivity extends AppCompatActivity {
         ivMelodyFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                Toast.makeText(MelodyActivity.this, "" + clicked_button, Toast.LENGTH_SHORT).show();
                 AlertDialog.Builder builderSingle = new AlertDialog.Builder(MelodyActivity.this);
 //                builderSingle.setIcon(R.drawable.ic_launcher);
                 builderSingle.setTitle("Filter Audio");
@@ -306,12 +258,13 @@ public class MelodyActivity extends AppCompatActivity {
                 builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+
                         strName = arrayAdapter.getItem(which);
                         if (strName.equals("Artist")) {
                             openDialog();
-                        }else if(strName.equals("# of Instruments")){
+                        } else if (strName.equals("# of Instruments")) {
                             openDialogInstruments();
-                        } else if (strName.equals("BPM")){
+                        } else if (strName.equals("BPM")) {
                             openDialogBPM();
                         } else {
                             AlertDialog.Builder builderInner = new AlertDialog.Builder(MelodyActivity.this);
@@ -322,9 +275,26 @@ public class MelodyActivity extends AppCompatActivity {
                             SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
                             editorSearchString.clear();
                             editorSearchString.apply();
+                            SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
+                            editorFilterArtist.putString("stringFilterArtist", artistName);
+                            editorFilterArtist.apply();
+                            SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
+                            editorFilterInstruments.putString("stringFilterInstruments", Instruments);
+                            editorFilterInstruments.apply();
+                            SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
+                            editorFilterBPM.clear();
+                            editorFilterBPM.apply();
                             builderInner.setTitle("Your Selected Item is");
-                            AudioFragment af = new AudioFragment();
-                            getFragmentManager().beginTransaction().replace(R.id.activity_melody, af).commit();
+                            if (clicked_button == 0) {
+                                MelodyPacksFragment mpf = new MelodyPacksFragment();
+                                getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
+
+                            } else if (clicked_button == 1) {
+                                RecordingsFragment rf = new RecordingsFragment();
+                                getFragmentManager().beginTransaction().replace(R.id.activity_melody, rf).commit();
+
+                            }
+
                         }
                     }
                 });
@@ -369,7 +339,7 @@ public class MelodyActivity extends AppCompatActivity {
         audio_feed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MelodyActivity.this,StationActivity.class);
+                Intent intent = new Intent(MelodyActivity.this, StationActivity.class);
                 startActivity(intent);
             }
         });
@@ -379,23 +349,13 @@ public class MelodyActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
-        editorFilterString.clear();
-        editorFilterString.apply();
-        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
-        editorSearchString.clear();
-        editorSearchString.apply();
+        clearSharePrefMelody();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
-        editorFilterString.clear();
-        editorFilterString.apply();
-        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
-        editorSearchString.clear();
-        editorSearchString.apply();
+        clearSharePrefMelody();
 
     }
 
@@ -412,7 +372,7 @@ public class MelodyActivity extends AppCompatActivity {
         searchView.setSearchableInfo(searchManager.
                 getSearchableInfo(getComponentName()));
         searchView.setSubmitButtonEnabled(true);
-        searchView.setOnQueryTextListener((SearchView.OnQueryTextListener)this);
+        searchView.setOnQueryTextListener((SearchView.OnQueryTextListener) this);
 
         searchGet = (String) searchView.getQuery();
 
@@ -439,121 +399,11 @@ public class MelodyActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(String result) {
-            adapter = new RecordingsCardAdapter(getApplicationContext(),recordingList, recordingsPools);
+            adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList, recordingsPools);
             adapter.notifyDataSetChanged();
             progressDialog.dismiss();
         }
 
-    }
-
-    public void fetchGenreNames() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        JSONObject jsonObject, genreJson;
-                        JSONArray jsonArray;
-                        String titleString;
-                        TabHost.TabSpec spec;
-                        final TabHost host = (TabHost) findViewById(R.id.tabHostProfile);
-                        host.setup();
-
-                        try {
-                            jsonObject = new JSONObject(response);
-                            if (jsonObject.getString(KEY_FLAG).equals(SUCCESS)) {
-                                myTask = new LongOperation();
-                                myTask.execute();
-                                jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    Genres genres = new Genres();
-                                    genreJson = jsonArray.getJSONObject(i);
-                                    titleString = genreJson.getString(KEY_GENRE_NAME);
-                                    genres.setName(titleString);
-                                    genres.setId(genreJson.getString(KEY_GENRE_ID));
-                                    genresArrayList.add(genres);
-                                    spec = host.newTabSpec(titleString);
-                                    spec.setIndicator(titleString);
-                                    spec.setContent(createTabContent());
-                                    host.addTab(spec);
-                                }
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        if (host.getCurrentTab() == 0) {
-//                            Toast.makeText(getActivity(), "All " + host.getCurrentTab(), Toast.LENGTH_SHORT).show();
-                        }
-
-                        host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-                            @Override
-                            public void onTabChanged(String arg0) {
-                                genreString = arg0;
-                                int currentTab = host.getCurrentTab();
-                                if (currentTab == 0) {
-                                    genreString = "";
-                                } else {
-                                    genreString = genresArrayList.get(currentTab).getId();
-                                }
-//                                genreString = String.valueOf(currentTab).trim();
-                                fetchRecordings();
-//                                Toast.makeText(getActivity(), "beta: " + genreString, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(MelodyActivity.this, error.toString(), Toast.LENGTH_LONG).show();
-                        String errorMsg = error.toString();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                return params;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-    }
-
-    public void fetchRecordings() {
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-//                        Toast.makeText(getActivity(), ""+response, Toast.LENGTH_SHORT).show();
-                        Log.d("ReturnData", response);
-                        recordingList.clear();
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
-                        adapter.notifyDataSetChanged();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
-                        String errorMsg = error.toString();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
-                params.put(KEY, "");
-                params.put(GENRE, genreString);
-                return params;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        requestQueue.add(stringRequest);
     }
 
     private void openDialog() {
@@ -585,8 +435,27 @@ public class MelodyActivity extends AppCompatActivity {
                 SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
                 editorFilterArtist.putString("stringFilterArtist", strArtist);
                 editorFilterArtist.apply();
-                AudioFragment af = new AudioFragment();
-                getFragmentManager().beginTransaction().replace(R.id.activity_melody, af).commit();
+
+                SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                editorFilterString.putString("stringFilter", strName);
+                editorFilterString.apply();
+
+                SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
+                editorFilterBPM.clear();
+                editorFilterBPM.apply();
+
+                SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
+                editorFilterInstruments.clear();
+                editorFilterInstruments.apply();
+
+                if (clicked_button == 0) {
+                    MelodyPacksFragment mpf = new MelodyPacksFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
+                } else if (clicked_button == 1) {
+                    RecordingsFragment rf = new RecordingsFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.activity_melody, rf).commit();
+                }
+
 
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtFilterName.getWindowToken(), 0);
@@ -636,8 +505,26 @@ public class MelodyActivity extends AppCompatActivity {
                 editorFilterInstruments.putString("stringFilterInstruments", Instruments);
                 editorFilterInstruments.apply();
 
-                AudioFragment af = new AudioFragment();
-                getFragmentManager().beginTransaction().replace(R.id.activity_melody, af).commit();
+                SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                editorFilterString.putString("stringFilter", strName);
+                editorFilterString.apply();
+
+                SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
+                editorFilterBPM.clear();
+                editorFilterBPM.apply();
+
+                SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
+                editorFilterArtist.putString("stringFilterArtist", artistName);
+                editorFilterArtist.apply();
+
+
+                if (clicked_button == 0) {
+                    MelodyPacksFragment mpf = new MelodyPacksFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
+                } else if (clicked_button == 1) {
+                    RecordingsFragment rf = new RecordingsFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.activity_melody, rf).commit();
+                }
 
 
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -688,8 +575,26 @@ public class MelodyActivity extends AppCompatActivity {
                 editorFilterBPM.putString("stringFilterBPM", BPM);
                 editorFilterBPM.apply();
 
-                AudioFragment af = new AudioFragment();
-                getFragmentManager().beginTransaction().replace(R.id.activity_melody, af).commit();
+                SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                editorFilterString.putString("stringFilter", strName);
+                editorFilterString.apply();
+
+                SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
+                editorFilterArtist.putString("stringFilterArtist", artistName);
+                editorFilterArtist.apply();
+
+                SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
+                editorFilterInstruments.putString("stringFilterInstruments", Instruments);
+                editorFilterInstruments.apply();
+
+
+                if (clicked_button == 0) {
+                    MelodyPacksFragment mpf = new MelodyPacksFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
+                } else if (clicked_button == 1) {
+                    RecordingsFragment rf = new RecordingsFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.activity_melody, rf).commit();
+                }
 
 
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -710,145 +615,25 @@ public class MelodyActivity extends AppCompatActivity {
         builder3.show();
     }
 
-    public void fetchSearchData() {
+    public void clearSharePrefMelody(){
+        SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
+        editorFilterBPM.clear();
+        editorFilterBPM.apply();
 
-        SharedPreferences searchPref = this.getSharedPreferences("SearchPref", MODE_PRIVATE);
-        strSearch = searchPref.getString("stringSearch", null);
+        SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
+        editorFilterInstruments.clear();
+        editorFilterInstruments.apply();
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
+        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+        editorFilterString.clear();
+        editorFilterString.apply();
 
-                        String successMsg = response.toString();
-                        try {
-                            JSONObject jsonObject = new JSONObject(successMsg);
-                            String flag = jsonObject.getString("flag");
-                            String msg = jsonObject.getString("msg");
-                            if (flag.equals("unsuccess")) {
-                                Toast.makeText(getApplicationContext(), "" + msg, Toast.LENGTH_SHORT).show();
-                            }
+        SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
+        editorFilterArtist.clear();
+        editorFilterArtist.apply();
 
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-//                        Toast.makeText(getActivity(), "" + response, Toast.LENGTH_SHORT).show();
-                        recordingList.clear();
-                        recordingsPools.clear();
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
-                        adapter.notifyDataSetChanged();
-                        Log.d("ReturnDataS", response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        String errorMsg = "";
-                        if (error instanceof TimeoutError) {
-                            errorMsg = "Internet connection timed out";
-                        } else if (error instanceof NoConnectionError) {
-//                            errorMsg = "There is no connection";
-                        } else if (error instanceof AuthFailureError) {
-                            errorMsg = "AuthFailureError";
-                        } else if (error instanceof ServerError) {
-                            errorMsg = "We are facing problem in connecting to server";
-                        } else if (error instanceof NetworkError) {
-                            errorMsg = "We are facing problem in connecting to network";
-                        } else if (error instanceof ParseError) {
-                            errorMsg = "ParseError";
-                        }
-//                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
-                params.put(KEY_SEARCH, strSearch);
-                return params;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        requestQueue.add(stringRequest);
-    }
-
-    public void fetchRecordingsFilterArtist() {
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        String rs = response.toString();
-                        try {
-                            JSONObject jsonObject = new JSONObject(rs);
-                            String flag = jsonObject.getString("flag");
-//                            Toast.makeText(getActivity(), "" + flag, Toast.LENGTH_SHORT).show();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
-
-                        Log.d("ReturnData1", response);
-                        recordingList.clear();
-                        recordingsPools.clear();
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
-                        adapter.notifyDataSetChanged();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        String errorMsg = "";
-                        if (error instanceof TimeoutError) {
-                            errorMsg = "Internet connection timed out";
-                        } else if (error instanceof NoConnectionError) {
-//                            errorMsg = "There is no connection";
-                        } else if (error instanceof AuthFailureError) {
-                            errorMsg = "AuthFailureError";
-                        } else if (error instanceof ServerError) {
-                            errorMsg = "We are facing problem in connecting to server";
-                        } else if (error instanceof NetworkError) {
-                            errorMsg = "We are facing problem in connecting to network";
-                        } else if (error instanceof ParseError) {
-                            errorMsg = "ParseError";
-                        }
-//                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
-                params.put(KEY, STATION);
-                params.put(GENRE, genreString);
-                params.put(FILE_TYPE, "user_recording");
-                params.put(FILTER_TYPE, strName);
-                params.put(USER_NAME, strArtist);
-                params.put(FILTER, "extrafilter");
-                return params;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        requestQueue.add(stringRequest);
-    }
-
-    private TabHost.TabContentFactory createTabContent() {
-        return new TabHost.TabContentFactory() {
-            @Override
-            public View createTabContent(String tag) {
-                RecyclerView rv = new RecyclerView(MelodyActivity.this);
-                rv.setHasFixedSize(true);
-                RecyclerView.LayoutManager lm = new LinearLayoutManager(MelodyActivity.this);
-                rv.setLayoutManager(lm);
-                rv.setItemAnimator(new DefaultItemAnimator());
-                rv.setAdapter(adapter);
-                return rv;
-            }
-        };
+        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+        editorSearchString.clear();
+        editorSearchString.apply();
     }
 }

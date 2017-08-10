@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 /**
  * Created by Shubhansh Jaiswal on 1/4/2017.
+ * this has no use ,must be deleted later
  */
 
 public class MessengerCardAdapter extends RecyclerView.Adapter<MessengerCardAdapter.MyViewHolder> {

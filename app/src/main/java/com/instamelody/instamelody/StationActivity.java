@@ -1,35 +1,37 @@
 package com.instamelody.instamelody;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Spinner;
+import android.widget.RelativeLayout;
 import android.widget.TabHost;
-import android.support.v7.widget.SearchView;
+import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
@@ -43,19 +45,10 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.instamelody.instamelody.Adapters.InstrumentListAdapter;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
+import com.instamelody.instamelody.Fragments.ActivityFragment;
 import com.instamelody.instamelody.Fragments.AudioFragment;
 import com.instamelody.instamelody.Models.RecordingsModel;
-
-import android.graphics.Color;
-import android.view.View;
-import android.widget.Button;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.instamelody.instamelody.Fragments.ActivityFragment;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
 
@@ -123,6 +116,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_station);
 
+        clearSharePrefStation();
+
 
         message = (ImageView) findViewById(R.id.message);
         discover = (ImageView) findViewById(R.id.discover);
@@ -177,8 +172,11 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
             public void onClick(View v) {
                 btnActivity.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnAudio.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                btnAudio.setEnabled(false);
+                btnActivity.setEnabled(true);
 
                 //new FetchActivityDetails().execute(userId);
+                clearSharePrefStation();
 
                 AudioFragment af = new AudioFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
@@ -193,6 +191,10 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
                 btnAudio.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnActivity.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                btnActivity.setEnabled(false);
+                btnAudio.setEnabled(true);
+
+                clearSharePrefStation();
 
                 ActivityFragment actf = new ActivityFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_station, actf).commit();
@@ -220,6 +222,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 search1.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
 
+                clearSharePrefStation();
+
 //                Toast.makeText(StationActivity.this, "" + searchContent, Toast.LENGTH_SHORT).show();
             }
         });
@@ -238,6 +242,12 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
                 editorFilterString.clear();
                 editorFilterString.apply();
+                SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
+                editorFilterArtist.putString("stringFilterArtist", artistName);
+                editorFilterArtist.apply();
+                SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
+                editorFilterInstruments.putString("stringFilterInstruments", Instruments);
+                editorFilterInstruments.apply();
                 AudioFragment af = new AudioFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
                 return false;
@@ -350,6 +360,15 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                             SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
                             editorSearchString.clear();
                             editorSearchString.apply();
+                            SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
+                            editorFilterArtist.putString("stringFilterArtist", artistName);
+                            editorFilterArtist.apply();
+                            SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
+                            editorFilterInstruments.putString("stringFilterInstruments", Instruments);
+                            editorFilterInstruments.apply();
+                            SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
+                            editorFilterBPM.clear();
+                            editorFilterBPM.apply();
                             builderInner.setTitle("Your Selected Item is");
                             AudioFragment af = new AudioFragment();
                             getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
@@ -380,12 +399,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
-        editorFilterString.clear();
-        editorFilterString.apply();
-        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
-        editorSearchString.clear();
-        editorSearchString.apply();
+        clearSharePrefStation();
 
     }
 
@@ -577,12 +591,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
-        editorFilterString.clear();
-        editorFilterString.apply();
-        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
-        editorSearchString.clear();
-        editorSearchString.apply();
+        clearSharePrefStation();
 
     }
 
@@ -708,6 +717,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
     private class LongOperation extends AsyncTask<String, Void, String> {
         protected void onPreExecute() {
+            btnActivity.setEnabled(false);
             progressDialog = new ProgressDialog(StationActivity.this);
             progressDialog.setTitle("Processing...");
             progressDialog.setMessage("Please wait...");
@@ -728,6 +738,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
             adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList, recordingsPools);
             adapter.notifyDataSetChanged();
             progressDialog.dismiss();
+            btnActivity.setEnabled(true);
         }
 
     }
@@ -761,6 +772,19 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
                 editorFilterArtist.putString("stringFilterArtist", artistName);
                 editorFilterArtist.apply();
+
+                SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                editorFilterString.putString("stringFilter", strName);
+                editorFilterString.apply();
+
+                SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
+                editorFilterBPM.clear();
+                editorFilterBPM.apply();
+
+                SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
+                editorFilterInstruments.clear();
+                editorFilterInstruments.apply();
+
                 AudioFragment af = new AudioFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
 
@@ -811,6 +835,18 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
                 editorFilterInstruments.putString("stringFilterInstruments", Instruments);
                 editorFilterInstruments.apply();
+
+                SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                editorFilterString.putString("stringFilter", strName);
+                editorFilterString.apply();
+
+                SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
+                editorFilterBPM.clear();
+                editorFilterBPM.apply();
+
+                SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
+                editorFilterArtist.clear();
+                editorFilterArtist.apply();
 
                 AudioFragment af = new AudioFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
@@ -864,6 +900,18 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 editorFilterBPM.putString("stringFilterBPM", BPM);
                 editorFilterBPM.apply();
 
+                SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                editorFilterString.putString("stringFilter", strName);
+                editorFilterString.apply();
+
+                SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
+                editorFilterArtist.putString("stringFilterArtist", artistName);
+                editorFilterArtist.apply();
+
+                SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
+                editorFilterInstruments.putString("stringFilterInstruments", Instruments);
+                editorFilterInstruments.apply();
+
                 AudioFragment af = new AudioFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
 
@@ -884,6 +932,28 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         });
 
         builder3.show();
+    }
+
+    public void clearSharePrefStation(){
+        SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
+        editorFilterBPM.clear();
+        editorFilterBPM.apply();
+
+        SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
+        editorFilterArtist.clear();
+        editorFilterArtist.apply();
+
+        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+        editorFilterString.clear();
+        editorFilterString.apply();
+
+        SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
+        editorFilterInstruments.clear();
+        editorFilterInstruments.apply();
+
+        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+        editorSearchString.clear();
+        editorSearchString.apply();
     }
     private class FetchActivityDetails extends AsyncTask<String, Void, String> {
         protected void onPreExecute() {

@@ -1,18 +1,12 @@
 package com.instamelody.instamelody;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -41,33 +35,25 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.instamelody.instamelody.Models.HandelLogin;
-import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
-import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
-import com.twitter.sdk.android.core.models.Configuration;
 import com.twitter.sdk.android.core.models.User;
 import com.twitter.sdk.android.core.services.AccountService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -76,8 +62,6 @@ import io.fabric.sdk.android.Fabric;
 import retrofit2.Call;
 
 import static android.R.attr.id;
-import static android.R.attr.name;
-import static com.instamelody.instamelody.R.drawable.twitter;
 import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LOGIN;
 import static com.instamelody.instamelody.utils.Const.ServiceType.REGISTER;
@@ -229,7 +213,7 @@ public class SignInActivity extends AppCompatActivity {
                                     //tvFirstName.setText(namefb);
                                     //tvUserName.setText("@" + namefb);
                                     gender = object.getString("gender");
-                                    birthday = object.getString("birthday");
+                                    //birthday = object.getString("birthday");
                                     String temp = object.getString("email");
                                     fbProfilePic = "https://graph.facebook.com/" + fbId + "/picture";
                                     username = temp.substring(0, temp.indexOf("@"));
@@ -251,8 +235,6 @@ public class SignInActivity extends AppCompatActivity {
                                 fbEditor.putInt("status", 1);
                                 fbEditor.commit();
                                 registerSpecialFB();
-                                Intent i = new Intent(SignInActivity.this, HomeActivity.class);
-                                startActivity(i);
                             }
                         });
 
@@ -505,10 +487,8 @@ public class SignInActivity extends AppCompatActivity {
                         String errorMsg = "";
                         if (error instanceof TimeoutError || error instanceof NoConnectionError) {
                             errorMsg = "There is either no connection or it timed out.";
-                            btnLogIn.setEnabled(false);
                         } else if (error instanceof AuthFailureError) {
                             errorMsg = "AuthFailureError";
-                            btnLogIn.setEnabled(false);
                         } else if (error instanceof ServerError) {
                             errorMsg = "ServerError";
                         } else if (error instanceof NetworkError) {
@@ -517,7 +497,6 @@ public class SignInActivity extends AppCompatActivity {
                             errorMsg = "ParseError";
                         }
                         Toast.makeText(SignInActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
-
                         Log.d("Error", errorMsg);
                     }
                 }) {

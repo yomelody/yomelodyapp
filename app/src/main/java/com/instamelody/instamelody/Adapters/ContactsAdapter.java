@@ -43,6 +43,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.USER_CHAT_ID;
@@ -55,13 +57,13 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
 
     Context context;
     ArrayList<Contacts> contactsList = new ArrayList<>();
-    String rsList[];
+    String rsList[], newList[];
     String senderID = "";
     String recieverId = "";
-    String recieverList = "";
+    String recId = "";
     String recieverName = "";
     String recieverImage = "";
-    int Count = 0;
+    int Count = 0, nonNullCount = 0;
 
     public ContactsAdapter(Context context, ArrayList<Contacts> contactsList) {
         this.contactsList = contactsList;
@@ -107,18 +109,28 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                         blue_circle.setVisibility(View.VISIBLE);
                         Count = Count + 1;
                         recieverId = contactsList.get(getAdapterPosition()).getUser_id();
-                        rsList[Count - 1] = recieverId;
-                        StringBuilder sb = new StringBuilder();
-                        for (String item : rsList) {
-                            if (sb.length() > 0) {
-                                sb.append(',');
+                        rsList[getAdapterPosition()] = recieverId;
+                        recId = "";
+
+                        for (int i = 0; i < rsList.length; i++) {
+                            if (rsList[i] != null) {
+                                recId = recId + "," + rsList[i];
                             }
-                            sb.append(item);
                         }
-                        recieverList = sb.toString();
+
+                        if (recId.contains(",null")) {
+                            String REGEX = ",null";
+                            Pattern p = Pattern.compile(REGEX);
+                            Matcher m = p.matcher(recId);
+                            recId = m.replaceAll("");
+                        }
+
+                        if (recId.startsWith(",")) {
+                            recId = recId.substring(1, recId.length());
+                        }
 
                         if (!userId.equals("")) {
-                            getChatId(userId, recieverId);
+                            getChatId(userId, recId);
                         } else {
                             Toast.makeText(context, "Logged in user null id Error", Toast.LENGTH_SHORT).show();
                         }
@@ -131,24 +143,41 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                         if (Count > 0) {
                             ContactsActivity.btnCancel.setVisibility(View.GONE);
                             ContactsActivity.btnOK.setVisibility(View.VISIBLE);
+                            SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                             if (Count > 1) {
                                 recieverName = "New Group";
+                                editor.putString("receiverName", recieverName);
+                                editor.putString("chatType", "group");
+                            }else{
+                                editor.putString("chatType", "single");
                             }
+                            editor.commit();
                         }
 
                     } else {
                         blue_circle.setVisibility(View.GONE);
                         grey_circle.setVisibility(View.VISIBLE);
                         Count = Count - 1;
+
                         rsList[getAdapterPosition()] = "null";
-                        StringBuilder sb = new StringBuilder();
-                        for (String item : rsList) {
-                            if (sb.length() > 0) {
-                                sb.append(',');
+
+                        recId = "";
+                        for (int i = 0; i < rsList.length; i++) {
+                            if (rsList[i] != "null") {
+                                recId = recId + "," + rsList[i];
                             }
-                            sb.append(item);
                         }
-                        recieverList = sb.toString();
+
+                        if (recId.contains(",null")) {
+                            String REGEX = ",null";
+                            Pattern p = Pattern.compile(REGEX);
+                            Matcher m = p.matcher(recId);
+                            recId = m.replaceAll("");
+                        }
+
+                        if (recId.startsWith(",")) {
+                            recId = recId.substring(1, recId.length());
+                        }
 
                         if (Count < 1) {
                             ContactsActivity.btnOK.setVisibility(View.GONE);
@@ -159,9 +188,11 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                         editor.putString("chatId", "");
                         editor.commit();
                     }
+
+                    Toast.makeText(context, recId, Toast.LENGTH_SHORT).show();
                     SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                     editor.putString("senderId", senderID);
-                    editor.putString("receiverId", recieverList);
+                    editor.putString("receiverId", recId);
                     editor.putString("receiverName", recieverName);
                     editor.putString("receiverImage", recieverImage);
                     editor.commit();

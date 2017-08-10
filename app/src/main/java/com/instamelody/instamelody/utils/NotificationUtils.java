@@ -4,8 +4,6 @@ import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,7 +13,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Patterns;
@@ -26,9 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
@@ -72,8 +66,7 @@ public class NotificationUtils {
                         PendingIntent.FLAG_CANCEL_CURRENT
                 );
 
-        final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-                mContext);
+        final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
@@ -107,7 +100,7 @@ public class NotificationUtils {
                 .setContentIntent(resultPendingIntent)
                 .setSound(alarmSound)
                 .setStyle(inboxStyle)
-                .setSmallIcon(R.drawable.instamelody_logo)
+                .setSmallIcon(getNotificationIcon())
                 .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), icon))
                 .setContentText(message)
                 .build();
@@ -128,7 +121,7 @@ public class NotificationUtils {
                 .setContentIntent(resultPendingIntent)
                 .setSound(alarmSound)
                 .setStyle(bigPictureStyle)
-                .setSmallIcon(R.drawable.instamelody_logo)
+                .setSmallIcon(getNotificationIcon())
                 .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), icon))
                 .setContentText(message)
                 .build();
@@ -190,6 +183,11 @@ public class NotificationUtils {
     public static void clearNotifications(Context context) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
+    }
+
+    private int getNotificationIcon() {
+        boolean useWhiteIcon = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP);
+        return useWhiteIcon ? R.drawable.instamelody_logo : R.drawable.instamelody_logo_color;
     }
 
 //    public static long getTimeMilliSec(String timeStamp) {

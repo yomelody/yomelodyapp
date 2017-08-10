@@ -26,7 +26,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,7 +61,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -72,7 +70,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static android.os.Environment.isExternalStorageEmulated;
@@ -96,7 +93,9 @@ public class ChatActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     ArrayList<Message> chatList = new ArrayList<>();// list of messages
-
+    ArrayList<String> imageFileList = new ArrayList<>();
+    ArrayList<RecentImagesModel> fileInfo = new ArrayList<>();
+    ArrayList<String> groupList = new ArrayList<>();
     String CHECK_FILE_URL = "http://35.165.96.167/api/ShareAudioChat.php";
     String DEVICE_TYPE = "device_type";
     String SENDER_ID = "senderID";
@@ -107,8 +106,6 @@ public class ChatActivity extends AppCompatActivity {
     String TITLE = "title";
     String MESSAGE = "message";
 
-    ArrayList<String> fileArray = new ArrayList<>();
-    ArrayList<RecentImagesModel> fileInfo = new ArrayList<>();
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     EditText etMessage;
 
@@ -124,12 +121,14 @@ public class ChatActivity extends AppCompatActivity {
     String KEY_FLAG = "flag";
     String userId, receiverId, receiverName, packId, packType, receiverImage;
     static String chatId;
-    RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton;
-    ImageView ivRecieverProfilePic;
+    RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton, rlSelectedImage;
+    ImageView ivRecieverProfilePic, ivSelectedImage;
     TextView tvRecieverName;
     String username = "";
     String parent;
     String senderId = "";
+    String chatType = "";
+    String group = "";
 
     @TargetApi(18)
     @Override
@@ -138,7 +137,7 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
 
         parent = getIntent().getStringExtra("from");
-        fileArray.clear();
+        imageFileList.clear();
         getGalleryImages();
 
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
@@ -156,25 +155,14 @@ public class ChatActivity extends AppCompatActivity {
             username = twitterPref.getString("userName", null);
         }
 
-//        SharedPreferences chatPrefs = getSharedPreferences("MessengerData", MODE_PRIVATE);
-//        id= chatPrefs.getString("id", null);
-//        senderId = chatPrefs.getString("senderId", null);
-//        senderName = chatPrefs.getString("senderName", null);
-//        receiverId = chatPrefs.getString("receiverId", null);
-//        receiverName = chatPrefs.getString("receiverName", null);
-//        coverPic = chatPrefs.getString("coverPic", null);
-//        profilePic = chatPrefs.getString("profilePic", null);
-//        message = chatPrefs.getString("message", null);
-//        chatId = chatPrefs.getString("chatId", null);
-//        isRead = chatPrefs.getString("isRead", null);
-//        sendAt = chatPrefs.getString("sendAt", null);
-
         SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
         senderId = prefs.getString("senderId", null);
         receiverId = prefs.getString("receiverId", null);
+        RemoveNullValue();
         receiverName = prefs.getString("receiverName", null);
         receiverImage = prefs.getString("receiverImage", null);
         chatId = prefs.getString("chatId", null);
+        chatType = prefs.getString("chatType", null);
         tvUserName = (TextView) findViewById(R.id.tvUserName);
         tvUserName.setText(receiverName);
 
@@ -196,10 +184,6 @@ public class ChatActivity extends AppCompatActivity {
 
         getChatMsgs(chatId);
 
-//        if (temp.equals("true")) {
-//            sendMessage("hello", userId, temp);
-//        }
-
         etMessage = (EditText) findViewById(R.id.etMessage);
         etMessage.setHintTextColor(Color.parseColor("#7B888F"));
         inflater = LayoutInflater.from(ChatActivity.this);
@@ -215,6 +199,8 @@ public class ChatActivity extends AppCompatActivity {
         rlTxtContent = (RelativeLayout) findViewById(R.id.rlTxtContent);
         ivNewChat = (ImageView) findViewById(R.id.ivNewChat);
         rlInviteButton = (RelativeLayout) findViewById(R.id.rlInviteButton);
+        ivSelectedImage = (ImageView) findViewById(R.id.ivSelectedImage);
+        rlSelectedImage = (RelativeLayout) findViewById(R.id.rlSelectedImage);
 
         recyclerViewChat = (RecyclerView) findViewById(R.id.recyclerViewChat);
         recyclerViewChat.setHasFixedSize(true);
@@ -235,20 +221,21 @@ public class ChatActivity extends AppCompatActivity {
                 if (intent.getAction().equals(PUSH_NOTIFICATION)) {
                     // new push notification is received
 //                    String message = intent.getStringExtra("message");
-                    String imageUrl = intent.getStringExtra("imageUrl");
+//                    String imageUrl = intent.getStringExtra("fileUrl");
                     String chatId = intent.getStringExtra("chatId");
                     getChatMsgs(chatId);
-                    if (imageUrl != null && imageUrl.length() > 4 && Patterns.WEB_URL.matcher(imageUrl).matches()) {
-                        Bitmap bitmap = getBitmapFromURL(imageUrl);
-                        if (bitmap != null) {
-                            tvImgChat.setImageBitmap(bitmap);
-                        } else {
-                            Toast.makeText(getApplicationContext(), "No Image!!", Toast.LENGTH_LONG).show();
-                        }
-                    }
+//                    if (imageUrl != null && imageUrl.length() > 4 && Patterns.WEB_URL.matcher(imageUrl).matches()) {
+//                        Bitmap bitmap = getBitmapFromURL(imageUrl);
+//                        if (bitmap != null) {
+//                            tvImgChat.setImageBitmap(bitmap);
+//                        } else {
+//                            Toast.makeText(getApplicationContext(), "No Image!!", Toast.LENGTH_LONG).show();
+//                        }
+//                    }
                 }
             }
         };
+
 
         SharedPreferences token = this.getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
         deviceToken = token.getString("regId", null);
@@ -365,6 +352,8 @@ public class ChatActivity extends AppCompatActivity {
                     inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                             InputMethodManager.HIDE_NOT_ALWAYS);
 
+                    getChatMsgs(chatId);
+
                 } else {
                     Toast.makeText(getApplicationContext(), "Log in to Chat", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
@@ -395,16 +384,15 @@ public class ChatActivity extends AppCompatActivity {
                     alertDialog.setContentView(customView);
                     alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     WindowManager.LayoutParams wmlp = alertDialog.getWindow().getAttributes();
-                    wmlp.width = android.view.WindowManager.LayoutParams.MATCH_PARENT;
-                    wmlp.height = android.view.WindowManager.LayoutParams.WRAP_CONTENT;
+                    wmlp.width = WindowManager.LayoutParams.MATCH_PARENT;
+                    wmlp.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
                     recycleImage.setHasFixedSize(true);
+                    recycleImage.setItemViewCacheSize(10);
+                    recycleImage.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+                    recycleImage.setItemAnimator(new DefaultItemAnimator());
                     RecyclerView.LayoutManager lm = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
                     recycleImage.setLayoutManager(lm);
-                    recycleImage.setHasFixedSize(true);
-                    recycleImage.setItemViewCacheSize(10);
-                    recycleImage.setDrawingCacheEnabled(true);
-                    recycleImage.setItemAnimator(new DefaultItemAnimator());
                     riAdapter = new RecentImagesAdapter(fileInfo, getApplicationContext());
                     recycleImage.setAdapter(riAdapter);
 
@@ -446,6 +434,13 @@ public class ChatActivity extends AppCompatActivity {
         ivAdjust.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+            }
+        });
+
+        rlSelectedImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rlSelectedImage.setVisibility(View.GONE);
             }
         });
     }
@@ -497,18 +492,19 @@ public class ChatActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (this.requestCode == requestCode && resultCode == RESULT_OK && null != data) {
+            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+            rlSelectedImage.setVisibility(View.VISIBLE);
+            ivSelectedImage.setImageBitmap(bitmap);
         }
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && null != data) {
             Uri selectedImageUri = data.getData();
-            String selectedImagePath = selectedImageUri.getPath();
-            Toast.makeText(getApplicationContext(), selectedImagePath, Toast.LENGTH_LONG).show();
-
-            String ExternalStorageDirectoryPath = Environment
-                    .getExternalStorageDirectory()
-                    .getAbsolutePath();
-
-            String targetPath = ExternalStorageDirectoryPath + "/Pictures";
-            Toast.makeText(getApplicationContext(), ExternalStorageDirectoryPath, Toast.LENGTH_LONG).show();
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
+                rlSelectedImage.setVisibility(View.VISIBLE);
+                ivSelectedImage.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -600,6 +596,7 @@ public class ChatActivity extends AppCompatActivity {
 
                         chatList.clear();
                         cAdapter.notifyDataSetChanged();
+//                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
                         JSONObject jsonObject;
 
                         try {
@@ -679,11 +676,10 @@ public class ChatActivity extends AppCompatActivity {
                     public void onResponse(String response) {
 
                         String str = response;
-                        Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
-                        getChatMsgs(chatId);
+//                        Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
+//                        getChatMsgs(chatId);
 //                        cAdapter.notifyDataSetChanged();
 //                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
-
                     }
                 },
                 new Response.ErrorListener() {
@@ -712,17 +708,34 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                if (receiverId.equals(user_Id)) {
-                    params.put(RECEIVER_ID, senderId);
-                    params.put(SENDER_ID, user_Id);
+
+                if (chatType.equals("group")) {
+                    if (senderId.equals(user_Id)) {
+                        params.put(RECEIVER_ID, receiverId);
+                        params.put("groupName", tvUserName.getText().toString().trim());
+                    } else {
+                        group = senderId + "," + receiverId;
+                        groupList = new ArrayList<>(Arrays.asList(group.split(",")));
+                        groupList.remove(groupList.indexOf(user_Id));
+                        String s = groupList.toString().replaceAll(", ", ",");
+                        receiverId = s.substring(1, s.length() - 1).trim();
+                        params.put(RECEIVER_ID, receiverId);
+                        params.put("groupName", tvUserName.getText().toString().trim());
+                    }
                 } else {
-                    params.put(RECEIVER_ID, receiverId);
-                    params.put(SENDER_ID, user_Id);
+                    if (receiverId.equals(user_Id)) {
+                        params.put(RECEIVER_ID, senderId);
+                    } else {
+                        params.put(RECEIVER_ID, receiverId);
+                    }
                 }
+                params.put(SENDER_ID, user_Id);
                 params.put(CHAT_ID, chatId);
                 params.put(TITLE, "message");
                 params.put(MESSAGE, message);
                 params.put(IS_READ, "0");
+//                params.put("file", );
+//                params.put("file_type", "image");
 
                 /*if (packAvailable.equals("True")) {
                     params.put("file", packId);
@@ -760,29 +773,27 @@ public class ChatActivity extends AppCompatActivity {
 
                 if (targetDirector.listFiles() != null) {
                     File[] files = targetDirector.listFiles();
-                    int last;
-                    int length = files.length;
-                    if (length > 15) {
-                        length = 15;
-                    }
-                    last = length - 1;
-                    File file;
-
-                    for (int i = 0; i < length; i++) {
-                        RecentImagesModel rim = new RecentImagesModel();
-                        file = files[last];
+                    int i = files.length - 1;
+                    while (imageFileList.size() < 10) {
+                        File file = files[i];
                         if (file.getAbsoluteFile().toString().trim().endsWith(".jpg")) {
-                            rim.setName(file.getName());
-                            rim.setFilepath(file.getAbsolutePath().toString().trim());
-                            Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-//                            ByteArrayOutputStream out = new ByteArrayOutputStream();
-//                            myBitmap.compress(Bitmap.CompressFormat.JPEG, 75, out);
-//                            Bitmap newBmp = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
-                            rim.setBitmap(myBitmap);
-                            last = last - 1;
+                            imageFileList.add(file.getAbsolutePath());
+                        } else if (file.getAbsoluteFile().toString().trim().endsWith(".png")) {
+                            imageFileList.add(file.getAbsolutePath());
                         }
-                        fileInfo.add(rim);
+                        i--;
                     }
+                }
+
+                String file, filename;
+                int length = imageFileList.size();
+                for (int i = 0; i < length; i++) {
+                    RecentImagesModel rim = new RecentImagesModel();
+                    file = imageFileList.get(i);
+                    rim.setFilepath(file);
+                    filename = file.substring(file.lastIndexOf("/") + 1);
+                    rim.setName(filename);
+                    fileInfo.add(rim);
                 }
             } else {
                 Toast.makeText(getApplicationContext(), "Failed to read External storage", Toast.LENGTH_LONG).show();
@@ -795,42 +806,36 @@ public class ChatActivity extends AppCompatActivity {
                 String ExternalStorageDirectoryPath = Environment.getExternalStorageDirectory().getAbsolutePath();
                 String InternalStoragePath = ExternalStorageDirectoryPath + "/DCIM/Camera/";
                 File targetDirector = new File(InternalStoragePath);
-                RecentImagesModel rim = new RecentImagesModel();
 
                 if (targetDirector.listFiles() != null) {
                     File[] files = targetDirector.listFiles();
-                    int last;
-                    int length = files.length;
-                    if (length > 15) {
-                        length = 15;
-                    }
-                    last = length - 1;
-                    File file;
-
-                    for (int i = 0; i < length; i++) {
-                        file = files[last];
+                    int i = files.length - 1;
+                    while (imageFileList.size() < 10) {
+                        File file = files[i];
                         if (file.getAbsoluteFile().toString().trim().endsWith(".jpg")) {
-                            fileArray.add(file.getAbsolutePath());
-                            last = last - 1;
+                            imageFileList.add(file.getAbsolutePath());
+                        } else if (file.getAbsoluteFile().toString().trim().endsWith(".png")) {
+                            imageFileList.add(file.getAbsolutePath());
                         }
+                        i--;
                     }
+                }
 
-                    for (int i = 0; i < length; i++) {
-
-                        file = files[last];
-                        if (file.getAbsoluteFile().toString().trim().endsWith(".jpg")) {
-                            rim.setName(file.getName());
-                            rim.setFilepath(file.getAbsolutePath().toString().trim());
-                            Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                            rim.setBitmap(myBitmap);
-                            last = last - 1;
-                        }
-                        fileInfo.add(rim);
-                    }
+                String file, filename;
+                int length = imageFileList.size();
+                for (int i = 0; i < length; i++) {
+                    RecentImagesModel rim = new RecentImagesModel();
+                    file = imageFileList.get(i);
+                    rim.setFilepath(file);
+                    filename = file.substring(file.lastIndexOf("/") + 1);
+                    rim.setName(filename);
+                    fileInfo.add(rim);
                 }
             } else {
                 Toast.makeText(getApplicationContext(), "Failed to read Internal storage", Toast.LENGTH_LONG).show();
             }
+        } else {
+            Toast.makeText(getApplicationContext(), "Unknown storage found", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -853,8 +858,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                           int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_READ_STORAGE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -862,6 +866,14 @@ public class ChatActivity extends AppCompatActivity {
                     checkPermissions();
                 }
                 break;
+        }
+    }
+
+    public void RemoveNullValue() {
+        try {
+            receiverId = receiverId.replaceAll(",null", "");
+        } catch (Exception e) {
+            Log.e("exception", e.toString());
         }
     }
 }
