@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TabHost;
 import android.widget.Toast;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
@@ -69,10 +68,15 @@ public class MelodyPacksFragment extends Fragment {
     String KEY = "key";
     String GENRE = "genere";
     String genreString = "1";
-    String USER_ID = "users_id";
+
+            String USER_ID = "users_id";
+    String USERS_ID = "users_id";
     private String KEY_SEARCH = "search";
     private String USER_NAME = "username";
     private String COUNT = "count";
+
+
+
     ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     String KEY_MSG = "msg";
     String packName;
@@ -313,13 +317,16 @@ public class MelodyPacksFragment extends Fragment {
                 String userId = loginSharedPref.getString("userId", null);
                 if (userId != null) {
 //                    params.put(USER_ID, userId);
+                    }
+
                 }
                 return params;
             }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+
+        } ;
+            RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         requestQueue.add(stringRequest);
-    }
+        }
 
     public void fetchMelodyFilter() {
 
@@ -657,4 +664,3 @@ public class MelodyPacksFragment extends Fragment {
         }
     }
 }
-

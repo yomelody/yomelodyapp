@@ -1,12 +1,14 @@
 package com.instamelody.instamelody.Adapters;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
@@ -52,6 +54,7 @@ import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.facebook.FacebookSdk.getApplicationContext;
+import static com.instamelody.instamelody.Adapters.InstrumentListAdapter.audioUrl;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LIKESAPI;
 import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
 
@@ -65,7 +68,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
     String genreName, mpid, MelodyName, profile;
     static String instrumentFile;
-    static MediaPlayer mp;
+    MediaPlayer mp;
     int duration1, currentPosition;
     int length;
     ArrayList<String> mpids = new ArrayList<>();
@@ -86,7 +89,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     String Key_shared_with = "shared_with";
     String Key_file_type = "file_type";
     Context context;
-    String userId="";
+    private RecyclerView.ViewHolder lastModifiedHoled = null;
 
     public RecordingsCardAdapter(Context context, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools) {
         this.recordingList = recordingList;
@@ -103,6 +106,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         ImageView ivJoin, ivStationPlay, ivStationPause;
         SeekBar seekBarRecordings;
         RelativeLayout rlProfilePic, rlLike;
+        ProgressDialog progressDialog;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -473,31 +477,90 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             @Override
             public void onClick(View v) {
 //                holder.seekBarRecordings.setVisibility(View.VISIBLE);
+                holder.progressDialog = new ProgressDialog(v.getContext());
+                holder.progressDialog.setMessage("Loading...");
+                holder.progressDialog.show();
+
                 holder.ivStationPause.setVisibility(View.VISIBLE);
-                try {
-                    RecordingsPool recordingsPool = recordingsPools.get(listPosition);
-                    instrumentFile = recordingsPool.getRecordingUrl();
-                    Integer s = listPosition + 1;
+                //  try {
+                RecordingsPool recordingsPool = recordingsPools.get(listPosition);
+                instrumentFile = recordingsPool.getRecordingUrl();
+                Integer s = listPosition + 1;
 
-                    if (getItemCount() >= s && instrumentFile != null) {
-                        playAudio();
-                        holder.primarySeekBarProgressUpdater();
+                if (getItemCount() >= listPosition + 1 && instrumentFile != null) {
+                    if (mp != null) {
+                        if (mp.isPlaying()) {
+                            mp.stop();
+                            mp.reset();
+                            mp.release();
+                            mp = null;
+                            if (lastModifiedHoled != null) {
+                                int lastPosition = lastModifiedHoled.getAdapterPosition();
+                                lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
+                                lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
+                           /* lastModifiedHoled.itemView.setBackgroundColor(Color.TRANSPARENT);
+                            lastModifiedHoled.txtIndustry.setTextColor(context.getResources().getColor(R.color.text_color_blue));*/
+                                notifyItemChanged(lastPosition);
+                            }
+
+                        }
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                mp.seekTo(length);
-                mp.start();
-
-                if (mp.equals(duration1)) {
+                    mp = new MediaPlayer();
+                    mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
                     try {
-                        playAudio();
-                        holder.primarySeekBarProgressUpdater();
+                        mp.setDataSource(instrumentFile);
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    mp.prepareAsync();
+                    mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            holder.progressDialog.dismiss();
+                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(GONE);
+                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(VISIBLE);
+                            mp.start();
+                            holder.primarySeekBarProgressUpdater();
+
+                        }
+                    });
+                    mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                        @Override
+                        public boolean onError(MediaPlayer mp, int what, int extra) {
+                            holder.progressDialog.dismiss();
+                            return false;
+                        }
+                    });
+                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            duration1 = mp.getDuration();
+                            currentPosition = mp.getCurrentPosition();
+                            holder.progressDialog.dismiss();
+                        }
+                    });
+                    lastModifiedHoled = holder;
+
+                    //   }
+
+
+                    //   playAudio();
+                    //   holder.primarySeekBarProgressUpdater();
                 }
+                //     }
+
+                //     mp.seekTo(length);
+                //     mp.start();
+
+//                if (mp.equals(duration1)) {
+//                    try {
+//                        playAudio();
+//                        holder.primarySeekBarProgressUpdater();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
             }
         });
 
@@ -513,7 +576,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         });
 
 
-
 //        holder.tvIncludedCount.setText(String.valueOf(recordingList.get(listPosition).getTvIncludedCount()));
     }
 
@@ -523,17 +585,17 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     }
 
 
-    public void playAudio() throws IOException {
-        killMediaPlayer();
-
-        mp = new MediaPlayer();
-//        mp.setDataSource(audioFilePath);
-        mp.setDataSource(instrumentFile);
-        mp.prepare();
-        mp.start();
-        duration1 = mp.getDuration();
-        currentPosition = mp.getCurrentPosition();
-    }
+//    public void playAudio() throws IOException {
+//        killMediaPlayer();
+//
+//        mp = new MediaPlayer();
+////        mp.setDataSource(audioFilePath);
+//        mp.setDataSource(instrumentFile);
+//        mp.prepare();
+//        mp.start();
+//        duration1 = mp.getDuration();
+//        currentPosition = mp.getCurrentPosition();
+//    }
 
     private void killMediaPlayer() {
         if (mp != null) {
