@@ -66,6 +66,7 @@ dependencies {
     compile 'com.cleveroad:audiovisualization:1.0.0'
     compile 'com.google.android.gms:play-services:11.0.0'
     compile 'com.writingminds:FFmpegAndroid:0.3.2'
+    compile 'com.facebook.fresco:fresco:1.4.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
 }

@@ -8,12 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.instamelody.instamelody.Models.RecentImagesModel;
 import com.instamelody.instamelody.R;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
+
+import static com.instamelody.instamelody.R.attr.failureImage;
+import static com.instamelody.instamelody.R.attr.placeholderImage;
 
 /**
  * Created by Shubhansh Jaiswal on 23/01/17.
@@ -32,10 +36,12 @@ public class RecentImagesAdapter extends RecyclerView.Adapter<RecentImagesAdapte
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         ImageView galleryImages;
+        SimpleDraweeView mSimpleDraweeView;
 
         public MyViewHolder(View mView) {
             super(mView);
             this.galleryImages = (ImageView) mView.findViewById(R.id.galleryImages);
+            this.mSimpleDraweeView = (SimpleDraweeView) mView.findViewById(R.id.sdvGalleryImages);
 
             galleryImages.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -55,7 +61,10 @@ public class RecentImagesAdapter extends RecyclerView.Adapter<RecentImagesAdapte
     @TargetApi(19)
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int listPosition) {
-        Picasso.with(context).load(new File(fileList.get(listPosition).getFilepath())).into(holder.galleryImages);
+//        Picasso.with(context).load(new File(fileList.get(listPosition).getFilepath())).into(holder.galleryImages);
+        holder.mSimpleDraweeView.getHierarchy().setPlaceholderImage(placeholderImage);
+        holder.mSimpleDraweeView.setImageURI(fileList.get(listPosition).getFilepath());
+        holder.mSimpleDraweeView.getHierarchy().setFailureImage(failureImage);
     }
 
     @Override

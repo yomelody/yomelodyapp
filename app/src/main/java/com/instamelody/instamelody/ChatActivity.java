@@ -207,7 +207,6 @@ public class ChatActivity extends AppCompatActivity {
         LinearLayoutManager lm = new LinearLayoutManager(getApplicationContext());
         lm.setStackFromEnd(true);
         recyclerViewChat.setLayoutManager(lm);
-        recyclerViewChat.setHasFixedSize(true);
         recyclerViewChat.setItemViewCacheSize(10);
         recyclerViewChat.setDrawingCacheEnabled(true);
         recyclerViewChat.setItemAnimator(new DefaultItemAnimator());
@@ -389,6 +388,7 @@ public class ChatActivity extends AppCompatActivity {
 
                     recycleImage.setHasFixedSize(true);
                     recycleImage.setItemViewCacheSize(10);
+                    recycleImage.setDrawingCacheEnabled(true);
                     recycleImage.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
                     recycleImage.setItemAnimator(new DefaultItemAnimator());
                     RecyclerView.LayoutManager lm = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
