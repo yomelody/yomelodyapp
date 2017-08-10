@@ -106,6 +106,8 @@ public class MelodyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_melody);
 
+        clearSharePrefMelody();
+
         SharedPreferences filterPref = this.getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
 
@@ -156,6 +158,7 @@ public class MelodyActivity extends AppCompatActivity {
                 btnRecordings.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnSubscriptions.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 clicked_button = 0;
+                clearSharePrefMelody();
                 MelodyPacksFragment mpf = new MelodyPacksFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
             }
@@ -168,6 +171,7 @@ public class MelodyActivity extends AppCompatActivity {
                 btnRecordings.setBackgroundColor(Color.parseColor("#FFFFFF"));
                 btnSubscriptions.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 clicked_button = 1;
+                clearSharePrefMelody();
                 RecordingsFragment rf = new RecordingsFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_melody, rf).commit();
             }
@@ -376,23 +380,13 @@ public class MelodyActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
-        editorFilterString.clear();
-        editorFilterString.apply();
-        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
-        editorSearchString.clear();
-        editorSearchString.apply();
+        clearSharePrefMelody();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
-        editorFilterString.clear();
-        editorFilterString.apply();
-        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
-        editorSearchString.clear();
-        editorSearchString.apply();
+        clearSharePrefMelody();
 
     }
 
@@ -650,5 +644,27 @@ public class MelodyActivity extends AppCompatActivity {
         });
 
         builder3.show();
+    }
+
+    public void clearSharePrefMelody(){
+        SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
+        editorFilterBPM.clear();
+        editorFilterBPM.apply();
+
+        SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
+        editorFilterInstruments.clear();
+        editorFilterInstruments.apply();
+
+        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+        editorFilterString.clear();
+        editorFilterString.apply();
+
+        SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
+        editorFilterArtist.clear();
+        editorFilterArtist.apply();
+
+        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+        editorSearchString.clear();
+        editorSearchString.apply();
     }
 }
