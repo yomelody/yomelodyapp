@@ -2,7 +2,6 @@ package com.instamelody.instamelody.Fragments;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -35,11 +34,8 @@ import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
-<<<<<<< HEAD
 import com.instamelody.instamelody.Models.UserMelodyCard;
 import com.instamelody.instamelody.Models.UserMelodyPlay;
-=======
->>>>>>> Abhishek-Dubey
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
 
@@ -54,7 +50,6 @@ import java.util.Map;
 import static android.content.Context.MODE_PRIVATE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
-import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
 /**
  * Created by Shubhansh Jaiswal on 11/29/2016.
@@ -62,7 +57,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
 public class MelodyPacksFragment extends Fragment {
 
-    RecyclerView.Adapter adapter;
+    RecyclerView.Adapter adapter, adapter1;
     ArrayList<MelodyCard> melodyList = new ArrayList<>();
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
@@ -74,21 +69,17 @@ public class MelodyPacksFragment extends Fragment {
     String KEY = "key";
     String GENRE = "genere";
     String genreString = "1";
-<<<<<<< HEAD
     String USER_ID = "users_id";
-    String USERS_ID = "users_id";
     private String KEY_SEARCH = "search";
     private String USER_NAME = "username";
     private String COUNT = "count";
-=======
-    String USER_ID = "user_id";
->>>>>>> Abhishek-Dubey
     ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     String KEY_MSG = "msg";
     String packName;
     String packId = "0";
     String resp;
-    String strName;
+    String strName, strSearch, strArtist, strInstruments, strBPM;
+    ;
     String userId;
 
     private String ID = "id";
@@ -97,21 +88,24 @@ public class MelodyPacksFragment extends Fragment {
     private String FILTER_TYPE = "filter_type";
     private String FILTER = "filter";
     ArrayList<Genres> genresArrayList = new ArrayList<>();
+    ArrayList<UserMelodyCard> userMelodyList = new ArrayList<>();
+    ArrayList<UserMelodyPlay> melodyPools = new ArrayList<>();
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
+        SharedPreferences searchPref = getActivity().getSharedPreferences("SearchPref", MODE_PRIVATE);
+        strSearch = searchPref.getString("stringSearch", null);
+        SharedPreferences filterPrefArtist = getActivity().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE);
+        strArtist = filterPrefArtist.getString("stringFilterArtist", null);
+        SharedPreferences FilterInstruments = getActivity().getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE);
+        strInstruments = FilterInstruments.getString("stringFilterInstruments", null);
+        SharedPreferences FilterBPM = getActivity().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE);
+        strBPM = FilterBPM.getString("stringFilterBPM", null);
 
-        //     new Loader().execute();
-        fetchGenreNames();
-//        ParseContents pc = new ParseContents(getActivity());
-//        pc.parseGenres(resp,genresArrayList);
-//        genresArrayList=pc.getGenreList();
-
-
-        adapter = new MelodyCardListAdapter(melodyList, getActivity());
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
         SharedPreferences fbPref = getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
@@ -125,12 +119,22 @@ public class MelodyPacksFragment extends Fragment {
             userId = twitterPref.getString("userId", null);
             //MelodyUser=userId;
         }
-
-        if (strName == null) {
+        //     new Loader().execute();
+        fetchGenreNames();
+        if (strName == null && strSearch == null) {
             fetchMelodyPacks();
-        } else {
-            fetchRecordingsFilter();
+        } else if (strName != null) {
+            fetchMelodyFilter();
+        } else if (strSearch != null) {
+            fetchMelodySearchData();
+        } else if (strArtist != null) {
+            fetchMelodyFilterArtist();
+        } else if (strInstruments != null && strName.equals("# of Instruments")) {
+            fetchMelodyFilterInstruments();
+        } else if (strBPM != null && strName.equals("BPM")) {
+            fetchMelodyFilterBPM();
         }
+        adapter = new MelodyCardListAdapter(melodyList, getActivity());
 
 
         RecordingsFragment rf = new RecordingsFragment();
@@ -216,7 +220,6 @@ public class MelodyPacksFragment extends Fragment {
                         } else if (error instanceof ParseError) {
 //                            errorMsg = "ParseError";
                         }
-                        //Added by Abhishek Dubey
                         try {
                             Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                             Log.d("Error", errorMsg);
@@ -232,6 +235,8 @@ public class MelodyPacksFragment extends Fragment {
                 return params;
             }
         };
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(0,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         requestQueue.add(stringRequest);
     }
@@ -290,9 +295,8 @@ public class MelodyPacksFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-<<<<<<< HEAD
-                if (packId.equals("7")) {
-                    params.put(USERS_ID, userId);
+                if (packId.equals("7") && userId != null) {
+                    params.put(USER_ID, userId);
                     params.put(FILE_TYPE, "user_melody");
                 } else if (userId != null) {
                     params.put(users_id, userId);
@@ -301,13 +305,6 @@ public class MelodyPacksFragment extends Fragment {
                 } else {
                     params.put(GENRE, packId);
                     params.put(FILE_TYPE, "admin_melody");
-=======
-                if (userId != null) {
-                    params.put(users_id, userId);
-                    params.put(GENRE, "0");
-                } else {
-                    params.put(GENRE, packId);
->>>>>>> Abhishek-Dubey
                 }
                 SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
                 String userId = loginSharedPref.getString("userId", null);
@@ -321,22 +318,20 @@ public class MelodyPacksFragment extends Fragment {
         requestQueue.add(stringRequest);
     }
 
+    public void fetchMelodyFilter() {
 
-    public void fetchRecordingsFilter() {
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
-//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getActivity(), "" + response, Toast.LENGTH_SHORT).show();
 
                         Log.d("ReturnData1", response);
-                        recordingList.clear();
-                        recordingsPools.clear();
-                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
+                        melodyList.clear();
+                        instrumentList.clear();
+                        new ParseContents(getActivity()).parseMelodyPacks(response, melodyList, instrumentList);
                         adapter.notifyDataSetChanged();
-
                     }
                 },
                 new Response.ErrorListener() {
@@ -347,7 +342,7 @@ public class MelodyPacksFragment extends Fragment {
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
                         } else if (error instanceof NoConnectionError) {
-                            errorMsg = "There is no connection";
+//                            errorMsg = "There is no connection";
                         } else if (error instanceof AuthFailureError) {
                             errorMsg = "AuthFailureError";
                         } else if (error instanceof ServerError) {
@@ -357,7 +352,126 @@ public class MelodyPacksFragment extends Fragment {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(GENRE, genreString);
+                params.put(FILE_TYPE, "admin_melody");
+                params.put(FILTER_TYPE, strName);
+                params.put(FILTER, "extrafilter");
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(stringRequest);
+    }
+
+    public void fetchMelodySearchData() {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        String successMsg = response.toString();
+                        try {
+                            JSONObject jsonObject = new JSONObject(successMsg);
+                            String flag = jsonObject.getString("flag");
+                            String msg = jsonObject.getString("msg");
+                            if (flag.equals("unsuccess")) {
+                                Toast.makeText(getActivity(), "" + msg, Toast.LENGTH_SHORT).show();
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+//                        Toast.makeText(getActivity(), "" + response, Toast.LENGTH_SHORT).show();
+                        melodyList.clear();
+                        instrumentList.clear();
+                        new ParseContents(getActivity()).parseMelodyPacks(response, melodyList, instrumentList);
+                        adapter.notifyDataSetChanged();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+//                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+//                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(ID, userId);
+                params.put(KEY_SEARCH, strSearch);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(stringRequest);
+    }
+
+    public void fetchMelodyFilterArtist() {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String rs = response.toString();
+                        try {
+                            JSONObject jsonObject = new JSONObject(rs);
+                            String flag = jsonObject.getString("flag");
+//                            Toast.makeText(getActivity(), "" + flag, Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
+
+                        melodyList.clear();
+                        instrumentList.clear();
+                        new ParseContents(getActivity()).parseMelodyPacks(response, melodyList, instrumentList);
+                        adapter.notifyDataSetChanged();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+//                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+//                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -367,8 +481,132 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(ID, userId);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
-                params.put(FILE_TYPE, "user_recording");
+                params.put(FILE_TYPE, "admin_melody");
                 params.put(FILTER_TYPE, strName);
+                params.put(USER_NAME, strArtist);
+                params.put(FILTER, "extrafilter");
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(stringRequest);
+    }
+
+    public void fetchMelodyFilterInstruments() {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String rs = response.toString();
+                        try {
+                            JSONObject jsonObject = new JSONObject(rs);
+                            String flag = jsonObject.getString("flag");
+//                            Toast.makeText(getActivity(), "" + flag, Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
+
+                        melodyList.clear();
+                        instrumentList.clear();
+                        new ParseContents(getActivity()).parseMelodyPacks(response, melodyList, instrumentList);
+                        adapter.notifyDataSetChanged();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+//                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+//                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(ID, userId);
+                params.put(KEY, STATION);
+                params.put(GENRE, genreString);
+                params.put(FILE_TYPE, "admin_melody");
+                params.put(FILTER_TYPE, "Instruments");
+                params.put(COUNT, strInstruments);
+                params.put(FILTER, "extrafilter");
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(stringRequest);
+    }
+
+    public void fetchMelodyFilterBPM() {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String rs = response.toString();
+                        try {
+                            JSONObject jsonObject = new JSONObject(rs);
+                            String flag = jsonObject.getString("flag");
+//                            Toast.makeText(getActivity(), "" + flag, Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
+
+                        melodyList.clear();
+                        instrumentList.clear();
+                        new ParseContents(getActivity()).parseMelodyPacks(response, melodyList, instrumentList);
+                        adapter.notifyDataSetChanged();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+//                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+//                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(ID, userId);
+                params.put(GENRE, genreString);
+                params.put(FILE_TYPE, "admin_melody");
+                params.put(FILTER_TYPE, strName);
+                params.put(COUNT, strBPM);
                 params.put(FILTER, "extrafilter");
                 return params;
             }
@@ -392,7 +630,7 @@ public class MelodyPacksFragment extends Fragment {
         };
     }
 
-    class AsyncData extends AsyncTask<Void, Void, Void>{
+    class AsyncData extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
