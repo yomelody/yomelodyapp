@@ -33,6 +33,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -40,6 +41,7 @@ import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -50,11 +52,15 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.vision.Frame;
 import com.instamelody.instamelody.Adapters.ChatAdapter;
 import com.instamelody.instamelody.Adapters.RecentImagesAdapter;
 import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.RecentImagesModel;
+import com.instamelody.instamelody.utils.AppHelper;
 import com.instamelody.instamelody.utils.NotificationUtils;
+import com.instamelody.instamelody.utils.VolleyMultipartRequest;
+import com.instamelody.instamelody.utils.VolleySingleton;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -103,6 +109,8 @@ public class ChatActivity extends AppCompatActivity {
     String CHAT_ID = "chat_id";
     String CHAT_ID_ = "chatID";
     String IS_READ = "isread";
+    String FILE_TYPE = "file_type";
+    String FILE = "file";
     String TITLE = "title";
     String MESSAGE = "message";
 
@@ -121,14 +129,18 @@ public class ChatActivity extends AppCompatActivity {
     String KEY_FLAG = "flag";
     String userId, receiverId, receiverName, packId, packType, receiverImage;
     static String chatId;
-    RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton;
-    ImageView ivRecieverProfilePic;
+    RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton, rlSelectedImage;
+    FrameLayout flClose;
+    ImageView ivRecieverProfilePic, ivSelectedImage;
     TextView tvRecieverName;
     String username = "";
     String parent;
     String senderId = "";
     String chatType = "";
     String group = "";
+    String flagFileType = "0"; // 0 = null, 1 = image file, 2 = station audio file , 3 = admin_melody audio file
+    Bitmap sendImageBitmap;
+    String sendImageName = "";
 
     @TargetApi(18)
     @Override
@@ -199,6 +211,9 @@ public class ChatActivity extends AppCompatActivity {
         rlTxtContent = (RelativeLayout) findViewById(R.id.rlTxtContent);
         ivNewChat = (ImageView) findViewById(R.id.ivNewChat);
         rlInviteButton = (RelativeLayout) findViewById(R.id.rlInviteButton);
+        ivSelectedImage = (ImageView) findViewById(R.id.ivSelectedImage);
+        rlSelectedImage = (RelativeLayout) findViewById(R.id.rlSelectedImage);
+        flClose = (FrameLayout) findViewById(R.id.flClose);
         recyclerViewChat = (RecyclerView) findViewById(R.id.recyclerViewChat);
         recyclerViewChat.setHasFixedSize(true);
         LinearLayoutManager lm = new LinearLayoutManager(getApplicationContext());
@@ -433,6 +448,15 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View view) {
             }
         });
+
+        flClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendImageBitmap.recycle();
+                flagFileType = "0";
+                rlSelectedImage.setVisibility(View.GONE);
+            }
+        });
     }
 
     @Override
@@ -482,20 +506,32 @@ public class ChatActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (this.requestCode == requestCode && resultCode == RESULT_OK && null != data) {
-            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-//            rlSelectedImage.setVisibility(View.VISIBLE);
-//            ivSelectedImage.setImageBitmap(bitmap);
+            sendImageBitmap = (Bitmap) data.getExtras().get("data");
+            rlSelectedImage.setVisibility(View.VISIBLE);
+            flClose.setVisibility(View.VISIBLE);
+            ivSelectedImage.setImageBitmap(sendImageBitmap);
+            Uri uri = data.getData();
+            String uriString = uri.toString();
+            File myFile = new File(uriString);
+            String path = myFile.getAbsolutePath();
+            sendImageName = path.substring(path.lastIndexOf("/") + 1);
         }
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && null != data) {
             Uri selectedImageUri = data.getData();
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
-//                rlSelectedImage.setVisibility(View.VISIBLE);
-//                ivSelectedImage.setImageBitmap(bitmap);
+                sendImageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
+                rlSelectedImage.setVisibility(View.VISIBLE);
+                flClose.setVisibility(View.VISIBLE);
+                ivSelectedImage.setImageBitmap(sendImageBitmap);
+                String uriString = selectedImageUri.toString();
+                File myFile = new File(uriString);
+                String path = myFile.getAbsolutePath();
+                sendImageName = path.substring(path.lastIndexOf("/") + 1);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        flagFileType = "1";
     }
 
     @Override
@@ -602,12 +638,16 @@ public class ChatActivity extends AppCompatActivity {
                                         message.setId(id);
                                         String senderID = chatJson.getString("senderID");
                                         message.setSenderId(senderID);
-                                        String sendat = chatJson.getString("sendat");
-                                        message.setCreatedAt(sendat);
-                                        String messagef = chatJson.getString("message");
-                                        message.setMessage(messagef);
+                                        String sendAt = chatJson.getString("sendat");
+                                        message.setCreatedAt(sendAt);
+                                        String chatMessage = chatJson.getString("message");
+                                        message.setMessage(chatMessage);
                                         String profilePic = chatJson.getString("sender_pic");
                                         message.setProfilePic(profilePic);
+                                        String file = chatJson.getString("file_url");
+                                        message.setFile(file);
+                                        String fileType = chatJson.getString("file_type");
+                                        message.setFileType(fileType);
                                         chatList.add(message);
                                     }
                                 } else {
@@ -659,46 +699,40 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public void sendMessage(final String message, final String user_Id/*, final String packAvailable*/) {
-
-        final StringRequest stringRequest = new StringRequest(Request.Method.POST, CHAT,
-                new Response.Listener<String>() {
+        VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, CHAT,
+                new Response.Listener<NetworkResponse>() {
                     @Override
-                    public void onResponse(String response) {
-
-                        String str = response;
+                    public void onResponse(NetworkResponse response) {
+                        String str = new String(response.data);
 //                        Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
-//                        getChatMsgs(chatId);
-//                        cAdapter.notifyDataSetChanged();
-//                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
                     }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
 
-                        String errorMsg = "";
-                        if (error instanceof TimeoutError) {
-                            errorMsg = "Internet connection timed out";
-                        } else if (error instanceof NoConnectionError) {
-                            errorMsg = "There is no connection";
-                        } else if (error instanceof AuthFailureError) {
-                            errorMsg = "AuthFailureError";
-                        } else if (error instanceof ServerError) {
-                            errorMsg = "We are facing problem in connecting to server";
-                        } else if (error instanceof NetworkError) {
-                            errorMsg = "We are facing problem in connecting to network";
-                        } else if (error instanceof ParseError) {
-                            errorMsg = "ParseError";
-                        }
-                        Toast.makeText(getApplicationContext(), "chat api error response " + errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                        error.printStackTrace();
-                    }
-                }) {
+                String errorMsg = "";
+                if (error instanceof TimeoutError) {
+                    errorMsg = "Internet connection timed out";
+                } else if (error instanceof NoConnectionError) {
+                    errorMsg = "There is no connection";
+                } else if (error instanceof AuthFailureError) {
+                    errorMsg = "AuthFailureError";
+                } else if (error instanceof ServerError) {
+                    errorMsg = "We are facing problem in connecting to server";
+                } else if (error instanceof NetworkError) {
+                    errorMsg = "We are facing problem in connecting to network";
+                } else if (error instanceof ParseError) {
+                    errorMsg = "ParseError";
+                }
+
+                Toast.makeText(getApplicationContext(), "chat api error response " + errorMsg, Toast.LENGTH_SHORT).show();
+                Log.d("Error", errorMsg);
+                error.printStackTrace();
+            }
+        }) {
             @Override
             protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-
+                Map<String, String> params = new HashMap<>();
                 if (chatType.equals("group")) {
                     if (senderId.equals(user_Id)) {
                         params.put(RECEIVER_ID, receiverId);
@@ -719,37 +753,33 @@ public class ChatActivity extends AppCompatActivity {
                         params.put(RECEIVER_ID, receiverId);
                     }
                 }
+                if (flagFileType.equals("1")) {
+                    params.put(FILE_TYPE, "image");
+                } else if (flagFileType.equals("2")) {
+                    params.put(FILE_TYPE, "station");
+                } else if (flagFileType.equals("3")) {
+                    params.put(FILE_TYPE, "admin_melody");
+                } else {
+
+                }
                 params.put(SENDER_ID, user_Id);
                 params.put(CHAT_ID, chatId);
                 params.put(TITLE, "message");
                 params.put(MESSAGE, message);
                 params.put(IS_READ, "0");
-//                params.put("file", );
-//                params.put("file_type", "image");
+                return params;
+            }
 
-                /*if (packAvailable.equals("True")) {
-                    params.put("file", packId);
-                    params.put("file_type", packType);
-                }*/
+            @Override
+            protected Map<String, DataPart> getByteData() {
+                Map<String, DataPart> params = new HashMap<>();
+                // file name could found file base or direct access from real path
+                // for now just get bitmap data from ImageView
+                params.put(FILE, new DataPart(sendImageName, AppHelper.getFileDataFromDrawable(getBaseContext(), sendImageBitmap), "image/jpeg"));
                 return params;
             }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        requestQueue.add(stringRequest);
-    }
-
-    public String checkIt(String response) {
-        JSONObject jsonObject;
-        String value = "0";
-        try {
-            jsonObject = new JSONObject(response);
-            if (jsonObject.getString("success").equals("1")) {
-                value = "1";
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return value;
+        VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
     }
 
     public void getGalleryImages() {
@@ -767,8 +797,6 @@ public class ChatActivity extends AppCompatActivity {
                     while (imageFileList.size() < 10) {
                         File file = files[i];
                         if (file.getAbsoluteFile().toString().trim().endsWith(".jpg")) {
-                            imageFileList.add(file.getAbsolutePath());
-                        } else if (file.getAbsoluteFile().toString().trim().endsWith(".png")) {
                             imageFileList.add(file.getAbsolutePath());
                         }
                         i--;
@@ -803,8 +831,6 @@ public class ChatActivity extends AppCompatActivity {
                     while (imageFileList.size() < 10) {
                         File file = files[i];
                         if (file.getAbsoluteFile().toString().trim().endsWith(".jpg")) {
-                            imageFileList.add(file.getAbsolutePath());
-                        } else if (file.getAbsoluteFile().toString().trim().endsWith(".png")) {
                             imageFileList.add(file.getAbsolutePath());
                         }
                         i--;
