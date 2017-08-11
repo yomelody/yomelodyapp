@@ -296,7 +296,6 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             });
 
             melodySlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
-
             {
 
                 @Override
@@ -581,7 +580,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-//                        Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
                     }
                 },
                 new Response.ErrorListener() {

@@ -225,7 +225,10 @@ public class StudioActivity extends AppCompatActivity {
     long stop_rec_time;
     String time_stop;
     int count = 0;
-
+    public static FrameLayout frameInstrument;
+    public static RelativeLayout rlFX, rlEQ, eqContent, fxContent,RltvFxButton,RltvEqButton;
+    public static TextView tvDoneFxEq,tvInstrumentLength,tvUserName,tvInstrumentName,tvBpmRate;
+    public static ImageView userProfileImage,ivInstrumentCover;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -255,8 +258,21 @@ public class StudioActivity extends AppCompatActivity {
         ivRecord_pause = (ImageView) findViewById(R.id.ivRecord_pause);
         profile_image = (CircleImageView) findViewById(R.id.profile_image);
         artist_name = (TextView) findViewById(R.id.artist_name);
-        //  recording_time = (TextView) findViewById(R.id.recording_time);
         melody_detail = (TextView) findViewById(R.id.melody_detail);
+        rlFX = (RelativeLayout) findViewById(R.id.rlFX);
+        rlEQ = (RelativeLayout) findViewById(R.id.rlEQ);
+        fxContent = (RelativeLayout) findViewById(R.id.fxContent);
+        eqContent = (RelativeLayout) findViewById(R.id.eqContent);
+        tvDoneFxEq = (TextView) findViewById(R.id.tvDoneFxEq);
+        RltvFxButton = (RelativeLayout) findViewById(R.id.RltvFxButton);
+        RltvEqButton = (RelativeLayout) findViewById(R.id.RltvEqButton);
+        frameInstrument=(FrameLayout)findViewById(R.id.frameInstrument);
+        tvInstrumentLength = (TextView) findViewById(R.id.tvInstrumentLength);
+        tvInstrumentName = (TextView) findViewById(R.id.tvInstrumentName);
+        tvUserName = (TextView) findViewById(R.id.tvUserName);
+        tvBpmRate = (TextView) findViewById(R.id.tvBpmRate);
+        userProfileImage = (ImageView) findViewById(R.id.userProfileImage);
+        ivInstrumentCover = (ImageView) findViewById(R.id.ivInstrumentCover);
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         firstName = loginSharedPref.getString("firstName", null);
         userNameLogin = loginSharedPref.getString("userName", null);
