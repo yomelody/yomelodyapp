@@ -46,7 +46,7 @@ import io.fabric.sdk.android.Fabric;
 public class SocialActivity extends AppCompatActivity {
 
     Switch switchFb, switchTwitter, switchSoundCloud, switchGoogle;
-    String fetchRecordingUrl;
+    String fetchRecordingUrl,fetchThumbNailUrl;
     CallbackManager callbackManager;
     ShareDialog shareDialog;
     URL ShortUrl;
@@ -93,6 +93,10 @@ public class SocialActivity extends AppCompatActivity {
         googleSignIn = (SignInButton) findViewById(R.id.googleSignIn);
         SharedPreferences loginSharedPref1 = this.getSharedPreferences("Url_recording", MODE_PRIVATE);
         fetchRecordingUrl = loginSharedPref1.getString("Recording_url", null);
+
+        SharedPreferences editorT = this.getSharedPreferences("thumbnail_url", MODE_PRIVATE);
+        fetchThumbNailUrl= editorT.getString("thumbnail_url", null);
+
         plus_one_button = (PlusOneButton) findViewById(R.id.plus_one_button);
 //        new URLShort().execute();
 
@@ -108,7 +112,7 @@ public class SocialActivity extends AppCompatActivity {
         switchFb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (fetchRecordingUrl == null) {
+                if (fetchThumbNailUrl == null) {
                     Toast.makeText(SocialActivity.this, "No Recording Found to Share", Toast.LENGTH_SHORT).show();
                     switchFb.setEnabled(false);
                 } else {
@@ -142,7 +146,7 @@ public class SocialActivity extends AppCompatActivity {
         switchTwitter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fetchRecordingUrl == null) {
+                if (fetchThumbNailUrl == null) {
                     Toast.makeText(SocialActivity.this, "No Recording Found to Share", Toast.LENGTH_SHORT).show();
                     switchTwitter.setEnabled(false);
                 } else {
@@ -178,7 +182,7 @@ public class SocialActivity extends AppCompatActivity {
         switchSoundCloud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fetchRecordingUrl == null) {
+                if (fetchThumbNailUrl == null) {
                     Toast.makeText(SocialActivity.this, "No Recording found to share", Toast.LENGTH_SHORT).show();
                     switchSoundCloud.setEnabled(false);
                 }
@@ -188,7 +192,7 @@ public class SocialActivity extends AppCompatActivity {
         switchGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fetchRecordingUrl == null) {
+                if (fetchThumbNailUrl == null) {
                     Toast.makeText(SocialActivity.this, "No Recording Found to Share", Toast.LENGTH_SHORT).show();
                     switchGoogle.setEnabled(false);
                 } else {
@@ -200,7 +204,7 @@ public class SocialActivity extends AppCompatActivity {
                             Intent shareIntent = new PlusShare.Builder(SocialActivity.this)
                                     .setType("text/plain")
                                     .setText("Welcome to the Google+ platform.")
-                                    .setContentUrl(Uri.parse(fetchRecordingUrl))
+                                    .setContentUrl(Uri.parse(fetchThumbNailUrl))
                                     .getIntent();
 
                             startActivityForResult(shareIntent, 0);
@@ -240,7 +244,7 @@ public class SocialActivity extends AppCompatActivity {
 
         if (ShareDialog.canShow(ShareLinkContent.class)) {
             ShareLinkContent linkContent = new ShareLinkContent.Builder()
-                    .setContentUrl(Uri.parse(fetchRecordingUrl))
+                    .setContentUrl(Uri.parse(fetchThumbNailUrl))
                     .setImageUrl(Uri.parse(cover))
                     .build();
             shareDialog.show(linkContent, ShareDialog.Mode.FEED);
@@ -270,7 +274,7 @@ public class SocialActivity extends AppCompatActivity {
     public void TweetShare() {
 
         try {
-            ShortUrl = new URL(fetchRecordingUrl);
+            ShortUrl = new URL(fetchThumbNailUrl);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -346,6 +350,6 @@ public class SocialActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         // Refresh the state of the +1 button each time the activity receives focus.
-        plus_one_button.initialize(fetchRecordingUrl, PLUS_ONE_REQUEST_CODE);
+        plus_one_button.initialize(fetchThumbNailUrl, PLUS_ONE_REQUEST_CODE);
     }
 }
