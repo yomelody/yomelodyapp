@@ -1,5 +1,7 @@
 package com.instamelody.instamelody;
 
+import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,9 +15,13 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -37,6 +43,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,6 +80,10 @@ public class Update extends AppCompatActivity {
     private int PICK_IMAGE_REQUEST = 1;
     private final int requestCode = 20;
     String password1;
+    DatePickerDialog dpd;
+    String formatedDate;
+    String pswd;
+    int day, month, year;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +111,7 @@ public class Update extends AppCompatActivity {
         etuPhone = (EditText) findViewById(R.id.etuPhone);
         userProfileImageUpdate = (CircleImageView) findViewById(R.id.userProfileImageUpdate);
         tvDobUpdate = (TextView) findViewById(R.id.tvDobUpdate);
+        errorConfirmPassUpdate = (TextView) findViewById(R.id.errorConfirmPassUpdate);
 
 
         etuFirstName.setText(firstName);
@@ -148,6 +162,73 @@ public class Update extends AppCompatActivity {
             }
         });
 
+        tvDobUpdate.setOnClickListener(new View.OnClickListener() {
+                                           @Override
+                                           public void onClick(View v) {
+                                               final Calendar c = Calendar.getInstance();
+                                               final DatePickerDialog dpd = new DatePickerDialog(Update.this,
+                                                       new DatePickerDialog.OnDateSetListener() {
+
+                                                           @Override
+                                                           public void onDateSet(DatePicker view, int year,
+                                                                                 int monthOfYear, int dayOfMonth) {
+
+                                                               tvDobUpdate.setText("Date of Birth:    " + dayOfMonth + " | " + (monthOfYear + 1) + " | " + year);
+                                                           }
+                                                       }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE));
+                                               dpd.getDatePicker().setMaxDate(new Date().getTime());
+                                               dpd.show();
+                                               etuPhone.setFocusableInTouchMode(true);
+                                               etuPhone.requestFocus();
+//                                         alertDialog.show();
+
+                                               day = dpd.getDatePicker().getDayOfMonth();
+                                               month = dpd.getDatePicker().getMonth();
+                                               year = dpd.getDatePicker().getYear();
+
+
+                                               SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                                               formatedDate = sdf.format(new Date(year, month, day));
+                                           }
+                                       }
+        );
+
+        etuConfirmPassWord.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_NEXT) {
+
+                    final Calendar c = Calendar.getInstance();
+
+                    dpd = new DatePickerDialog(Update.this,
+                            new DatePickerDialog.OnDateSetListener() {
+                                @Override
+                                public void onDateSet(DatePicker view, int year,
+                                                      int monthOfYear, int dayOfMonth) {
+                                    dpd.getDatePicker().setMaxDate(System.currentTimeMillis());
+                                    tvDobUpdate.setText("Date of Birth:    " + dayOfMonth + " | " + (monthOfYear + 1) + " | " + year);
+
+
+                                }
+                            }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE));
+                    dpd.getDatePicker().setMaxDate(new Date().getTime());
+                    dpd.show();
+
+                    InputMethodManager inputManager = (InputMethodManager)
+                            getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                    inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                            InputMethodManager.HIDE_NOT_ALWAYS);
+
+                    etuPhone.setFocusableInTouchMode(true);
+                    etuPhone.requestFocus();
+
+                    return true;
+                }
+                return false;
+            }
+        });
+
 
         buttonEditProfile = (Button) findViewById(R.id.buttonEditProfile);
         buttonUpdate = (Button) findViewById(R.id.buttonUpdate);
@@ -164,6 +245,7 @@ public class Update extends AppCompatActivity {
                 etuPassWord.setEnabled(true);
                 etuConfirmPassWord.setEnabled(true);
                 etuPhone.setEnabled(true);
+                tvDobUpdate.setEnabled(true);
                 etuPassWord.setHint("New Password");
                 etuConfirmPassWord.setHint("Confirm Password");
                 userProfileImageUpdate.setEnabled(true);
@@ -172,30 +254,48 @@ public class Update extends AppCompatActivity {
                 Drawable d = v1.getBackground();
                 d.setAlpha(255);
 
+            }
+        });
+
+        etuConfirmPassWord.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                errorConfirmPassUpdate.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
 
             }
         });
+
 
         buttonUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Update();
-                if (userProfileImageUpdate != null) {
-                    updateImage();
+                if (!etuConfirmPassWord.getText().toString().equals(etuPassWord.getText().toString())) {
+                    // Toast.makeText(SignUpActivity.this, "please check your confirm password .", Toast.LENGTH_SHORT).show();
+                    errorConfirmPassUpdate.setVisibility(View.VISIBLE);
+                    errorConfirmPassUpdate.setText("Password didn't match!");
+                } else {
+                    updateData();
                 }
             }
         });
-
     }
 
-
-    private void Update() {
+    private void updateData() {
         final String firstname = etuFirstName.getText().toString().trim();
         final String lastname = etuLastName.getText().toString().trim();
         final String username = etuUsername.getText().toString().trim();
         final String password = etuPassWord.getText().toString().trim();
-        if (password.equals("")) {
-            password1 = password;
+        if (password == null) {
+            password1 = pswd;
         } else {
             password1 = etuPassWord.getText().toString().trim();
         }
@@ -224,13 +324,14 @@ public class Update extends AppCompatActivity {
                             String flag = jsonObject.getString("flag");
                             if (flag.equals("success")) {
                                 String msg = jsonObject.getString("msg");
+                                if (userProfileImageUpdate != null) {
+                                    updateImage();
+                                }
 //                                Toast.makeText(Update.this, "" + msg, Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
-
                     }
                 },
                 new Response.ErrorListener() {
@@ -251,7 +352,7 @@ public class Update extends AppCompatActivity {
                 params.put(KEY_EMAIL, email);
                 params.put(KEY_USERNAME, username);
                 params.put(KEY_PASSWORD, password1);
-                params.put(KEY_DOB, dob);
+                params.put(KEY_DOB, date);
                 params.put(KEY_PHONE, phone);
                 return params;
             }
@@ -266,7 +367,7 @@ public class Update extends AppCompatActivity {
             @Override
             public void onResponse(NetworkResponse response) {
                 String resultResponse = new String(response.data);
-                Toast.makeText(getApplicationContext(), "Profile Picture Updated", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), "Profile Picture Updated", Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override
