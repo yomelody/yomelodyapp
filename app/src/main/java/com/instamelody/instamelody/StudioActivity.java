@@ -555,7 +555,7 @@ public class StudioActivity extends AppCompatActivity {
                 //  killMediaPlayer();
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
-                //    onStop();
+                 //   onStop();
             }
         });
 
@@ -939,6 +939,22 @@ public class StudioActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mp != null || mediaPlayer != null) {
+            if (mp.isPlaying() || mediaPlayer.isPlaying()) {
+                try {
+                    mp.reset();
+                    mediaPlayer.reset();
+
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+    }
     private boolean StopMediaPlayer(MediaPlayer mp) {
         if (mp != null) {
             if (mp.isPlaying()) {
@@ -2132,22 +2148,7 @@ public class StudioActivity extends AppCompatActivity {
 //        }
 //    }
 
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//        if (mp != null || mediaPlayer != null) {
-//            if (mp.isPlaying() || mediaPlayer.isPlaying()) {
-//                try {
-//                    mp.reset();
-//                    mediaPlayer.reset();
-//
-//                } catch (Throwable e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//        }
-//    }
+
 }
 
 

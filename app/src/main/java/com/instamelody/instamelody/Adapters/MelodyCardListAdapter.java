@@ -339,7 +339,6 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             });
 
             btnMelodyAdd.setOnClickListener(new View.OnClickListener()
-
             {
                 @Override
                 public void onClick(View v) {
@@ -438,14 +437,14 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     ParseContents pc = new ParseContents(context);
                     instrumentList = pc.getInstruments();
                     if (listPosition < instrumentList.size()) {
-                        audioUrl = instrumentList.get(listPosition).getInstrumentFile();
+                        audioUrl = melody.getMelodyURL();
                     }
 
                 } else {
                     ParseContents pc = new ParseContents(context);
                     instrumentList = pc.getInstruments();
                     if (listPosition < instrumentList.size()) {
-                        audioUrl = instrumentList.get(listPosition).getInstrumentFile();
+                        audioUrl = melody.getMelodyURL();
                     }
                 }
 //                    try {
