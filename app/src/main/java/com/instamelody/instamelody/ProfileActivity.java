@@ -894,7 +894,7 @@ public class ProfileActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(KEY, STATION);
+                params.put(KEY, "");
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
@@ -1021,7 +1021,7 @@ public class ProfileActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(KEY, STATION);
+                params.put(KEY, "");
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
@@ -1084,7 +1084,7 @@ public class ProfileActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(KEY, STATION);
+                params.put(KEY, "");
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, "Instruments");
@@ -1147,7 +1147,7 @@ public class ProfileActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(KEY, STATION);
+                params.put(KEY, "");
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
@@ -1190,7 +1190,6 @@ public class ProfileActivity extends AppCompatActivity {
                 editorFilterArtist.putString("stringFilterArtist", artistName);
                 editorFilterArtist.apply();
                 fetchRecordingsFilterArtist();
-                sharePrefClearProfile();
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtFilterName.getWindowToken(), 0);
 
@@ -1239,7 +1238,7 @@ public class ProfileActivity extends AppCompatActivity {
                 editorFilterInstruments.putString("stringFilterInstruments", Instruments);
                 editorFilterInstruments.apply();
                 fetchRecordingsFilterInstruments();
-                sharePrefClearProfile();
+
 
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtFilterInstruments.getWindowToken(), 0);
@@ -1290,7 +1289,6 @@ public class ProfileActivity extends AppCompatActivity {
                 editorFilterBPM.apply();
 
                 fetchRecordingsFilterBPM();
-                sharePrefClearProfile();
 
 
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -1311,7 +1309,7 @@ public class ProfileActivity extends AppCompatActivity {
         builder3.show();
     }
 
-    public void sharePrefClearProfile(){
+    public void sharePrefClearProfile() {
         SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
         editorFilterString.clear();
         editorFilterString.apply();

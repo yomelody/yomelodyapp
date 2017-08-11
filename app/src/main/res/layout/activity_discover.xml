@@ -205,6 +205,7 @@
                     android:padding="5dp">
 
                     <ImageView
+                        android:id="@+id/ivProfileD"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_alignParentTop="true"
