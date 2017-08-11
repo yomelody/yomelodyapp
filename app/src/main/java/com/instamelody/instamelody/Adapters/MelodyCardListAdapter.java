@@ -296,7 +296,6 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             });
 
             melodySlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
-
             {
 
                 @Override

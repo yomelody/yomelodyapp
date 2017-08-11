@@ -5,10 +5,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.CardView;
@@ -32,6 +35,7 @@ import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -298,38 +302,104 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         //holder.volumeSeekbar.setMax(holder.audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
 
         audioValue = instruments.getAudioType();
-        holder.rlEQ.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.frameInstrument.setVisibility(View.VISIBLE);
-                if (holder.eqContent.getVisibility() == View.VISIBLE) {
-                    holder.eqContent.setVisibility(View.GONE);
-                    holder.fxContent.setVisibility(View.GONE);
-                    holder.frameInstrument.setVisibility(View.GONE);
-                } else if (holder.eqContent.getVisibility() == View.GONE) {
-                    holder.eqContent.setVisibility(View.VISIBLE);
-                    holder.fxContent.setVisibility(View.GONE);
-                }
-            }
-        });
         holder.rlFX.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                holder.frameInstrument.setVisibility(View.VISIBLE);
-                if (holder.fxContent.getVisibility() == View.VISIBLE) {
-                    holder.fxContent.setVisibility(View.GONE);
-                    holder.eqContent.setVisibility(View.GONE);
-                    holder.frameInstrument.setVisibility(View.GONE);
-                } else if (holder.fxContent.getVisibility() == View.GONE) {
-                    holder.fxContent.setVisibility(View.VISIBLE);
-                    holder.eqContent.setVisibility(View.GONE);
+                String InstName="",UserName="",InstLength="",BPM="",ivInstrumentCover="",ivUserProfileImage="";
+                StudioActivity.frameInstrument.setVisibility(View.VISIBLE);
+                InstName=instrumentList.get(listPosition).getInstrumentName();
+                UserName=instrumentList.get(listPosition).getUserName();
+                InstLength=instrumentList.get(listPosition).getInstrumentLength();
+                BPM="BPM: "+instrumentList.get(listPosition).getInstrumentBpm().replaceAll("BPM: ","");
+                ivInstrumentCover = instrumentList.get(listPosition).getInstrumentCover();
+                ivUserProfileImage = instrumentList.get(listPosition).getUserProfilePic();
+                StudioActivity.tvInstrumentName.setText(InstName);
+                StudioActivity.tvUserName.setText(UserName);
+                StudioActivity.tvInstrumentLength.setText(InstLength);
+                StudioActivity.tvBpmRate.setText(BPM);
+                new InstrumentCover().execute(ivInstrumentCover);
+                new UserProfileCover().execute(ivUserProfileImage);
+
+                if(StudioActivity.fxContent.getVisibility()==View.VISIBLE)
+                {
+                    StudioActivity.eqContent.setVisibility(View.GONE);
+                }
+                else
+                {
+                    StudioActivity.fxContent.setVisibility(View.VISIBLE);
                 }
             }
         });
-        holder.tvDoneFxEq.setOnClickListener(new View.OnClickListener() {
+        holder.rlEQ.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                holder.frameInstrument.setVisibility(View.GONE);
+                String InstName="",UserName="",InstLength="",BPM="",ivInstrumentCover="",ivUserProfileImage="";
+                StudioActivity.frameInstrument.setVisibility(View.VISIBLE);
+                InstName=instrumentList.get(listPosition).getInstrumentName();
+                UserName=instrumentList.get(listPosition).getUserName();
+                InstLength=instrumentList.get(listPosition).getInstrumentLength();
+                BPM="BPM: "+instrumentList.get(listPosition).getInstrumentBpm().replaceAll("BPM: ","");
+                ivInstrumentCover = instrumentList.get(listPosition).getInstrumentCover();
+                ivUserProfileImage = instrumentList.get(listPosition).getUserProfilePic();
+                StudioActivity.tvInstrumentName.setText(InstName);
+                StudioActivity.tvUserName.setText(UserName);
+                StudioActivity.tvInstrumentLength.setText(InstLength);
+                StudioActivity.tvBpmRate.setText(BPM);
+                new InstrumentCover().execute(ivInstrumentCover);
+                new UserProfileCover().execute(ivUserProfileImage);
+
+                if(StudioActivity.fxContent.getVisibility()==View.VISIBLE)
+                {
+                    StudioActivity.fxContent.setVisibility(View.GONE);
+                }
+                else
+                {
+                    StudioActivity.eqContent.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        StudioActivity.RltvFxButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(StudioActivity.fxContent.getVisibility()==View.VISIBLE)
+                {
+                    StudioActivity.fxContent.setVisibility(View.GONE);
+                    StudioActivity.frameInstrument.setVisibility(View.GONE);
+                    StudioActivity.eqContent.setVisibility(View.GONE);
+                }
+                else
+                {
+                    StudioActivity.frameInstrument.setVisibility(View.VISIBLE);
+                    StudioActivity.eqContent.setVisibility(View.GONE);
+                    StudioActivity.fxContent.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        StudioActivity.RltvEqButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(StudioActivity.eqContent.getVisibility()==View.VISIBLE)
+                {
+                    StudioActivity.eqContent.setVisibility(View.GONE);
+                    StudioActivity.frameInstrument.setVisibility(View.GONE);
+                    StudioActivity.fxContent.setVisibility(View.GONE);
+                }
+                else
+                {
+                    StudioActivity.frameInstrument.setVisibility(View.VISIBLE);
+                    StudioActivity.fxContent.setVisibility(View.GONE);
+                    StudioActivity.eqContent.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        StudioActivity.tvDoneFxEq.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                StudioActivity.fxContent.setVisibility(View.GONE);
+                StudioActivity.frameInstrument.setVisibility(View.GONE);
+                StudioActivity.eqContent.setVisibility(View.GONE);
             }
         });
 
@@ -643,6 +713,53 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     public int getItemViewType(int position) {
         return (position == instrumentList.size()) ? R.layout.layout_button_sync : R.layout.card_melody_added;
     }
+    private class InstrumentCover extends AsyncTask<String, Void, Bitmap> {
+        //ImageView bmImage;
 
+        public InstrumentCover() {
+            //StudioActivity.ivInstrumentCover = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            StudioActivity.ivInstrumentCover.setImageBitmap(result);
+        }
+    }
+    private class UserProfileCover extends AsyncTask<String, Void, Bitmap> {
+        //ImageView bmImage;
+
+        public UserProfileCover() {
+            //StudioActivity.ivInstrumentCover = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            StudioActivity.userProfileImage.setImageBitmap(result);
+        }
+    }
 
 }
