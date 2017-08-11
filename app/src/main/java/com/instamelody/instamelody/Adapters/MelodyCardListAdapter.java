@@ -166,7 +166,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     String position;
                     String MelodyName;
                     //String positions = mpids.get(getAdapterPosition() + 1);
-                    if (userId != null) {
+                    if (!userId.equals("") && userId!=null) {
 //                        position = Integer.toString(getAdapterPosition() + 1);
                         //position = mpids.get(getAdapterPosition());
                         MelodyCard melody = melodyList.get(getAdapterPosition());
@@ -254,7 +254,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             rlComment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    if (!userId.equals("") && userId!=null) {
                     String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID;
 
                     instruments = tvInstrumentsUsed.getText().toString().trim();
@@ -291,6 +291,11 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 
                     Intent intent = new Intent(context, CommentsActivity.class);
                     context.startActivity(intent);
+                    } else {
+                        Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(context, SignInActivity.class);
+                        context.startActivity(intent);
+                    }
 
                 }
             });

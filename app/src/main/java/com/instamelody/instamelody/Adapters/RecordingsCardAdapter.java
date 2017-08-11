@@ -199,7 +199,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     String position;
 
                     String MelodyName;
-                    if (userId != null ) {
+                    if (!userId.equals("") && userId!=null) {
                         //Toast.makeText(context, "like", Toast.LENGTH_SHORT).show();
                         //position = mpids.get(getAdapterPosition() + 1);
 
@@ -259,7 +259,8 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             ivCommentButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(context, "comment", Toast.LENGTH_SHORT).show();
+                    if (!userId.equals("") && userId!=null) {
+                    //Toast.makeText(context, "comment", Toast.LENGTH_SHORT).show();
                     String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID;
 
                     //instruments = tvInstrumentsUsed.getText().toString().trim();
@@ -297,6 +298,11 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     Intent intent = new Intent(context, CommentsActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);
+                    } else {
+                        Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(context, SignInActivity.class);
+                        context.startActivity(intent);
+                    }
 
                 }
             });
