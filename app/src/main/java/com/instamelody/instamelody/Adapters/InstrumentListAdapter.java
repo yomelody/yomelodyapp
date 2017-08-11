@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -25,12 +26,12 @@ import android.widget.Toast;
 
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.R;
-import com.instamelody.instamelody.StudioActivity;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.facebook.FacebookSdk.getApplicationContext;
@@ -47,7 +48,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     static String audioUrl;
     private static String audioFilePath;
     private static String instrumentFile;
-    int duration1, currentPosition;
     int length;
     String coverPicStudio;
     int statusNormal, statusFb, statusTwitter;
@@ -76,10 +76,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
     }
 
-    public InstrumentListAdapter(boolean playfromStudio, Context context) {
-        this.playfrom_studio = playfromStudio;
-        this.context = context;
-    }
+
 
     public InstrumentListAdapter(boolean playfromStudio, Context context) {
         this.playfrom_studio = playfromStudio;

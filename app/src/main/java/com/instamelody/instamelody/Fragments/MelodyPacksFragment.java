@@ -319,7 +319,7 @@ public class MelodyPacksFragment extends Fragment {
 //                    params.put(USER_ID, userId);
                     }
 
-                }
+
                 return params;
             }
 
