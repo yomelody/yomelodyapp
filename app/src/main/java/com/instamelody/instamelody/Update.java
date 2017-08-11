@@ -23,6 +23,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -75,6 +76,7 @@ public class Update extends AppCompatActivity {
             errorDOBUpdate, tvDobUpdate, errorPhoneUpdate;
     String userId, firstName, lastName, userNameLogin, profilePicLogin, dob, mobile, email, date;
     CircleImageView userProfileImageUpdate;
+    ImageView ivEye;
     int statusNormal;
     private Bitmap bitmap;
     private int PICK_IMAGE_REQUEST = 1;
@@ -112,6 +114,7 @@ public class Update extends AppCompatActivity {
         userProfileImageUpdate = (CircleImageView) findViewById(R.id.userProfileImageUpdate);
         tvDobUpdate = (TextView) findViewById(R.id.tvDobUpdate);
         errorConfirmPassUpdate = (TextView) findViewById(R.id.errorConfirmPassUpdate);
+        ivEye = (ImageView) findViewById(R.id.ivEye);
 
 
         etuFirstName.setText(firstName);
@@ -159,6 +162,13 @@ public class Update extends AppCompatActivity {
                     });
                     alertDialog.show();
                 }
+            }
+        });
+
+        ivEye.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
 

@@ -131,6 +131,8 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        sharePrefClearProfile();
+
         SharedPreferences filterPref = this.getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
         SharedPreferences filterPrefArtist = this.getSharedPreferences("FilterPrefArtist", MODE_PRIVATE);
@@ -276,6 +278,7 @@ public class ProfileActivity extends AppCompatActivity {
                             SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
                             editorSearchString.clear();
                             editorSearchString.apply();
+                            sharePrefClearProfile();
                             builderInner.setTitle("Your Selected Item is");
                             fetchRecordingsFilter();
                         }
@@ -1189,6 +1192,7 @@ public class ProfileActivity extends AppCompatActivity {
                 editorFilterArtist.putString("stringFilterArtist", artistName);
                 editorFilterArtist.apply();
                 fetchRecordingsFilterArtist();
+                sharePrefClearProfile();
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtFilterName.getWindowToken(), 0);
 
@@ -1237,6 +1241,7 @@ public class ProfileActivity extends AppCompatActivity {
                 editorFilterInstruments.putString("stringFilterInstruments", Instruments);
                 editorFilterInstruments.apply();
                 fetchRecordingsFilterInstruments();
+                sharePrefClearProfile();
 
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtFilterInstruments.getWindowToken(), 0);
@@ -1287,6 +1292,7 @@ public class ProfileActivity extends AppCompatActivity {
                 editorFilterBPM.apply();
 
                 fetchRecordingsFilterBPM();
+                sharePrefClearProfile();
 
 
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -1305,5 +1311,23 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         builder3.show();
+    }
+
+    public void sharePrefClearProfile(){
+        SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+        editorFilterString.clear();
+        editorFilterString.apply();
+        SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+        editorSearchString.clear();
+        editorSearchString.apply();
+        SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
+        editorFilterArtist.clear();
+        editorFilterArtist.apply();
+        SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
+        editorFilterInstruments.clear();
+        editorFilterInstruments.apply();
+        SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
+        editorFilterBPM.clear();
+        editorFilterBPM.apply();
     }
 }
