@@ -317,7 +317,9 @@ public class MelodyPacksFragment extends Fragment {
                 String userId = loginSharedPref.getString("userId", null);
                 if (userId != null) {
 //                    params.put(USER_ID, userId);
-                }
+                    }
+
+
                 return params;
             }
 
@@ -431,7 +433,7 @@ public class MelodyPacksFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
+                params.put(FILE_TYPE, "admin_melody");
                 params.put(KEY_SEARCH, strSearch);
                 return params;
             }
@@ -662,5 +664,4 @@ class AsyncData extends AsyncTask<Void, Void, Void> {
         super.onPostExecute(result);
         // dismiss dialog
     }
-}
-}
+}}
