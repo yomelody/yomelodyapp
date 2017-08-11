@@ -939,6 +939,13 @@ public class StudioActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onPause() {
+        // TODO Auto-generated method stub
+        super.onPause();
+        mp.stop();
+    }
+
     private boolean StopMediaPlayer(MediaPlayer mp) {
         if (mp != null) {
             if (mp.isPlaying()) {

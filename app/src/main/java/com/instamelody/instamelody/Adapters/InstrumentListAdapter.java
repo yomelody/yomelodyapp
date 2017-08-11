@@ -227,6 +227,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         }
 
 
+
         private void primarySeekBarProgressUpdater() {
             Handler mHandler1 = new Handler();
             melodySlider.setProgress((int) (((float) mp.getCurrentPosition() / mp.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
