@@ -76,6 +76,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     MelodyMixing melodyMixing = new MelodyMixing();
     ArrayList<MixingData> list = new ArrayList<MixingData>();
     List aa;
+    int InstrumentListPosition;
 
     public InstrumentListAdapter(ArrayList<MelodyInstruments> instrumentList, Context context) {
         this.instrumentList = instrumentList;
@@ -238,6 +239,18 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 mHandler1.postDelayed(notification, 100);
             }
         }
+        private void FrameprimarySeekBarProgressUpdater() {
+            Handler mHandler1 = new Handler();
+            StudioActivity.FramemelodySlider.setProgress((int) (((float) StudioActivity.mpInst.getCurrentPosition() / StudioActivity.mpInst.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
+            if (StudioActivity.mpInst.isPlaying()) {
+                Runnable notification = new Runnable() {
+                    public void run() {
+                        FrameprimarySeekBarProgressUpdater();
+                    }
+                };
+                mHandler1.postDelayed(notification, 100);
+            }
+        }
     }
 
 
@@ -307,6 +320,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             @Override
             public void onClick(View v) {
                 String InstName="",UserName="",InstLength="",BPM="",ivInstrumentCover="",ivUserProfileImage="";
+                InstrumentListPosition=listPosition;
                 StudioActivity.frameInstrument.setVisibility(View.VISIBLE);
                 InstName=instrumentList.get(listPosition).getInstrumentName();
                 UserName=instrumentList.get(listPosition).getUserName();
@@ -335,6 +349,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             @Override
             public void onClick(View v) {
                 String InstName="",UserName="",InstLength="",BPM="",ivInstrumentCover="",ivUserProfileImage="";
+                InstrumentListPosition=listPosition;
                 StudioActivity.frameInstrument.setVisibility(View.VISIBLE);
                 InstName=instrumentList.get(listPosition).getInstrumentName();
                 UserName=instrumentList.get(listPosition).getUserName();
@@ -401,10 +416,11 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 StudioActivity.fxContent.setVisibility(View.GONE);
                 StudioActivity.frameInstrument.setVisibility(View.GONE);
                 StudioActivity.eqContent.setVisibility(View.GONE);
+                StudioActivity.mpInst.pause();
             }
         });
 
-        holder.volumeSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        StudioActivity.volumeSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar arg0) {
                 // TODO Auto-generated method stub
@@ -433,7 +449,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             }
 
         });
-        holder.sbBase.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        StudioActivity.sbBase.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar arg0) {
                 // TODO Auto-generated method stub
@@ -461,7 +477,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             }
 
         });
-        holder.sbTreble.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        StudioActivity.sbTreble.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar arg0) {
                 // TODO Auto-generated method stub
@@ -485,7 +501,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 aa = melodyMixing.getVocalsound();
             }
         });
-        holder.sbBase.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        StudioActivity.sbBase.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar arg0) {
                 // TODO Auto-generated method stub
@@ -509,7 +525,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 aa = melodyMixing.getVocalsound();
             }
         });
-        holder.sbReverb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        StudioActivity.sbReverb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar arg0) {
                 // TODO Auto-generated method stub
@@ -533,7 +549,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 aa = melodyMixing.getVocalsound();
             }
         });
-        holder.sbCompression.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        StudioActivity.sbCompression.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar arg0) {
                 // TODO Auto-generated method stub
@@ -557,7 +573,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 aa = melodyMixing.getVocalsound();
             }
         });
-        holder.sbDelay.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        StudioActivity.sbDelay.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar arg0) {
                 // TODO Auto-generated method stub
@@ -581,7 +597,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 aa = melodyMixing.getVocalsound();
             }
         });
-        holder.sbTempo.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        StudioActivity.sbTempo.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar arg0) {
                 // TODO Auto-generated method stub
@@ -605,7 +621,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 aa = melodyMixing.getVocalsound();
             }
         });
-        holder.sbPan.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        StudioActivity.sbPan.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar arg0) {
                 // TODO Auto-generated method stub
@@ -694,6 +710,73 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 StudioActivity.mpInst.pause();
                 length = StudioActivity.mpInst.getCurrentPosition();
                 holder.melodySlider.setProgress(0);
+            }
+        });
+
+        StudioActivity.FramesivPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                StudioActivity.FramesivPlay.setVisibility(v.GONE);
+                StudioActivity.FramesivPause.setVisibility(v.VISIBLE);
+                instrumentFile=instrumentList.get(InstrumentListPosition).getInstrumentFile();
+                instruments_url.add(instrumentFile);
+                //instrumentFile = instruments.getInstrumentFile();
+
+                holder.progressDialog = new ProgressDialog(v.getContext());
+                holder.progressDialog.setMessage("Loading...");
+                holder.progressDialog.show();
+                if(StudioActivity.mpInst!=null) {
+                    StudioActivity.mpInst.stop();
+                    StudioActivity.mpInst.release();
+                }
+                StudioActivity.mpInst = new MediaPlayer();
+                StudioActivity.mpInst.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                try {
+                    StudioActivity.mpInst.setDataSource(instrumentFile);
+                    StudioActivity.mpInst.prepareAsync();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                StudioActivity.mpInst.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        holder.progressDialog.dismiss();
+                        mp.start();
+                        holder.FrameprimarySeekBarProgressUpdater();
+
+                    }
+                });
+                StudioActivity.mpInst.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                    @Override
+                    public boolean onError(MediaPlayer mp, int what, int extra) {
+                        holder.progressDialog.dismiss();
+                        return false;
+                    }
+                });
+                StudioActivity.mpInst.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        duration1 = StudioActivity.mpInst.getDuration();
+                        currentPosition = StudioActivity.mpInst.getCurrentPosition();
+                        holder.progressDialog.dismiss();
+                    }
+                });
+
+                instrumentName = instruments.getInstrumentName();
+
+            }
+        });
+
+
+        StudioActivity.FramesivPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                StudioActivity.FramesivPlay.setVisibility(v.VISIBLE);
+                StudioActivity.FramesivPause.setVisibility(v.GONE);
+                StudioActivity.mpInst.pause();
+                length = StudioActivity.mpInst.getCurrentPosition();
+                StudioActivity.FramemelodySlider.setProgress(0);
             }
         });
 

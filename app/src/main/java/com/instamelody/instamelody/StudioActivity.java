@@ -23,7 +23,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
@@ -206,6 +205,7 @@ public class StudioActivity extends AppCompatActivity {
     public static MediaPlayer mpInst;
     static int duration1, currentPosition;
     SeekBar melodySlider;
+    public static SeekBar volumeSeekbar, sbTreble, sbBase, sbPan, sbPitch, sbReverb, sbCompression, sbDelay, sbTempo;
     String array[] = {""};
     ArrayList<String> instruments_count = new ArrayList<String>();
     Timer timer;
@@ -228,7 +228,8 @@ public class StudioActivity extends AppCompatActivity {
     public static FrameLayout frameInstrument;
     public static RelativeLayout rlFX, rlEQ, eqContent, fxContent,RltvFxButton,RltvEqButton;
     public static TextView tvDoneFxEq,tvInstrumentLength,tvUserName,tvInstrumentName,tvBpmRate;
-    public static ImageView userProfileImage,ivInstrumentCover;
+    public static ImageView userProfileImage,ivInstrumentCover,FramesivPause,FramesivPlay;
+    public static SeekBar FramemelodySlider;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -273,6 +274,18 @@ public class StudioActivity extends AppCompatActivity {
         tvBpmRate = (TextView) findViewById(R.id.tvBpmRate);
         userProfileImage = (ImageView) findViewById(R.id.userProfileImage);
         ivInstrumentCover = (ImageView) findViewById(R.id.ivInstrumentCover);
+        volumeSeekbar = (SeekBar) findViewById(R.id.sbVolume);
+        sbTreble = (SeekBar) findViewById(R.id.sbTreble);
+        sbBase = (SeekBar) findViewById(R.id.sbBase);
+        sbReverb = (SeekBar) findViewById(R.id.sbReverb);
+        sbCompression = (SeekBar) findViewById(R.id.sbCompression);
+        sbDelay = (SeekBar) findViewById(R.id.sbDelay);
+        sbTempo = (SeekBar) findViewById(R.id.sbTempo);
+        sbPan = (SeekBar) findViewById(R.id.sbPan);
+        sbPitch = (SeekBar) findViewById(R.id.sbPitch);
+        FramesivPause = (ImageView) findViewById(R.id.FramesivPause);
+        FramesivPlay = (ImageView) findViewById(R.id.FramesivPlay);
+        FramemelodySlider = (SeekBar) findViewById(R.id.FramemelodySlider);
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         firstName = loginSharedPref.getString("firstName", null);
         userNameLogin = loginSharedPref.getString("userName", null);
@@ -990,22 +1003,6 @@ public class StudioActivity extends AppCompatActivity {
         // return timer string
         return String.valueOf(seconds);
     }
-
-    private void primarySeekBarProgressUpdater() {
-
-        Handler mHandler1 = new Handler();
-        melodySlider.setProgress((int) (((float) mp.getCurrentPosition() / duration1) * 100));// This math construction give a percentage of "was playing"/"song length"
-        if (mp.isPlaying()) {
-            Runnable notification = new Runnable() {
-                public void run() {
-                    primarySeekBarProgressUpdater();
-                }
-            };
-            mHandler1.postDelayed(notification, 100);
-        }
-    }
-
-
     private void openDialog() {
         LayoutInflater inflater = LayoutInflater.from(StudioActivity.this);
         View subView = inflater.inflate(R.layout.dialog_layout, null);

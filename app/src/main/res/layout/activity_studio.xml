@@ -351,7 +351,7 @@
                                             android:visibility="visible" />
 
                                         <SeekBar
-                                            android:id="@+id/melodySlider"
+                                            android:id="@+id/FramemelodySlider"
                                             android:layout_width="match_parent"
                                             android:layout_height="21dp"
                                             android:layout_alignParentBottom="true"
@@ -364,7 +364,7 @@
                                             android:visibility="visible" />
 
                                         <ImageView
-                                            android:id="@+id/ivPause"
+                                            android:id="@+id/FramesivPause"
                                             android:layout_width="40dp"
                                             android:layout_height="match_parent"
                                             android:layout_alignParentLeft="true"
@@ -375,7 +375,7 @@
                                             app:srcCompat="@drawable/transparent_pause" />
 
                                         <ImageView
-                                            android:id="@+id/ivPlay"
+                                            android:id="@+id/FramesivPlay"
                                             android:layout_width="40dp"
                                             android:layout_height="match_parent"
                                             android:layout_alignParentLeft="true"
