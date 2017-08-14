@@ -1,6 +1,7 @@
 package com.instamelody.instamelody;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -25,6 +27,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -32,6 +35,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -53,11 +57,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.vision.Frame;
+import com.google.android.gms.vision.barcode.Barcode;
 import com.instamelody.instamelody.Adapters.ChatAdapter;
 import com.instamelody.instamelody.Adapters.RecentImagesAdapter;
 import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.RecentImagesModel;
 import com.instamelody.instamelody.utils.AppHelper;
+import com.instamelody.instamelody.utils.ImageCompressor;
 import com.instamelody.instamelody.utils.NotificationUtils;
 import com.instamelody.instamelody.utils.VolleyMultipartRequest;
 import com.instamelody.instamelody.utils.VolleySingleton;
@@ -72,9 +78,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,6 +103,10 @@ public class ChatActivity extends AppCompatActivity {
 
     private static int RESULT_LOAD_IMAGE = 2;
     private final int requestCode = 20;
+
+    private static final int CAMERA_PHOTO = 111;
+    private Uri imageToUploadUri;
+
     Bitmap bitmap;
     private static final int PICK_IMAGE_REQUEST = 1;
     public static final int MY_PERMISSIONS_REQUEST_READ_STORAGE = 201;
@@ -411,10 +425,10 @@ public class ChatActivity extends AppCompatActivity {
                     rlBtnPhotoLibrary.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent intent = new Intent();
-                            intent.setType("image/*");
-                            intent.setAction(Intent.ACTION_GET_CONTENT);
-                            startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+                            Intent getIntent = new Intent(Intent.ACTION_PICK);
+                            getIntent.setType("image/*");
+                            Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST);
                             alertDialog.cancel();
                         }
                     });
@@ -422,8 +436,14 @@ public class ChatActivity extends AppCompatActivity {
                     rlBtnTakePhotoOrVideo.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent photoCaptureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                            startActivityForResult(photoCaptureIntent, requestCode);
+
+                            Intent chooserIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                            Date d = new Date();
+                            CharSequence s  = DateFormat.format("yyyyMMdd_hh_mm_ss", d.getTime());
+                            File f = new File(Environment.getExternalStorageDirectory(), "IMG_" + s.toString() + ".jpg");
+                            chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                            imageToUploadUri = Uri.fromFile(f);
+                            startActivityForResult(chooserIntent, CAMERA_PHOTO);
                             alertDialog.cancel();
                         }
                     });
@@ -505,29 +525,81 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (this.requestCode == requestCode && resultCode == RESULT_OK && null != data) {
-            sendImageBitmap = (Bitmap) data.getExtras().get("data");
-            rlSelectedImage.setVisibility(View.VISIBLE);
-            flClose.setVisibility(View.VISIBLE);
-            ivSelectedImage.setImageBitmap(sendImageBitmap);
-            Uri uri = data.getData();
-            String uriString = uri.toString();
-            File myFile = new File(uriString);
-            String path = myFile.getAbsolutePath();
-            sendImageName = path.substring(path.lastIndexOf("/") + 1);
+
+        if (requestCode == CAMERA_PHOTO && resultCode == Activity.RESULT_OK) {
+            if (imageToUploadUri != null) {
+                Uri selectedImage = imageToUploadUri;
+                sendImageName = imageToUploadUri.getPath();
+                getContentResolver().notifyChange(selectedImage, null);
+                ImageCompressor ic = new ImageCompressor(getApplicationContext());
+                sendImageBitmap = ic.compressImage(sendImageName);
+                if (sendImageBitmap != null) {
+                    rlSelectedImage.setVisibility(View.VISIBLE);
+                    flClose.setVisibility(View.VISIBLE);
+                    ivSelectedImage.setImageBitmap(sendImageBitmap);
+                } else {
+                    Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
+            }
         }
+
+//        if (this.requestCode == requestCode && resultCode == RESULT_OK && null != data) {
+////            sendImageBitmap = (Bitmap) data.getExtras().get("data");
+////            rlSelectedImage.setVisibility(View.VISIBLE);
+////            flClose.setVisibility(View.VISIBLE);
+////            ivSelectedImage.setImageBitmap(sendImageBitmap);
+//            Uri uri = data.getData();
+//            String uriString = uri.toString();
+//            File myFile = new File(uriString);
+//            String path = myFile.getAbsolutePath();
+//            sendImageName = path.substring(path.lastIndexOf("/") + 1);
+//            ImageCompressor ic = new ImageCompressor(getApplicationContext());
+//            sendImageBitmap = ic.compressImage(path);
+//            rlSelectedImage.setVisibility(View.VISIBLE);
+//            flClose.setVisibility(View.VISIBLE);
+//            ivSelectedImage.setImageBitmap((Bitmap) data.getExtras().get("data"));
+//
+//        }
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && null != data) {
-            Uri selectedImageUri = data.getData();
             try {
-                sendImageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                // Get the cursor
+                Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                // Move to first row
+                cursor.moveToFirst();
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String img_Decodable_Str = cursor.getString(columnIndex);
+                cursor.close();
+                sendImageName = img_Decodable_Str.substring(img_Decodable_Str.lastIndexOf("/") + 1);
                 rlSelectedImage.setVisibility(View.VISIBLE);
                 flClose.setVisibility(View.VISIBLE);
+                ImageCompressor ic = new ImageCompressor(getApplicationContext());
+                sendImageBitmap = ic.compressImage(img_Decodable_Str);
                 ivSelectedImage.setImageBitmap(sendImageBitmap);
-                String uriString = selectedImageUri.toString();
-                File myFile = new File(uriString);
-                String path = myFile.getAbsolutePath();
-                sendImageName = path.substring(path.lastIndexOf("/") + 1);
-            } catch (IOException e) {
+
+//                sendImageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
+//                rlSelectedImage.setVisibility(View.VISIBLE);
+//                flClose.setVisibility(View.VISIBLE);
+//                ivSelectedImage.setImageBitmap(sendImageBitmap);
+//                String path = selectedImageUri.toString();
+//                try {
+//                    File file = new File(new URI(path));
+//                } catch (URISyntaxException e) {
+//                    e.printStackTrace();
+//                }
+
+//                File myFile = new File(selectedImageUri.getPath());
+//                myFile.getAbsolutePath();
+
+//                ivSelectedImage.setImageBitmap(sendImageBitmap);
+//                String uriString = selectedImageUri.toString();
+//                File myFile = new File(uriString);
+//                String path = myFile.getAbsolutePath();
+//                sendImageName = path.substring(path.lastIndexOf("/") + 1);
+            } catch (Throwable e) {
                 e.printStackTrace();
             }
         }
@@ -801,18 +873,21 @@ public class ChatActivity extends AppCompatActivity {
                         }
                         i--;
                     }
+
+                    String file, filename;
+                    int length = imageFileList.size();
+                    for (int j = 0; j < length; j++) {
+                        RecentImagesModel rim = new RecentImagesModel();
+                        file = imageFileList.get(j);
+                        rim.setFilepath(file);
+                        filename = file.substring(file.lastIndexOf("/") + 1);
+                        rim.setName(filename);
+                        fileInfo.add(rim);
+                    }
+
                 }
 
-                String file, filename;
-                int length = imageFileList.size();
-                for (int i = 0; i < length; i++) {
-                    RecentImagesModel rim = new RecentImagesModel();
-                    file = imageFileList.get(i);
-                    rim.setFilepath(file);
-                    filename = file.substring(file.lastIndexOf("/") + 1);
-                    rim.setName(filename);
-                    fileInfo.add(rim);
-                }
+
             } else {
                 Toast.makeText(getApplicationContext(), "Failed to read External storage", Toast.LENGTH_LONG).show();
             }
@@ -890,6 +965,67 @@ public class ChatActivity extends AppCompatActivity {
             receiverId = receiverId.replaceAll(",null", "");
         } catch (Exception e) {
             Log.e("exception", e.toString());
+        }
+    }
+
+    private Bitmap getBitmap(String path) {
+
+        Uri uri = Uri.fromFile(new File(path));
+        InputStream in = null;
+        try {
+            final int IMAGE_MAX_SIZE = 1200000; // 1.2MP
+            in = getContentResolver().openInputStream(uri);
+
+            // Decode image size
+            BitmapFactory.Options o = new BitmapFactory.Options();
+            o.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(in, null, o);
+            in.close();
+
+
+            int scale = 1;
+            while ((o.outWidth * o.outHeight) * (1 / Math.pow(scale, 2)) >
+                    IMAGE_MAX_SIZE) {
+                scale++;
+            }
+            Log.d("", "scale = " + scale + ", orig-width: " + o.outWidth + ", orig-height: " + o.outHeight);
+
+            Bitmap b = null;
+            in = getContentResolver().openInputStream(uri);
+            if (scale > 1) {
+                scale--;
+                // scale to max possible inSampleSize that still yields an image
+                // larger than target
+                o = new BitmapFactory.Options();
+                o.inSampleSize = scale;
+                b = BitmapFactory.decodeStream(in, null, o);
+
+                // resize to desired dimensions
+                int height = b.getHeight();
+                int width = b.getWidth();
+                Log.d("", "1th scale operation dimenions - width: " + width + ", height: " + height);
+
+                double y = Math.sqrt(IMAGE_MAX_SIZE
+                        / (((double) width) / height));
+                double x = (y / height) * width;
+
+                Bitmap scaledBitmap = Bitmap.createScaledBitmap(b, (int) x,
+                        (int) y, true);
+                b.recycle();
+                b = scaledBitmap;
+
+                System.gc();
+            } else {
+                b = BitmapFactory.decodeStream(in);
+            }
+            in.close();
+
+            Log.d("", "bitmap size - width: " + b.getWidth() + ", height: " +
+                    b.getHeight());
+            return b;
+        } catch (IOException e) {
+            Log.e("", e.getMessage(), e);
+            return null;
         }
     }
 }

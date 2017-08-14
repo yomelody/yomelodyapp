@@ -239,13 +239,15 @@ public class MessengerActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        if(userId != null)
         getChats(userId);
     }
 
     @Override
     public void onRestart() {
         super.onRestart();
-        getChats(userId);
+        if(userId != null)
+            getChats(userId);
     }
 
 }
