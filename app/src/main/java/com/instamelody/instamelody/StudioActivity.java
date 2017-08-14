@@ -226,9 +226,10 @@ public class StudioActivity extends AppCompatActivity {
     String time_stop;
     int count = 0;
     public static FrameLayout frameInstrument;
-    public static RelativeLayout rlFX, rlEQ, eqContent, fxContent,RltvFxButton,RltvEqButton;
-    public static TextView tvDoneFxEq,tvInstrumentLength,tvUserName,tvInstrumentName,tvBpmRate;
-    public static ImageView userProfileImage,ivInstrumentCover;
+    public static RelativeLayout rlFX, rlEQ, eqContent, fxContent, RltvFxButton, RltvEqButton;
+    public static TextView tvDoneFxEq, tvInstrumentLength, tvUserName, tvInstrumentName, tvBpmRate;
+    public static ImageView userProfileImage, ivInstrumentCover;
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -266,7 +267,7 @@ public class StudioActivity extends AppCompatActivity {
         tvDoneFxEq = (TextView) findViewById(R.id.tvDoneFxEq);
         RltvFxButton = (RelativeLayout) findViewById(R.id.RltvFxButton);
         RltvEqButton = (RelativeLayout) findViewById(R.id.RltvEqButton);
-        frameInstrument=(FrameLayout)findViewById(R.id.frameInstrument);
+        frameInstrument = (FrameLayout) findViewById(R.id.frameInstrument);
         tvInstrumentLength = (TextView) findViewById(R.id.tvInstrumentLength);
         tvInstrumentName = (TextView) findViewById(R.id.tvInstrumentName);
         tvUserName = (TextView) findViewById(R.id.tvUserName);
@@ -532,6 +533,16 @@ public class StudioActivity extends AppCompatActivity {
         rlMelodyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (InstrumentListAdapter.mp_start != null) {
+                    killMediaPlayer_fromInstrument();
+                }
+                if (mps != null) {
+                    ivRecord_stop.performClick();
+
+                }
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    ivRecord_pause.performClick();
+                }
                 Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
                 startActivity(intent);
                 SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("cover response", MODE_PRIVATE).edit();
@@ -543,6 +554,26 @@ public class StudioActivity extends AppCompatActivity {
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (InstrumentListAdapter.mp_start != null) {
+                    killMediaPlayer_fromInstrument();
+                }
+                if (mps != null) {
+                    ivRecord_stop.performClick();
+
+                }
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    ivRecord_pause.performClick();
+                }
+                if (MelodyCardListAdapter.mediaPlayer != null && MelodyCardListAdapter.mediaPlayer.isPlaying()) {
+                    try {
+                        MelodyCardListAdapter.mediaPlayer.stop();
+                        MelodyCardListAdapter.mediaPlayer.reset();
+                        MelodyCardListAdapter.mediaPlayer.release();
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 finish();
                 //killMediaPlayer();
                 //   onStop();
@@ -552,16 +583,36 @@ public class StudioActivity extends AppCompatActivity {
         ivHomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (InstrumentListAdapter.mp_start != null) {
+                    killMediaPlayer_fromInstrument();
+                }
+                if (mps != null) {
+                    ivRecord_stop.performClick();
+
+                }
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    ivRecord_pause.performClick();
+                }
                 //  killMediaPlayer();
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
-                 //   onStop();
+                //   onStop();
             }
         });
 
         discover.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (InstrumentListAdapter.mp_start != null) {
+                    killMediaPlayer_fromInstrument();
+                }
+                if (mps != null) {
+                    ivRecord_stop.performClick();
+
+                }
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    ivRecord_pause.performClick();
+                }
                 Intent intent = new Intent(getApplicationContext(), DiscoverActivity.class);
                 startActivity(intent);
             }
@@ -570,6 +621,16 @@ public class StudioActivity extends AppCompatActivity {
         message.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (InstrumentListAdapter.mp_start != null) {
+                    killMediaPlayer_fromInstrument();
+                }
+                if (mps != null) {
+                    ivRecord_stop.performClick();
+
+                }
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    ivRecord_pause.performClick();
+                }
                 Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
                 startActivity(intent);
             }
@@ -578,6 +639,16 @@ public class StudioActivity extends AppCompatActivity {
         ivProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (InstrumentListAdapter.mp_start != null) {
+                    killMediaPlayer_fromInstrument();
+                }
+                if (mps != null) {
+                    ivRecord_stop.performClick();
+
+                }
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    ivRecord_pause.performClick();
+                }
                 Intent i = new Intent(StudioActivity.this, ProfileActivity.class);
                 startActivity(i);
             }
@@ -586,6 +657,16 @@ public class StudioActivity extends AppCompatActivity {
         audio_feed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (InstrumentListAdapter.mp_start != null) {
+                    killMediaPlayer_fromInstrument();
+                }
+                if (mps != null) {
+                    ivRecord_stop.performClick();
+
+                }
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    ivRecord_pause.performClick();
+                }
                 Intent i = new Intent(StudioActivity.this, StationActivity.class);
                 startActivity(i);
             }
@@ -721,9 +802,15 @@ public class StudioActivity extends AppCompatActivity {
                     recorder = null;
                     isRecording = false;
                 } else {
-                    mediaPlayer.release();
-                    mediaPlayer = null;
-                    rlRecordingButton.setEnabled(true);
+                    try {
+                        mediaPlayer.release();
+                        mediaPlayer = null;
+                        rlRecordingButton.setEnabled(true);
+                    }
+                    catch (Throwable e){
+                        e.printStackTrace();
+                    }
+
                 }
                 tvDone.setEnabled(true);
                 chrono.stop();
@@ -943,7 +1030,7 @@ public class StudioActivity extends AppCompatActivity {
     protected void onPause() {
         // TODO Auto-generated method stub
         super.onPause();
-        mp.stop();
+//        mp.stop();
     }
 
     private boolean StopMediaPlayer(MediaPlayer mp) {
@@ -1945,6 +2032,20 @@ public class StudioActivity extends AppCompatActivity {
             }
         }
         mps.clear();
+    }
+
+    public void killMediaPlayer_fromInstrument() {
+        for (MediaPlayer mp : InstrumentListAdapter.mp_start) {
+            try {
+                mp.stop();
+                mp.reset();
+                mp.release();
+                //     mp=null;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        InstrumentListAdapter.mp_start.clear();
     }
 
 

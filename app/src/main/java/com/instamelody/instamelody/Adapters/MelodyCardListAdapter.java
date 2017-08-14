@@ -82,7 +82,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     String Topic = "topic";
     RecordingsPool recordingsPool;
     Context context;
-    MediaPlayer mediaPlayer;
+    public static MediaPlayer mediaPlayer;
     int playerPos, TempLength = 0;
     int duration, length;
     String mpid, MelodyName, TempRecordingid = "0", Recordingid;
@@ -295,8 +295,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 }
             });
 
-            melodySlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
-            {
+            melodySlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -338,8 +337,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 }
             });
 
-            btnMelodyAdd.setOnClickListener(new View.OnClickListener()
-            {
+            btnMelodyAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     String position = Integer.toString(getAdapterPosition());

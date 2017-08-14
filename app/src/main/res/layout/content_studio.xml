@@ -387,7 +387,9 @@
                                 android:layout_gravity="start|bottom"
                                 android:layout_marginEnd="14dp"
                                 android:layout_marginRight="14dp"
-                                app:srcCompat="@drawable/red_plus" />
+                                app:srcCompat="@drawable/red_plus"
+                                android:layout_toRightOf="@+id/tvMelodyAdd"
+                                android:layout_toEndOf="@+id/tvMelodyAdd" />
 
                             <TextView
                                 android:id="@+id/tvMelodyAdd"

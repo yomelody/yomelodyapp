@@ -77,6 +77,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     MelodyMixing melodyMixing = new MelodyMixing();
     ArrayList<MixingData> list = new ArrayList<MixingData>();
     List aa;
+    public static List<MediaPlayer> mp_start = new ArrayList<MediaPlayer>();
 
     public InstrumentListAdapter(ArrayList<MelodyInstruments> instrumentList, Context context) {
         this.instrumentList = instrumentList;
@@ -222,23 +223,26 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             });
 
 
-
-
         }
-
 
 
         private void primarySeekBarProgressUpdater() {
             Handler mHandler1 = new Handler();
-            melodySlider.setProgress((int) (((float) mp.getCurrentPosition() / mp.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
-            if (mp.isPlaying()) {
-                Runnable notification = new Runnable() {
-                    public void run() {
-                        primarySeekBarProgressUpdater();
-                    }
-                };
-                mHandler1.postDelayed(notification, 100);
+            try {
+                melodySlider.setProgress((int) (((float) mp.getCurrentPosition() / mp.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
+                if (mp.isPlaying()) {
+                    Runnable notification = new Runnable() {
+                        public void run() {
+                            primarySeekBarProgressUpdater();
+                        }
+                    };
+                    mHandler1.postDelayed(notification, 100);
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
             }
+
+
         }
     }
 
@@ -308,12 +312,12 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         holder.rlFX.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String InstName="",UserName="",InstLength="",BPM="",ivInstrumentCover="",ivUserProfileImage="";
+                String InstName = "", UserName = "", InstLength = "", BPM = "", ivInstrumentCover = "", ivUserProfileImage = "";
                 StudioActivity.frameInstrument.setVisibility(View.VISIBLE);
-                InstName=instrumentList.get(listPosition).getInstrumentName();
-                UserName=instrumentList.get(listPosition).getUserName();
-                InstLength=instrumentList.get(listPosition).getInstrumentLength();
-                BPM="BPM: "+instrumentList.get(listPosition).getInstrumentBpm().replaceAll("BPM: ","");
+                InstName = instrumentList.get(listPosition).getInstrumentName();
+                UserName = instrumentList.get(listPosition).getUserName();
+                InstLength = instrumentList.get(listPosition).getInstrumentLength();
+                BPM = "BPM: " + instrumentList.get(listPosition).getInstrumentBpm().replaceAll("BPM: ", "");
                 ivInstrumentCover = instrumentList.get(listPosition).getInstrumentCover();
                 ivUserProfileImage = instrumentList.get(listPosition).getUserProfilePic();
                 StudioActivity.tvInstrumentName.setText(InstName);
@@ -323,12 +327,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 new InstrumentCover().execute(ivInstrumentCover);
                 new UserProfileCover().execute(ivUserProfileImage);
 
-                if(StudioActivity.fxContent.getVisibility()==View.VISIBLE)
-                {
+                if (StudioActivity.fxContent.getVisibility() == View.VISIBLE) {
                     StudioActivity.eqContent.setVisibility(View.GONE);
-                }
-                else
-                {
+                } else {
                     StudioActivity.fxContent.setVisibility(View.VISIBLE);
                 }
             }
@@ -336,12 +337,12 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         holder.rlEQ.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String InstName="",UserName="",InstLength="",BPM="",ivInstrumentCover="",ivUserProfileImage="";
+                String InstName = "", UserName = "", InstLength = "", BPM = "", ivInstrumentCover = "", ivUserProfileImage = "";
                 StudioActivity.frameInstrument.setVisibility(View.VISIBLE);
-                InstName=instrumentList.get(listPosition).getInstrumentName();
-                UserName=instrumentList.get(listPosition).getUserName();
-                InstLength=instrumentList.get(listPosition).getInstrumentLength();
-                BPM="BPM: "+instrumentList.get(listPosition).getInstrumentBpm().replaceAll("BPM: ","");
+                InstName = instrumentList.get(listPosition).getInstrumentName();
+                UserName = instrumentList.get(listPosition).getUserName();
+                InstLength = instrumentList.get(listPosition).getInstrumentLength();
+                BPM = "BPM: " + instrumentList.get(listPosition).getInstrumentBpm().replaceAll("BPM: ", "");
                 ivInstrumentCover = instrumentList.get(listPosition).getInstrumentCover();
                 ivUserProfileImage = instrumentList.get(listPosition).getUserProfilePic();
                 StudioActivity.tvInstrumentName.setText(InstName);
@@ -351,12 +352,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 new InstrumentCover().execute(ivInstrumentCover);
                 new UserProfileCover().execute(ivUserProfileImage);
 
-                if(StudioActivity.fxContent.getVisibility()==View.VISIBLE)
-                {
+                if (StudioActivity.fxContent.getVisibility() == View.VISIBLE) {
                     StudioActivity.fxContent.setVisibility(View.GONE);
-                }
-                else
-                {
+                } else {
                     StudioActivity.eqContent.setVisibility(View.VISIBLE);
                 }
             }
@@ -365,14 +363,11 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             @Override
             public void onClick(View v) {
 
-                if(StudioActivity.fxContent.getVisibility()==View.VISIBLE)
-                {
+                if (StudioActivity.fxContent.getVisibility() == View.VISIBLE) {
                     StudioActivity.fxContent.setVisibility(View.GONE);
                     StudioActivity.frameInstrument.setVisibility(View.GONE);
                     StudioActivity.eqContent.setVisibility(View.GONE);
-                }
-                else
-                {
+                } else {
                     StudioActivity.frameInstrument.setVisibility(View.VISIBLE);
                     StudioActivity.eqContent.setVisibility(View.GONE);
                     StudioActivity.fxContent.setVisibility(View.VISIBLE);
@@ -382,14 +377,11 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         StudioActivity.RltvEqButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(StudioActivity.eqContent.getVisibility()==View.VISIBLE)
-                {
+                if (StudioActivity.eqContent.getVisibility() == View.VISIBLE) {
                     StudioActivity.eqContent.setVisibility(View.GONE);
                     StudioActivity.frameInstrument.setVisibility(View.GONE);
                     StudioActivity.fxContent.setVisibility(View.GONE);
-                }
-                else
-                {
+                } else {
                     StudioActivity.frameInstrument.setVisibility(View.VISIBLE);
                     StudioActivity.fxContent.setVisibility(View.GONE);
                     StudioActivity.eqContent.setVisibility(View.VISIBLE);
@@ -646,22 +638,31 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 holder.progressDialog.setMessage("Loading...");
                 holder.progressDialog.show();
                 holder.mp = new MediaPlayer();
+
                 holder.mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 try {
                     holder.mp.setDataSource(instrumentFile);
                     holder.mp.prepareAsync();
+                    mp_start.add(holder.mp);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                holder.mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                    @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        holder.progressDialog.dismiss();
-                        mp.start();
-                        holder.primarySeekBarProgressUpdater();
+                for (MediaPlayer instrument_media : mp_start) {
+                    instrument_media.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            holder.progressDialog.dismiss();
+                            mp.start();
+                            try {
+                                holder.primarySeekBarProgressUpdater();
+                            } catch (Throwable e) {
+                                e.printStackTrace();
+                            }
 
-                    }
-                });
+                        }
+                    });
+                }
+
                 holder.mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                     @Override
                     public boolean onError(MediaPlayer mp, int what, int extra) {
@@ -696,7 +697,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         });
 
 
-
         Intent i = new Intent("fetchingInstruments");
         i.putStringArrayListExtra("instruments", instrument_url_count);
         LocalBroadcastManager.getInstance(context).sendBroadcast(i);
@@ -718,6 +718,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     public int getItemViewType(int position) {
         return (position == instrumentList.size()) ? R.layout.layout_button_sync : R.layout.card_melody_added;
     }
+
     private class InstrumentCover extends AsyncTask<String, Void, Bitmap> {
         //ImageView bmImage;
 
@@ -742,6 +743,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             StudioActivity.ivInstrumentCover.setImageBitmap(result);
         }
     }
+
     private class UserProfileCover extends AsyncTask<String, Void, Bitmap> {
         //ImageView bmImage;
 
