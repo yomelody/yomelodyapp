@@ -203,13 +203,13 @@ public class StudioActivity extends AppCompatActivity {
     ProgressDialog progressDialog, pDialog;
     // LongOperation myTask = null;
     RelativeLayout rlSync;
-    MediaPlayer mp;
+    public static MediaPlayer mpInst;
     static int duration1, currentPosition;
     SeekBar melodySlider;
     String array[] = {""};
     ArrayList<String> instruments_count = new ArrayList<String>();
     Timer timer;
-
+    MediaPlayer mp;
     ShareDialog shareDialog;
     FacebookSdk.InitializeCallback i1;
     String fetchRecordingUrl;
@@ -553,6 +553,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //  killMediaPlayer();
+
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
                  //   onStop();
@@ -1961,6 +1962,31 @@ public class StudioActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        try {
+            if(mpInst!=null)
+                mpInst.stop();
+
+            if (mRecordingThread != null) {
+                mRecordingThread.stopRunning();
+                mRecordingThread = null;
+            }
+            if (mPlayer != null) {
+                mPlayer.stop();
+                mp.stop();
+                mp.release();
+            }
+            if (recorder != null) {
+                try {
+                    recorder.stop();
+                    killMediaPlayer();
+
+                } catch (RuntimeException ex) {
+                }
+            }
+
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
         Intent i = new Intent(this, HomeActivity.class);
         startActivity(i);
     }
@@ -2116,21 +2142,47 @@ public class StudioActivity extends AppCompatActivity {
         return out.toByteArray();
     }
 
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        if (mp != null || mediaPlayer != null) {
-//            try {
-//                mp.reset();
-//                mediaPlayer.reset();
-//                mp.release();
-//                mediaPlayer.prepare();
-//
-//            } catch (Throwable e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+            try {
+                if(mpInst!=null)
+                    mpInst.stop();
+
+                    if (mRecordingThread != null) {
+                        mRecordingThread.stopRunning();
+                        mRecordingThread = null;
+                    }
+                if (mPlayer != null) {
+                    mPlayer.stop();
+                    mp.stop();
+                    mp.release();
+                }
+//                    recorder.stop();
+                if (recorder != null) {
+                    try {
+                        recorder.stop();
+                        killMediaPlayer();
+
+                    } catch (RuntimeException ex) {
+                        //Ignore
+                    }
+                }
+                    //          onPause();
+                    /*mediaPlayer.pause();
+                    chrono.stop();*/
+                /*mp.reset();
+                mediaPlayer.reset();
+                mp.release();
+                mediaPlayer.prepare();*/
+
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
 
 
 }
