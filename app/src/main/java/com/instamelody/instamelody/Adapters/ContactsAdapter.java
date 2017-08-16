@@ -189,7 +189,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                         editor.commit();
                     }
 
-                    Toast.makeText(context, recId, Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(context, recId, Toast.LENGTH_SHORT).show();
                     SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                     editor.putString("senderId", senderID);
                     editor.putString("receiverId", recId);

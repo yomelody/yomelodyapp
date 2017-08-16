@@ -2,6 +2,7 @@ package com.instamelody.instamelody.Adapters;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.instamelody.instamelody.Models.RecentImagesModel;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.utils.ImageCompressor;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -59,7 +61,11 @@ public class RecentImagesAdapter extends RecyclerView.Adapter<RecentImagesAdapte
     @TargetApi(19)
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int listPosition) {
-        Picasso.with(context).load(new File(fileList.get(listPosition).getFilepath())).into(holder.galleryImages);
+        Bitmap sendImageBitmap;
+        ImageCompressor ic = new ImageCompressor(context);
+        sendImageBitmap = ic.compressImage(fileList.get(listPosition).getFilepath());
+        holder.galleryImages.setImageBitmap(sendImageBitmap);
+//        Picasso.with(context).load(new File(fileList.get(listPosition).getFilepath())).into(holder.galleryImages);
     }
 
     @Override

@@ -75,6 +75,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -261,18 +262,8 @@ public class ChatActivity extends AppCompatActivity {
             }
         };
 
-
         SharedPreferences token = this.getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
         deviceToken = token.getString("regId", null);
-        //if token is not null
-//        if (deviceToken != null) {
-//            //displaying the token
-//            tvRegId.setText(deviceToken);
-//        } else {
-//            //if token is null that means something wrong
-//            tvRegId.setText("Token not generated");
-//        }
-
         etMessage.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -316,7 +307,6 @@ public class ChatActivity extends AppCompatActivity {
                 editor.putString("receiverId", "");
                 editor.putString("receiverName", "");
                 editor.putString("receiverImage", "");
-//                Log.d("rcvrimg", "receiverImage 3 has no value");
                 editor.putString("chatId", "");
                 editor.commit();
 
@@ -333,7 +323,6 @@ public class ChatActivity extends AppCompatActivity {
                 editor.putString("receiverId", "");
                 editor.putString("receiverName", "");
                 editor.putString("receiverImage", "");
-//                Log.d("rcvrimg", "receiverImage 4 has no value");
                 editor.putString("chatId", "");
                 editor.commit();
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
@@ -348,7 +337,6 @@ public class ChatActivity extends AppCompatActivity {
                 editor.putString("receiverId", "");
                 editor.putString("receiverName", "");
                 editor.putString("receiverImage", "");
-//                Log.d("rcvrimg", "receiverImage 5 has no value");
                 editor.putString("chatId", "");
                 editor.commit();
                 Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
@@ -376,6 +364,11 @@ public class ChatActivity extends AppCompatActivity {
                             getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                             InputMethodManager.HIDE_NOT_ALWAYS);
+
+                    rlSelectedImage.setVisibility(View.GONE);
+                    flClose.setVisibility(View.GONE);
+//                    sendImageBitmap.recycle();
+                    flagFileType = "0";
 
                     getChatMsgs(chatId);
 
@@ -439,7 +432,7 @@ public class ChatActivity extends AppCompatActivity {
 
                             Intent chooserIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                             Date d = new Date();
-                            CharSequence s  = DateFormat.format("yyyyMMdd_hh_mm_ss", d.getTime());
+                            CharSequence s = DateFormat.format("yyyyMMdd_hh_mm_ss", d.getTime());
                             File f = new File(Environment.getExternalStorageDirectory(), "IMG_" + s.toString() + ".jpg");
                             chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
                             imageToUploadUri = Uri.fromFile(f);
@@ -472,7 +465,7 @@ public class ChatActivity extends AppCompatActivity {
         flClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendImageBitmap.recycle();
+//                sendImageBitmap.recycle();
                 flagFileType = "0";
                 rlSelectedImage.setVisibility(View.GONE);
             }
@@ -496,7 +489,6 @@ public class ChatActivity extends AppCompatActivity {
     /**
      * Downloading image and showing as a message
      */
-
     public Bitmap getBitmapFromURL(String strURL) {
         try {
             URL url = new URL(strURL);
@@ -537,6 +529,7 @@ public class ChatActivity extends AppCompatActivity {
                     rlSelectedImage.setVisibility(View.VISIBLE);
                     flClose.setVisibility(View.VISIBLE);
                     ivSelectedImage.setImageBitmap(sendImageBitmap);
+                    flagFileType = "1";
                 } else {
                     Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
                 }
@@ -545,30 +538,11 @@ public class ChatActivity extends AppCompatActivity {
             }
         }
 
-//        if (this.requestCode == requestCode && resultCode == RESULT_OK && null != data) {
-////            sendImageBitmap = (Bitmap) data.getExtras().get("data");
-////            rlSelectedImage.setVisibility(View.VISIBLE);
-////            flClose.setVisibility(View.VISIBLE);
-////            ivSelectedImage.setImageBitmap(sendImageBitmap);
-//            Uri uri = data.getData();
-//            String uriString = uri.toString();
-//            File myFile = new File(uriString);
-//            String path = myFile.getAbsolutePath();
-//            sendImageName = path.substring(path.lastIndexOf("/") + 1);
-//            ImageCompressor ic = new ImageCompressor(getApplicationContext());
-//            sendImageBitmap = ic.compressImage(path);
-//            rlSelectedImage.setVisibility(View.VISIBLE);
-//            flClose.setVisibility(View.VISIBLE);
-//            ivSelectedImage.setImageBitmap((Bitmap) data.getExtras().get("data"));
-//
-//        }
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && null != data) {
             try {
                 Uri selectedImage = data.getData();
                 String[] filePathColumn = {MediaStore.Images.Media.DATA};
-                // Get the cursor
                 Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-                // Move to first row
                 cursor.moveToFirst();
                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
                 String img_Decodable_Str = cursor.getString(columnIndex);
@@ -579,31 +553,11 @@ public class ChatActivity extends AppCompatActivity {
                 ImageCompressor ic = new ImageCompressor(getApplicationContext());
                 sendImageBitmap = ic.compressImage(img_Decodable_Str);
                 ivSelectedImage.setImageBitmap(sendImageBitmap);
-
-//                sendImageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
-//                rlSelectedImage.setVisibility(View.VISIBLE);
-//                flClose.setVisibility(View.VISIBLE);
-//                ivSelectedImage.setImageBitmap(sendImageBitmap);
-//                String path = selectedImageUri.toString();
-//                try {
-//                    File file = new File(new URI(path));
-//                } catch (URISyntaxException e) {
-//                    e.printStackTrace();
-//                }
-
-//                File myFile = new File(selectedImageUri.getPath());
-//                myFile.getAbsolutePath();
-
-//                ivSelectedImage.setImageBitmap(sendImageBitmap);
-//                String uriString = selectedImageUri.toString();
-//                File myFile = new File(uriString);
-//                String path = myFile.getAbsolutePath();
-//                sendImageName = path.substring(path.lastIndexOf("/") + 1);
+                flagFileType = "1";
             } catch (Throwable e) {
                 e.printStackTrace();
             }
         }
-        flagFileType = "1";
     }
 
     @Override
@@ -734,9 +688,7 @@ public class ChatActivity extends AppCompatActivity {
                         }
                     }
                 },
-                new Response.ErrorListener()
-
-                {
+                new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
 
@@ -794,10 +746,10 @@ public class ChatActivity extends AppCompatActivity {
                 } else if (error instanceof NetworkError) {
                     errorMsg = "We are facing problem in connecting to network";
                 } else if (error instanceof ParseError) {
-                    errorMsg = "ParseError";
+                    errorMsg = "Parse error";
                 }
 
-                Toast.makeText(getApplicationContext(), "chat api error response " + errorMsg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                 Log.d("Error", errorMsg);
                 error.printStackTrace();
             }
@@ -845,8 +797,6 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             protected Map<String, DataPart> getByteData() {
                 Map<String, DataPart> params = new HashMap<>();
-                // file name could found file base or direct access from real path
-                // for now just get bitmap data from ImageView
                 params.put(FILE, new DataPart(sendImageName, AppHelper.getFileDataFromDrawable(getBaseContext(), sendImageBitmap), "image/jpeg"));
                 return params;
             }
@@ -864,44 +814,12 @@ public class ChatActivity extends AppCompatActivity {
                 File targetDirector = new File(ExternalStoragePath);
 
                 if (targetDirector.listFiles() != null) {
-                    File[] files = targetDirector.listFiles();
-                    int i = files.length - 1;
-                    while (imageFileList.size() < 10) {
-                        File file = files[i];
-                        if (file.getAbsoluteFile().toString().trim().endsWith(".jpg")) {
-                            imageFileList.add(file.getAbsolutePath());
+                    File[] files = targetDirector.listFiles(new FilenameFilter() {
+                        public boolean accept(File dir, String name) {
+                            return name.toLowerCase().endsWith(".jpg");
                         }
-                        i--;
-                    }
+                    });
 
-                    String file, filename;
-                    int length = imageFileList.size();
-                    for (int j = 0; j < length; j++) {
-                        RecentImagesModel rim = new RecentImagesModel();
-                        file = imageFileList.get(j);
-                        rim.setFilepath(file);
-                        filename = file.substring(file.lastIndexOf("/") + 1);
-                        rim.setName(filename);
-                        fileInfo.add(rim);
-                    }
-
-                }
-
-
-            } else {
-                Toast.makeText(getApplicationContext(), "Failed to read External storage", Toast.LENGTH_LONG).show();
-            }
-        }
-
-        if (isExternalStorageEmulated()) {
-            String state = Environment.getExternalStorageState();
-            if (Environment.MEDIA_MOUNTED.equals(state) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-                String ExternalStorageDirectoryPath = Environment.getExternalStorageDirectory().getAbsolutePath();
-                String InternalStoragePath = ExternalStorageDirectoryPath + "/DCIM/Camera/";
-                File targetDirector = new File(InternalStoragePath);
-
-                if (targetDirector.listFiles() != null) {
-                    File[] files = targetDirector.listFiles();
                     int i = files.length - 1;
                     while (imageFileList.size() < 10) {
                         File file = files[i];
@@ -921,6 +839,42 @@ public class ChatActivity extends AppCompatActivity {
                     filename = file.substring(file.lastIndexOf("/") + 1);
                     rim.setName(filename);
                     fileInfo.add(rim);
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "Failed to read External storage", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        if (isExternalStorageEmulated()) {
+            String state = Environment.getExternalStorageState();
+            if (Environment.MEDIA_MOUNTED.equals(state) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+                String ExternalStorageDirectoryPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+                String InternalStoragePath = ExternalStorageDirectoryPath + "/DCIM/Camera/";
+                File targetDirector = new File(InternalStoragePath);
+
+                int length;
+                String file, filename;
+                if (targetDirector.listFiles() != null) {
+                    File[] files = targetDirector.listFiles(new FilenameFilter() {
+                        public boolean accept(File dir, String name) {
+                            return name.toLowerCase().endsWith(".jpg");
+                        }
+                    });
+
+                    if (files.length < 10) {
+                        length = files.length;
+                    } else {
+                        length = 10;
+                    }
+
+                    for (int i = 0; i < length; i++) {
+                        RecentImagesModel rim = new RecentImagesModel();
+                        file = files[i].toString();
+                        rim.setFilepath(file);
+                        filename = file.substring(file.lastIndexOf("/") + 1);
+                        rim.setName(filename);
+                        fileInfo.add(rim);
+                    }
                 }
             } else {
                 Toast.makeText(getApplicationContext(), "Failed to read Internal storage", Toast.LENGTH_LONG).show();
@@ -965,67 +919,6 @@ public class ChatActivity extends AppCompatActivity {
             receiverId = receiverId.replaceAll(",null", "");
         } catch (Exception e) {
             Log.e("exception", e.toString());
-        }
-    }
-
-    private Bitmap getBitmap(String path) {
-
-        Uri uri = Uri.fromFile(new File(path));
-        InputStream in = null;
-        try {
-            final int IMAGE_MAX_SIZE = 1200000; // 1.2MP
-            in = getContentResolver().openInputStream(uri);
-
-            // Decode image size
-            BitmapFactory.Options o = new BitmapFactory.Options();
-            o.inJustDecodeBounds = true;
-            BitmapFactory.decodeStream(in, null, o);
-            in.close();
-
-
-            int scale = 1;
-            while ((o.outWidth * o.outHeight) * (1 / Math.pow(scale, 2)) >
-                    IMAGE_MAX_SIZE) {
-                scale++;
-            }
-            Log.d("", "scale = " + scale + ", orig-width: " + o.outWidth + ", orig-height: " + o.outHeight);
-
-            Bitmap b = null;
-            in = getContentResolver().openInputStream(uri);
-            if (scale > 1) {
-                scale--;
-                // scale to max possible inSampleSize that still yields an image
-                // larger than target
-                o = new BitmapFactory.Options();
-                o.inSampleSize = scale;
-                b = BitmapFactory.decodeStream(in, null, o);
-
-                // resize to desired dimensions
-                int height = b.getHeight();
-                int width = b.getWidth();
-                Log.d("", "1th scale operation dimenions - width: " + width + ", height: " + height);
-
-                double y = Math.sqrt(IMAGE_MAX_SIZE
-                        / (((double) width) / height));
-                double x = (y / height) * width;
-
-                Bitmap scaledBitmap = Bitmap.createScaledBitmap(b, (int) x,
-                        (int) y, true);
-                b.recycle();
-                b = scaledBitmap;
-
-                System.gc();
-            } else {
-                b = BitmapFactory.decodeStream(in);
-            }
-            in.close();
-
-            Log.d("", "bitmap size - width: " + b.getWidth() + ", height: " +
-                    b.getHeight());
-            return b;
-        } catch (IOException e) {
-            Log.e("", e.getMessage(), e);
-            return null;
         }
     }
 }
