@@ -1,19 +1,29 @@
 package com.instamelody.instamelody;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,6 +73,7 @@ import retrofit2.Call;
 
 import static android.R.attr.id;
 import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
+import static com.instamelody.instamelody.utils.Const.ServiceType.FORGOT_PASSWORD;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LOGIN;
 import static com.instamelody.instamelody.utils.Const.ServiceType.REGISTER;
 
@@ -100,7 +111,7 @@ public class SignInActivity extends AppCompatActivity {
     int temp = 0;
 
     EditText etEmail, etPassword;
-    TextView emailRequired, passwordRequired;
+    TextView emailRequired, passwordRequired,tvForgetPassword;
     //    String deviceToken;
 //    String TestdeviceToken;
     ImageView ivuserimg;
@@ -115,6 +126,7 @@ public class SignInActivity extends AppCompatActivity {
     ProgressDialog progressDialog;
     String photoUrlNormalSize;
     Long TwitterId;
+    EditText subEtTopicName;
 
     private TwitterAuthClient client;
     private TwitterLoginButton twitterLoginButton;
@@ -143,6 +155,7 @@ public class SignInActivity extends AppCompatActivity {
         btnfblogin = (RelativeLayout) findViewById(R.id.FbLogin);
         mcallbckmanager = CallbackManager.Factory.create();
         fbloginbtn = (LoginButton) findViewById(R.id.FbLoginReal);
+        tvForgetPassword = (TextView) findViewById(R.id.tvForgetPassword);
         SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
         DeviceToken = fcmPref.getString("regId", null);
 //        Log.d("DeviceToken", DeviceToken);
@@ -324,6 +337,14 @@ public class SignInActivity extends AppCompatActivity {
                 LoginManager.getInstance().logInWithReadPermissions(SignInActivity.this, Arrays.asList("public_profile", "email", "user_birthday", "user_friends", "user_about_me"));
                /* LoginManager.getInstance().logOut();*/
 
+            }
+        });
+
+        tvForgetPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDialog();
+                tvForgetPassword.setEnabled(false);
             }
         });
 
@@ -711,6 +732,115 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);
                 params.put(KEY_DEVICE_TYPE, "android");
                 params.put(KEY_PROFILE_PIC, photoUrlNormalSize);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
+
+    private void openDialog() {
+        LayoutInflater inflater = LayoutInflater.from(SignInActivity.this);
+        View subView = inflater.inflate(R.layout.dialog_layout, null);
+
+        subEtTopicName = (EditText) subView.findViewById(R.id.dialogEtTopicName);
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(SignInActivity.this);
+//        builder.setView(sp);
+
+
+
+        AlertDialog.Builder builder2 = new AlertDialog.Builder(this);
+        builder.setTitle("Forget Password");
+        builder.setMessage("Enter your email for Password");
+        builder.setView(subView);
+
+        TextView title = new TextView(this);
+        title.setText("Save As");
+        title.setBackgroundColor(Color.DKGRAY);
+        title.setPadding(10, 10, 10, 10);
+        title.setGravity(Gravity.CENTER);
+        title.setTextColor(Color.WHITE);
+        title.setTextSize(20);
+
+        builder.setCustomTitle(title);
+
+        builder.setPositiveButton("Get Password", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //tvInfo.setText(subEtTopicName.getText().toString());
+                forgotPassword();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(subEtTopicName.getWindowToken(), 0);
+
+
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(subEtTopicName.getWindowToken(), 0);
+            }
+        });
+
+        builder.show();
+
+    }
+
+    private void forgotPassword() {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, FORGOT_PASSWORD,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String successmsg = response.toString();
+                        Toast.makeText(SignInActivity.this, "A link to reset password has been sent to your email address.", Toast.LENGTH_SHORT).show();
+                        tvForgetPassword.setEnabled(true);
+                        try {
+                            JSONObject jsonObject = new JSONObject(successmsg);
+                            flag = jsonObject.getString("flag");
+                            String password = jsonObject.getString("password");
+                            if (flag.equals("unsuccess")) {
+                                tvForgetPassword.setEnabled(true);
+                                Toast.makeText(SignInActivity.this, "Password not Reset Try Again", Toast.LENGTH_SHORT).show();
+                                tvForgetPassword.setEnabled(true);
+                            }
+                            JSONObject rspns = jsonObject.getJSONObject("response");
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            errorMsg = "There is either no connection or it timed out.";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "ServerError";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "Network Error";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(SignInActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(KEY_EMAIL, subEtTopicName.getText().toString().trim());
                 return params;
             }
         };
