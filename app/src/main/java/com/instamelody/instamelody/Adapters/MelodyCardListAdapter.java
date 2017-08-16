@@ -203,11 +203,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 
                 @Override
                 public void onClick(View v) {
-                    /*Intent shareIntent = new Intent();
-                    shareIntent.setAction(Intent.ACTION_SEND);
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
-                    shareIntent.setType("image/jpeg");
-                    startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));*/
+
 
                     MelodyCard melody = melodyList.get(getAdapterPosition());
                     MelodyName = melody.getMelodyName();
@@ -224,6 +220,9 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(Intent.createChooser(shareIntent, "Hello."));
                     SetMelodyShare("", "", "");
+
+
+
 
                 }
 

@@ -927,7 +927,8 @@
                                                 android:layout_height="wrap_content"
                                                 android:layout_below="@+id/tvVolume"
                                                 android:thumb="@drawable/slider_fxeq_thumb"
-                                                android:progress="50"
+                                                android:progress="20"
+                                                android:max="40"
                                                 android:progressDrawable="@drawable/seekbar_fxeq"/>
 
                                             <RelativeLayout
@@ -975,7 +976,8 @@
                                                 android:layout_height="wrap_content"
                                                 android:layout_below="@+id/tvTreble"
                                                 android:thumb="@drawable/slider_fxeq_thumb"
-                                                android:progress="50"
+                                                android:progress="20"
+                                                android:max="40"
                                                 android:progressDrawable="@drawable/seekbar_fxeq"/>
 
                                             <RelativeLayout
@@ -1023,7 +1025,8 @@
                                                 android:layout_height="wrap_content"
                                                 android:layout_below="@+id/tvBase"
                                                 android:thumb="@drawable/slider_fxeq_thumb"
-                                                android:progress="50"
+                                                android:progress="20"
+                                                android:max="40"
                                                 android:progressDrawable="@drawable/seekbar_fxeq"/>
 
                                             <RelativeLayout
