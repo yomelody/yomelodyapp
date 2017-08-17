@@ -3,8 +3,11 @@ package com.instamelody.instamelody;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ResolveInfo;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,12 +42,15 @@ import com.instamelody.instamelody.Models.Comments;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.instamelody.instamelody.utils.Const.ServiceType.COMMENTS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.COMMENT_LIST;
+import static com.instamelody.instamelody.utils.Const.ServiceType.LIKESAPI;
 
 /**
  * Created by Shubhansh Jaiswal on 11/29/2016.
@@ -58,15 +64,19 @@ public class CommentsActivity extends AppCompatActivity {
     Button btnMelodyAdd;
     SeekBar melodySlider;
     RelativeLayout rlSeekbarTracer, rlLike, rlPlay, rlComment;
+    String Topic = "topic";
+    String LIKES = "likes";
+    String TYPE = "type";
 
     CommentsAdapter adapter;
-    ImageView ivBackButton, ivHomeButton, ivCamera, tvImgChat;
+    ImageView ivBackButton, ivHomeButton, ivCamera, tvImgChat, ivShareButton;
     TextView tvCancel, tvSend, tvRegId, tvMsgChat;
     RecyclerView recyclerView;
     RelativeLayout rlCommentSend;
     EditText etComment;
 
-    String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, profilePic, cover, melodyID, fileType;
+
+    String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, profilePic, cover, melodyID, fileType, RecordingURL, LikeStatus, CoverUrl;
     static ArrayList<Comments> commentList = new ArrayList<>();
     String COMMENT = "comment";
     String FILE_TYPE = "file_type";
@@ -75,7 +85,8 @@ public class CommentsActivity extends AppCompatActivity {
     String TOPIC = "topic";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";
-    String userId="";
+    String userId = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,7 +108,10 @@ public class CommentsActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewComment);
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
         ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
-
+        ivShareButton = (ImageView) findViewById(R.id.ivShareButton);
+        ivLikeButton = (ImageView) findViewById(R.id.ivLikeButton);
+        ivDislikeButton = (ImageView) findViewById(R.id.ivDislikeButton);
+        rlLike = (RelativeLayout) findViewById(R.id.rlLike);
         SharedPreferences prefs = getSharedPreferences("commentData", MODE_PRIVATE);
         instruments = prefs.getString("instruments", null);
         bpm = prefs.getString("bpm", null);
@@ -114,17 +128,9 @@ public class CommentsActivity extends AppCompatActivity {
         cover = prefs.getString("bitmapCover", null);
         melodyID = prefs.getString("melodyID", null);
         fileType = prefs.getString("fileType", null);
-        SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-        SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
-        SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
-
-        if (loginSharedPref.getString("userId", null) != null) {
-            userId = loginSharedPref.getString("userId", null);
-        } else if (fbPref.getString("userId", null) != null) {
-            userId = fbPref.getString("userId", null);
-        } else if (twitterPref.getString("userId", null) != null) {
-            userId = twitterPref.getString("userId", null);
-        }
+        RecordingURL = prefs.getString("RecordingURL", null);
+        LikeStatus = prefs.getString("LikeStatus", null);
+        CoverUrl = prefs.getString("CoverUrl", null);
         getComments();
 
         tvInstrumentsUsed.setText(instruments);
@@ -138,7 +144,7 @@ public class CommentsActivity extends AppCompatActivity {
         tvLikeCount.setText(likes);
         tvCommentCount.setText(comments);
         tvShareCount.setText(shares);
-        Picasso.with(ivMelodyCover.getContext()).load(cover).into(ivMelodyCover);
+        Picasso.with(ivMelodyCover.getContext()).load(CoverUrl).into(ivMelodyCover);
         Picasso.with(userProfileImage.getContext()).load(profilePic).into(userProfileImage);
 
         recyclerView.setHasFixedSize(true);
@@ -156,8 +162,23 @@ public class CommentsActivity extends AppCompatActivity {
         etComment.setHintTextColor(Color.parseColor("#7B888F"));
         tvCancel = (TextView) findViewById(R.id.tvCancel);
         tvSend = (TextView) findViewById(R.id.tvSend);
+        if (LikeStatus == "0") {
+            ivDislikeButton.setVisibility(View.GONE);
+        } else {
+            ivDislikeButton.setVisibility(View.VISIBLE);
+        }
 
+        SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+        SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
 
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
+        }
         etComment.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -198,7 +219,7 @@ public class CommentsActivity extends AppCompatActivity {
             public void onClick(View view) {
 
 
-                if (!userId.equals("") && userId!=null) {
+                if (!userId.equals("") && userId != null) {
 
                     tvCancel.setVisibility(View.VISIBLE);
                     tvSend.setVisibility(View.GONE);
@@ -228,6 +249,70 @@ public class CommentsActivity extends AppCompatActivity {
                         InputMethodManager.HIDE_NOT_ALWAYS);
             }
         });
+        ivShareButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (!userId.equals("") && userId != null) {
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, "Melody Songs" + "\n" + CoverUrl + "\n" + RecordingURL);
+                shareIntent.putExtra(Intent.EXTRA_TEXT, "Melody Songs" + "\n" + RecordingURL);
+
+                shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(Intent.createChooser(shareIntent, "Hello."));
+                } else {
+                    Toast.makeText(getApplicationContext(), "Log in to comment", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    getApplicationContext().startActivity(intent);
+                }
+
+            }
+        });
+        rlLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String position;
+                String MelodyName;
+                if (!userId.equals("") && userId != null) {
+                    //Toast.makeText(context, "like", Toast.LENGTH_SHORT).show();
+                    //position = mpids.get(getAdapterPosition() + 1);
+
+                    /*RecordingsModel recording = commentList.get(Integer.parseInt(melodyID));
+                    MelodyName = recording.getRecordingName();
+                    position = recording.getRecordingId();*/
+
+                    if (ivDislikeButton.getVisibility() == View.VISIBLE) {
+                        ivLikeButton.setVisibility(View.VISIBLE);
+                        ivDislikeButton.setVisibility(View.GONE);
+                        String like = tvLikeCount.getText().toString().trim();
+                        int likeValue = Integer.parseInt(like) - 1;
+                        like = String.valueOf(likeValue);
+                        tvLikeCount.setText(like);
+                        SetLikeState(userId, melodyID, "0", melodyName);
+
+
+                    } else if (ivDislikeButton.getVisibility() == View.GONE) {
+                        ivLikeButton.setVisibility(View.GONE);
+                        ivDislikeButton.setVisibility(View.VISIBLE);
+                        String like = tvLikeCount.getText().toString().trim();
+                        int likeValue = Integer.parseInt(like) + 1;
+                        like = String.valueOf(likeValue);
+                        tvLikeCount.setText(like);
+                        SetLikeState(userId, melodyID, "1", melodyName);
+                    }
+                } else {
+                    Toast.makeText(CommentsActivity.this, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(CommentsActivity.this, SignInActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
+
+
     }
 
     public void getComments() {
@@ -328,5 +413,69 @@ public class CommentsActivity extends AppCompatActivity {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
+    }
+
+    public void SetLikeState(final String userId, final String pos, final String likeState, String LikeMelodyName) {
+        try {
+
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, LIKESAPI,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+//                            Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(CommentsActivity.this, error.toString(), Toast.LENGTH_LONG).show();
+                            String errorMsg = error.toString();
+                            Log.d("Error", errorMsg);
+                        }
+                    }) {
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put(Topic, melodyName);
+                    params.put(USER_ID, userId);
+                    params.put(FILE_ID, pos);
+                    params.put(TYPE, fileType);
+                    params.put(LIKES, likeState);
+                    return params;
+                }
+            };
+            RequestQueue requestQueue1 = Volley.newRequestQueue(CommentsActivity.this);
+            requestQueue1.add(stringRequest);
+        } catch (Exception ex) {
+
+        }
+
+    }
+
+    void share(String nameApp, String imagePath) {
+        try {
+            List<Intent> targetedShareIntents = new ArrayList<Intent>();
+            Intent share = new Intent(android.content.Intent.ACTION_SEND);
+            share.setType("image/jpeg");
+            List<ResolveInfo> resInfo = getPackageManager().queryIntentActivities(share, 0);
+            if (!resInfo.isEmpty()) {
+                for (ResolveInfo info : resInfo) {
+                    Intent targetedShare = new Intent(android.content.Intent.ACTION_SEND);
+                    targetedShare.setType("image/jpeg"); // put here your mime type
+                    if (info.activityInfo.packageName.toLowerCase().contains(nameApp) || info.activityInfo.name.toLowerCase().contains(nameApp)) {
+                        targetedShare.putExtra(Intent.EXTRA_SUBJECT, "Sample Photo");
+                        targetedShare.putExtra(Intent.EXTRA_TEXT, "This photo is created by App Name");
+                        targetedShare.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(imagePath)));
+                        targetedShare.setPackage(info.activityInfo.packageName);
+                        targetedShareIntents.add(targetedShare);
+                    }
+                }
+                Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(0), "Select app to share");
+                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
+                startActivity(chooserIntent);
+            }
+        } catch (Exception e) {
+            Log.v("VM", "Exception while sending image on" + nameApp + " " + e.getMessage());
+        }
     }
 }

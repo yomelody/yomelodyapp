@@ -55,7 +55,7 @@ public class ActivityFragment extends Fragment {
     String USER_ID = "user_id";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "responce";
-    String id = "id";
+    String id = "id",userId="";
     ProgressDialog progressDialog;
     private static ArrayList<ActivityModel> arraylist;
     public ActivityFragment() {
@@ -77,7 +77,7 @@ public class ActivityFragment extends Fragment {
         recyclerView.setLayoutManager(lmactivity);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         arraylist = new ArrayList<ActivityModel>();
-        String position, userId="";
+        String position;
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
         SharedPreferences fbPref = getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
@@ -93,7 +93,7 @@ public class ActivityFragment extends Fragment {
         }
 
 
-        if(userId!=null) {
+        if(!userId.equals("") && userId != null) {
             new FetchActivityDetails().execute(userId);
         }
 //        else {

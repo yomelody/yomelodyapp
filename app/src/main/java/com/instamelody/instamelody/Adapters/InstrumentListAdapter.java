@@ -365,9 +365,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 StudioActivity.tvBpmRate.setText(BPM);
                 new InstrumentCover().execute(ivInstrumentCover);
                 new UserProfileCover().execute(ivUserProfileImage);
-                StudioActivity.volumeSeekbar.setProgress(20);
-                StudioActivity.sbTreble.setProgress(20);
-                StudioActivity.sbBase.setProgress(20);
+                StudioActivity.volumeSeekbar.setProgress(10);
+                StudioActivity.sbTreble.setProgress(10);
+                StudioActivity.sbBase.setProgress(10);
 
                 if(StudioActivity.fxContent.getVisibility()==View.VISIBLE)
                 {

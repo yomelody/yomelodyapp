@@ -166,7 +166,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     String position;
                     String MelodyName;
                     //String positions = mpids.get(getAdapterPosition() + 1);
-                    if (!userId.equals("") && userId!=null) {
+                    if (!userId.equals("") && userId != null) {
 //                        position = Integer.toString(getAdapterPosition() + 1);
                         //position = mpids.get(getAdapterPosition());
                         MelodyCard melody = melodyList.get(getAdapterPosition());
@@ -203,25 +203,27 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 
                 @Override
                 public void onClick(View v) {
+                    if (!userId.equals("") && userId != null) {
+                        MelodyCard melody = melodyList.get(getAdapterPosition());
+                        MelodyName = melody.getMelodyName();
 
+                        MelodyCard recording = melodyList.get(getAdapterPosition());
+                        String RecordingURL = recording.getMelodyURL();
 
-                    MelodyCard melody = melodyList.get(getAdapterPosition());
-                    MelodyName = melody.getMelodyName();
+                        Intent shareIntent = new Intent();
+                        shareIntent.setAction(Intent.ACTION_SEND);
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                        shareIntent.setType("text/plain");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt" + "\n" + RecordingURL);
 
-                    MelodyCard recording = melodyList.get(getAdapterPosition());
-                    String RecordingURL = recording.getMelodyURL();
-
-                    Intent shareIntent = new Intent();
-                    shareIntent.setAction(Intent.ACTION_SEND);
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                    shareIntent.setType("text/plain");
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt" + "\n" + RecordingURL);
-
-                    shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(Intent.createChooser(shareIntent, "Hello."));
-                    SetMelodyShare("", "", "");
-
-
+                        shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(Intent.createChooser(shareIntent, "Hello."));
+                        SetMelodyShare("", "", "");
+                    } else {
+                        Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(context, SignInActivity.class);
+                        context.startActivity(intent);
+                    }
 
 
                 }
@@ -253,43 +255,47 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             rlComment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (!userId.equals("") && userId!=null) {
-                    String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID;
+                    if (!userId.equals("") && userId != null) {
+                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID, RecordingURL, CoverUrl;
+                        MelodyCard melody = melodyList.get(getAdapterPosition());
+                        instruments = tvInstrumentsUsed.getText().toString().trim();
+                        bpm = tvBpmRate.getText().toString().trim();
+                        genre = tvMelodyGenre.getText().toString().trim();
+                        melodyName = tvMelodyName.getText().toString().trim();
+                        userName = tvUserName.getText().toString().trim();
+                        duration = tvMelodyLength.getText().toString().trim();
+                        date = tvMelodyDate.getText().toString().trim();
+                        plays = tvPlayCount.getText().toString().trim();
+                        likes = tvLikeCount.getText().toString().trim();
+                        comments = tvCommentCount.getText().toString().trim();
+                        shares = tvShareCount.getText().toString().trim();
+                        int pos = getAdapterPosition();
+                        melodyID = mpids.get(pos);
+                        RecordingURL = melody.getMelodyURL();
+                        CoverUrl = melody.getMelodyCover();
 
-                    instruments = tvInstrumentsUsed.getText().toString().trim();
-                    bpm = tvBpmRate.getText().toString().trim();
-                    genre = tvMelodyGenre.getText().toString().trim();
-                    melodyName = tvMelodyName.getText().toString().trim();
-                    userName = tvUserName.getText().toString().trim();
-                    duration = tvMelodyLength.getText().toString().trim();
-                    date = tvMelodyDate.getText().toString().trim();
-                    plays = tvPlayCount.getText().toString().trim();
-                    likes = tvLikeCount.getText().toString().trim();
-                    comments = tvCommentCount.getText().toString().trim();
-                    shares = tvShareCount.getText().toString().trim();
-                    int pos = getAdapterPosition();
-                    melodyID = mpids.get(pos);
-
-                    SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
-                    editor.putString("instruments", instruments);
-                    editor.putString("bpm", bpm);
-                    editor.putString("genre", genre);
-                    editor.putString("melodyName", melodyName);
-                    editor.putString("userName", userName);
-                    editor.putString("duration", duration);
-                    editor.putString("date", date);
-                    editor.putString("plays", plays);
-                    editor.putString("likes", likes);
-                    editor.putString("comments", comments);
-                    editor.putString("shares", shares);
-                    editor.putString("bitmapProfile", profile);
+                        SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
+                        editor.putString("instruments", instruments);
+                        editor.putString("bpm", bpm);
+                        editor.putString("genre", genre);
+                        editor.putString("melodyName", melodyName);
+                        editor.putString("userName", userName);
+                        editor.putString("duration", duration);
+                        editor.putString("date", date);
+                        editor.putString("plays", plays);
+                        editor.putString("likes", likes);
+                        editor.putString("comments", comments);
+                        editor.putString("shares", shares);
+                        editor.putString("bitmapProfile", profile);
 //                    editor.putString("bitmapCover", cover);
-                    editor.putString("melodyID", melodyID);
-                    editor.putString("fileType", "admin_melody");
-                    editor.commit();
+                        editor.putString("melodyID", melodyID);
+                        editor.putString("fileType", "admin_melody");
+                        editor.putString("RecordingURL", RecordingURL);
+                        editor.putString("CoverUrl", CoverUrl);
+                        editor.commit();
 
-                    Intent intent = new Intent(context, CommentsActivity.class);
-                    context.startActivity(intent);
+                        Intent intent = new Intent(context, CommentsActivity.class);
+                        context.startActivity(intent);
                     } else {
                         Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(context, SignInActivity.class);
@@ -299,8 +305,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 }
             });
 
-            melodySlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
-            {
+            melodySlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -342,8 +347,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 }
             });
 
-            btnMelodyAdd.setOnClickListener(new View.OnClickListener()
-            {
+            btnMelodyAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     String position = Integer.toString(getAdapterPosition());
@@ -583,7 +587,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
                     }
                 },
                 new Response.ErrorListener() {
