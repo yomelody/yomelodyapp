@@ -3,23 +3,20 @@ package com.instamelody.instamelody.Adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.instamelody.instamelody.CommentsActivity;
 import com.instamelody.instamelody.Models.Comments;
-import com.instamelody.instamelody.Models.MelodyCard;
-import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
 import com.squareup.picasso.Picasso;
-import static com.instamelody.instamelody.utils.RMethod.getServerDiffrenceDate;
 
 import java.util.ArrayList;
+
+import static com.instamelody.instamelody.utils.RMethod.getServerDiffrenceDate;
 
 /**
  * Created by Shubhansh Jaiswal on 06/04/17.
@@ -30,7 +27,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MyView
     Context context;
     ArrayList<Comments> commentList = new ArrayList<>();
 
-    public CommentsAdapter(Context context, ArrayList<Comments> commentList ) {
+    public CommentsAdapter(Context context, ArrayList<Comments> commentList) {
         this.commentList = commentList;
         this.context = context;
     }
@@ -76,7 +73,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MyView
         Comments comments = commentList.get(listPosition);
         Picasso.with(holder.userProfileImage.getContext()).load(comments.getUserProfileImage()).into(holder.userProfileImage);
         holder.tvRealName.setText(comments.getTvRealName());
-        holder.tvUsername.setText("@"+comments.getTvUsername());
+        holder.tvUsername.setText("@" + comments.getTvUsername());
         holder.tvTime.setText(DateTime(comments.getTvTime()));
         holder.tvMsg.setText(comments.getTvMsg());
         //DateTime(c.getString(comments.getTvTime())
@@ -87,9 +84,10 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MyView
     public int getItemCount() {
         return commentList.size();
     }
+
     public String DateTime(String send_at) {
         String val = "";
-        val=getServerDiffrenceDate(send_at);
+        val = getServerDiffrenceDate(send_at);
         return val;
     }
 

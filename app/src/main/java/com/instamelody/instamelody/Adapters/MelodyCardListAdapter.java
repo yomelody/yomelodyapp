@@ -204,25 +204,27 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 
                 @Override
                 public void onClick(View v) {
+                    if (!userId.equals("") && userId != null) {
+                        MelodyCard melody = melodyList.get(getAdapterPosition());
+                        MelodyName = melody.getMelodyName();
 
+                        MelodyCard recording = melodyList.get(getAdapterPosition());
+                        String RecordingURL = recording.getMelodyURL();
 
-                    MelodyCard melody = melodyList.get(getAdapterPosition());
-                    MelodyName = melody.getMelodyName();
+                        Intent shareIntent = new Intent();
+                        shareIntent.setAction(Intent.ACTION_SEND);
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                        shareIntent.setType("text/plain");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt" + "\n" + RecordingURL);
 
-                    MelodyCard recording = melodyList.get(getAdapterPosition());
-                    String RecordingURL = recording.getMelodyURL();
-
-                    Intent shareIntent = new Intent();
-                    shareIntent.setAction(Intent.ACTION_SEND);
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                    shareIntent.setType("text/plain");
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt" + "\n" + RecordingURL);
-
-                    shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(Intent.createChooser(shareIntent, "Hello."));
-                    SetMelodyShare("", "", "");
-
-
+                        shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(Intent.createChooser(shareIntent, "Hello."));
+                        SetMelodyShare("", "", "");
+                    } else {
+                        Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(context, SignInActivity.class);
+                        context.startActivity(intent);
+                    }
 
 
                 }
@@ -255,8 +257,8 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 @Override
                 public void onClick(View view) {
                     if (!userId.equals("") && userId != null) {
-                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID;
-
+                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID, RecordingURL, CoverUrl;
+                        MelodyCard melody = melodyList.get(getAdapterPosition());
                         instruments = tvInstrumentsUsed.getText().toString().trim();
                         bpm = tvBpmRate.getText().toString().trim();
                         genre = tvMelodyGenre.getText().toString().trim();
@@ -270,6 +272,8 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         shares = tvShareCount.getText().toString().trim();
                         int pos = getAdapterPosition();
                         melodyID = mpids.get(pos);
+                        RecordingURL = melody.getMelodyURL();
+                        CoverUrl = melody.getMelodyCover();
 
                         SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
                         editor.putString("instruments", instruments);
@@ -287,6 +291,8 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 //                    editor.putString("bitmapCover", cover);
                         editor.putString("melodyID", melodyID);
                         editor.putString("fileType", "admin_melody");
+                        editor.putString("RecordingURL", RecordingURL);
+                        editor.putString("CoverUrl", CoverUrl);
                         editor.commit();
 
                         Intent intent = new Intent(context, CommentsActivity.class);
@@ -602,7 +608,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
                     }
                 },
                 new Response.ErrorListener() {
