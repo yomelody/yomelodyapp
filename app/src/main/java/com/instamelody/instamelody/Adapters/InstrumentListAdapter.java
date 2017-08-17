@@ -27,7 +27,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.instamelody.instamelody.HomeActivity;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.MelodyMixing;
 import com.instamelody.instamelody.Models.MixingData;
@@ -116,7 +115,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         private int curVolume = 0;
 
         ProgressDialog progressDialog;
-        public MediaPlayer mp;
+        //public MediaPlayer mp;
 
         CardView card_melody;
         AudioManager audioManager;
@@ -168,8 +167,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 public void onClick(View v) {
                     ivPlay.setVisibility(v.VISIBLE);
                     ivPause.setVisibility(v.GONE);
-                    mp.pause();
-                    length = mp.getCurrentPosition();
+                    StudioActivity.mpInst.pause();
+                    length = StudioActivity.mpInst.getCurrentPosition();
                     melodySlider.setProgress(0);
                 }
             });
@@ -203,9 +202,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     UtilsRecording utilRecording = new UtilsRecording();
                     int progress1 = utilRecording.getProgressPercentage(mCurrentPosition, mDuration);
 
-                    if (mp != null && fromUser) {
+                    if (StudioActivity.mpInst != null && fromUser) {
                         int playPositionInMilliseconds = duration1 / 100 * melodySlider.getProgress();
-                        mp.seekTo(playPositionInMilliseconds);
+                        StudioActivity.mpInst.seekTo(playPositionInMilliseconds);
 //                        seekBar.setProgress(progress);
                     } else {
                         // the event was fired from code and you shouldn't call player.seekTo()
@@ -670,11 +669,11 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                         return false;
                     }
                 });
-                holder.mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                StudioActivity.mpInst.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
-                        duration1 = holder.mp.getDuration();
-                        currentPosition = holder.mp.getCurrentPosition();
+                        duration1 = StudioActivity.mpInst.getDuration();
+                        currentPosition = StudioActivity.mpInst.getCurrentPosition();
                         holder.progressDialog.dismiss();
                     }
                 });
@@ -690,8 +689,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             public void onClick(View v) {
                 holder.ivPlay.setVisibility(v.VISIBLE);
                 holder.ivPause.setVisibility(v.GONE);
-                holder.mp.pause();
-                length = holder.mp.getCurrentPosition();
+                StudioActivity.mpInst.pause();
+                length = StudioActivity.mpInst.getCurrentPosition();
                 holder.melodySlider.setProgress(0);
             }
         });
@@ -712,7 +711,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         //  rvLength = instrumentList.size();
         return instrumentList.size();
     }
-
+    public void onPause() {
+        Bitmap mIcon11 = null;
+    }
 
     @Override
     public int getItemViewType(int position) {

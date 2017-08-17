@@ -18,6 +18,7 @@ import android.media.AudioRecord;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.media.audiofx.Equalizer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -74,6 +75,7 @@ import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.utils.AppHelper;
+import com.instamelody.instamelody.utils.UtilsRecording;
 import com.instamelody.instamelody.utils.VolleyMultipartRequest;
 import com.instamelody.instamelody.utils.VolleySingleton;
 import com.squareup.picasso.Picasso;
@@ -203,13 +205,13 @@ public class StudioActivity extends AppCompatActivity {
     ProgressDialog progressDialog, pDialog;
     // LongOperation myTask = null;
     RelativeLayout rlSync;
-    MediaPlayer mp;
+    public static MediaPlayer mpInst;
     static int duration1, currentPosition;
-    SeekBar melodySlider;
+    //SeekBar melodySlider;
     String array[] = {""};
     ArrayList<String> instruments_count = new ArrayList<String>();
     Timer timer;
-
+    MediaPlayer mp;
     ShareDialog shareDialog;
     FacebookSdk.InitializeCallback i1;
     String fetchRecordingUrl;
@@ -672,7 +674,6 @@ public class StudioActivity extends AppCompatActivity {
             }
         });
 
-
         tvDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -695,6 +696,7 @@ public class StudioActivity extends AppCompatActivity {
         ivRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
 
@@ -806,8 +808,7 @@ public class StudioActivity extends AppCompatActivity {
                         mediaPlayer.release();
                         mediaPlayer = null;
                         rlRecordingButton.setEnabled(true);
-                    }
-                    catch (Throwable e){
+                    } catch (NullPointerException e) {
                         e.printStackTrace();
                     }
 
@@ -824,7 +825,12 @@ public class StudioActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                recordingDuration = getDuration(new File(audioFilePath));
+                try {
+                    recordingDuration = getDuration(new File(audioFilePath));
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+
                 stop_rec_time = SystemClock.elapsedRealtime() - chrono.getBase();
                 time_stop = formateMilliSeccond(stop_rec_time);
 
@@ -1026,13 +1032,6 @@ public class StudioActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onPause() {
-        // TODO Auto-generated method stub
-        super.onPause();
-//        mp.stop();
-    }
-
     private boolean StopMediaPlayer(MediaPlayer mp) {
         if (mp != null) {
             if (mp.isPlaying()) {
@@ -1084,19 +1083,7 @@ public class StudioActivity extends AppCompatActivity {
         return String.valueOf(seconds);
     }
 
-    private void primarySeekBarProgressUpdater() {
 
-        Handler mHandler1 = new Handler();
-        melodySlider.setProgress((int) (((float) mp.getCurrentPosition() / duration1) * 100));// This math construction give a percentage of "was playing"/"song length"
-        if (mp.isPlaying()) {
-            Runnable notification = new Runnable() {
-                public void run() {
-                    primarySeekBarProgressUpdater();
-                }
-            };
-            mHandler1.postDelayed(notification, 100);
-        }
-    }
 
 
     private void openDialog() {
@@ -2010,14 +1997,17 @@ public class StudioActivity extends AppCompatActivity {
             mps.add(mp);
 
         }
+
         for (MediaPlayer mp : mps) {
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     mp.start();
+
                 }
             });
         }
+
     }
 
     public void killMediaPlayer() {
@@ -2069,6 +2059,31 @@ public class StudioActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        try {
+            if (mpInst != null)
+                mpInst.stop();
+
+            if (mRecordingThread != null) {
+                mRecordingThread.stopRunning();
+                mRecordingThread = null;
+            }
+            if (mPlayer != null) {
+                mPlayer.stop();
+                mp.stop();
+                mp.release();
+            }
+            if (recorder != null) {
+                try {
+                    recorder.stop();
+                    killMediaPlayer();
+
+                } catch (RuntimeException ex) {
+                }
+            }
+
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
         Intent i = new Intent(this, HomeActivity.class);
         startActivity(i);
     }
@@ -2224,21 +2239,29 @@ public class StudioActivity extends AppCompatActivity {
         return out.toByteArray();
     }
 
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        if (mp != null || mediaPlayer != null) {
-//            try {
-//                mp.reset();
-//                mediaPlayer.reset();
-//                mp.release();
-//                mediaPlayer.prepare();
-//
-//            } catch (Throwable e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            if (InstrumentListAdapter.mp_start != null) {
+                killMediaPlayer_fromInstrument();
+                StudioActivity.this.recreate();
+                adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+                recyclerViewInstruments.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+            }
+            if (mps != null) {
+                ivRecord_stop.performClick();
+
+            }
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                ivRecord_pause.performClick();
+            }
+
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
 
 
 }

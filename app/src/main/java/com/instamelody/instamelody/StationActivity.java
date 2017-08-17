@@ -44,8 +44,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.InstrumentListAdapter;
+import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Fragments.AudioFragment;
+import com.instamelody.instamelody.Fragments.MelodyPacksFragment;
 import com.instamelody.instamelody.Models.RecordingsModel;
 
 import android.graphics.Color;
@@ -79,7 +81,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     Button btnActivity, btnAudio, btnCancel;
     RelativeLayout rlFragmentActivity, rlPartStation, rlSearch;
     ImageView ivBackButton, ivHomeButton, discover, message, ivProfile, audio_feed, ivStationSearch, ivMelodyStation, ivFilter;
-    EditText subEtFilterName,subEtFilterInstruments,subEtFilterBPM;
+    EditText subEtFilterName, subEtFilterInstruments, subEtFilterBPM;
 
     TabHost host;
     private static RecyclerView.Adapter adapter;
@@ -113,7 +115,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     String strName, strSearch;
     String titleString;
     String searchGet, search5;
-    String artistName,Instruments,BPM;
+    String artistName, Instruments, BPM;
     ProgressDialog progressDialog;
     LongOperation myTask = null;
 
@@ -169,8 +171,6 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
 
-
-
         AudioFragment af = new AudioFragment();
         getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
 
@@ -215,7 +215,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 //                searchMenuItem.setVisible(position == 0);
                 rlSearch.setVisibility(View.GONE);
                 search1.setVisibility(View.VISIBLE);
-                ((EditText)  search1.findViewById(android.support.v7.appcompat.R.id.search_src_text))
+                ((EditText) search1.findViewById(android.support.v7.appcompat.R.id.search_src_text))
                         .setHintTextColor(getResources().getColor(R.color.colorSearch));
                 btnCancel.setVisibility(View.VISIBLE);
             }
@@ -354,11 +354,11 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                         strName = arrayAdapter.getItem(which);
                         if (strName.equals("Artist")) {
                             openDialog();
-                        }else if(strName.equals("# of Instruments")){
+                        } else if (strName.equals("# of Instruments")) {
                             openDialogInstruments();
-                        } else if (strName.equals("BPM")){
+                        } else if (strName.equals("BPM")) {
                             openDialogBPM();
-                        }else {
+                        } else {
                             AlertDialog.Builder builderInner = new AlertDialog.Builder(StationActivity.this);
                             builderInner.setMessage(strName);
                             SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
@@ -941,7 +941,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         builder3.show();
     }
 
-    public void clearSharePrefStation(){
+    public void clearSharePrefStation() {
         SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
         editorFilterBPM.clear();
         editorFilterBPM.apply();
@@ -962,6 +962,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         editorSearchString.clear();
         editorSearchString.apply();
     }
+
     private class FetchActivityDetails extends AsyncTask<String, Void, String> {
         protected void onPreExecute() {
             super.onPreExecute();
@@ -991,8 +992,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            if (progressDialog != null)
-            {
+            if (progressDialog != null) {
                 progressDialog.dismiss();
                 btnActivity.setEnabled(true);
                 btnAudio.setEnabled(true);
@@ -1000,6 +1000,26 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
             // progressDialog.dismiss();
         }
     }
-    public void DisableActivity()
-    {}
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (RecordingsCardAdapter.mp != null) {
+            try {
+                RecordingsCardAdapter.mp.stop();
+                RecordingsCardAdapter.mp.reset();
+                RecordingsCardAdapter.mp.release();
+                try {
+                    AudioFragment af = new AudioFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
 }
