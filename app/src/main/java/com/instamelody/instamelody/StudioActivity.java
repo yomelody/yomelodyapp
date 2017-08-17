@@ -18,7 +18,6 @@ import android.media.AudioRecord;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.media.audiofx.Equalizer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -74,7 +73,6 @@ import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.utils.AppHelper;
-import com.instamelody.instamelody.utils.UtilsRecording;
 import com.instamelody.instamelody.utils.VolleyMultipartRequest;
 import com.instamelody.instamelody.utils.VolleySingleton;
 import com.squareup.picasso.Picasso;
@@ -231,6 +229,7 @@ public class StudioActivity extends AppCompatActivity {
     public static TextView tvDoneFxEq,tvInstrumentLength,tvUserName,tvInstrumentName,tvBpmRate;
     public static ImageView userProfileImage,ivInstrumentCover,FramesivPause,FramesivPlay;
     public static SeekBar FramemelodySlider;
+    public static SeekBar volumeSeekbar, sbTreble, sbBase, sbPan, sbPitch, sbReverb, sbCompression, sbDelay, sbTempo;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {

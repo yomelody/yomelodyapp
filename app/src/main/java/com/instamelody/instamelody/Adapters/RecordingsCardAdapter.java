@@ -238,22 +238,22 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                 @Override
                 public void onClick(View v) {
-                    /*Intent shareIntent = new Intent();
-                    shareIntent.setAction(Intent.ACTION_SEND);
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
-                    shareIntent.setType("image/jpeg");
-                    startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));*/
-
-                    RecordingsModel recording = recordingList.get(getAdapterPosition());
-                    String RecordingURL = recording.getrecordingurl();
-                    Intent shareIntent = new Intent();
-                    shareIntent.setAction(Intent.ACTION_SEND);
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt");
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, RecordingURL);
-                    shareIntent.setType("image/jpeg");
-                    shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(Intent.createChooser(shareIntent, "Hello."));
+                    if (!userId.equals("") && userId != null) {
+                        RecordingsModel recording = recordingList.get(getAdapterPosition());
+                        String RecordingURL = recording.getrecordingurl();
+                        Intent shareIntent = new Intent();
+                        shareIntent.setAction(Intent.ACTION_SEND);
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, RecordingURL);
+                        shareIntent.setType("image/jpeg");
+                        shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(Intent.createChooser(shareIntent, "Hello."));
+                    } else {
+                        Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(context, SignInActivity.class);
+                        context.startActivity(intent);
+                    }
                 }
             });
             ivCommentButton.setOnClickListener(new View.OnClickListener() {
@@ -491,7 +491,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                 if (getItemCount() >= listPosition + 1 && instrumentFile != null) {
                     if (mp != null) {
-                        try{
+                        try {
                             if (mp.isPlaying()) {
                                 mp.stop();
                                 mp.reset();
@@ -507,8 +507,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 }
 
                             }
-                        }
-                        catch (Throwable e){
+                        } catch (Throwable e) {
                             e.printStackTrace();
                         }
 

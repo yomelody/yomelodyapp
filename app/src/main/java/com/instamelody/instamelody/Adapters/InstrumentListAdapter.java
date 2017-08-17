@@ -116,7 +116,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         private int curVolume = 0;
 
         ProgressDialog progressDialog;
-        //public MediaPlayer mp;
+        public MediaPlayer mp;
 
         CardView card_melody;
         AudioManager audioManager;
