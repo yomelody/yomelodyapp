@@ -1,19 +1,29 @@
 package com.instamelody.instamelody;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +54,7 @@ import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
@@ -63,6 +74,7 @@ import retrofit2.Call;
 
 import static android.R.attr.id;
 import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
+import static com.instamelody.instamelody.utils.Const.ServiceType.FORGOT_PASSWORD;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LOGIN;
 import static com.instamelody.instamelody.utils.Const.ServiceType.REGISTER;
 
@@ -100,7 +112,7 @@ public class SignInActivity extends AppCompatActivity {
     int temp = 0;
 
     EditText etEmail, etPassword;
-    TextView emailRequired, passwordRequired;
+    TextView emailRequired, passwordRequired,tvForgetPassword;
     //    String deviceToken;
 //    String TestdeviceToken;
     ImageView ivuserimg;
@@ -115,6 +127,7 @@ public class SignInActivity extends AppCompatActivity {
     ProgressDialog progressDialog;
     String photoUrlNormalSize;
     Long TwitterId;
+    EditText subEtTopicName;
 
     private TwitterAuthClient client;
     private TwitterLoginButton twitterLoginButton;
@@ -143,6 +156,7 @@ public class SignInActivity extends AppCompatActivity {
         btnfblogin = (RelativeLayout) findViewById(R.id.FbLogin);
         mcallbckmanager = CallbackManager.Factory.create();
         fbloginbtn = (LoginButton) findViewById(R.id.FbLoginReal);
+        tvForgetPassword = (TextView) findViewById(R.id.tvForgetPassword);
         SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
         DeviceToken = fcmPref.getString("regId", null);
 //        Log.d("DeviceToken", DeviceToken);
@@ -327,6 +341,14 @@ public class SignInActivity extends AppCompatActivity {
             }
         });
 
+        tvForgetPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDialog();
+                tvForgetPassword.setEnabled(false);
+            }
+        });
+
     }
 
     //this callback is the same for default and custom login metods
@@ -342,6 +364,23 @@ public class SignInActivity extends AppCompatActivity {
                /* Toast.makeText(SignInActivity.this, "" + output, Toast.LENGTH_LONG).show();*/
             //loginTwitter(result);
             TwitterSession session = result.data;
+
+
+            TwitterSession session1 = Twitter.getSessionManager().getActiveSession();
+            TwitterAuthToken twitterAuthToken = session1.getAuthToken();
+            TwitterAuthClient twitterAuthClient = new TwitterAuthClient();
+            twitterAuthClient.requestEmail(session1, new Callback<String>() {
+                @Override
+                public void success(Result<String> result) {
+                    Toast.makeText(SignInActivity.this, ""+result, Toast.LENGTH_LONG).show();
+                    Log.d("TwitterEmail",result.toString());
+                }
+
+                @Override
+                public void failure(TwitterException exception) {
+
+                }
+            });
             Twitter twitter = Twitter.getInstance();
             TwitterApiClient api = twitter.core.getApiClient(session);
             AccountService service = api.getAccountService();
@@ -549,7 +588,7 @@ public class SignInActivity extends AppCompatActivity {
                                 Last_name = rspns.getString("l_name");
                                 emailfinal = rspns.getString("email");
                                 profilePic = rspns.getString("profilepic");
-                                coverPic = rspns.getString("coverpic");
+//                                coverPic = rspns.getString("coverpic");
                                 followers = rspns.getString("followers");
                                 fans = rspns.getString("fans");
                                 records = rspns.getString("records");
@@ -561,13 +600,13 @@ public class SignInActivity extends AppCompatActivity {
 
                                 SharedPreferences.Editor fbEditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
                                 fbEditor.putString("userId", user_id);
-//                                fbEditor.putString("firstName", First_name);
-//                                fbEditor.putString("lastName", Last_name);
-//                                fbEditor.putString("emailFinal", emailfinal);
+                                fbEditor.putString("firstName", First_name);
+                                fbEditor.putString("lastName", Last_name);
+                                fbEditor.putString("emailFinal", emailfinal);
                                 fbEditor.putString("profilePic", profilePic);
                                 fbEditor.putString("coverPic", coverPic);
 //                                fbEditor.putString("lastLogin", lastLogin);
-//                                fbEditor.putString("userName", userName);
+                                fbEditor.putString("userName", userName);
                                 fbEditor.putString("fans", fans);
                                 fbEditor.putString("followers", followers);
                                 fbEditor.putString("records", records);
@@ -658,11 +697,12 @@ public class SignInActivity extends AppCompatActivity {
 
                                 SharedPreferences.Editor twitterEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
                                 twitterEditor.putString("userId", user_id);
-//                                twitterEditor.putString("firstName", First_name);
-//                                twitterEditor.putString("lastName", Last_name);
-//                                twitterEditor.putString("emailFinal", emailfinal);
+                                twitterEditor.putString("firstName", First_name);
+                                twitterEditor.putString("lastName", Last_name);
+                                twitterEditor.putString("emailFinal", emailfinal);
                                 twitterEditor.putString("profilePic", profilePic);
                                 twitterEditor.putString("coverPic", coverPic);
+                                twitterEditor.putString("userName",userName);
 //                                twitterEditor.putString("lastLogin", lastLogin);
 //                                twitterEditor.putString("userName", userName);
                                 twitterEditor.putString("fans", fans);
@@ -711,6 +751,115 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);
                 params.put(KEY_DEVICE_TYPE, "android");
                 params.put(KEY_PROFILE_PIC, photoUrlNormalSize);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
+
+    private void openDialog() {
+        LayoutInflater inflater = LayoutInflater.from(SignInActivity.this);
+        View subView = inflater.inflate(R.layout.dialog_layout, null);
+
+        subEtTopicName = (EditText) subView.findViewById(R.id.dialogEtTopicName);
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(SignInActivity.this);
+//        builder.setView(sp);
+
+
+
+        AlertDialog.Builder builder2 = new AlertDialog.Builder(this);
+        builder.setTitle("Forget Password");
+        builder.setMessage("Enter your email for Password");
+        builder.setView(subView);
+
+        TextView title = new TextView(this);
+        title.setText("Save As");
+        title.setBackgroundColor(Color.DKGRAY);
+        title.setPadding(10, 10, 10, 10);
+        title.setGravity(Gravity.CENTER);
+        title.setTextColor(Color.WHITE);
+        title.setTextSize(20);
+
+        builder.setCustomTitle(title);
+
+        builder.setPositiveButton("Get Password", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //tvInfo.setText(subEtTopicName.getText().toString());
+                forgotPassword();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(subEtTopicName.getWindowToken(), 0);
+
+
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(subEtTopicName.getWindowToken(), 0);
+            }
+        });
+
+        builder.show();
+
+    }
+
+    private void forgotPassword() {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, FORGOT_PASSWORD,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String successmsg = response.toString();
+                        Toast.makeText(SignInActivity.this, "A link to reset password has been sent to your email address.", Toast.LENGTH_SHORT).show();
+                        tvForgetPassword.setEnabled(true);
+                        try {
+                            JSONObject jsonObject = new JSONObject(successmsg);
+                            flag = jsonObject.getString("flag");
+                            String password = jsonObject.getString("password");
+                            if (flag.equals("unsuccess")) {
+                                tvForgetPassword.setEnabled(true);
+                                Toast.makeText(SignInActivity.this, "Password not Reset Try Again", Toast.LENGTH_SHORT).show();
+                                tvForgetPassword.setEnabled(true);
+                            }
+                            JSONObject rspns = jsonObject.getJSONObject("response");
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            errorMsg = "There is either no connection or it timed out.";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "ServerError";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "Network Error";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(SignInActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(KEY_EMAIL, subEtTopicName.getText().toString().trim());
                 return params;
             }
         };

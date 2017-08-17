@@ -74,6 +74,8 @@ public class Update extends AppCompatActivity {
     TextView tvDoneUpdate, errorFnameUpdate, errorUnameUpdate, errorPasswordUpdate, errorConfirmPassUpdate,
             errorDOBUpdate, tvDobUpdate, errorPhoneUpdate;
     String userId, firstName, lastName, userNameLogin, profilePicLogin, dob, mobile, email, date;
+    String userIdTwitter, firstNameTwitter, lastNameTwitter, emailFinalTwitter, profilePicTwitter, userNameTwitter;
+    String userIdFb, firstNameFb, lastNameFb, emailFinalFb, profilePicFb, userNameFb;
     CircleImageView userProfileImageUpdate;
     int statusNormal;
     private Bitmap bitmap;
@@ -84,6 +86,7 @@ public class Update extends AppCompatActivity {
     String formatedDate;
     String pswd;
     int day, month, year;
+    int userIdUpdate =0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +105,24 @@ public class Update extends AppCompatActivity {
         mobile = loginSharedPref.getString("mobile", null);
         statusNormal = loginSharedPref.getInt("status", 0);
 
+        SharedPreferences twitterEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        userIdTwitter = twitterEditor.getString("userId", null);
+        firstNameTwitter = twitterEditor.getString("firstName", null);
+        lastNameTwitter = twitterEditor.getString("lastName", null);
+        userNameTwitter = twitterEditor.getString("userName", null);
+        emailFinalTwitter = twitterEditor.getString("emailFinal", null);
+        profilePicTwitter = twitterEditor.getString("profilePic", null);
+
+
+        SharedPreferences fbEditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+        userIdFb = fbEditor.getString("userId", null);
+        firstNameFb = fbEditor.getString("firstName", null);
+        lastNameFb = fbEditor.getString("lastName", null);
+        emailFinalFb = fbEditor.getString("emailFinal", null);
+        profilePicFb = fbEditor.getString("profilePic", null);
+        userNameFb = fbEditor.getString("userName", null);
+
+
         etuFirstName = (EditText) findViewById(R.id.etuFirstName);
         etuLastName = (EditText) findViewById(R.id.etuLastName);
         etuEmailUpdate = (EditText) findViewById(R.id.etuEmailUpdate);
@@ -113,7 +134,6 @@ public class Update extends AppCompatActivity {
         tvDobUpdate = (TextView) findViewById(R.id.tvDobUpdate);
         errorConfirmPassUpdate = (TextView) findViewById(R.id.errorConfirmPassUpdate);
 
-
         etuFirstName.setText(firstName);
         etuLastName.setText(lastName);
         etuEmailUpdate.setText(email);
@@ -121,6 +141,25 @@ public class Update extends AppCompatActivity {
         etuPhone.setText(mobile);
         tvDobUpdate.setText(dob);
         Picasso.with(Update.this).load(profilePicLogin).into(userProfileImageUpdate);
+
+        if (userIdFb!= null){
+            etuFirstName.setText(firstNameFb);
+            etuLastName.setText(lastNameFb);
+            etuEmailUpdate.setText(emailFinalFb);
+            etuUsername.setText(userNameFb);
+            etuPhone.setText(mobile);
+            SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+            String fbId = fbPref.getString("fbId", null);
+            Picasso.with(Update.this).load("https://graph.facebook.com/" + fbId + "/picture").into(userProfileImageUpdate);
+        }else if (userIdTwitter!= null){
+            etuFirstName.setText(firstNameTwitter);
+            etuLastName.setText(lastNameTwitter);
+            etuEmailUpdate.setText(emailFinalTwitter);
+            etuUsername.setText(userNameTwitter);
+            SharedPreferences twitterPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
+            String profilePic1 = twitterPref.getString("profilePic", null);
+            Picasso.with(Update.this).load(profilePic1).into(userProfileImageUpdate);
+        }
 
 
         View v = findViewById(R.id.activity_update);
@@ -337,7 +376,7 @@ public class Update extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-//                        Toast.makeText(SignUpActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(Update.this, error.toString(), Toast.LENGTH_SHORT).show();
                         String errormsg = error.toString();
                         Log.d("Error", errormsg);
                     }
