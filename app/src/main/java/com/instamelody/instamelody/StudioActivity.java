@@ -18,12 +18,12 @@ import android.media.AudioRecord;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.media.audiofx.Equalizer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
@@ -74,6 +74,7 @@ import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.utils.AppHelper;
+import com.instamelody.instamelody.utils.UtilsRecording;
 import com.instamelody.instamelody.utils.VolleyMultipartRequest;
 import com.instamelody.instamelody.utils.VolleySingleton;
 import com.squareup.picasso.Picasso;
@@ -203,13 +204,13 @@ public class StudioActivity extends AppCompatActivity {
     ProgressDialog progressDialog, pDialog;
     // LongOperation myTask = null;
     RelativeLayout rlSync;
-    MediaPlayer mp;
+    public static MediaPlayer mpInst;
     static int duration1, currentPosition;
-    SeekBar melodySlider;
+    //SeekBar melodySlider;
     String array[] = {""};
     ArrayList<String> instruments_count = new ArrayList<String>();
     Timer timer;
-
+    MediaPlayer mp;
     ShareDialog shareDialog;
     FacebookSdk.InitializeCallback i1;
     String fetchRecordingUrl;
@@ -225,7 +226,11 @@ public class StudioActivity extends AppCompatActivity {
     long stop_rec_time;
     String time_stop;
     int count = 0;
-
+    public static FrameLayout frameInstrument;
+    public static RelativeLayout rlFX, rlEQ, eqContent, fxContent,RltvFxButton,RltvEqButton;
+    public static TextView tvDoneFxEq,tvInstrumentLength,tvUserName,tvInstrumentName,tvBpmRate;
+    public static ImageView userProfileImage,ivInstrumentCover,FramesivPause,FramesivPlay;
+    public static SeekBar FramemelodySlider;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -255,8 +260,33 @@ public class StudioActivity extends AppCompatActivity {
         ivRecord_pause = (ImageView) findViewById(R.id.ivRecord_pause);
         profile_image = (CircleImageView) findViewById(R.id.profile_image);
         artist_name = (TextView) findViewById(R.id.artist_name);
-        //  recording_time = (TextView) findViewById(R.id.recording_time);
         melody_detail = (TextView) findViewById(R.id.melody_detail);
+        rlFX = (RelativeLayout) findViewById(R.id.rlFX);
+        rlEQ = (RelativeLayout) findViewById(R.id.rlEQ);
+        fxContent = (RelativeLayout) findViewById(R.id.fxContent);
+        eqContent = (RelativeLayout) findViewById(R.id.eqContent);
+        tvDoneFxEq = (TextView) findViewById(R.id.tvDoneFxEq);
+        RltvFxButton = (RelativeLayout) findViewById(R.id.RltvFxButton);
+        RltvEqButton = (RelativeLayout) findViewById(R.id.RltvEqButton);
+        frameInstrument = (FrameLayout) findViewById(R.id.frameInstrument);
+        tvInstrumentLength = (TextView) findViewById(R.id.tvInstrumentLength);
+        tvInstrumentName = (TextView) findViewById(R.id.tvInstrumentName);
+        tvUserName = (TextView) findViewById(R.id.tvUserName);
+        tvBpmRate = (TextView) findViewById(R.id.tvBpmRate);
+        userProfileImage = (ImageView) findViewById(R.id.userProfileImage);
+        ivInstrumentCover = (ImageView) findViewById(R.id.ivInstrumentCover);
+        volumeSeekbar = (SeekBar) findViewById(R.id.sbVolume);
+        sbTreble = (SeekBar) findViewById(R.id.sbTreble);
+        sbBase = (SeekBar) findViewById(R.id.sbBase);
+        sbReverb = (SeekBar) findViewById(R.id.sbReverb);
+        sbCompression = (SeekBar) findViewById(R.id.sbCompression);
+        sbDelay = (SeekBar) findViewById(R.id.sbDelay);
+        sbTempo = (SeekBar) findViewById(R.id.sbTempo);
+        sbPan = (SeekBar) findViewById(R.id.sbPan);
+        sbPitch = (SeekBar) findViewById(R.id.sbPitch);
+        FramesivPause = (ImageView) findViewById(R.id.FramesivPause);
+        FramesivPlay = (ImageView) findViewById(R.id.FramesivPlay);
+        FramemelodySlider = (SeekBar) findViewById(R.id.FramemelodySlider);
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         firstName = loginSharedPref.getString("firstName", null);
         userNameLogin = loginSharedPref.getString("userName", null);
@@ -516,6 +546,16 @@ public class StudioActivity extends AppCompatActivity {
         rlMelodyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (InstrumentListAdapter.mp_start != null) {
+                    killMediaPlayer_fromInstrument();
+                }
+                if (mps != null) {
+                    ivRecord_stop.performClick();
+
+                }
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    ivRecord_pause.performClick();
+                }
                 Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
                 startActivity(intent);
                 SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("cover response", MODE_PRIVATE).edit();
@@ -527,6 +567,26 @@ public class StudioActivity extends AppCompatActivity {
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (InstrumentListAdapter.mp_start != null) {
+                    killMediaPlayer_fromInstrument();
+                }
+                if (mps != null) {
+                    ivRecord_stop.performClick();
+
+                }
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    ivRecord_pause.performClick();
+                }
+                if (MelodyCardListAdapter.mediaPlayer != null && MelodyCardListAdapter.mediaPlayer.isPlaying()) {
+                    try {
+                        MelodyCardListAdapter.mediaPlayer.stop();
+                        MelodyCardListAdapter.mediaPlayer.reset();
+                        MelodyCardListAdapter.mediaPlayer.release();
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 finish();
                 //killMediaPlayer();
                 //   onStop();
@@ -536,16 +596,36 @@ public class StudioActivity extends AppCompatActivity {
         ivHomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (InstrumentListAdapter.mp_start != null) {
+                    killMediaPlayer_fromInstrument();
+                }
+                if (mps != null) {
+                    ivRecord_stop.performClick();
+
+                }
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    ivRecord_pause.performClick();
+                }
                 //  killMediaPlayer();
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
-                //    onStop();
+                //   onStop();
             }
         });
 
         discover.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (InstrumentListAdapter.mp_start != null) {
+                    killMediaPlayer_fromInstrument();
+                }
+                if (mps != null) {
+                    ivRecord_stop.performClick();
+
+                }
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    ivRecord_pause.performClick();
+                }
                 Intent intent = new Intent(getApplicationContext(), DiscoverActivity.class);
                 startActivity(intent);
             }
@@ -554,6 +634,16 @@ public class StudioActivity extends AppCompatActivity {
         message.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (InstrumentListAdapter.mp_start != null) {
+                    killMediaPlayer_fromInstrument();
+                }
+                if (mps != null) {
+                    ivRecord_stop.performClick();
+
+                }
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    ivRecord_pause.performClick();
+                }
                 Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
                 startActivity(intent);
             }
@@ -562,6 +652,16 @@ public class StudioActivity extends AppCompatActivity {
         ivProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (InstrumentListAdapter.mp_start != null) {
+                    killMediaPlayer_fromInstrument();
+                }
+                if (mps != null) {
+                    ivRecord_stop.performClick();
+
+                }
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    ivRecord_pause.performClick();
+                }
                 Intent i = new Intent(StudioActivity.this, ProfileActivity.class);
                 startActivity(i);
             }
@@ -570,11 +670,20 @@ public class StudioActivity extends AppCompatActivity {
         audio_feed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (InstrumentListAdapter.mp_start != null) {
+                    killMediaPlayer_fromInstrument();
+                }
+                if (mps != null) {
+                    ivRecord_stop.performClick();
+
+                }
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    ivRecord_pause.performClick();
+                }
                 Intent i = new Intent(StudioActivity.this, StationActivity.class);
                 startActivity(i);
             }
         });
-
 
         tvDone.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -598,6 +707,7 @@ public class StudioActivity extends AppCompatActivity {
         ivRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
 
@@ -705,9 +815,14 @@ public class StudioActivity extends AppCompatActivity {
                     recorder = null;
                     isRecording = false;
                 } else {
-                    mediaPlayer.release();
-                    mediaPlayer = null;
-                    rlRecordingButton.setEnabled(true);
+                    try {
+                        mediaPlayer.release();
+                        mediaPlayer = null;
+                        rlRecordingButton.setEnabled(true);
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
+
                 }
                 tvDone.setEnabled(true);
                 chrono.stop();
@@ -721,7 +836,12 @@ public class StudioActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                recordingDuration = getDuration(new File(audioFilePath));
+                try {
+                    recordingDuration = getDuration(new File(audioFilePath));
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+
                 stop_rec_time = SystemClock.elapsedRealtime() - chrono.getBase();
                 time_stop = formateMilliSeccond(stop_rec_time);
 
@@ -973,22 +1093,6 @@ public class StudioActivity extends AppCompatActivity {
         // return timer string
         return String.valueOf(seconds);
     }
-
-    private void primarySeekBarProgressUpdater() {
-
-        Handler mHandler1 = new Handler();
-        melodySlider.setProgress((int) (((float) mp.getCurrentPosition() / duration1) * 100));// This math construction give a percentage of "was playing"/"song length"
-        if (mp.isPlaying()) {
-            Runnable notification = new Runnable() {
-                public void run() {
-                    primarySeekBarProgressUpdater();
-                }
-            };
-            mHandler1.postDelayed(notification, 100);
-        }
-    }
-
-
     private void openDialog() {
         LayoutInflater inflater = LayoutInflater.from(StudioActivity.this);
         View subView = inflater.inflate(R.layout.dialog_layout, null);
@@ -1634,7 +1738,6 @@ public class StudioActivity extends AppCompatActivity {
             public void onResponse(NetworkResponse response) {
 
                 String urlRecording;
-                String thumbNail;
                 String resultResponse = new String(response.data);
                 Log.d("Server Data", resultResponse);
                 SharedPreferences loginSharedPref = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
@@ -1649,10 +1752,8 @@ public class StudioActivity extends AppCompatActivity {
                     JSONObject r1 = response1.getJSONObject("0");
                     if (r1.has("melody")) {
                         urlRecording = r1.getString("melody");
-                        thumbNail = r1.getString("thumbnail");
                     } else {
                         urlRecording = r1.getString("recording");
-                        thumbNail = r1.getString("thumbnail");
                     }
 
                     if (flag.equals("success")) {
@@ -1714,10 +1815,6 @@ public class StudioActivity extends AppCompatActivity {
 
                         SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("Url_recording", MODE_PRIVATE).edit();
                         editor.putString("Recording_url", urlRecording);
-                        editor.commit();
-
-                        SharedPreferences.Editor editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE).edit();
-                        editorT.putString("thumbnail_url", thumbNail);
                         editor.commit();
 
 
@@ -1907,14 +2004,17 @@ public class StudioActivity extends AppCompatActivity {
             mps.add(mp);
 
         }
+
         for (MediaPlayer mp : mps) {
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     mp.start();
+
                 }
             });
         }
+
     }
 
     public void killMediaPlayer() {
@@ -1929,6 +2029,20 @@ public class StudioActivity extends AppCompatActivity {
             }
         }
         mps.clear();
+    }
+
+    public void killMediaPlayer_fromInstrument() {
+        for (MediaPlayer mp : InstrumentListAdapter.mp_start) {
+            try {
+                mp.stop();
+                mp.reset();
+                mp.release();
+                //     mp=null;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        InstrumentListAdapter.mp_start.clear();
     }
 
 
@@ -1952,6 +2066,31 @@ public class StudioActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        try {
+            if (mpInst != null)
+                mpInst.stop();
+
+            if (mRecordingThread != null) {
+                mRecordingThread.stopRunning();
+                mRecordingThread = null;
+            }
+            if (mPlayer != null) {
+                mPlayer.stop();
+                mp.stop();
+                mp.release();
+            }
+            if (recorder != null) {
+                try {
+                    recorder.stop();
+                    killMediaPlayer();
+
+                } catch (RuntimeException ex) {
+                }
+            }
+
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
         Intent i = new Intent(this, HomeActivity.class);
         startActivity(i);
     }
@@ -2107,38 +2246,31 @@ public class StudioActivity extends AppCompatActivity {
         return out.toByteArray();
     }
 
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        if (mp != null || mediaPlayer != null) {
-//            try {
-//                mp.reset();
-//                mediaPlayer.reset();
-//                mp.release();
-//                mediaPlayer.prepare();
-//
-//            } catch (Throwable e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            if (InstrumentListAdapter.mp_start != null) {
+                killMediaPlayer_fromInstrument();
+                StudioActivity.this.recreate();
+                adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+                recyclerViewInstruments.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+            }
+            if (mps != null) {
+                ivRecord_stop.performClick();
 
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//        if (mp != null || mediaPlayer != null) {
-//            if (mp.isPlaying() || mediaPlayer.isPlaying()) {
-//                try {
-//                    mp.reset();
-//                    mediaPlayer.reset();
-//
-//                } catch (Throwable e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//        }
-//    }
+            }
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                ivRecord_pause.performClick();
+            }
+
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }
 
 

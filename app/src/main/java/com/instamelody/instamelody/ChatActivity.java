@@ -121,8 +121,8 @@ public class ChatActivity extends AppCompatActivity {
     String KEY_FLAG = "flag";
     String userId, receiverId, receiverName, packId, packType, receiverImage;
     static String chatId;
-    RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton, rlSelectedImage;
-    ImageView ivRecieverProfilePic, ivSelectedImage;
+    RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton;
+    ImageView ivRecieverProfilePic;
     TextView tvRecieverName;
     String username = "";
     String parent;
@@ -199,9 +199,6 @@ public class ChatActivity extends AppCompatActivity {
         rlTxtContent = (RelativeLayout) findViewById(R.id.rlTxtContent);
         ivNewChat = (ImageView) findViewById(R.id.ivNewChat);
         rlInviteButton = (RelativeLayout) findViewById(R.id.rlInviteButton);
-        ivSelectedImage = (ImageView) findViewById(R.id.ivSelectedImage);
-        rlSelectedImage = (RelativeLayout) findViewById(R.id.rlSelectedImage);
-
         recyclerViewChat = (RecyclerView) findViewById(R.id.recyclerViewChat);
         recyclerViewChat.setHasFixedSize(true);
         LinearLayoutManager lm = new LinearLayoutManager(getApplicationContext());
@@ -436,13 +433,6 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View view) {
             }
         });
-
-        rlSelectedImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                rlSelectedImage.setVisibility(View.GONE);
-            }
-        });
     }
 
     @Override
@@ -493,15 +483,15 @@ public class ChatActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (this.requestCode == requestCode && resultCode == RESULT_OK && null != data) {
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-            rlSelectedImage.setVisibility(View.VISIBLE);
-            ivSelectedImage.setImageBitmap(bitmap);
+//            rlSelectedImage.setVisibility(View.VISIBLE);
+//            ivSelectedImage.setImageBitmap(bitmap);
         }
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && null != data) {
             Uri selectedImageUri = data.getData();
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
-                rlSelectedImage.setVisibility(View.VISIBLE);
-                ivSelectedImage.setImageBitmap(bitmap);
+//                rlSelectedImage.setVisibility(View.VISIBLE);
+//                ivSelectedImage.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -143,6 +143,7 @@
             android:name=".JoinActivity"
             android:label="@string/title_activity_join"
             android:theme="@style/AppTheme" />
+
         <activity android:name=".Update" />
         <activity android:name=".PrivacyPolicy"></activity>
     </application>

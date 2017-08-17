@@ -75,7 +75,7 @@ public class CommentsActivity extends AppCompatActivity {
     String TOPIC = "topic";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";
-
+    String userId="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,7 +114,17 @@ public class CommentsActivity extends AppCompatActivity {
         cover = prefs.getString("bitmapCover", null);
         melodyID = prefs.getString("melodyID", null);
         fileType = prefs.getString("fileType", null);
+        SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+        SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
 
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
+        }
         getComments();
 
         tvInstrumentsUsed.setText(instruments);
@@ -187,9 +197,8 @@ public class CommentsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-                String userId = loginSharedPref.getString("userId", null);
-                if (userId != null) {
+
+                if (!userId.equals("") && userId!=null) {
 
                     tvCancel.setVisibility(View.VISIBLE);
                     tvSend.setVisibility(View.GONE);

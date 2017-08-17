@@ -68,7 +68,7 @@
                                     android:layout_height="35dp"
                                     android:layout_centerHorizontal="true"
                                     android:layout_centerVertical="true"
-                                />
+                                     />
 
                             </RelativeLayout>
 
@@ -895,6 +895,7 @@
                         android:textColor="#3B6EFF"
                         android:textSize="16sp"
                         android:textStyle="normal|bold" />
+
 
                 </RelativeLayout>
 
