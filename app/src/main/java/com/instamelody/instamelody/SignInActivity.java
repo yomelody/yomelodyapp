@@ -54,6 +54,7 @@ import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
@@ -363,6 +364,23 @@ public class SignInActivity extends AppCompatActivity {
                /* Toast.makeText(SignInActivity.this, "" + output, Toast.LENGTH_LONG).show();*/
             //loginTwitter(result);
             TwitterSession session = result.data;
+
+
+            TwitterSession session1 = Twitter.getSessionManager().getActiveSession();
+            TwitterAuthToken twitterAuthToken = session1.getAuthToken();
+            TwitterAuthClient twitterAuthClient = new TwitterAuthClient();
+            twitterAuthClient.requestEmail(session1, new Callback<String>() {
+                @Override
+                public void success(Result<String> result) {
+                    Toast.makeText(SignInActivity.this, ""+result, Toast.LENGTH_LONG).show();
+                    Log.d("TwitterEmail",result.toString());
+                }
+
+                @Override
+                public void failure(TwitterException exception) {
+
+                }
+            });
             Twitter twitter = Twitter.getInstance();
             TwitterApiClient api = twitter.core.getApiClient(session);
             AccountService service = api.getAccountService();
@@ -570,7 +588,7 @@ public class SignInActivity extends AppCompatActivity {
                                 Last_name = rspns.getString("l_name");
                                 emailfinal = rspns.getString("email");
                                 profilePic = rspns.getString("profilepic");
-                                coverPic = rspns.getString("coverpic");
+//                                coverPic = rspns.getString("coverpic");
                                 followers = rspns.getString("followers");
                                 fans = rspns.getString("fans");
                                 records = rspns.getString("records");
@@ -582,13 +600,13 @@ public class SignInActivity extends AppCompatActivity {
 
                                 SharedPreferences.Editor fbEditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
                                 fbEditor.putString("userId", user_id);
-//                                fbEditor.putString("firstName", First_name);
-//                                fbEditor.putString("lastName", Last_name);
-//                                fbEditor.putString("emailFinal", emailfinal);
+                                fbEditor.putString("firstName", First_name);
+                                fbEditor.putString("lastName", Last_name);
+                                fbEditor.putString("emailFinal", emailfinal);
                                 fbEditor.putString("profilePic", profilePic);
                                 fbEditor.putString("coverPic", coverPic);
 //                                fbEditor.putString("lastLogin", lastLogin);
-//                                fbEditor.putString("userName", userName);
+                                fbEditor.putString("userName", userName);
                                 fbEditor.putString("fans", fans);
                                 fbEditor.putString("followers", followers);
                                 fbEditor.putString("records", records);
@@ -679,11 +697,12 @@ public class SignInActivity extends AppCompatActivity {
 
                                 SharedPreferences.Editor twitterEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
                                 twitterEditor.putString("userId", user_id);
-//                                twitterEditor.putString("firstName", First_name);
-//                                twitterEditor.putString("lastName", Last_name);
-//                                twitterEditor.putString("emailFinal", emailfinal);
+                                twitterEditor.putString("firstName", First_name);
+                                twitterEditor.putString("lastName", Last_name);
+                                twitterEditor.putString("emailFinal", emailfinal);
                                 twitterEditor.putString("profilePic", profilePic);
                                 twitterEditor.putString("coverPic", coverPic);
+                                twitterEditor.putString("userName",userName);
 //                                twitterEditor.putString("lastLogin", lastLogin);
 //                                twitterEditor.putString("userName", userName);
                                 twitterEditor.putString("fans", fans);
