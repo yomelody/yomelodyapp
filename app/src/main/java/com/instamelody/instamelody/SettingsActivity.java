@@ -1,8 +1,10 @@
 package com.instamelody.instamelody;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -26,7 +28,7 @@ public class SettingsActivity extends AppCompatActivity {
     TextView tvDone, tvSignIn, tvSignOut, tvFirstNameSettings, tvUserNameSettings;
     SeekBar seekBarDisc;
     ImageView ivLogoContainer;
-    RelativeLayout rlSocialConnect, rlSubscription, rlMyAccount, rlTos, rlPrivacyPolicy,rlInviteContacts;
+    RelativeLayout rlSocialConnect, rlSubscription, rlMyAccount, rlTos, rlPrivacyPolicy,rlInviteContacts,rlRateApp;
     String userId, firstName, lastName, userNameLogin, profilePicLogin;
     CircleImageView userProfileImageSettings;
     int statusNormal;
@@ -49,6 +51,7 @@ public class SettingsActivity extends AppCompatActivity {
         userProfileImageSettings = (CircleImageView) findViewById(R.id.userProfileImageSettings);
         rlPrivacyPolicy = (RelativeLayout) findViewById(R.id.rlPrivacyPolicy);
         rlTos = (RelativeLayout) findViewById(R.id.rlTos);
+        rlRateApp = (RelativeLayout) findViewById(R.id.rlRateApp);
 
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userId = loginSharedPref.getString("userId", null);
@@ -138,6 +141,30 @@ public class SettingsActivity extends AppCompatActivity {
                 }
             });
 
+            rlRateApp.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    /*Uri uri = Uri.parse("market://details?id=" + context.getPackageName
+                            ());*/
+
+                    Uri uri = Uri.parse("https://play.google.com/store?hl=en");
+
+                    Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+                    // To count with Play market backstack, After pressing back button,
+                    // to taken back to our application, we need to add following flags
+                    goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+                            Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
+                            Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                    try {
+                        startActivity(goToMarket);
+                    } catch (ActivityNotFoundException e) {
+                        /*startActivity(new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("http://play.google.com/store/apps/details?
+                                        id=" + context.getPackageName())));*/
+                    }
+                }
+            });
+
             rlInviteContacts.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -192,6 +219,28 @@ public class SettingsActivity extends AppCompatActivity {
                     Toast.makeText(SettingsActivity.this, "Sign in Share InstaMelody Application", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
                     startActivity(intent);
+                }
+            });
+
+            rlRateApp.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    /*Uri uri = Uri.parse("market://details?id=" + context.getPackageName
+                            ());*/
+                    Uri uri = Uri.parse("https://play.google.com/store?hl=en");
+                    Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+                    // To count with Play market backstack, After pressing back button,
+                    // to taken back to our application, we need to add following flags
+                    goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+                            Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
+                            Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                    try {
+                        startActivity(goToMarket);
+                    } catch (ActivityNotFoundException e) {
+                        /*startActivity(new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("http://play.google.com/store/apps/details?
+                                        id=" + context.getPackageName())));*/
+                    }
                 }
             });
 

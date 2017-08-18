@@ -97,6 +97,7 @@ public class MelodyPacksFragment extends Fragment {
     ArrayList<UserMelodyPlay> melodyPools = new ArrayList<>();
     TabHost host = null;
     ProgressDialog progressDialog;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -126,9 +127,10 @@ public class MelodyPacksFragment extends Fragment {
         }
 
         //     new Loader().execute();
-
+        fetchGenreNames();
         if (strName == null && strSearch == null) {
-            new LongOperation().execute();
+            fetchMelodyPacks();
+//            new LongOperation().execute();
         } else if (strName != null) {
             fetchMelodyFilter();
         } else if (strSearch != null) {
@@ -142,9 +144,6 @@ public class MelodyPacksFragment extends Fragment {
         }
         adapter = new MelodyCardListAdapter(melodyList, getActivity());
 
-
-      /*  if (strName == null) {
-        }*/
         RecordingsFragment rf = new RecordingsFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.melodyPackFragment, rf);
@@ -333,10 +332,10 @@ public class MelodyPacksFragment extends Fragment {
                     params.put(GENRE, packId);
                     params.put(FILE_TYPE, "admin_melody");
                 }
-                try{
+                try {
                     SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
                     String userId = loginSharedPref.getString("userId", null);
-                }catch (NullPointerException e){
+                } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
 

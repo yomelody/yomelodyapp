@@ -827,7 +827,7 @@ public class DiscoverActivity extends AppCompatActivity {
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, "Instruments");
-                params.put(COUNT, strInstruments);
+                params.put(COUNT, Instruments);
                 params.put(FILTER, "extrafilter");
                 return params;
             }
@@ -890,7 +890,7 @@ public class DiscoverActivity extends AppCompatActivity {
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
-                params.put(COUNT, strBPM);
+                params.put(COUNT, BPM);
                 params.put(FILTER, "extrafilter");
                 return params;
             }

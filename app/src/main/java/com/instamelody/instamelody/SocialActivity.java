@@ -95,7 +95,7 @@ public class SocialActivity extends AppCompatActivity {
         fetchRecordingUrl = loginSharedPref1.getString("Recording_url", null);
 
         SharedPreferences editorT = this.getSharedPreferences("thumbnail_url", MODE_PRIVATE);
-        fetchThumbNailUrl= editorT.getString("thumbnail_url", null);
+        fetchThumbNailUrl= editorT.getString("thumbnailUrl", null);
 
         plus_one_button = (PlusOneButton) findViewById(R.id.plus_one_button);
 //        new URLShort().execute();
@@ -227,6 +227,9 @@ public class SocialActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Sharer.Result result) {
                 Toast.makeText(SocialActivity.this, "Recording Uploaded", Toast.LENGTH_SHORT).show();
+                SharedPreferences.Editor editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE).edit();
+                editorT.clear();
+                editorT.apply();
             }
 
             @Override
