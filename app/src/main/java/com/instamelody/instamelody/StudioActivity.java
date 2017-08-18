@@ -356,7 +356,6 @@ public class StudioActivity extends AppCompatActivity {
 
 
                 ArrayList<MelodyCard> arrayMelody = new ArrayList<>();
-
                 arrayMelody = MelodyCardListAdapter.returnMelodyList();
                 try {
                     melodyName = arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName();
@@ -368,7 +367,6 @@ public class StudioActivity extends AppCompatActivity {
                 for (int i = 0; i < instrumentList.size(); i++) {
                     MelodyInstruments instruments = instrumentList.get(i);
                     instrumentName = instruments.getInstrumentName();
-
                 }
 
                 LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
