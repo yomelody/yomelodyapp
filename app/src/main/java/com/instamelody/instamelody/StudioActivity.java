@@ -330,7 +330,6 @@ public class StudioActivity extends AppCompatActivity {
         recording_date.setText(dateString);
         melody_date.setText(dateString);
 
-
         Intent intent = getIntent();
         if (intent == null) {
         } else if (intent.getExtras().getString("clickPosition").equals("fromHomeActivity")) {
@@ -362,13 +361,10 @@ public class StudioActivity extends AppCompatActivity {
                 } catch (IndexOutOfBoundsException e) {
                     e.printStackTrace();
                 }
-
-
                 for (int i = 0; i < instrumentList.size(); i++) {
                     MelodyInstruments instruments = instrumentList.get(i);
                     instrumentName = instruments.getInstrumentName();
                 }
-
                 LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
 
                 String audioUrl = "http://52.41.33.64/api/uploads/melody/instruments/";
