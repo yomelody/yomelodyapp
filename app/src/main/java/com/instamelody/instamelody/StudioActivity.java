@@ -374,6 +374,7 @@ public class StudioActivity extends AppCompatActivity {
                 ArrayList<MelodyCard> arrayMelody = new ArrayList<>();
 
                 arrayMelody = MelodyCardListAdapter.returnMelodyList();
+
                 melodyName = arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName();
 
 
