@@ -36,12 +36,10 @@ public class RecentImagesAdapter extends RecyclerView.Adapter<RecentImagesAdapte
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         ImageView galleryImages;
-        SimpleDraweeView mSimpleDraweeView;
 
         public MyViewHolder(View mView) {
             super(mView);
             this.galleryImages = (ImageView) mView.findViewById(R.id.galleryImages);
-            this.mSimpleDraweeView = (SimpleDraweeView) mView.findViewById(R.id.sdvGalleryImages);
 
             galleryImages.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -61,10 +59,7 @@ public class RecentImagesAdapter extends RecyclerView.Adapter<RecentImagesAdapte
     @TargetApi(19)
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int listPosition) {
-//        Picasso.with(context).load(new File(fileList.get(listPosition).getFilepath())).into(holder.galleryImages);
-        holder.mSimpleDraweeView.getHierarchy().setPlaceholderImage(placeholderImage);
-        holder.mSimpleDraweeView.setImageURI(fileList.get(listPosition).getFilepath());
-        holder.mSimpleDraweeView.getHierarchy().setFailureImage(failureImage);
+        Picasso.with(context).load(new File(fileList.get(listPosition).getFilepath())).into(holder.galleryImages);
     }
 
     @Override
