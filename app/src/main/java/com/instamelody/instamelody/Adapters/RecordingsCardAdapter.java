@@ -260,11 +260,8 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 @Override
                 public void onClick(View view) {
                     if (!userId.equals("") && userId != null) {
-                        //Toast.makeText(context, "comment", Toast.LENGTH_SHORT).show();
-                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID;
+                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID,LikeStatus;
 
-                        //instruments = tvInstrumentsUsed.getText().toString().trim();
-                        //bpm = tvBpmRate.getText().toString().trim();
                         genre = tvRecordingGenres.getText().toString().trim();
                         melodyName = tvRecordingName.getText().toString().trim();
                         userName = tvUserName.getText().toString().trim();
@@ -276,7 +273,13 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         shares = tvShareCount.getText().toString().trim();
                         int pos = getAdapterPosition();
                         melodyID = mpids.get(pos);
-
+                        if (ivDislikeButton.getVisibility() == VISIBLE) {
+                            LikeStatus = "1";
+                        }
+                        else
+                        {
+                            LikeStatus = "0";
+                        }
                         SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
                         editor.putString("instruments", "0");
                         editor.putString("bpm", "0");
@@ -293,6 +296,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 //                    editor.putString("bitmapCover", cover);
                         editor.putString("melodyID", melodyID);
                         editor.putString("fileType", "user_recording");
+                        editor.putString("LikeStatus", LikeStatus);
                         editor.commit();
 
                         Intent intent = new Intent(context, CommentsActivity.class);

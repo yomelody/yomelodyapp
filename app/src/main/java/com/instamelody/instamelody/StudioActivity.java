@@ -70,6 +70,8 @@ import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
+import com.instamelody.instamelody.Models.MelodyMixing;
+import com.instamelody.instamelody.Models.MixingData;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.utils.AppHelper;
@@ -140,6 +142,7 @@ public class StudioActivity extends AppCompatActivity {
     private String RECORDING_DURATION = "duration";
     private String SHARE_PUBLIC = "public_flag";
     private String RECORDING_BPM = "bpm";
+    private List Mlist;
     private String ADMIN_INSTRUMENT_ID = "admin_instruments_ids";
     private String USER_INSTRUMENT_ID = "user_instruments_ids";
 
@@ -225,11 +228,14 @@ public class StudioActivity extends AppCompatActivity {
     String time_stop;
     int count = 0;
     public static FrameLayout frameInstrument;
-    public static RelativeLayout rlFX, rlEQ, eqContent, fxContent,RltvFxButton,RltvEqButton;
-    public static TextView tvDoneFxEq,tvInstrumentLength,tvUserName,tvInstrumentName,tvBpmRate;
-    public static ImageView userProfileImage,ivInstrumentCover,FramesivPause,FramesivPlay;
+    public static RelativeLayout rlFX, rlEQ, eqContent, fxContent, RltvFxButton, RltvEqButton;
+    public static TextView tvDoneFxEq, tvInstrumentLength, tvUserName, tvInstrumentName, tvBpmRate;
+    public static ImageView userProfileImage, ivInstrumentCover, FramesivPause, FramesivPlay;
     public static SeekBar FramemelodySlider;
     public static SeekBar volumeSeekbar, sbTreble, sbBase, sbPan, sbPitch, sbReverb, sbCompression, sbDelay, sbTempo;
+    public static MelodyMixing melodyMixing = new MelodyMixing();
+    public static ArrayList<MixingData> list = new ArrayList<MixingData>();
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -1092,6 +1098,7 @@ public class StudioActivity extends AppCompatActivity {
         // return timer string
         return String.valueOf(seconds);
     }
+
     private void openDialog() {
         LayoutInflater inflater = LayoutInflater.from(StudioActivity.this);
         View subView = inflater.inflate(R.layout.dialog_layout, null);
@@ -1591,6 +1598,7 @@ public class StudioActivity extends AppCompatActivity {
 //        final String genre = selectedGenre;
 //        final String recType = value;
 //        final String duration = Long.toString(elapsedMillis);
+        List ls=list;
         progressDialog = new ProgressDialog(StudioActivity.this);
         progressDialog.setTitle("Processing...");
         progressDialog.setMessage("Please wait...");
@@ -1713,6 +1721,7 @@ public class StudioActivity extends AppCompatActivity {
                 params.put(RECORDING_DURATION, recordingDuration);
                 params.put(SHARE_PUBLIC, switchFlag);
                 params.put(RECORDING_BPM, "128");
+                //params.put(Mlist,list);
                 return params;
             }
         };

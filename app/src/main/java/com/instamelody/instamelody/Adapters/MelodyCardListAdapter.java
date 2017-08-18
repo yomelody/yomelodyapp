@@ -106,6 +106,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     }
 
 
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvUserName, tvMelodyName, tvMelodyLength, tvBpmRate, tvInstrumentsUsed, tvMelodyGenre, tvMelodyDate, tv7, tv8, tv9;
@@ -257,8 +258,16 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 @Override
                 public void onClick(View view) {
                     if (!userId.equals("") && userId != null) {
-                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID, RecordingURL, CoverUrl;
+                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID, RecordingURL, CoverUrl, LikeStatus;
                         MelodyCard melody = melodyList.get(getAdapterPosition());
+
+                        if (ivDislikeButton.getVisibility() == VISIBLE) {
+                            LikeStatus = "1";
+                        }
+                        else
+                        {
+                            LikeStatus = "0";
+                        }
                         instruments = tvInstrumentsUsed.getText().toString().trim();
                         bpm = tvBpmRate.getText().toString().trim();
                         genre = tvMelodyGenre.getText().toString().trim();
@@ -293,6 +302,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         editor.putString("fileType", "admin_melody");
                         editor.putString("RecordingURL", RecordingURL);
                         editor.putString("CoverUrl", CoverUrl);
+                        editor.putString("LikeStatus", LikeStatus);
                         editor.commit();
 
                         Intent intent = new Intent(context, CommentsActivity.class);
@@ -356,9 +366,9 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     intent.putExtra("clickPosition", position);
                     v.getContext().startActivity(intent);
                     if (mediaPlayer != null) {
-                        try{
+                        try {
                             mediaPlayer.reset();
-                        }catch (IllegalStateException e){
+                        } catch (IllegalStateException e) {
                             e.printStackTrace();
                         }
 
