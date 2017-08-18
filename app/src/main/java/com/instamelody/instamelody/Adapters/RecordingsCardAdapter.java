@@ -244,33 +244,30 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                 @Override
                 public void onClick(View v) {
-                    /*Intent shareIntent = new Intent();
-                    shareIntent.setAction(Intent.ACTION_SEND);
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
-                    shareIntent.setType("image/jpeg");
-                    startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));*/
-
-                    RecordingsModel recording = recordingList.get(getAdapterPosition());
-                    String RecordingURL = recording.getrecordingurl();
-                    Intent shareIntent = new Intent();
-                    shareIntent.setAction(Intent.ACTION_SEND);
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt");
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, RecordingURL);
-                    shareIntent.setType("image/jpeg");
-                    shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(Intent.createChooser(shareIntent, "Hello."));
+                    if (!userId.equals("") && userId != null) {
+                        RecordingsModel recording = recordingList.get(getAdapterPosition());
+                        String RecordingURL = recording.getrecordingurl();
+                        Intent shareIntent = new Intent();
+                        shareIntent.setAction(Intent.ACTION_SEND);
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, RecordingURL);
+                        shareIntent.setType("image/jpeg");
+                        shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(Intent.createChooser(shareIntent, "Hello."));
+                    } else {
+                        Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(context, SignInActivity.class);
+                        context.startActivity(intent);
+                    }
                 }
             });
             ivCommentButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (!userId.equals("") && userId != null) {
-                        //Toast.makeText(context, "comment", Toast.LENGTH_SHORT).show();
-                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID;
+                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID,LikeStatus;
 
-                        //instruments = tvInstrumentsUsed.getText().toString().trim();
-                        //bpm = tvBpmRate.getText().toString().trim();
                         genre = tvRecordingGenres.getText().toString().trim();
                         melodyName = tvRecordingName.getText().toString().trim();
                         userName = tvUserName.getText().toString().trim();
@@ -282,7 +279,13 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         shares = tvShareCount.getText().toString().trim();
                         int pos = getAdapterPosition();
                         melodyID = mpids.get(pos);
-
+                        if (ivDislikeButton.getVisibility() == VISIBLE) {
+                            LikeStatus = "1";
+                        }
+                        else
+                        {
+                            LikeStatus = "0";
+                        }
                         SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
                         editor.putString("instruments", "0");
                         editor.putString("bpm", "0");
@@ -299,6 +302,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 //                    editor.putString("bitmapCover", cover);
                         editor.putString("melodyID", melodyID);
                         editor.putString("fileType", "user_recording");
+                        editor.putString("LikeStatus", LikeStatus);
                         editor.commit();
 
                         Intent intent = new Intent(context, CommentsActivity.class);
@@ -529,7 +533,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             }
                         } catch (Throwable e) {
                             e.printStackTrace();
-                        }
 
                     }
                     if(holder.ivStationPause.getVisibility()==VISIBLE){
