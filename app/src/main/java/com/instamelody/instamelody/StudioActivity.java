@@ -353,8 +353,6 @@ public class StudioActivity extends AppCompatActivity {
                     frameSync.setVisibility(View.VISIBLE);
                 }
 
-
-                
                 ArrayList<MelodyCard> arrayMelody = new ArrayList<>();
                 arrayMelody = MelodyCardListAdapter.returnMelodyList();
                 try {
