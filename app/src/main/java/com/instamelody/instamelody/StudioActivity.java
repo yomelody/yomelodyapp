@@ -354,6 +354,7 @@ public class StudioActivity extends AppCompatActivity {
                 }
 
 
+                
                 ArrayList<MelodyCard> arrayMelody = new ArrayList<>();
                 arrayMelody = MelodyCardListAdapter.returnMelodyList();
                 try {
