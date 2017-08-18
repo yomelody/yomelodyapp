@@ -115,7 +115,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         private int curVolume = 0;
 
         ProgressDialog progressDialog;
-        //public MediaPlayer mp;
+        public MediaPlayer mp;
 
         CardView card_melody;
         AudioManager audioManager;
@@ -167,8 +167,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 public void onClick(View v) {
                     ivPlay.setVisibility(v.VISIBLE);
                     ivPause.setVisibility(v.GONE);
-                    StudioActivity.mpInst.pause();
-                    length = StudioActivity.mpInst.getCurrentPosition();
+                    mp.pause();
+                    length = mp.getCurrentPosition();
                     melodySlider.setProgress(0);
                 }
             });
@@ -202,9 +202,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     UtilsRecording utilRecording = new UtilsRecording();
                     int progress1 = utilRecording.getProgressPercentage(mCurrentPosition, mDuration);
 
-                    if (StudioActivity.mpInst != null && fromUser) {
+                    if (mp!= null && fromUser) {
                         int playPositionInMilliseconds = duration1 / 100 * melodySlider.getProgress();
-                        StudioActivity.mpInst.seekTo(playPositionInMilliseconds);
+                        mp.seekTo(playPositionInMilliseconds);
 //                        seekBar.setProgress(progress);
                     } else {
                         // the event was fired from code and you shouldn't call player.seekTo()
@@ -669,11 +669,11 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                         return false;
                     }
                 });
-                StudioActivity.mpInst.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                holder.mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
-                        duration1 = StudioActivity.mpInst.getDuration();
-                        currentPosition = StudioActivity.mpInst.getCurrentPosition();
+                        duration1 = holder.mp.getDuration();
+                        currentPosition = holder.mp.getCurrentPosition();
                         holder.progressDialog.dismiss();
                     }
                 });
@@ -689,8 +689,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             public void onClick(View v) {
                 holder.ivPlay.setVisibility(v.VISIBLE);
                 holder.ivPause.setVisibility(v.GONE);
-                StudioActivity.mpInst.pause();
-                length = StudioActivity.mpInst.getCurrentPosition();
+               holder.mp.pause();
+                length = holder.mp.getCurrentPosition();
                 holder.melodySlider.setProgress(0);
             }
         });
