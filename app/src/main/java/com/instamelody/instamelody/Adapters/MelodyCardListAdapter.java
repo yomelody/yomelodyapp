@@ -90,7 +90,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     String Key_shared_with = "shared_with";
     String Key_file_type = "file_type";
     String userId = "";
-    public static ImageView ivPlay, ivPause;
+
     private RecyclerView.ViewHolder lastModifiedHoled = null;
 
 
@@ -115,6 +115,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         SeekBar melodySlider;
         RelativeLayout rlSeekbarTracer, rlLike, rlPlay, rlComment, rlshare;
         ProgressDialog progressDialog;
+        ImageView ivPlay, ivPause;
 
         public MyViewHolder(final View itemView) {
             super(itemView);
@@ -306,47 +307,6 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 }
             });
 
-            melodySlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-//                    int sliderSize = melodySlider.getWidth();
-//                    int rlivSize = rlSeekbarTracer.getWidth();
-//
-//                    tv7.setText(Integer.toString(sliderSize));
-//                    tv8.setText(Integer.toString(progress));
-//                    tv9.setText(Integer.toString(rlivSize));
-//
-//                    int maxProgress = melodySlider.getMax();
-//                    int rate = (sliderSize - 20) / maxProgress;
-//
-//                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) rlSeekbarTracer.getLayoutParams();
-//                    params.width = (40 + (progress * rate));
-//                    rlSeekbarTracer.setLayoutParams(params);
-
-                    int mCurrentPosition = mediaPlayer.getCurrentPosition() / 1000;
-                    int mDuration = mediaPlayer.getDuration() / 1000;
-                    //   UtilsRecording utilRecording = new UtilsRecording();
-                    //   int progress1 = utilRecording.getProgressPercentage(mCurrentPosition, mDuration);
-
-                    if (mediaPlayer != null && fromUser) {
-                        int playPositionInMilliseconds = mediaPlayer.getDuration() / 100 * melodySlider.getProgress();
-                        mediaPlayer.seekTo(playPositionInMilliseconds);
-//                        seekBar.setProgress(progress);
-                    } else {
-                        // the event was fired from code and you shouldn't call player.seekTo()
-                    }
-                }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                }
-            });
 
             btnMelodyAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -356,9 +316,9 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     intent.putExtra("clickPosition", position);
                     v.getContext().startActivity(intent);
                     if (mediaPlayer != null) {
-                        try{
+                        try {
                             mediaPlayer.reset();
-                        }catch (IllegalStateException e){
+                        } catch (IllegalStateException e) {
                             e.printStackTrace();
                         }
 
@@ -429,7 +389,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         }
 
 
-        ivPlay.setOnClickListener(new View.OnClickListener() {
+        holder.ivPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -437,44 +397,24 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 holder.progressDialog.setMessage("Loading...");
                 holder.progressDialog.show();
 
-
+                holder.ivPause.setVisibility(VISIBLE);
                 holder.melodySlider.setVisibility(VISIBLE);
                 holder.rlSeekbarTracer.setVisibility(VISIBLE);
 
-                String position, userId;
-                SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-                userId = loginSharedPref.getString("userId", null);
+                String position;
                 position = Integer.toString(listPosition + 1);
 
-                if (userId != null) {
-                    String play = holder.tvPlayCount.getText().toString().trim();
-                    int playValue = Integer.parseInt(play) + 1;
-                    play = String.valueOf(playValue);
-                    holder.tvPlayCount.setText(play);
-
-                    fetchViewCount(userId, position);
-                    ParseContents pc = new ParseContents(context);
-                    instrumentList = pc.getInstruments();
-                    if (listPosition < instrumentList.size()) {
-                        audioUrl = melody.getMelodyURL();
-                    }
-
-                } else {
-                    ParseContents pc = new ParseContents(context);
-                    instrumentList = pc.getInstruments();
-                    if (listPosition < instrumentList.size()) {
-                        audioUrl = melody.getMelodyURL();
-                    }
+                String play = holder.tvPlayCount.getText().toString().trim();
+                int playValue = Integer.parseInt(play) + 1;
+                play = String.valueOf(playValue);
+                holder.tvPlayCount.setText(play);
+                fetchViewCount(userId, position);
+                ParseContents pc = new ParseContents(context);
+                instrumentList = pc.getInstruments();
+                if (listPosition < instrumentList.size()) {
+                    audioUrl = melody.getMelodyURL();
                 }
-//                    try {
-//                        playAudio(audioUrl);
-//                        primarySeekBarProgressUpdater();
-//                        audioUrl = "";
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                        Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
-//
-//                    }
+
 
                 if (mediaPlayer != null) {
                     try {
@@ -569,11 +509,11 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         });
 
 
-        ivPause.setOnClickListener(new View.OnClickListener() {
+        holder.ivPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ivPlay.setVisibility(VISIBLE);
-                ivPause.setVisibility(GONE);
+                holder.ivPlay.setVisibility(VISIBLE);
+                holder.ivPause.setVisibility(GONE);
                 try {
                     mediaPlayer.pause();
                 } catch (Throwable e) {
@@ -583,7 +523,47 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 holder.melodySlider.setProgress(0);
             }
         });
+        holder.melodySlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+//                    int sliderSize = melodySlider.getWidth();
+//                    int rlivSize = rlSeekbarTracer.getWidth();
+//
+//                    tv7.setText(Integer.toString(sliderSize));
+//                    tv8.setText(Integer.toString(progress));
+//                    tv9.setText(Integer.toString(rlivSize));
+//
+//                    int maxProgress = melodySlider.getMax();
+//                    int rate = (sliderSize - 20) / maxProgress;
+//
+//                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) rlSeekbarTracer.getLayoutParams();
+//                    params.width = (40 + (progress * rate));
+//                    rlSeekbarTracer.setLayoutParams(params);
+
+//                    int mCurrentPosition = mediaPlayer.getCurrentPosition() / 1000;
+//                    int mDuration = mediaPlayer.getDuration() / 1000;
+                //   UtilsRecording utilRecording = new UtilsRecording();
+                //   int progress1 = utilRecording.getProgressPercentage(mCurrentPosition, mDuration);
+
+                if (mediaPlayer != null && fromUser) {
+                    int playPositionInMilliseconds = mediaPlayer.getDuration() / 100 * holder.melodySlider.getProgress();
+                    mediaPlayer.seekTo(playPositionInMilliseconds);
+//                        seekBar.setProgress(progress);
+                } else {
+                    // the event was fired from code and you shouldn't call player.seekTo()
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
 
     }
 

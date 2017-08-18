@@ -189,8 +189,14 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     editor.putString("fileType", "admin_melody");
                     editor.commit();
 
-                    Intent intent = new Intent(context, JoinActivity.class);
-                    context.startActivity(intent);
+
+                    try{
+                        Intent intent = new Intent(context, JoinActivity.class);
+                        context.startActivity(intent);
+                    }catch (Throwable e){
+                        e.printStackTrace();
+                    }
+
                 }
             });
             rlLike.setOnClickListener(new View.OnClickListener() {
@@ -329,8 +335,14 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     int progress1 = utilRecording.getProgressPercentage(mCurrentPosition, mDuration);
 
                     if (mp != null && fromUser) {
-                        int playPositionInMilliseconds = duration1 / 100 * seekBarRecordings.getProgress();
-                        mp.seekTo(playPositionInMilliseconds);
+                        try{
+                            int playPositionInMilliseconds = duration1 / 100 * seekBarRecordings.getProgress();
+                            mp.seekTo(playPositionInMilliseconds);
+                        }
+                        catch (IllegalStateException e){
+                            e.printStackTrace();
+                        }
+
 //                        seekBar.setProgress(progress);
                     } else {
                         // the event was fired from code and you shouldn't call player.seekTo()
@@ -361,6 +373,14 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         }
                     };
                     mHandler1.postDelayed(notification, 100);
+                }
+                else {
+                    try{
+                        seekBarRecordings.setProgress(0);
+                    }catch (Throwable e){
+                        e.printStackTrace();
+                    }
+
                 }
             } catch (Throwable e) {
                 e.printStackTrace();
@@ -491,7 +511,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                 if (getItemCount() >= listPosition + 1 && instrumentFile != null) {
                     if (mp != null) {
-                        try{
+                        try {
                             if (mp.isPlaying()) {
                                 mp.stop();
                                 mp.reset();
@@ -507,8 +527,16 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 }
 
                             }
+                        } catch (Throwable e) {
+                            e.printStackTrace();
                         }
-                        catch (Throwable e){
+
+                    }
+                    if(holder.ivStationPause.getVisibility()==VISIBLE){
+                        try{
+                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
+                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
+                        }catch (NullPointerException e){
                             e.printStackTrace();
                         }
 
@@ -543,11 +571,12 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mp) {
-                            duration1 = mp.getDuration();
-                            currentPosition = mp.getCurrentPosition();
+                         //   duration1 = mp.getDuration();
+                         //   currentPosition = mp.getCurrentPosition();
                             holder.progressDialog.dismiss();
-                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
-                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
+                            holder.primarySeekBarProgressUpdater();
+//                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
+//                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
 
                         }
                     });
