@@ -6,9 +6,9 @@
 
     <LinearLayout
         android:id="@+id/llMessage"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:padding="10dp">
 
         <RelativeLayout
             android:id="@+id/rlProfilePic"
@@ -28,6 +28,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rlMessageContent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -38,10 +39,11 @@
                 android:background="@drawable/newest_blue_bubble">
 
                 <RelativeLayout
+                    android:id="@+id/rlMessageInside"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/ticks"
-                    android:layout_toEndOf="@+id/ticks">
+                    android:layout_toEndOf="@+id/ticks"
+                    android:layout_toRightOf="@+id/ticks">
 
                     <TextView
                         android:id="@+id/chatMessage"
@@ -60,7 +62,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/chatMessage"
                         android:layout_marginTop="5dp"
-                        android:visibility="gone">
+                        android:visibility="visible">
 
                         <FrameLayout
                             android:id="@+id/frameChatImage"
@@ -83,17 +85,18 @@
                         </FrameLayout>
 
                         <RelativeLayout
-                            android:visibility="gone"
+                            android:id="@+id/rlBelowImage"
                             android:layout_width="match_parent"
                             android:layout_height="18dp"
                             android:layout_alignParentEnd="true"
                             android:layout_alignParentRight="true"
                             android:layout_below="@+id/frameChatImage"
-                            android:layout_marginTop="3dp">
+                            android:layout_marginTop="3dp"
+                            android:visibility="visible">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_alignParentLeft="true"
                                 android:layout_alignParentStart="true"
                                 android:orientation="horizontal">
@@ -107,11 +110,11 @@
                                         android:id="@+id/chatImageName"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_alignParentRight="true"
                                         android:layout_alignParentEnd="true"
+                                        android:layout_alignParentRight="true"
                                         android:layout_centerVertical="true"
-                                        android:layout_marginRight="3dp"
                                         android:layout_marginEnd="3dp"
+                                        android:layout_marginRight="3dp"
                                         android:text="photo.jpg"
                                         android:textColor="#FFFFFF"
                                         android:textSize="14sp" />
@@ -125,11 +128,12 @@
 
                                     <ImageView
                                         android:id="@+id/fileClip"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
                                         android:background="@drawable/white_paperclip" />
 
                                 </RelativeLayout>
+
                             </LinearLayout>
                         </RelativeLayout>
                     </RelativeLayout>
@@ -138,10 +142,10 @@
                 <RelativeLayout
                     android:id="@+id/ticks"
                     android:layout_width="25dp"
-                    android:layout_height="10dp"
+                    android:layout_height="8dp"
+                    android:layout_alignBottom="@id/rlMessageInside"
                     android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentBottom="true">
+                    android:layout_alignParentStart="true">
 
                     <ImageView
                         android:id="@+id/tick"
@@ -161,10 +165,9 @@
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:background="@drawable/dubble_tick_white"
-                        android:visibility="gone" />
+                        android:visibility="visible" />
 
                 </RelativeLayout>
-
             </RelativeLayout>
 
             <TextView

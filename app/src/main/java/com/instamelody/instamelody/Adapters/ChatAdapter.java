@@ -44,7 +44,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView chatMessage, timeStamp;
         ImageView userProfileImage, chatImage;
-        RelativeLayout rlChatImage;
+        RelativeLayout rlChatImage, rlBelowImage;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -53,6 +53,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             userProfileImage = (ImageView) itemView.findViewById(R.id.userProfileImage);
             chatImage = (ImageView) itemView.findViewById(R.id.chatImage);
             rlChatImage = (RelativeLayout) itemView.findViewById(R.id.rlChatImage);
+            rlBelowImage = (RelativeLayout) itemView.findViewById(R.id.rlBelowImage);
         }
     }
 
@@ -121,6 +122,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             if(!message.getFile().equals("")){
                 holder.rlChatImage.setVisibility(View.VISIBLE);
                 Picasso.with(holder.chatImage.getContext()).load(message.getFile()).into(holder.chatImage);
+//                holder.rlBelowImage.setVisibility(View.VISIBLE);
             }
             holder.chatMessage.setText(message.getMessage());
             holder.timeStamp.setText(message.getCreatedAt());
