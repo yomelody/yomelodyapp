@@ -28,92 +28,118 @@
 
         <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@+id/rlProfilePic"
-            android:layout_toRightOf="@+id/rlProfilePic">
+            android:layout_height="wrap_content">
 
             <RelativeLayout
                 android:id="@+id/rlMessage"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:background="@drawable/newest_grey_bubble">
 
-                <TextView
-                    android:id="@+id/chatMessage"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginEnd="15dp"
-                    android:layout_marginRight="15dp"
-                    android:text=""
-                    android:textColor="#425661"
-                    android:textSize="16sp" />
-
                 <RelativeLayout
-                    android:id="@+id/rlChatImage"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/chatMessage"
-                    android:visibility="gone">
+                    android:layout_height="match_parent"
+                    android:layout_toLeftOf="@+id/ticks"
+                    android:layout_toStartOf="@+id/ticks">
 
-                    <FrameLayout
-                        android:id="@+id/frameChatImage"
-                        android:layout_width="wrap_content"
+                    <TextView
+                        android:id="@+id/chatMessage"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
-                        android:layout_marginTop="5dp">
-
-                        <ImageView
-                            android:id="@+id/chatImage"
-                            android:layout_width="150dp"
-                            android:layout_height="100dp"
-                            android:padding="3dp"
-                            android:scaleType="fitXY"
-                            android:src="@drawable/cover3" />
-
-                        <ImageView
-                            android:layout_width="150dp"
-                            android:layout_height="100dp"
-                            android:src="@drawable/frame_grey" />
-
-                    </FrameLayout>
+                        android:layout_alignParentTop="true"
+                        android:text="Honda koog hond jgjj hfhfh fhhf"
+                        android:textColor="#425661"
+                        android:textSize="16sp" />
 
                     <RelativeLayout
+                        android:id="@+id/rlChatImage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/frameChatImage">
+                        android:layout_below="@+id/chatMessage"
+                        android:layout_marginTop="5dp"
+                        android:visibility="visible">
 
-                        <ImageView
-                            android:id="@+id/fileClip"
-                            android:layout_width="18dp"
+                        <FrameLayout
+                            android:id="@+id/frameChatImage"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:id="@+id/chatImage"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+
+                                android:padding="3dp"
+                                android:scaleType="fitXY"
+                                android:src="@drawable/cover2" />
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/frame_grey" />
+
+                        </FrameLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
                             android:layout_height="18dp"
-                            android:layout_marginLeft="5dp"
-                            android:layout_marginStart="5dp"
-                            android:background="@drawable/paperclip" />
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_below="@+id/frameChatImage"
+                            android:layout_marginTop="3dp"
+                            android:visibility="gone">
 
-                        <TextView
-                            android:id="@+id/chatImageName"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignBaseline="@+id/fileClip"
-                            android:layout_marginLeft="5dp"
-                            android:layout_marginStart="5dp"
-                            android:layout_toEndOf="@+id/fileClip"
-                            android:layout_toRightOf="@+id/fileClip"
-                            android:text="photo.jpg"
-                            android:textColor="#425661"
-                            android:textSize="13sp" />
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_alignParentLeft="true"
+                                android:layout_alignParentStart="true"
+                                android:orientation="horizontal">
 
+                                <RelativeLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="0.08">
+
+                                    <ImageView
+                                        android:id="@+id/fileClip"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="@drawable/paperclip" />
+
+                                </RelativeLayout>
+
+                                <RelativeLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="0.99">
+
+                                    <TextView
+                                        android:id="@+id/chatImageName"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_alignParentLeft="true"
+                                        android:layout_alignParentStart="true"
+                                        android:layout_centerVertical="true"
+                                        android:layout_marginLeft="3dp"
+                                        android:layout_marginStart="3dp"
+                                        android:text="photo.jpg"
+                                        android:textColor="#425661"
+                                        android:textSize="14sp" />
+
+                                </RelativeLayout>
+                            </LinearLayout>
+                        </RelativeLayout>
                     </RelativeLayout>
 
                 </RelativeLayout>
 
                 <RelativeLayout
-                    android:layout_width="30dp"
-                    android:layout_height="20dp"
+                    android:id="@+id/ticks"
+                    android:layout_width="25dp"
+                    android:layout_height="8dp"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true">
@@ -125,8 +151,8 @@
                         android:layout_alignParentBottom="true"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
-                        android:background="@drawable/tick_white"
-                        android:visibility="gone" />
+                        android:background="@drawable/tick_grey"
+                        android:visibility="visible" />
 
                     <ImageView
                         android:id="@+id/doubleTick"
@@ -135,13 +161,11 @@
                         android:layout_alignParentBottom="true"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
-                        android:background="@drawable/dubble_tick_white"
+                        android:background="@drawable/dubble_tick_grey"
                         android:visibility="gone" />
 
                 </RelativeLayout>
-
             </RelativeLayout>
-
             <TextView
                 android:id="@+id/timeStamp"
                 android:layout_width="match_parent"

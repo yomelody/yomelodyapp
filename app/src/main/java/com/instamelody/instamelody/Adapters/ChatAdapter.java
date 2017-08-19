@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.instamelody.instamelody.Models.Message;
@@ -42,13 +43,16 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView chatMessage, timeStamp;
-        ImageView userProfileImage;
+        ImageView userProfileImage, chatImage;
+        RelativeLayout rlChatImage;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             chatMessage = (TextView) itemView.findViewById(R.id.chatMessage);
             timeStamp = (TextView) itemView.findViewById(R.id.timeStamp);
             userProfileImage = (ImageView) itemView.findViewById(R.id.userProfileImage);
+            chatImage = (ImageView) itemView.findViewById(R.id.chatImage);
+            rlChatImage = (RelativeLayout) itemView.findViewById(R.id.rlChatImage);
         }
     }
 
@@ -114,6 +118,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         } else {
             Message message = chatList.get(position);
             Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).into(holder.userProfileImage);
+            if(!message.getFile().equals("")){
+                holder.rlChatImage.setVisibility(View.VISIBLE);
+                Picasso.with(holder.chatImage.getContext()).load(message.getFile()).into(holder.chatImage);
+            }
             holder.chatMessage.setText(message.getMessage());
             holder.timeStamp.setText(message.getCreatedAt());
         }

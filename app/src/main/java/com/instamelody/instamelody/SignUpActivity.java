@@ -744,8 +744,6 @@ public class SignUpActivity extends AppCompatActivity {
                 params.put(FILE1, new DataPart("img.jpg", AppHelper.getFileDataFromDrawable(getBaseContext(), userProfileImage.getDrawable()), "image/jpeg"));
                 return params;
             }
-
-
         };
         VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
     }

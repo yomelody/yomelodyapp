@@ -13,7 +13,7 @@ import java.util.TimeZone;
 
 public class Message implements Serializable {
 
-    String id, message, createdAt, senderId;
+    String id, message, createdAt, senderId, file, fileType;
     String profilePic;
 
     public Message() {
@@ -24,6 +24,22 @@ public class Message implements Serializable {
         this.message = message;
         this.createdAt = createdAt;
         this.profilePic = userProfileImage;
+    }
+
+    public String getFile() {
+        return file;
+    }
+
+    public void setFile(String file) {
+        this.file = file;
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
     }
 
     public String getProfilePic() {

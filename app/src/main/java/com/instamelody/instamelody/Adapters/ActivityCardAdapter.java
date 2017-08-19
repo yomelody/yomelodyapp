@@ -56,7 +56,6 @@ public class ActivityCardAdapter extends RecyclerView.Adapter<ActivityCardAdapte
         }
     }
 
-
     public ActivityCardAdapter(ArrayList<ActivityModel> data1) {
         this.activityList = data1;
     }

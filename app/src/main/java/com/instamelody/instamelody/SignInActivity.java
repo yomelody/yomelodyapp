@@ -99,7 +99,7 @@ public class SignInActivity extends AppCompatActivity {
     String f_name;
     String l_name;
     String userId;
-    String dob,mobile;
+    String dob, mobile;
     String fbProfilePic;
     String FbProf1;
     TextView tvSettings, tvDone, tvSignUp, tvFirstName, tvUserName;
@@ -456,7 +456,6 @@ public class SignInActivity extends AppCompatActivity {
 
         final String email = etEmail.getText().toString().trim();
         final String password = etPassword.getText().toString().trim();
-        Log.d("DeviceToken", DeviceToken);
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, LOGIN,
                 new Response.Listener<String>() {
@@ -470,50 +469,43 @@ public class SignInActivity extends AppCompatActivity {
                             if (flag.equals("unsuccess")) {
                                 btnLogIn.setEnabled(true);
                                 Toast.makeText(SignInActivity.this, "Invalid Email or Password", Toast.LENGTH_SHORT).show();
-                                btnLogIn.setEnabled(true);
+                                etEmail.setText("");
+                                etPassword.setText("");
+
+                            } else {
+                                JSONObject rspns = jsonObject.getJSONObject("response");
+                                user_id = rspns.getString("user_id");
+                                userName = rspns.getString("username");
+                                First_name = rspns.getString("First_name");
+                                Last_name = rspns.getString("Last_name");
+                                emailfinal = rspns.getString("email");
+                                profilePic = rspns.getString("profilepic");
+                                coverPic = rspns.getString("coverpic");
+                                followers = rspns.getString("followers");
+                                fans = rspns.getString("fans");
+                                records = rspns.getString("records");
+                                dob = rspns.getString("dob");
+                                mobile = rspns.getString("mobile");
+
+                                SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
+                                editor.putString("userId", user_id);
+                                editor.putString("userName", userName);
+                                editor.putString("firstName", First_name);
+                                editor.putString("lastName", Last_name);
+                                editor.putString("emailFinal", emailfinal);
+                                editor.putString("profilePic", profilePic);
+                                editor.putString("coverPic", coverPic);
+                                editor.putString("followers", followers);
+                                editor.putString("fans", fans);
+                                editor.putString("records", records);
+                                editor.putString("dob", dob);
+                                editor.putString("mobile", mobile);
+                                editor.putInt("status", 1);
+                                editor.commit();
+
+                                Intent i = new Intent(getApplicationContext(), HomeActivity.class);
+                                startActivity(i);
                             }
-                            JSONObject rspns = jsonObject.getJSONObject("response");
-                            user_id = rspns.getString("user_id");
-                            userName = rspns.getString("username");
-                            First_name = rspns.getString("First_name");
-                            Last_name = rspns.getString("Last_name");
-                            emailfinal = rspns.getString("email");
-                            profilePic = rspns.getString("profilepic");
-                            coverPic = rspns.getString("coverpic");
-                            followers = rspns.getString("followers");
-                            fans = rspns.getString("fans");
-                            records = rspns.getString("records");
-                            dob = rspns.getString("dob");
-                            mobile = rspns.getString("mobile");
-//                            user_id = rspns.getString("dob");
-//                            user_id = rspns.getString("device_token");
-//                            user_id = rspns.getString("discrisption");
-//                            user_id = rspns.getString("mobile");
-//                            user_id = rspns.getString("device_type");
-
-                            SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
-                            editor.putString("userId", user_id);
-                            editor.putString("userName", userName);
-                            editor.putString("firstName", First_name);
-                            editor.putString("lastName", Last_name);
-                            editor.putString("emailFinal", emailfinal);
-                            editor.putString("profilePic", profilePic);
-                            editor.putString("coverPic", coverPic);
-                            editor.putString("followers", followers);
-                            editor.putString("fans", fans);
-                            editor.putString("records", records);
-                            editor.putString("dob",dob);
-                            editor.putString("mobile",mobile);
-                            editor.putInt("status", 1);
-                            editor.commit();
-
-//                            obj.setId(1);
-                            Intent i = new Intent(getApplicationContext(), HomeActivity.class);
-//                            Bundle bundle = new Bundle();
-//                            bundle.putString("login_val", "1");
-//                            i.putExtras(bundle);
-                            startActivity(i);
-
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -535,7 +527,7 @@ public class SignInActivity extends AppCompatActivity {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(SignInActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SignInActivity.this, "this here" + errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {

@@ -1,6 +1,7 @@
 package com.instamelody.instamelody;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -25,6 +27,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -32,7 +35,9 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -40,6 +45,7 @@ import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -50,11 +56,17 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.vision.Frame;
+import com.google.android.gms.vision.barcode.Barcode;
 import com.instamelody.instamelody.Adapters.ChatAdapter;
 import com.instamelody.instamelody.Adapters.RecentImagesAdapter;
 import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.RecentImagesModel;
+import com.instamelody.instamelody.utils.AppHelper;
+import com.instamelody.instamelody.utils.ImageCompressor;
 import com.instamelody.instamelody.utils.NotificationUtils;
+import com.instamelody.instamelody.utils.VolleyMultipartRequest;
+import com.instamelody.instamelody.utils.VolleySingleton;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -63,12 +75,17 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,50 +102,46 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.MESSAGE_LIST;
 
 public class ChatActivity extends AppCompatActivity {
 
-    private static int RESULT_LOAD_IMAGE = 2;
-    private final int requestCode = 20;
-    Bitmap bitmap;
-    private static final int PICK_IMAGE_REQUEST = 1;
-    public static final int MY_PERMISSIONS_REQUEST_READ_STORAGE = 201;
-    private static final String TAG = MainActivity.class.getSimpleName();
+    public static TextView tvUserName;
+    FrameLayout flClose;
+    EditText etMessage;
+    ImageView ivBackButton, ivHomeButton, ivAdjust, ivCamera, ivNewChat, ivRecieverProfilePic, ivSelectedImage;
+    TextView tvSend, tvRecieverName;
+    RecyclerView recycleImage, recyclerViewChat;
+    RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton, rlMessage, rlSelectedImage;
 
+    RecentImagesAdapter riAdapter;
+    ChatAdapter cAdapter;
+    LayoutInflater inflater;
+    Bitmap sendImageBitmap;
+    private Uri imageToUploadUri;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
+
+    private static final int TAKE_CAMERA_PHOTO = 101;
+    private static final int PICK_GALLERY_IMAGE = 102;
+    private static final int PERMISSIONS_READ_STORAGE = 201;
     ArrayList<Message> chatList = new ArrayList<>();// list of messages
+    public static ArrayList<RecentImagesModel> fileInfo = new ArrayList<>();
     ArrayList<String> imageFileList = new ArrayList<>();
-    ArrayList<RecentImagesModel> fileInfo = new ArrayList<>();
     ArrayList<String> groupList = new ArrayList<>();
     String CHECK_FILE_URL = "http://35.165.96.167/api/ShareAudioChat.php";
-    String DEVICE_TYPE = "device_type";
     String SENDER_ID = "senderID";
     String RECEIVER_ID = "receiverID";
     String CHAT_ID = "chat_id";
     String CHAT_ID_ = "chatID";
     String IS_READ = "isread";
+    String FILE_TYPE = "file_type";
+    String FILE = "file";
     String TITLE = "title";
     String MESSAGE = "message";
-
-    private BroadcastReceiver mRegistrationBroadcastReceiver;
-    EditText etMessage;
-
-    ImageView ivBackButton, ivHomeButton, ivAdjust, ivCamera, tvImgChat, ivNewChat;
-    TextView tvSend;
-    RecyclerView recycleImage, recyclerViewChat;
-    LayoutInflater inflater;
-    RelativeLayout rlMessage;
-    String deviceToken;
-    RecentImagesAdapter riAdapter;
-    ChatAdapter cAdapter;
-    public static TextView tvUserName;
     String KEY_FLAG = "flag";
-    String userId, receiverId, receiverName, packId, packType, receiverImage;
-    static String chatId;
-    RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton;
-    ImageView ivRecieverProfilePic;
-    TextView tvRecieverName;
+    String userId, chatId, receiverId, receiverName, packId, packType, receiverImage, deviceToken, parent;
     String username = "";
-    String parent;
     String senderId = "";
     String chatType = "";
     String group = "";
+    String sendImageName = "";
+    String flagFileType = "0"; // 0 = null, 1 = image file, 2 = station audio file , 3 = admin_melody audio file
 
     @TargetApi(18)
     @Override
@@ -136,9 +149,28 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        parent = getIntent().getStringExtra("from");
+        rlSelectedImage = (RelativeLayout) findViewById(R.id.rlSelectedImage);
+        flClose = (FrameLayout) findViewById(R.id.flClose);
+        ivSelectedImage = (ImageView) findViewById(R.id.ivSelectedImage);
+
+//        parent = getIntent().getStringExtra("from");
         imageFileList.clear();
         getGalleryImages();
+
+        SharedPreferences selectedImagePos = getApplicationContext().getSharedPreferences("selectedImagePos", MODE_PRIVATE);
+        if (selectedImagePos.getString("pos", null) != null) {
+            String pos = selectedImagePos.getString("pos", null);
+            int position = Integer.parseInt(pos);
+            SharedPreferences.Editor selImgPosEditor = getSharedPreferences("selectedImagePos", MODE_PRIVATE).edit();
+            selImgPosEditor.putString("pos", null);
+            selImgPosEditor.commit();
+            sendImageName = fileInfo.get(position).getName();
+            sendImageBitmap = fileInfo.get(position).getBitmap();
+            rlSelectedImage.setVisibility(View.VISIBLE);
+            flClose.setVisibility(View.VISIBLE);
+            ivSelectedImage.setImageBitmap(sendImageBitmap);
+            flagFileType = "1";
+        }
 
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
@@ -232,18 +264,8 @@ public class ChatActivity extends AppCompatActivity {
             }
         };
 
-
         SharedPreferences token = this.getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
         deviceToken = token.getString("regId", null);
-        //if token is not null
-//        if (deviceToken != null) {
-//            //displaying the token
-//            tvRegId.setText(deviceToken);
-//        } else {
-//            //if token is null that means something wrong
-//            tvRegId.setText("Token not generated");
-//        }
-
         etMessage.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -287,7 +309,6 @@ public class ChatActivity extends AppCompatActivity {
                 editor.putString("receiverId", "");
                 editor.putString("receiverName", "");
                 editor.putString("receiverImage", "");
-//                Log.d("rcvrimg", "receiverImage 3 has no value");
                 editor.putString("chatId", "");
                 editor.commit();
 
@@ -304,7 +325,6 @@ public class ChatActivity extends AppCompatActivity {
                 editor.putString("receiverId", "");
                 editor.putString("receiverName", "");
                 editor.putString("receiverImage", "");
-//                Log.d("rcvrimg", "receiverImage 4 has no value");
                 editor.putString("chatId", "");
                 editor.commit();
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
@@ -319,7 +339,6 @@ public class ChatActivity extends AppCompatActivity {
                 editor.putString("receiverId", "");
                 editor.putString("receiverName", "");
                 editor.putString("receiverImage", "");
-//                Log.d("rcvrimg", "receiverImage 5 has no value");
                 editor.putString("chatId", "");
                 editor.commit();
                 Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
@@ -348,6 +367,9 @@ public class ChatActivity extends AppCompatActivity {
                     inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                             InputMethodManager.HIDE_NOT_ALWAYS);
 
+                    rlSelectedImage.setVisibility(View.GONE);
+                    flClose.setVisibility(View.GONE);
+//                    sendImageBitmap.recycle();
                     getChatMsgs(chatId);
 
                 } else {
@@ -396,10 +418,10 @@ public class ChatActivity extends AppCompatActivity {
                     rlBtnPhotoLibrary.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent intent = new Intent();
-                            intent.setType("image/*");
-                            intent.setAction(Intent.ACTION_GET_CONTENT);
-                            startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+                            Intent getIntent = new Intent(Intent.ACTION_PICK);
+                            getIntent.setType("image/*");
+                            Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            startActivityForResult(galleryIntent, PICK_GALLERY_IMAGE);
                             alertDialog.cancel();
                         }
                     });
@@ -407,8 +429,14 @@ public class ChatActivity extends AppCompatActivity {
                     rlBtnTakePhotoOrVideo.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent photoCaptureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                            startActivityForResult(photoCaptureIntent, requestCode);
+
+                            Intent chooserIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                            Date d = new Date();
+                            CharSequence s = DateFormat.format("yyyyMMdd_hh_mm_ss", d.getTime());
+                            File f = new File(Environment.getExternalStorageDirectory(), "IMG_" + s.toString() + ".jpg");
+                            chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                            imageToUploadUri = Uri.fromFile(f);
+                            startActivityForResult(chooserIntent, TAKE_CAMERA_PHOTO);
                             alertDialog.cancel();
                         }
                     });
@@ -433,6 +461,14 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View view) {
             }
         });
+
+        flClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                flagFileType = "0";
+                rlSelectedImage.setVisibility(View.GONE);
+            }
+        });
     }
 
     @Override
@@ -452,7 +488,6 @@ public class ChatActivity extends AppCompatActivity {
     /**
      * Downloading image and showing as a message
      */
-
     public Bitmap getBitmapFromURL(String strURL) {
         try {
             URL url = new URL(strURL);
@@ -481,18 +516,44 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (this.requestCode == requestCode && resultCode == RESULT_OK && null != data) {
-            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-//            rlSelectedImage.setVisibility(View.VISIBLE);
-//            ivSelectedImage.setImageBitmap(bitmap);
+
+        if (requestCode == TAKE_CAMERA_PHOTO && resultCode == Activity.RESULT_OK) {
+            if (imageToUploadUri != null) {
+                Uri selectedImage = imageToUploadUri;
+                sendImageName = imageToUploadUri.getPath();
+                getContentResolver().notifyChange(selectedImage, null);
+                ImageCompressor ic = new ImageCompressor(getApplicationContext());
+                sendImageBitmap = ic.compressImage(sendImageName);
+                if (sendImageBitmap != null) {
+                    rlSelectedImage.setVisibility(View.VISIBLE);
+                    flClose.setVisibility(View.VISIBLE);
+                    ivSelectedImage.setImageBitmap(sendImageBitmap);
+                    flagFileType = "1";
+                } else {
+                    Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
+            }
         }
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && null != data) {
-            Uri selectedImageUri = data.getData();
+
+        if (requestCode == PICK_GALLERY_IMAGE && resultCode == RESULT_OK && null != data) {
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
-//                rlSelectedImage.setVisibility(View.VISIBLE);
-//                ivSelectedImage.setImageBitmap(bitmap);
-            } catch (IOException e) {
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                cursor.moveToFirst();
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String img_Decodable_Str = cursor.getString(columnIndex);
+                cursor.close();
+                sendImageName = img_Decodable_Str.substring(img_Decodable_Str.lastIndexOf("/") + 1);
+                rlSelectedImage.setVisibility(View.VISIBLE);
+                flClose.setVisibility(View.VISIBLE);
+                ImageCompressor ic = new ImageCompressor(getApplicationContext());
+                sendImageBitmap = ic.compressImage(img_Decodable_Str);
+                ivSelectedImage.setImageBitmap(sendImageBitmap);
+                flagFileType = "1";
+            } catch (Throwable e) {
                 e.printStackTrace();
             }
         }
@@ -602,12 +663,16 @@ public class ChatActivity extends AppCompatActivity {
                                         message.setId(id);
                                         String senderID = chatJson.getString("senderID");
                                         message.setSenderId(senderID);
-                                        String sendat = chatJson.getString("sendat");
-                                        message.setCreatedAt(sendat);
-                                        String messagef = chatJson.getString("message");
-                                        message.setMessage(messagef);
+                                        String sendAt = chatJson.getString("sendat");
+                                        message.setCreatedAt(sendAt);
+                                        String chatMessage = chatJson.getString("message");
+                                        message.setMessage(chatMessage);
                                         String profilePic = chatJson.getString("sender_pic");
                                         message.setProfilePic(profilePic);
+                                        String file = chatJson.getString("file_url");
+                                        message.setFile(file);
+                                        String fileType = chatJson.getString("file_type");
+                                        message.setFileType(fileType);
                                         chatList.add(message);
                                     }
                                 } else {
@@ -622,9 +687,7 @@ public class ChatActivity extends AppCompatActivity {
                         }
                     }
                 },
-                new Response.ErrorListener()
-
-                {
+                new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
 
@@ -660,96 +723,153 @@ public class ChatActivity extends AppCompatActivity {
 
     public void sendMessage(final String message, final String user_Id/*, final String packAvailable*/) {
 
-        final StringRequest stringRequest = new StringRequest(Request.Method.POST, CHAT,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        String str = response;
-//                        Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
-//                        getChatMsgs(chatId);
-//                        cAdapter.notifyDataSetChanged();
-//                        recyclerViewChat.smoothScrollToPosition(cAdapter.getItemCount());
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        String errorMsg = "";
-                        if (error instanceof TimeoutError) {
-                            errorMsg = "Internet connection timed out";
-                        } else if (error instanceof NoConnectionError) {
-                            errorMsg = "There is no connection";
-                        } else if (error instanceof AuthFailureError) {
-                            errorMsg = "AuthFailureError";
-                        } else if (error instanceof ServerError) {
-                            errorMsg = "We are facing problem in connecting to server";
-                        } else if (error instanceof NetworkError) {
-                            errorMsg = "We are facing problem in connecting to network";
-                        } else if (error instanceof ParseError) {
-                            errorMsg = "ParseError";
+        if (flagFileType.equals("1")) {
+            VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, CHAT,
+                    new Response.Listener<NetworkResponse>() {
+                        @Override
+                        public void onResponse(NetworkResponse response) {
+                            String str = new String(response.data);
+                            Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
                         }
-                        Toast.makeText(getApplicationContext(), "chat api error response " + errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                        error.printStackTrace();
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
 
-                if (chatType.equals("group")) {
-                    if (senderId.equals(user_Id)) {
-                        params.put(RECEIVER_ID, receiverId);
-                        params.put("groupName", tvUserName.getText().toString().trim());
-                    } else {
-                        group = senderId + "," + receiverId;
-                        groupList = new ArrayList<>(Arrays.asList(group.split(",")));
-                        groupList.remove(groupList.indexOf(user_Id));
-                        String s = groupList.toString().replaceAll(", ", ",");
-                        receiverId = s.substring(1, s.length() - 1).trim();
-                        params.put(RECEIVER_ID, receiverId);
-                        params.put("groupName", tvUserName.getText().toString().trim());
+                    String errorMsg = "";
+                    if (error instanceof TimeoutError) {
+                        errorMsg = "Internet connection timed out";
+                    } else if (error instanceof NoConnectionError) {
+                        errorMsg = "There is no connection";
+                    } else if (error instanceof AuthFailureError) {
+                        errorMsg = "AuthFailureError";
+                    } else if (error instanceof ServerError) {
+                        errorMsg = "We are facing problem in connecting to server";
+                    } else if (error instanceof NetworkError) {
+                        errorMsg = "We are facing problem in connecting to network";
+                    } else if (error instanceof ParseError) {
+                        errorMsg = "Parse error";
                     }
-                } else {
-                    if (receiverId.equals(user_Id)) {
-                        params.put(RECEIVER_ID, senderId);
-                    } else {
-                        params.put(RECEIVER_ID, receiverId);
-                    }
+
+                    Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                    Log.d("Error", errorMsg);
+                    error.printStackTrace();
                 }
-                params.put(SENDER_ID, user_Id);
-                params.put(CHAT_ID, chatId);
-                params.put(TITLE, "message");
-                params.put(MESSAGE, message);
-                params.put(IS_READ, "0");
-//                params.put("file", );
-//                params.put("file_type", "image");
+            }) {
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<>();
+                    if (chatType.equals("group")) {
+                        if (senderId.equals(user_Id)) {
+                            params.put(RECEIVER_ID, receiverId);
+                            params.put("groupName", tvUserName.getText().toString().trim());
+                        } else {
+                            group = senderId + "," + receiverId;
+                            groupList = new ArrayList<>(Arrays.asList(group.split(",")));
+                            groupList.remove(groupList.indexOf(user_Id));
+                            String s = groupList.toString().replaceAll(", ", ",");
+                            receiverId = s.substring(1, s.length() - 1).trim();
+                            params.put(RECEIVER_ID, receiverId);
+                            params.put("groupName", tvUserName.getText().toString().trim());
+                        }
+                    } else {
+                        if (receiverId.equals(user_Id)) {
+                            params.put(RECEIVER_ID, senderId);
+                        } else {
+                            params.put(RECEIVER_ID, receiverId);
+                        }
+                    }
+                    if (flagFileType.equals("1")) {
+                        params.put(FILE_TYPE, "image");
+                    } else if (flagFileType.equals("2")) {
+                        params.put(FILE_TYPE, "station");
+                    } else if (flagFileType.equals("3")) {
+                        params.put(FILE_TYPE, "admin_melody");
+                    } else {
 
-                /*if (packAvailable.equals("True")) {
-                    params.put("file", packId);
-                    params.put("file_type", packType);
-                }*/
-                return params;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        requestQueue.add(stringRequest);
-    }
+                    }
+                    params.put(SENDER_ID, user_Id);
+                    params.put(CHAT_ID, chatId);
+                    params.put(TITLE, "message");
+                    params.put(MESSAGE, message);
+                    params.put(IS_READ, "0");
+                    return params;
+                }
 
-    public String checkIt(String response) {
-        JSONObject jsonObject;
-        String value = "0";
-        try {
-            jsonObject = new JSONObject(response);
-            if (jsonObject.getString("success").equals("1")) {
-                value = "1";
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+                @Override
+                protected Map<String, DataPart> getByteData() {
+                    Map<String, DataPart> params = new HashMap<>();
+                    params.put(FILE, new DataPart(sendImageName, AppHelper.getFileDataFromDrawable(getBaseContext(), sendImageBitmap), "image/jpeg"));
+                    return params;
+                }
+            };
+            VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
+        } else {
+            final StringRequest stringRequest = new StringRequest(Request.Method.POST, CHAT,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            String str = response;
+                            Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+                            String errorMsg = "";
+                            if (error instanceof TimeoutError) {
+                                errorMsg = "Internet connection timed out";
+                            } else if (error instanceof NoConnectionError) {
+                                errorMsg = "There is no connection";
+                            } else if (error instanceof AuthFailureError) {
+                                errorMsg = "AuthFailureError";
+                            } else if (error instanceof ServerError) {
+                                errorMsg = "We are facing problem in connecting to server";
+                            } else if (error instanceof NetworkError) {
+                                errorMsg = "We are facing problem in connecting to network";
+                            } else if (error instanceof ParseError) {
+                                errorMsg = "ParseError";
+                            }
+                            Toast.makeText(getApplicationContext(), "chat api error response " + errorMsg, Toast.LENGTH_SHORT).show();
+                            Log.d("Error", errorMsg);
+                            error.printStackTrace();
+                        }
+                    }) {
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<>();
+
+                    if (chatType.equals("group")) {
+                        if (senderId.equals(user_Id)) {
+                            params.put(RECEIVER_ID, receiverId);
+                            params.put("groupName", tvUserName.getText().toString().trim());
+                        } else {
+                            group = senderId + "," + receiverId;
+                            groupList = new ArrayList<>(Arrays.asList(group.split(",")));
+                            groupList.remove(groupList.indexOf(user_Id));
+                            String s = groupList.toString().replaceAll(", ", ",");
+                            receiverId = s.substring(1, s.length() - 1).trim();
+                            params.put(RECEIVER_ID, receiverId);
+                            params.put("groupName", tvUserName.getText().toString().trim());
+                        }
+                    } else {
+                        if (receiverId.equals(user_Id)) {
+                            params.put(RECEIVER_ID, senderId);
+                        } else {
+                            params.put(RECEIVER_ID, receiverId);
+                        }
+                    }
+                    params.put(SENDER_ID, user_Id);
+                    params.put(CHAT_ID, chatId);
+                    params.put(TITLE, "message");
+                    params.put(MESSAGE, message);
+                    params.put(IS_READ, "0");
+                    return params;
+                }
+            };
+            RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+            requestQueue.add(stringRequest);
         }
-        return value;
     }
 
     public void getGalleryImages() {
@@ -762,13 +882,16 @@ public class ChatActivity extends AppCompatActivity {
                 File targetDirector = new File(ExternalStoragePath);
 
                 if (targetDirector.listFiles() != null) {
-                    File[] files = targetDirector.listFiles();
+                    File[] files = targetDirector.listFiles(new FilenameFilter() {
+                        public boolean accept(File dir, String name) {
+                            return name.toLowerCase().endsWith(".jpg");
+                        }
+                    });
+
                     int i = files.length - 1;
                     while (imageFileList.size() < 10) {
                         File file = files[i];
                         if (file.getAbsoluteFile().toString().trim().endsWith(".jpg")) {
-                            imageFileList.add(file.getAbsolutePath());
-                        } else if (file.getAbsoluteFile().toString().trim().endsWith(".png")) {
                             imageFileList.add(file.getAbsolutePath());
                         }
                         i--;
@@ -797,29 +920,29 @@ public class ChatActivity extends AppCompatActivity {
                 String InternalStoragePath = ExternalStorageDirectoryPath + "/DCIM/Camera/";
                 File targetDirector = new File(InternalStoragePath);
 
-                if (targetDirector.listFiles() != null) {
-                    File[] files = targetDirector.listFiles();
-                    int i = files.length - 1;
-                    while (imageFileList.size() < 10) {
-                        File file = files[i];
-                        if (file.getAbsoluteFile().toString().trim().endsWith(".jpg")) {
-                            imageFileList.add(file.getAbsolutePath());
-                        } else if (file.getAbsoluteFile().toString().trim().endsWith(".png")) {
-                            imageFileList.add(file.getAbsolutePath());
-                        }
-                        i--;
-                    }
-                }
-
+                int length;
                 String file, filename;
-                int length = imageFileList.size();
-                for (int i = 0; i < length; i++) {
-                    RecentImagesModel rim = new RecentImagesModel();
-                    file = imageFileList.get(i);
-                    rim.setFilepath(file);
-                    filename = file.substring(file.lastIndexOf("/") + 1);
-                    rim.setName(filename);
-                    fileInfo.add(rim);
+                if (targetDirector.listFiles() != null) {
+                    File[] files = targetDirector.listFiles(new FilenameFilter() {
+                        public boolean accept(File dir, String name) {
+                            return name.toLowerCase().endsWith(".jpg");
+                        }
+                    });
+
+                    if (files.length < 10) {
+                        length = files.length;
+                    } else {
+                        length = 10;
+                    }
+
+                    for (int i = 0; i < length; i++) {
+                        RecentImagesModel rim = new RecentImagesModel();
+                        file = files[i].toString();
+                        rim.setFilepath(file);
+                        filename = file.substring(file.lastIndexOf("/") + 1);
+                        rim.setName(filename);
+                        fileInfo.add(rim);
+                    }
                 }
             } else {
                 Toast.makeText(getApplicationContext(), "Failed to read Internal storage", Toast.LENGTH_LONG).show();
@@ -840,9 +963,9 @@ public class ChatActivity extends AppCompatActivity {
     public void setPermissions() {
         if (ContextCompat.checkSelfPermission(ChatActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(ChatActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                ActivityCompat.requestPermissions(ChatActivity.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_STORAGE);
+                ActivityCompat.requestPermissions(ChatActivity.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSIONS_READ_STORAGE);
             } else {
-                ActivityCompat.requestPermissions(ChatActivity.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_STORAGE);
+                ActivityCompat.requestPermissions(ChatActivity.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSIONS_READ_STORAGE);
             }
         }
     }
@@ -850,7 +973,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_STORAGE:
+            case PERMISSIONS_READ_STORAGE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 } else {
                     checkPermissions();

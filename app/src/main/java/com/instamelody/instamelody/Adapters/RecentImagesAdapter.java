@@ -2,6 +2,10 @@ package com.instamelody.instamelody.Adapters;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,13 +13,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.instamelody.instamelody.ChatActivity;
 import com.instamelody.instamelody.Models.RecentImagesModel;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.utils.ImageCompressor;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
 
+import static android.content.Context.MODE_PRIVATE;
+import static android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION;
 import static com.instamelody.instamelody.R.attr.failureImage;
 import static com.instamelody.instamelody.R.attr.placeholderImage;
 
@@ -44,7 +52,12 @@ public class RecentImagesAdapter extends RecyclerView.Adapter<RecentImagesAdapte
             galleryImages.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    fileList.get(getAdapterPosition()).getFilepath();
+
+                    SharedPreferences.Editor selectedImagePos = context.getSharedPreferences("selectedImagePos", MODE_PRIVATE).edit();
+                    selectedImagePos.putString("pos", String.valueOf(getAdapterPosition()));
+                    selectedImagePos.apply();
+                    Intent i = new Intent(view.getContext(), ChatActivity.class);
+                    view.getContext().startActivity(i);
                 }
             });
         }
@@ -59,7 +72,12 @@ public class RecentImagesAdapter extends RecyclerView.Adapter<RecentImagesAdapte
     @TargetApi(19)
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int listPosition) {
-        Picasso.with(context).load(new File(fileList.get(listPosition).getFilepath())).into(holder.galleryImages);
+        Bitmap sendImageBitmap;
+        ImageCompressor ic = new ImageCompressor(context);
+        sendImageBitmap = ic.compressImage(fileList.get(listPosition).getFilepath());
+        ChatActivity.fileInfo.get(listPosition).setBitmap(sendImageBitmap);
+        holder.galleryImages.setImageBitmap(sendImageBitmap);
+//        Picasso.with(context).load(new File(fileList.get(listPosition).getFilepath())).into(holder.galleryImages);
     }
 
     @Override
