@@ -162,7 +162,7 @@ public class CommentsActivity extends AppCompatActivity {
         etComment.setHintTextColor(Color.parseColor("#7B888F"));
         tvCancel = (TextView) findViewById(R.id.tvCancel);
         tvSend = (TextView) findViewById(R.id.tvSend);
-        if (LikeStatus == "0") {
+        if (LikeStatus.equals("0")) {
             ivDislikeButton.setVisibility(View.GONE);
         } else {
             ivDislikeButton.setVisibility(View.VISIBLE);
@@ -202,7 +202,13 @@ public class CommentsActivity extends AppCompatActivity {
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+               /* SharedPreferences prefsActivity = getSharedPreferences("PreviousActivity", MODE_PRIVATE);
+                String PrevAct = prefsActivity.getString("instruments", null);
+                Intent intent = new Intent(getApplicationContext(),);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);*/
                 finish();
+
             }
         });
 
@@ -227,6 +233,7 @@ public class CommentsActivity extends AppCompatActivity {
                     etComment.getText().clear();
                     sendComment(comment, userId);
                     int commentCount = Integer.parseInt(tvCommentCount.getText().toString().trim()) + 1;
+
                     tvCommentCount.setText(String.valueOf(commentCount));
 
                 } else {

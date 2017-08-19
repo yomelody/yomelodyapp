@@ -189,8 +189,14 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     editor.putString("fileType", "admin_melody");
                     editor.commit();
 
-                    Intent intent = new Intent(context, JoinActivity.class);
-                    context.startActivity(intent);
+
+                    try {
+                        Intent intent = new Intent(context, JoinActivity.class);
+                        context.startActivity(intent);
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+
                 }
             });
             rlLike.setOnClickListener(new View.OnClickListener() {
@@ -238,22 +244,24 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                 @Override
                 public void onClick(View v) {
-                    /*Intent shareIntent = new Intent();
-                    shareIntent.setAction(Intent.ACTION_SEND);
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
-                    shareIntent.setType("image/jpeg");
-                    startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));*/
+                    if (!userId.equals("") && userId != null) {
 
-                    RecordingsModel recording = recordingList.get(getAdapterPosition());
-                    String RecordingURL = recording.getrecordingurl();
-                    Intent shareIntent = new Intent();
-                    shareIntent.setAction(Intent.ACTION_SEND);
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt");
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, RecordingURL);
-                    shareIntent.setType("image/jpeg");
-                    shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(Intent.createChooser(shareIntent, "Hello."));
+                        RecordingsModel recording = recordingList.get(getAdapterPosition());
+                        String RecordingURL = recording.getrecordingurl();
+                        Intent shareIntent = new Intent();
+                        shareIntent.setAction(Intent.ACTION_SEND);
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, RecordingURL);
+                        shareIntent.setType("image/jpeg");
+                        shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(Intent.createChooser(shareIntent, "Hello."));
+                    } else {
+                        Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(context, SignInActivity.class);
+                        context.startActivity(intent);
+                    }
+
                 }
             });
             ivCommentButton.setOnClickListener(new View.OnClickListener() {
@@ -261,10 +269,15 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 public void onClick(View view) {
                     if (!userId.equals("") && userId != null) {
                         //Toast.makeText(context, "comment", Toast.LENGTH_SHORT).show();
-                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID;
+                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID, RecordingURL, CoverUrl, LikeStatus,ProfilePick;
 
-                        //instruments = tvInstrumentsUsed.getText().toString().trim();
-                        //bpm = tvBpmRate.getText().toString().trim();
+                        RecordingsModel recording = recordingList.get(getAdapterPosition());
+
+                        if (ivDislikeButton.getVisibility() == VISIBLE) {
+                            LikeStatus = "1";
+                        } else {
+                            LikeStatus = "0";
+                        }
                         genre = tvRecordingGenres.getText().toString().trim();
                         melodyName = tvRecordingName.getText().toString().trim();
                         userName = tvUserName.getText().toString().trim();
@@ -276,7 +289,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         shares = tvShareCount.getText().toString().trim();
                         int pos = getAdapterPosition();
                         melodyID = mpids.get(pos);
-
+                        RecordingURL = recording.getrecordingurl();
+                        CoverUrl = recording.getRecordingCover();
+                        ProfilePick=recording.getUserProfilePic();
                         SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
                         editor.putString("instruments", "0");
                         editor.putString("bpm", "0");
@@ -289,10 +304,13 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         editor.putString("likes", likes);
                         editor.putString("comments", comments);
                         editor.putString("shares", shares);
-                        editor.putString("bitmapProfile", profile);
+                        editor.putString("bitmapProfile", ProfilePick);
 //                    editor.putString("bitmapCover", cover);
                         editor.putString("melodyID", melodyID);
                         editor.putString("fileType", "user_recording");
+                        editor.putString("RecordingURL", RecordingURL);
+                        editor.putString("CoverUrl", CoverUrl);
+                        editor.putString("LikeStatus", LikeStatus);
                         editor.commit();
 
                         Intent intent = new Intent(context, CommentsActivity.class);
@@ -329,8 +347,13 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     int progress1 = utilRecording.getProgressPercentage(mCurrentPosition, mDuration);
 
                     if (mp != null && fromUser) {
-                        int playPositionInMilliseconds = duration1 / 100 * seekBarRecordings.getProgress();
-                        mp.seekTo(playPositionInMilliseconds);
+                        try {
+                            int playPositionInMilliseconds = duration1 / 100 * seekBarRecordings.getProgress();
+                            mp.seekTo(playPositionInMilliseconds);
+                        } catch (IllegalStateException e) {
+                            e.printStackTrace();
+                        }
+
 //                        seekBar.setProgress(progress);
                     } else {
                         // the event was fired from code and you shouldn't call player.seekTo()
@@ -361,6 +384,13 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         }
                     };
                     mHandler1.postDelayed(notification, 100);
+                } else {
+                    try {
+                        seekBarRecordings.setProgress(0);
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+
                 }
             } catch (Throwable e) {
                 e.printStackTrace();
@@ -370,16 +400,16 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     }
 
     @Override
-    public RecordingsCardAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.card_recordings, parent, false);
 
-        RecordingsCardAdapter.MyViewHolder myViewHolder = new RecordingsCardAdapter.MyViewHolder(view);
+        MyViewHolder myViewHolder = new MyViewHolder(view);
         return myViewHolder;
     }
 
     @Override
-    public void onBindViewHolder(final RecordingsCardAdapter.MyViewHolder holder, final int listPosition) {
+    public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
 
         RecordingsModel recording = recordingList.get(listPosition);
         /*final RecordingsPool recordingsPool = recordingsPools.get(listPosition);
@@ -491,7 +521,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                 if (getItemCount() >= listPosition + 1 && instrumentFile != null) {
                     if (mp != null) {
-                        try{
+                        try {
                             if (mp.isPlaying()) {
                                 mp.stop();
                                 mp.reset();
@@ -507,8 +537,16 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 }
 
                             }
+                        } catch (Throwable e) {
+                            e.printStackTrace();
                         }
-                        catch (Throwable e){
+
+                    }
+                    if (holder.ivStationPause.getVisibility() == VISIBLE) {
+                        try {
+                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
+                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
+                        } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
 
@@ -543,11 +581,12 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mp) {
-                            duration1 = mp.getDuration();
-                            currentPosition = mp.getCurrentPosition();
+                            //   duration1 = mp.getDuration();
+                            //   currentPosition = mp.getCurrentPosition();
                             holder.progressDialog.dismiss();
-                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
-                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
+                            holder.primarySeekBarProgressUpdater();
+//                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
+//                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
 
                         }
                     });

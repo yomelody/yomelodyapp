@@ -142,7 +142,6 @@ public class StudioActivity extends AppCompatActivity {
     private String RECORDING_DURATION = "duration";
     private String SHARE_PUBLIC = "public_flag";
     private String RECORDING_BPM = "bpm";
-    private List Mlist;
     private String ADMIN_INSTRUMENT_ID = "admin_instruments_ids";
     private String USER_INSTRUMENT_ID = "user_instruments_ids";
 
@@ -205,7 +204,7 @@ public class StudioActivity extends AppCompatActivity {
     ProgressDialog progressDialog, pDialog;
     // LongOperation myTask = null;
     RelativeLayout rlSync;
-    public static MediaPlayer mpInst;
+    // public static MediaPlayer mpInst;
     static int duration1, currentPosition;
     //SeekBar melodySlider;
     String array[] = {""};
@@ -227,15 +226,15 @@ public class StudioActivity extends AppCompatActivity {
     long stop_rec_time;
     String time_stop;
     int count = 0;
-    public static FrameLayout frameInstrument;
+    public static FrameLayout frameInstrument ;
     public static RelativeLayout rlFX, rlEQ, eqContent, fxContent, RltvFxButton, RltvEqButton;
     public static TextView tvDoneFxEq, tvInstrumentLength, tvUserName, tvInstrumentName, tvBpmRate;
-    public static ImageView userProfileImage, ivInstrumentCover, FramesivPause, FramesivPlay;
+    public static ImageView userProfileImage, ivInstrumentCover,FramesivPause, FramesivPlay;
     public static SeekBar FramemelodySlider;
     public static SeekBar volumeSeekbar, sbTreble, sbBase, sbPan, sbPitch, sbReverb, sbCompression, sbDelay, sbTempo;
     public static MelodyMixing melodyMixing = new MelodyMixing();
     public static ArrayList<MixingData> list = new ArrayList<MixingData>();
-
+    public static MediaPlayer mpInst;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -374,7 +373,11 @@ public class StudioActivity extends AppCompatActivity {
                 ArrayList<MelodyCard> arrayMelody = new ArrayList<>();
 
                 arrayMelody = MelodyCardListAdapter.returnMelodyList();
-                melodyName = arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName();
+                try {
+                    melodyName = arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName();
+                } catch (IndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                }
 
 
                 for (int i = 0; i < instrumentList.size(); i++) {
@@ -555,11 +558,48 @@ public class StudioActivity extends AppCompatActivity {
                     killMediaPlayer_fromInstrument();
                 }
                 if (mps != null) {
-                    ivRecord_stop.performClick();
+                    if (mRecordingThread != null) {
+                        mRecordingThread.stopRunning();
+                    }
+
+                    if (isRecording) {
+                        ivRecord.setEnabled(false);
+
+                        if (mPlayer != null) {
+                            mPlayer.stop();
+                            mp.stop();
+                            mp.release();
+                        }
+//                    recorder.stop();
+                        if (recorder != null) {
+                            try {
+                                recorder.stop();
+                                killMediaPlayer();
+
+                            } catch (RuntimeException ex) {
+                                //Ignore
+                            }
+                        }
+                        recorder.release();
+                        recorder = null;
+                        isRecording = false;
+                    } else {
+                        try {
+                            mediaPlayer.release();
+                            mediaPlayer = null;
+                            rlRecordingButton.setEnabled(true);
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                    tvDone.setEnabled(true);
+                    chrono.stop();
+                    //    ivRecord_stop.performClick();
 
                 }
                 if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                    ivRecord_pause.performClick();
+                    //       ivRecord_pause.performClick();
                 }
                 Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
                 startActivity(intent);
@@ -576,21 +616,63 @@ public class StudioActivity extends AppCompatActivity {
                     killMediaPlayer_fromInstrument();
                 }
                 if (mps != null) {
-                    ivRecord_stop.performClick();
+                    if (mRecordingThread != null) {
+                        mRecordingThread.stopRunning();
+                    }
+
+                    if (isRecording) {
+                        ivRecord.setEnabled(false);
+
+                        if (mPlayer != null) {
+                            mPlayer.stop();
+                            mp.stop();
+                            mp.release();
+                        }
+//                    recorder.stop();
+                        if (recorder != null) {
+                            try {
+                                recorder.stop();
+                                killMediaPlayer();
+
+                            } catch (RuntimeException ex) {
+                                //Ignore
+                            }
+                        }
+                        recorder.release();
+                        recorder = null;
+                        isRecording = false;
+                    } else {
+                        try {
+                            mediaPlayer.release();
+                            mediaPlayer = null;
+                            rlRecordingButton.setEnabled(true);
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                    tvDone.setEnabled(true);
+                    chrono.stop();
+                    //       ivRecord_stop.performClick();
 
                 }
                 if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                    ivRecord_pause.performClick();
+                    //            ivRecord_pause.performClick();
                 }
-                if (MelodyCardListAdapter.mediaPlayer != null && MelodyCardListAdapter.mediaPlayer.isPlaying()) {
-                    try {
-                        MelodyCardListAdapter.mediaPlayer.stop();
-                        MelodyCardListAdapter.mediaPlayer.reset();
-                        MelodyCardListAdapter.mediaPlayer.release();
-                    } catch (Throwable e) {
-                        e.printStackTrace();
+                try{
+                    if (MelodyCardListAdapter.mediaPlayer != null && MelodyCardListAdapter.mediaPlayer.isPlaying()) {
+                        try {
+                            MelodyCardListAdapter.mediaPlayer.stop();
+                            MelodyCardListAdapter.mediaPlayer.reset();
+                            MelodyCardListAdapter.mediaPlayer.release();
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                        }
                     }
+                }catch (IllegalStateException e){
+                    e.printStackTrace();
                 }
+
 
                 finish();
                 //killMediaPlayer();
@@ -605,7 +687,43 @@ public class StudioActivity extends AppCompatActivity {
                     killMediaPlayer_fromInstrument();
                 }
                 if (mps != null) {
-                    ivRecord_stop.performClick();
+                    if (mRecordingThread != null) {
+                        mRecordingThread.stopRunning();
+                    }
+
+                    if (isRecording) {
+                        ivRecord.setEnabled(false);
+
+                        if (mPlayer != null) {
+                            mPlayer.stop();
+                            mp.stop();
+                            mp.release();
+                        }
+//                    recorder.stop();
+                        if (recorder != null) {
+                            try {
+                                recorder.stop();
+                                killMediaPlayer();
+
+                            } catch (RuntimeException ex) {
+                                //Ignore
+                            }
+                        }
+                        recorder.release();
+                        recorder = null;
+                        isRecording = false;
+                    } else {
+                        try {
+                            mediaPlayer.release();
+                            mediaPlayer = null;
+                            rlRecordingButton.setEnabled(true);
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                    tvDone.setEnabled(true);
+                    chrono.stop();
 
                 }
                 if (mediaPlayer != null && mediaPlayer.isPlaying()) {
@@ -625,7 +743,43 @@ public class StudioActivity extends AppCompatActivity {
                     killMediaPlayer_fromInstrument();
                 }
                 if (mps != null) {
-                    ivRecord_stop.performClick();
+                    if (mRecordingThread != null) {
+                        mRecordingThread.stopRunning();
+                    }
+
+                    if (isRecording) {
+                        ivRecord.setEnabled(false);
+
+                        if (mPlayer != null) {
+                            mPlayer.stop();
+                            mp.stop();
+                            mp.release();
+                        }
+//                    recorder.stop();
+                        if (recorder != null) {
+                            try {
+                                recorder.stop();
+                                killMediaPlayer();
+
+                            } catch (RuntimeException ex) {
+                                //Ignore
+                            }
+                        }
+                        recorder.release();
+                        recorder = null;
+                        isRecording = false;
+                    } else {
+                        try {
+                            mediaPlayer.release();
+                            mediaPlayer = null;
+                            rlRecordingButton.setEnabled(true);
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                    tvDone.setEnabled(true);
+                    chrono.stop();
 
                 }
                 if (mediaPlayer != null && mediaPlayer.isPlaying()) {
@@ -643,7 +797,43 @@ public class StudioActivity extends AppCompatActivity {
                     killMediaPlayer_fromInstrument();
                 }
                 if (mps != null) {
-                    ivRecord_stop.performClick();
+                    if (mRecordingThread != null) {
+                        mRecordingThread.stopRunning();
+                    }
+
+                    if (isRecording) {
+                        ivRecord.setEnabled(false);
+
+                        if (mPlayer != null) {
+                            mPlayer.stop();
+                            mp.stop();
+                            mp.release();
+                        }
+//                    recorder.stop();
+                        if (recorder != null) {
+                            try {
+                                recorder.stop();
+                                killMediaPlayer();
+
+                            } catch (RuntimeException ex) {
+                                //Ignore
+                            }
+                        }
+                        recorder.release();
+                        recorder = null;
+                        isRecording = false;
+                    } else {
+                        try {
+                            mediaPlayer.release();
+                            mediaPlayer = null;
+                            rlRecordingButton.setEnabled(true);
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                    tvDone.setEnabled(true);
+                    chrono.stop();
 
                 }
                 if (mediaPlayer != null && mediaPlayer.isPlaying()) {
@@ -661,7 +851,43 @@ public class StudioActivity extends AppCompatActivity {
                     killMediaPlayer_fromInstrument();
                 }
                 if (mps != null) {
-                    ivRecord_stop.performClick();
+                    if (mRecordingThread != null) {
+                        mRecordingThread.stopRunning();
+                    }
+
+                    if (isRecording) {
+                        ivRecord.setEnabled(false);
+
+                        if (mPlayer != null) {
+                            mPlayer.stop();
+                            mp.stop();
+                            mp.release();
+                        }
+//                    recorder.stop();
+                        if (recorder != null) {
+                            try {
+                                recorder.stop();
+                                killMediaPlayer();
+
+                            } catch (RuntimeException ex) {
+                                //Ignore
+                            }
+                        }
+                        recorder.release();
+                        recorder = null;
+                        isRecording = false;
+                    } else {
+                        try {
+                            mediaPlayer.release();
+                            mediaPlayer = null;
+                            rlRecordingButton.setEnabled(true);
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                    tvDone.setEnabled(true);
+                    chrono.stop();
 
                 }
                 if (mediaPlayer != null && mediaPlayer.isPlaying()) {
@@ -679,7 +905,43 @@ public class StudioActivity extends AppCompatActivity {
                     killMediaPlayer_fromInstrument();
                 }
                 if (mps != null) {
-                    ivRecord_stop.performClick();
+                    if (mRecordingThread != null) {
+                        mRecordingThread.stopRunning();
+                    }
+
+                    if (isRecording) {
+                        ivRecord.setEnabled(false);
+
+                        if (mPlayer != null) {
+                            mPlayer.stop();
+                            mp.stop();
+                            mp.release();
+                        }
+//                    recorder.stop();
+                        if (recorder != null) {
+                            try {
+                                recorder.stop();
+                                killMediaPlayer();
+
+                            } catch (RuntimeException ex) {
+                                //Ignore
+                            }
+                        }
+                        recorder.release();
+                        recorder = null;
+                        isRecording = false;
+                    } else {
+                        try {
+                            mediaPlayer.release();
+                            mediaPlayer = null;
+                            rlRecordingButton.setEnabled(true);
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                    tvDone.setEnabled(true);
+                    chrono.stop();
 
                 }
                 if (mediaPlayer != null && mediaPlayer.isPlaying()) {
@@ -944,8 +1206,13 @@ public class StudioActivity extends AppCompatActivity {
                     mRecordingThread = null;
                 }
                 //          onPause();
-                mediaPlayer.pause();
-                chrono.stop();
+                try{
+                    mediaPlayer.pause();
+                    chrono.stop();
+                }catch (NullPointerException e){
+                    e.printStackTrace();
+                }
+
 
 
             }
@@ -1098,6 +1365,7 @@ public class StudioActivity extends AppCompatActivity {
         // return timer string
         return String.valueOf(seconds);
     }
+
 
     private void openDialog() {
         LayoutInflater inflater = LayoutInflater.from(StudioActivity.this);
@@ -1598,7 +1866,6 @@ public class StudioActivity extends AppCompatActivity {
 //        final String genre = selectedGenre;
 //        final String recType = value;
 //        final String duration = Long.toString(elapsedMillis);
-        List ls=list;
         progressDialog = new ProgressDialog(StudioActivity.this);
         progressDialog.setTitle("Processing...");
         progressDialog.setMessage("Please wait...");
@@ -1721,7 +1988,6 @@ public class StudioActivity extends AppCompatActivity {
                 params.put(RECORDING_DURATION, recordingDuration);
                 params.put(SHARE_PUBLIC, switchFlag);
                 params.put(RECORDING_BPM, "128");
-                //params.put(Mlist,list);
                 return params;
             }
         };
@@ -1746,7 +2012,6 @@ public class StudioActivity extends AppCompatActivity {
             public void onResponse(NetworkResponse response) {
 
                 String urlRecording;
-                String thumbNail;
                 String resultResponse = new String(response.data);
                 Log.d("Server Data", resultResponse);
                 SharedPreferences loginSharedPref = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
@@ -1761,10 +2026,8 @@ public class StudioActivity extends AppCompatActivity {
                     JSONObject r1 = response1.getJSONObject("0");
                     if (r1.has("melody")) {
                         urlRecording = r1.getString("melody");
-                        thumbNail = r1.getString("thumbnail");
                     } else {
                         urlRecording = r1.getString("recording");
-                        thumbNail = r1.getString("thumbnail");
                     }
 
                     if (flag.equals("success")) {
@@ -1827,10 +2090,6 @@ public class StudioActivity extends AppCompatActivity {
                         SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("Url_recording", MODE_PRIVATE).edit();
                         editor.putString("Recording_url", urlRecording);
                         editor.commit();
-
-                        SharedPreferences.Editor editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE).edit();
-                        editorT.putString("thumbnailUrl", thumbNail);
-                        editorT.commit();
 
 
                     }
@@ -2081,31 +2340,31 @@ public class StudioActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        try {
-            if (mpInst != null)
-                mpInst.stop();
-
-            if (mRecordingThread != null) {
-                mRecordingThread.stopRunning();
-                mRecordingThread = null;
-            }
-            if (mPlayer != null) {
-                mPlayer.stop();
-                mp.stop();
-                mp.release();
-            }
-            if (recorder != null) {
-                try {
-                    recorder.stop();
-                    killMediaPlayer();
-
-                } catch (RuntimeException ex) {
-                }
-            }
-
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
+//        try {
+//            if (mpInst != null)
+//                mpInst.stop();
+//
+//            if (mRecordingThread != null) {
+//                mRecordingThread.stopRunning();
+//                mRecordingThread = null;
+//            }
+//            if (mPlayer != null) {
+//                mPlayer.stop();
+//                mp.stop();
+//                mp.release();
+//            }
+//            if (recorder != null) {
+//                try {
+//                    recorder.stop();
+//                    killMediaPlayer();
+//
+//                } catch (RuntimeException ex) {
+//                }
+//            }
+//
+//        } catch (Throwable e) {
+//            e.printStackTrace();
+//        }
         Intent i = new Intent(this, HomeActivity.class);
         startActivity(i);
     }
@@ -2265,23 +2524,58 @@ public class StudioActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         try {
-            if(mpInst!=null)
-            {
-                mpInst.pause();
-            }
             if (InstrumentListAdapter.mp_start != null) {
                 killMediaPlayer_fromInstrument();
-                StudioActivity.this.recreate();
+                //   StudioActivity.this.recreate();
                 adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
                 recyclerViewInstruments.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
             }
             if (mps != null) {
-                ivRecord_stop.performClick();
+
+                if (isRecording) {
+                    ivRecord.setEnabled(false);
+
+                    if (mPlayer != null) {
+                        mPlayer.stop();
+                        mp.stop();
+                        mp.release();
+                    }
+//                    recorder.stop();
+                    if (recorder != null) {
+                        try {
+                            recorder.stop();
+                            killMediaPlayer();
+
+                        } catch (RuntimeException ex) {
+                            //Ignore
+                        }
+                    }
+                    recorder.release();
+                    recorder = null;
+                    isRecording = false;
+                } else {
+                    try {
+                        mediaPlayer.release();
+                        mediaPlayer = null;
+                        rlRecordingButton.setEnabled(true);
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+                tvDone.setEnabled(true);
+                chrono.stop();
+                //        ivRecord_stop.performClick();
 
             }
             if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                ivRecord_pause.performClick();
+                           ivRecord_pause.performClick();
+            }
+            if(mpInst!=null)
+            {
+                mpInst.stop();
+                mpInst.release();
             }
 
         } catch (Throwable e) {
