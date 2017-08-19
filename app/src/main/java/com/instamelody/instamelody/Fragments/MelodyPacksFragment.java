@@ -2,6 +2,7 @@ package com.instamelody.instamelody.Fragments;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -94,8 +95,8 @@ public class MelodyPacksFragment extends Fragment {
     ArrayList<Genres> genresArrayList = new ArrayList<>();
     ArrayList<UserMelodyCard> userMelodyList = new ArrayList<>();
     ArrayList<UserMelodyPlay> melodyPools = new ArrayList<>();
-
-
+    TabHost host = null;
+    ProgressDialog progressDialog;
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -125,9 +126,9 @@ public class MelodyPacksFragment extends Fragment {
         }
 
         //     new Loader().execute();
-        fetchGenreNames();
+
         if (strName == null && strSearch == null) {
-            fetchMelodyPacks();
+            new LongOperation().execute();
         } else if (strName != null) {
             fetchMelodyFilter();
         } else if (strSearch != null) {
@@ -161,91 +162,110 @@ public class MelodyPacksFragment extends Fragment {
     }
 
     public void fetchGenreNames() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
+        try {
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
 
-                        JSONObject jsonObject, genreJson;
-                        JSONArray jsonArray;
-                        String titleString;
-                        TabHost.TabSpec spec;
-                        final TabHost host = (TabHost) getActivity().findViewById(R.id.tabHostMelodyPacks);
-                        host.setup();
-
-                        try {
-                            jsonObject = new JSONObject(response);
-                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
-                                jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    Genres genres = new Genres();
-                                    genreJson = jsonArray.getJSONObject(i);
-                                    titleString = genreJson.getString(KEY_GENRE_NAME);
-                                    genres.setName(titleString);
-                                    genres.setId(genreJson.getString(KEY_GENRE_ID));
-                                    genresArrayList.add(genres);
-                                    spec = host.newTabSpec(titleString);
-                                    spec.setIndicator(titleString);
-                                    spec.setContent(createTabContent());
-                                    host.addTab(spec);
-                                }
+                            JSONObject jsonObject, genreJson;
+                            JSONArray jsonArray;
+                            String titleString;
+                            TabHost.TabSpec spec;
+                            try {
+                                host = (TabHost) getActivity().findViewById(R.id.tabHostMelodyPacks);
+                                host.setup();
+                            } catch (Throwable e) {
+                                e.printStackTrace();
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+
+
+                            try {
+                                jsonObject = new JSONObject(response);
+                                if (jsonObject.getString(KEY_FLAG).equals("success")) {
+                                    jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
+                                    for (int i = 0; i < jsonArray.length(); i++) {
+                                        Genres genres = new Genres();
+                                        genreJson = jsonArray.getJSONObject(i);
+                                        titleString = genreJson.getString(KEY_GENRE_NAME);
+                                        genres.setName(titleString);
+                                        genres.setId(genreJson.getString(KEY_GENRE_ID));
+                                        genresArrayList.add(genres);
+                                        try {
+                                            spec = host.newTabSpec(titleString);
+                                            spec.setIndicator(titleString);
+                                            spec.setContent(createTabContent());
+                                            host.addTab(spec);
+                                        } catch (NullPointerException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                    }
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+                                    @Override
+                                    public void onTabChanged(String arg0) {
+                                        packName = arg0;
+                                        int currentTab = host.getCurrentTab();
+                                        if (currentTab == 0) {
+                                            packId = "";
+                                        } else {
+                                            packId = (genresArrayList.get(currentTab)).getId();
+                                        }
+                                        fetchMelodyPacks();
+                                    }
+                                });
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
+                            }
+
                         }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
 
-                        host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-                            @Override
-                            public void onTabChanged(String arg0) {
-                                packName = arg0;
-                                int currentTab = host.getCurrentTab();
-                                if (currentTab == 0) {
-                                    packId = "";
-                                } else {
-                                    packId = (genresArrayList.get(currentTab)).getId();
-                                }
-                                fetchMelodyPacks();
-                            }
-                        });
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        String errorMsg = "";
-                        if (error instanceof TimeoutError) {
-                            errorMsg = "Internet connection timed out";
-                        } else if (error instanceof NoConnectionError) {
-                            errorMsg = "There is no connection";
-                        } else if (error instanceof AuthFailureError) {
+                            String errorMsg = "";
+                            if (error instanceof TimeoutError) {
+                                errorMsg = "Internet connection timed out";
+                            } else if (error instanceof NoConnectionError) {
+                                errorMsg = "There is no connection";
+                            } else if (error instanceof AuthFailureError) {
 //                            errorMsg = "AuthFailureError";
-                        } else if (error instanceof ServerError) {
-                            errorMsg = "We are facing problem in connecting to server";
-                        } else if (error instanceof NetworkError) {
-                            errorMsg = "We are facing problem in connecting to network";
-                        } else if (error instanceof ParseError) {
+                            } else if (error instanceof ServerError) {
+                                errorMsg = "We are facing problem in connecting to server";
+                            } else if (error instanceof NetworkError) {
+                                errorMsg = "We are facing problem in connecting to network";
+                            } else if (error instanceof ParseError) {
 //                            errorMsg = "ParseError";
-                        }
-                        try {
-                            Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
-                            Log.d("Error", errorMsg);
-                        } catch (Throwable throwable) {
-                            Log.d("Error", throwable.toString());
-                        }
+                            }
+                            try {
+                                Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+                                Log.d("Error", errorMsg);
+                            } catch (Throwable throwable) {
+                                Log.d("Error", throwable.toString());
+                            }
 
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                return params;
-            }
-        };
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(0,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        requestQueue.add(stringRequest);
+                        }
+                    }) {
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    return params;
+                }
+            };
+            stringRequest.setRetryPolicy(new DefaultRetryPolicy(0,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+            requestQueue.add(stringRequest);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void fetchMelodyPacks() {
@@ -313,15 +333,21 @@ public class MelodyPacksFragment extends Fragment {
                     params.put(GENRE, packId);
                     params.put(FILE_TYPE, "admin_melody");
                 }
-                SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-                String userId = loginSharedPref.getString("userId", null);
-                if (userId != null) {
-//                    params.put(USER_ID, userId);
+                try{
+                    SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+                    String userId = loginSharedPref.getString("userId", null);
+                }catch (NullPointerException e){
+                    e.printStackTrace();
                 }
+
+//                if (userId != null) {
+////                    params.put(USER_ID, userId);
+//                }
 
 
                 return params;
             }
+
 
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
@@ -640,27 +666,30 @@ public class MelodyPacksFragment extends Fragment {
         };
     }
 
-    class AsyncData extends AsyncTask<Void, Void, Void> {
-
-        @Override
+    private class LongOperation extends AsyncTask<String, Void, String> {
         protected void onPreExecute() {
-            super.onPreExecute();
-            // init progressdialog
+            try {
+                progressDialog = new ProgressDialog(getActivity());
+                progressDialog.setTitle("Processing...");
+                progressDialog.setMessage("Please wait...");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
 
         }
 
-
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            // get data
+        protected String doInBackground(String... params) {
+            fetchGenreNames();
+            fetchMelodyPacks();
             return null;
         }
 
+        protected void onPostExecute(String result) {
 
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            // dismiss dialog
+            progressDialog.dismiss();
         }
+
     }
 }

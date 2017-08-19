@@ -82,7 +82,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     String Topic = "topic";
     RecordingsPool recordingsPool;
     Context context;
-    MediaPlayer mediaPlayer;
+    public static MediaPlayer mediaPlayer;
     int playerPos, TempLength = 0;
     int duration, length;
     String mpid, MelodyName, TempRecordingid = "0", Recordingid;
@@ -90,6 +90,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     String Key_shared_with = "shared_with";
     String Key_file_type = "file_type";
     String userId = "";
+
     private RecyclerView.ViewHolder lastModifiedHoled = null;
 
 
@@ -109,11 +110,12 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 
         TextView tvUserName, tvMelodyName, tvMelodyLength, tvBpmRate, tvInstrumentsUsed, tvMelodyGenre, tvMelodyDate, tv7, tv8, tv9;
         TextView tvPlayCount, tvLikeCount, tvCommentCount, tvShareCount;
-        ImageView userProfileImage, ivMelodyCover, ivPlay, ivPause, ivLikeButton, ivDislikeButton, ivPlayButton;
+        ImageView userProfileImage, ivMelodyCover, ivLikeButton, ivDislikeButton, ivPlayButton;
         Button btnMelodyAdd;
         SeekBar melodySlider;
         RelativeLayout rlSeekbarTracer, rlLike, rlPlay, rlComment, rlshare;
         ProgressDialog progressDialog;
+        ImageView ivPlay, ivPause;
 
         public MyViewHolder(final View itemView) {
             super(itemView);
@@ -166,7 +168,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     String position;
                     String MelodyName;
                     //String positions = mpids.get(getAdapterPosition() + 1);
-                    if (userId != null) {
+                    if (!userId.equals("") && userId != null) {
 //                        position = Integer.toString(getAdapterPosition() + 1);
                         //position = mpids.get(getAdapterPosition());
                         MelodyCard melody = melodyList.get(getAdapterPosition());
@@ -254,94 +256,54 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             rlComment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if (!userId.equals("") && userId != null) {
+                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID;
 
-                    String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID;
+                        instruments = tvInstrumentsUsed.getText().toString().trim();
+                        bpm = tvBpmRate.getText().toString().trim();
+                        genre = tvMelodyGenre.getText().toString().trim();
+                        melodyName = tvMelodyName.getText().toString().trim();
+                        userName = tvUserName.getText().toString().trim();
+                        duration = tvMelodyLength.getText().toString().trim();
+                        date = tvMelodyDate.getText().toString().trim();
+                        plays = tvPlayCount.getText().toString().trim();
+                        likes = tvLikeCount.getText().toString().trim();
+                        comments = tvCommentCount.getText().toString().trim();
+                        shares = tvShareCount.getText().toString().trim();
+                        int pos = getAdapterPosition();
+                        melodyID = mpids.get(pos);
 
-                    instruments = tvInstrumentsUsed.getText().toString().trim();
-                    bpm = tvBpmRate.getText().toString().trim();
-                    genre = tvMelodyGenre.getText().toString().trim();
-                    melodyName = tvMelodyName.getText().toString().trim();
-                    userName = tvUserName.getText().toString().trim();
-                    duration = tvMelodyLength.getText().toString().trim();
-                    date = tvMelodyDate.getText().toString().trim();
-                    plays = tvPlayCount.getText().toString().trim();
-                    likes = tvLikeCount.getText().toString().trim();
-                    comments = tvCommentCount.getText().toString().trim();
-                    shares = tvShareCount.getText().toString().trim();
-                    int pos = getAdapterPosition();
-                    melodyID = mpids.get(pos);
-
-                    SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
-                    editor.putString("instruments", instruments);
-                    editor.putString("bpm", bpm);
-                    editor.putString("genre", genre);
-                    editor.putString("melodyName", melodyName);
-                    editor.putString("userName", userName);
-                    editor.putString("duration", duration);
-                    editor.putString("date", date);
-                    editor.putString("plays", plays);
-                    editor.putString("likes", likes);
-                    editor.putString("comments", comments);
-                    editor.putString("shares", shares);
-                    editor.putString("bitmapProfile", profile);
+                        SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
+                        editor.putString("instruments", instruments);
+                        editor.putString("bpm", bpm);
+                        editor.putString("genre", genre);
+                        editor.putString("melodyName", melodyName);
+                        editor.putString("userName", userName);
+                        editor.putString("duration", duration);
+                        editor.putString("date", date);
+                        editor.putString("plays", plays);
+                        editor.putString("likes", likes);
+                        editor.putString("comments", comments);
+                        editor.putString("shares", shares);
+                        editor.putString("bitmapProfile", profile);
 //                    editor.putString("bitmapCover", cover);
-                    editor.putString("melodyID", melodyID);
-                    editor.putString("fileType", "admin_melody");
-                    editor.commit();
+                        editor.putString("melodyID", melodyID);
+                        editor.putString("fileType", "admin_melody");
+                        editor.commit();
 
-                    Intent intent = new Intent(context, CommentsActivity.class);
-                    context.startActivity(intent);
-
-                }
-            });
-
-            melodySlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
-
-            {
-
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-//                    int sliderSize = melodySlider.getWidth();
-//                    int rlivSize = rlSeekbarTracer.getWidth();
-//
-//                    tv7.setText(Integer.toString(sliderSize));
-//                    tv8.setText(Integer.toString(progress));
-//                    tv9.setText(Integer.toString(rlivSize));
-//
-//                    int maxProgress = melodySlider.getMax();
-//                    int rate = (sliderSize - 20) / maxProgress;
-//
-//                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) rlSeekbarTracer.getLayoutParams();
-//                    params.width = (40 + (progress * rate));
-//                    rlSeekbarTracer.setLayoutParams(params);
-
-                    int mCurrentPosition = mediaPlayer.getCurrentPosition() / 1000;
-                    int mDuration = mediaPlayer.getDuration() / 1000;
-                    //   UtilsRecording utilRecording = new UtilsRecording();
-                    //   int progress1 = utilRecording.getProgressPercentage(mCurrentPosition, mDuration);
-
-                    if (mediaPlayer != null && fromUser) {
-                        int playPositionInMilliseconds = mediaPlayer.getDuration() / 100 * melodySlider.getProgress();
-                        mediaPlayer.seekTo(playPositionInMilliseconds);
-//                        seekBar.setProgress(progress);
+                        Intent intent = new Intent(context, CommentsActivity.class);
+                        context.startActivity(intent);
                     } else {
-                        // the event was fired from code and you shouldn't call player.seekTo()
+                        Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(context, SignInActivity.class);
+                        context.startActivity(intent);
                     }
-                }
 
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
                 }
             });
 
-            btnMelodyAdd.setOnClickListener(new View.OnClickListener()
 
-            {
+            btnMelodyAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     String position = Integer.toString(getAdapterPosition());
@@ -349,7 +311,12 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     intent.putExtra("clickPosition", position);
                     v.getContext().startActivity(intent);
                     if (mediaPlayer != null) {
-                        mediaPlayer.reset();
+                        try {
+                            mediaPlayer.reset();
+                        } catch (IllegalStateException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 }
             });
@@ -358,15 +325,20 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 
         private void primarySeekBarProgressUpdater() {
             Handler mHandler1 = new Handler();
-            melodySlider.setProgress((int) (((float) mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
-            if (mediaPlayer.isPlaying()) {
-                Runnable notification = new Runnable() {
-                    public void run() {
-                        primarySeekBarProgressUpdater();
-                    }
-                };
-                mHandler1.postDelayed(notification, 100);
+            try {
+                melodySlider.setProgress((int) (((float) mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
+                if (mediaPlayer.isPlaying()) {
+                    Runnable notification = new Runnable() {
+                        public void run() {
+                            primarySeekBarProgressUpdater();
+                        }
+                    };
+                    mHandler1.postDelayed(notification, 100);
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
             }
+
         }
     }
 
@@ -420,61 +392,43 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 holder.progressDialog.setMessage("Loading...");
                 holder.progressDialog.show();
 
-
+                holder.ivPause.setVisibility(VISIBLE);
                 holder.melodySlider.setVisibility(VISIBLE);
                 holder.rlSeekbarTracer.setVisibility(VISIBLE);
 
-                String position, userId;
-                SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-                userId = loginSharedPref.getString("userId", null);
+                String position;
                 position = Integer.toString(listPosition + 1);
 
-                if (userId != null) {
-                    String play = holder.tvPlayCount.getText().toString().trim();
-                    int playValue = Integer.parseInt(play) + 1;
-                    play = String.valueOf(playValue);
-                    holder.tvPlayCount.setText(play);
-
-                    fetchViewCount(userId, position);
-                    ParseContents pc = new ParseContents(context);
-                    instrumentList = pc.getInstruments();
-                    if (listPosition < instrumentList.size()) {
-                        audioUrl = instrumentList.get(listPosition).getInstrumentFile();
-                    }
-
-                } else {
-                    ParseContents pc = new ParseContents(context);
-                    instrumentList = pc.getInstruments();
-                    if (listPosition < instrumentList.size()) {
-                        audioUrl = instrumentList.get(listPosition).getInstrumentFile();
-                    }
+                String play = holder.tvPlayCount.getText().toString().trim();
+                int playValue = Integer.parseInt(play) + 1;
+                play = String.valueOf(playValue);
+                holder.tvPlayCount.setText(play);
+                fetchViewCount(userId, position);
+                ParseContents pc = new ParseContents(context);
+                instrumentList = pc.getInstruments();
+                if (listPosition < instrumentList.size()) {
+                    audioUrl = melody.getMelodyURL();
                 }
-//                    try {
-//                        playAudio(audioUrl);
-//                        primarySeekBarProgressUpdater();
-//                        audioUrl = "";
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                        Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
-//
-//                    }
+
 
                 if (mediaPlayer != null) {
-                    if (mediaPlayer.isPlaying()) {
-                        mediaPlayer.stop();
-                        mediaPlayer.reset();
-                        mediaPlayer.release();
-                        mediaPlayer = null;
-                        //holder.ivPause.setVisibility(GONE);
+                    try {
+                        if (mediaPlayer.isPlaying()) {
 
-                        if (lastModifiedHoled != null) {
-                            int lastPosition = lastModifiedHoled.getAdapterPosition();
-                            lastModifiedHoled.itemView.findViewById(R.id.ivPlay).setVisibility(VISIBLE);
-                            lastModifiedHoled.itemView.findViewById(R.id.ivPause).setVisibility(GONE);
+                            mediaPlayer.stop();
+                            mediaPlayer.reset();
+                            mediaPlayer.release();
+                            mediaPlayer = null;
+                            //holder.ivPause.setVisibility(GONE);
+
+                            if (lastModifiedHoled != null) {
+                                int lastPosition = lastModifiedHoled.getAdapterPosition();
+                                lastModifiedHoled.itemView.findViewById(R.id.ivPlay).setVisibility(VISIBLE);
+                                lastModifiedHoled.itemView.findViewById(R.id.ivPause).setVisibility(GONE);
                            /* lastModifiedHoled.itemView.setBackgroundColor(Color.TRANSPARENT);
                             lastModifiedHoled.txtIndustry.setTextColor(context.getResources().getColor(R.color.text_color_blue));*/
-                            notifyItemChanged(lastPosition);
-                        }
+                                notifyItemChanged(lastPosition);
+                            }
 
 
 
@@ -485,7 +439,11 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         holder.ivPause.setVisibility(VISIBLE);*/
 
 
+                        }
+                    } catch (Throwable e) {
+                        e.printStackTrace();
                     }
+
 
                 }
 
@@ -551,12 +509,56 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             public void onClick(View v) {
                 holder.ivPlay.setVisibility(VISIBLE);
                 holder.ivPause.setVisibility(GONE);
-                mediaPlayer.pause();
+                try {
+                    mediaPlayer.pause();
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
                 length = mediaPlayer.getCurrentPosition();
                 holder.melodySlider.setProgress(0);
             }
         });
+        holder.melodySlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+//                    int sliderSize = melodySlider.getWidth();
+//                    int rlivSize = rlSeekbarTracer.getWidth();
+//
+//                    tv7.setText(Integer.toString(sliderSize));
+//                    tv8.setText(Integer.toString(progress));
+//                    tv9.setText(Integer.toString(rlivSize));
+//
+//                    int maxProgress = melodySlider.getMax();
+//                    int rate = (sliderSize - 20) / maxProgress;
+//
+//                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) rlSeekbarTracer.getLayoutParams();
+//                    params.width = (40 + (progress * rate));
+//                    rlSeekbarTracer.setLayoutParams(params);
+
+//                    int mCurrentPosition = mediaPlayer.getCurrentPosition() / 1000;
+//                    int mDuration = mediaPlayer.getDuration() / 1000;
+                //   UtilsRecording utilRecording = new UtilsRecording();
+                //   int progress1 = utilRecording.getProgressPercentage(mCurrentPosition, mDuration);
+
+                if (mediaPlayer != null && fromUser) {
+                    int playPositionInMilliseconds = mediaPlayer.getDuration() / 100 * holder.melodySlider.getProgress();
+                    mediaPlayer.seekTo(playPositionInMilliseconds);
+//                        seekBar.setProgress(progress);
+                } else {
+                    // the event was fired from code and you shouldn't call player.seekTo()
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
 
     }
 

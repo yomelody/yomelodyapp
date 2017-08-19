@@ -1,13 +1,9 @@
 package com.instamelody.instamelody.Adapters;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
@@ -30,17 +26,13 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.CommentsActivity;
 import com.instamelody.instamelody.JoinActivity;
-import com.instamelody.instamelody.Models.Genres;
-import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
-import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,7 +46,6 @@ import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.facebook.FacebookSdk.getApplicationContext;
-import static com.instamelody.instamelody.Adapters.InstrumentListAdapter.audioUrl;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LIKESAPI;
 import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
 
@@ -68,7 +59,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
     String genreName, mpid, MelodyName, profile;
     static String instrumentFile;
-    MediaPlayer mp;
+    public static MediaPlayer mp;
     int duration1, currentPosition;
     int length;
     ArrayList<String> mpids = new ArrayList<>();
@@ -89,7 +80,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     String Key_shared_with = "shared_with";
     String Key_file_type = "file_type";
     Context context;
-    String userId="";
+    String userId = "";
     private RecyclerView.ViewHolder lastModifiedHoled = null;
 
     public RecordingsCardAdapter(Context context, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools) {
@@ -198,8 +189,14 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     editor.putString("fileType", "admin_melody");
                     editor.commit();
 
-                    Intent intent = new Intent(context, JoinActivity.class);
-                    context.startActivity(intent);
+
+                    try{
+                        Intent intent = new Intent(context, JoinActivity.class);
+                        context.startActivity(intent);
+                    }catch (Throwable e){
+                        e.printStackTrace();
+                    }
+
                 }
             });
             rlLike.setOnClickListener(new View.OnClickListener() {
@@ -208,7 +205,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     String position;
 
                     String MelodyName;
-                    if (userId != null ) {
+                    if (!userId.equals("") && userId != null) {
                         //Toast.makeText(context, "like", Toast.LENGTH_SHORT).show();
                         //position = mpids.get(getAdapterPosition() + 1);
 
@@ -268,44 +265,50 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             ivCommentButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(context, "comment", Toast.LENGTH_SHORT).show();
-                    String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID;
+                    if (!userId.equals("") && userId != null) {
+                        //Toast.makeText(context, "comment", Toast.LENGTH_SHORT).show();
+                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID;
 
-                    //instruments = tvInstrumentsUsed.getText().toString().trim();
-                    //bpm = tvBpmRate.getText().toString().trim();
-                    genre = tvRecordingGenres.getText().toString().trim();
-                    melodyName = tvRecordingName.getText().toString().trim();
-                    userName = tvUserName.getText().toString().trim();
-                    duration = tvContributeLength.getText().toString().trim();
-                    date = tvRecordingDate.getText().toString().trim();
-                    plays = tvViewCount.getText().toString().trim();
-                    likes = tvLikeCount.getText().toString().trim();
-                    comments = tvCommentCount.getText().toString().trim();
-                    shares = tvShareCount.getText().toString().trim();
-                    int pos = getAdapterPosition();
-                    melodyID = mpids.get(pos);
+                        //instruments = tvInstrumentsUsed.getText().toString().trim();
+                        //bpm = tvBpmRate.getText().toString().trim();
+                        genre = tvRecordingGenres.getText().toString().trim();
+                        melodyName = tvRecordingName.getText().toString().trim();
+                        userName = tvUserName.getText().toString().trim();
+                        duration = tvContributeLength.getText().toString().trim();
+                        date = tvRecordingDate.getText().toString().trim();
+                        plays = tvViewCount.getText().toString().trim();
+                        likes = tvLikeCount.getText().toString().trim();
+                        comments = tvCommentCount.getText().toString().trim();
+                        shares = tvShareCount.getText().toString().trim();
+                        int pos = getAdapterPosition();
+                        melodyID = mpids.get(pos);
 
-                    SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
-                    editor.putString("instruments", "0");
-                    editor.putString("bpm", "0");
-                    editor.putString("genre", genre);
-                    editor.putString("melodyName", melodyName);
-                    editor.putString("userName", userName);
-                    editor.putString("duration", duration);
-                    editor.putString("date", date);
-                    editor.putString("plays", plays);
-                    editor.putString("likes", likes);
-                    editor.putString("comments", comments);
-                    editor.putString("shares", shares);
-                    editor.putString("bitmapProfile", profile);
+                        SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
+                        editor.putString("instruments", "0");
+                        editor.putString("bpm", "0");
+                        editor.putString("genre", genre);
+                        editor.putString("melodyName", melodyName);
+                        editor.putString("userName", userName);
+                        editor.putString("duration", duration);
+                        editor.putString("date", date);
+                        editor.putString("plays", plays);
+                        editor.putString("likes", likes);
+                        editor.putString("comments", comments);
+                        editor.putString("shares", shares);
+                        editor.putString("bitmapProfile", profile);
 //                    editor.putString("bitmapCover", cover);
-                    editor.putString("melodyID", melodyID);
-                    editor.putString("fileType", "user_recording");
-                    editor.commit();
+                        editor.putString("melodyID", melodyID);
+                        editor.putString("fileType", "user_recording");
+                        editor.commit();
 
-                    Intent intent = new Intent(context, CommentsActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent);
+                        Intent intent = new Intent(context, CommentsActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
+                    } else {
+                        Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(context, SignInActivity.class);
+                        context.startActivity(intent);
+                    }
 
                 }
             });
@@ -332,8 +335,14 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     int progress1 = utilRecording.getProgressPercentage(mCurrentPosition, mDuration);
 
                     if (mp != null && fromUser) {
-                        int playPositionInMilliseconds = duration1 / 100 * seekBarRecordings.getProgress();
-                        mp.seekTo(playPositionInMilliseconds);
+                        try{
+                            int playPositionInMilliseconds = duration1 / 100 * seekBarRecordings.getProgress();
+                            mp.seekTo(playPositionInMilliseconds);
+                        }
+                        catch (IllegalStateException e){
+                            e.printStackTrace();
+                        }
+
 //                        seekBar.setProgress(progress);
                     } else {
                         // the event was fired from code and you shouldn't call player.seekTo()
@@ -354,30 +363,43 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
         private void primarySeekBarProgressUpdater() {
             Handler mHandler1 = new Handler();
-            duration1 = mp.getDuration();
-            seekBarRecordings.setProgress((int) (((float) mp.getCurrentPosition() / duration1) * 100));// This math construction give a percentage of "was playing"/"song length"
-            if (mp.isPlaying()) {
-                Runnable notification = new Runnable() {
-                    public void run() {
-                        primarySeekBarProgressUpdater();
+            try {
+                duration1 = mp.getDuration();
+                seekBarRecordings.setProgress((int) (((float) mp.getCurrentPosition() / duration1) * 100));// This math construction give a percentage of "was playing"/"song length"
+                if (mp.isPlaying()) {
+                    Runnable notification = new Runnable() {
+                        public void run() {
+                            primarySeekBarProgressUpdater();
+                        }
+                    };
+                    mHandler1.postDelayed(notification, 100);
+                }
+                else {
+                    try{
+                        seekBarRecordings.setProgress(0);
+                    }catch (Throwable e){
+                        e.printStackTrace();
                     }
-                };
-                mHandler1.postDelayed(notification, 100);
+
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
             }
+
         }
     }
 
     @Override
-    public RecordingsCardAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.card_recordings, parent, false);
 
-        RecordingsCardAdapter.MyViewHolder myViewHolder = new RecordingsCardAdapter.MyViewHolder(view);
+        MyViewHolder myViewHolder = new MyViewHolder(view);
         return myViewHolder;
     }
 
     @Override
-    public void onBindViewHolder(final RecordingsCardAdapter.MyViewHolder holder, final int listPosition) {
+    public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
 
         RecordingsModel recording = recordingList.get(listPosition);
         /*final RecordingsPool recordingsPool = recordingsPools.get(listPosition);
@@ -466,7 +488,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         }
 
 
-
 //        tvContributeLength.setText(recordingList.get(listPosition).getTvContributeLength());
         holder.tvRecordingDate.setText(recordingList.get(listPosition).getRecordingCreated());
         //    tvContributeDate.setText(recordingList.get(listPosition).getTvContributeDate());
@@ -490,21 +511,35 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                 if (getItemCount() >= listPosition + 1 && instrumentFile != null) {
                     if (mp != null) {
-                        if (mp.isPlaying()) {
-                            mp.stop();
-                            mp.reset();
-                            mp.release();
-                            mp = null;
-                            if (lastModifiedHoled != null) {
-                                int lastPosition = lastModifiedHoled.getAdapterPosition();
-                                lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
-                                lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
+                        try {
+                            if (mp.isPlaying()) {
+                                mp.stop();
+                                mp.reset();
+                                mp.release();
+                                mp = null;
+                                if (lastModifiedHoled != null) {
+                                    int lastPosition = lastModifiedHoled.getAdapterPosition();
+                                    lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
+                                    lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
                            /* lastModifiedHoled.itemView.setBackgroundColor(Color.TRANSPARENT);
                             lastModifiedHoled.txtIndustry.setTextColor(context.getResources().getColor(R.color.text_color_blue));*/
-                                notifyItemChanged(lastPosition);
-                            }
+                                    notifyItemChanged(lastPosition);
+                                }
 
+                            }
+                        } catch (Throwable e) {
+                            e.printStackTrace();
                         }
+
+                    }
+                    if(holder.ivStationPause.getVisibility()==VISIBLE){
+                        try{
+                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
+                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
+                        }catch (NullPointerException e){
+                            e.printStackTrace();
+                        }
+
                     }
                     mp = new MediaPlayer();
                     mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -536,9 +571,13 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mp) {
-                            duration1 = mp.getDuration();
-                            currentPosition = mp.getCurrentPosition();
+                         //   duration1 = mp.getDuration();
+                         //   currentPosition = mp.getCurrentPosition();
                             holder.progressDialog.dismiss();
+                            holder.primarySeekBarProgressUpdater();
+//                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
+//                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
+
                         }
                     });
                     lastModifiedHoled = holder;
@@ -616,7 +655,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
                         }
                     },
                     new Response.ErrorListener() {

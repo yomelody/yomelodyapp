@@ -5,10 +5,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.CardView;
@@ -28,10 +31,12 @@ import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.MelodyMixing;
 import com.instamelody.instamelody.Models.MixingData;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.StudioActivity;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,13 +76,13 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     MelodyMixing melodyMixing = new MelodyMixing();
     ArrayList<MixingData> list = new ArrayList<MixingData>();
     List aa;
+    public static List<MediaPlayer> mp_start = new ArrayList<MediaPlayer>();
 
     public InstrumentListAdapter(ArrayList<MelodyInstruments> instrumentList, Context context) {
         this.instrumentList = instrumentList;
         this.context = context;
 
     }
-
 
 
     public InstrumentListAdapter(boolean playfromStudio, Context context) {
@@ -114,7 +119,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
         CardView card_melody;
         AudioManager audioManager;
-
 
 
         public MyViewHolder(View itemView) {
@@ -198,7 +202,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     UtilsRecording utilRecording = new UtilsRecording();
                     int progress1 = utilRecording.getProgressPercentage(mCurrentPosition, mDuration);
 
-                    if (mp != null && fromUser) {
+                    if (mp!= null && fromUser) {
                         int playPositionInMilliseconds = duration1 / 100 * melodySlider.getProgress();
                         mp.seekTo(playPositionInMilliseconds);
 //                        seekBar.setProgress(progress);
@@ -223,15 +227,21 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
         private void primarySeekBarProgressUpdater() {
             Handler mHandler1 = new Handler();
-            melodySlider.setProgress((int) (((float) mp.getCurrentPosition() / mp.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
-            if (mp.isPlaying()) {
-                Runnable notification = new Runnable() {
-                    public void run() {
-                        primarySeekBarProgressUpdater();
-                    }
-                };
-                mHandler1.postDelayed(notification, 100);
+            try {
+                melodySlider.setProgress((int) (((float) mp.getCurrentPosition() / mp.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
+                if (mp.isPlaying()) {
+                    Runnable notification = new Runnable() {
+                        public void run() {
+                            primarySeekBarProgressUpdater();
+                        }
+                    };
+                    mHandler1.postDelayed(notification, 100);
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
             }
+
+
         }
     }
 
@@ -298,38 +308,92 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         //holder.volumeSeekbar.setMax(holder.audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
 
         audioValue = instruments.getAudioType();
-        holder.rlEQ.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.frameInstrument.setVisibility(View.VISIBLE);
-                if (holder.eqContent.getVisibility() == View.VISIBLE) {
-                    holder.eqContent.setVisibility(View.GONE);
-                    holder.fxContent.setVisibility(View.GONE);
-                    holder.frameInstrument.setVisibility(View.GONE);
-                } else if (holder.eqContent.getVisibility() == View.GONE) {
-                    holder.eqContent.setVisibility(View.VISIBLE);
-                    holder.fxContent.setVisibility(View.GONE);
-                }
-            }
-        });
         holder.rlFX.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                holder.frameInstrument.setVisibility(View.VISIBLE);
-                if (holder.fxContent.getVisibility() == View.VISIBLE) {
-                    holder.fxContent.setVisibility(View.GONE);
-                    holder.eqContent.setVisibility(View.GONE);
-                    holder.frameInstrument.setVisibility(View.GONE);
-                } else if (holder.fxContent.getVisibility() == View.GONE) {
-                    holder.fxContent.setVisibility(View.VISIBLE);
-                    holder.eqContent.setVisibility(View.GONE);
+                String InstName = "", UserName = "", InstLength = "", BPM = "", ivInstrumentCover = "", ivUserProfileImage = "";
+                StudioActivity.frameInstrument.setVisibility(View.VISIBLE);
+                InstName = instrumentList.get(listPosition).getInstrumentName();
+                UserName = instrumentList.get(listPosition).getUserName();
+                InstLength = instrumentList.get(listPosition).getInstrumentLength();
+                BPM = "BPM: " + instrumentList.get(listPosition).getInstrumentBpm().replaceAll("BPM: ", "");
+                ivInstrumentCover = instrumentList.get(listPosition).getInstrumentCover();
+                ivUserProfileImage = instrumentList.get(listPosition).getUserProfilePic();
+                StudioActivity.tvInstrumentName.setText(InstName);
+                StudioActivity.tvUserName.setText(UserName);
+                StudioActivity.tvInstrumentLength.setText(InstLength);
+                StudioActivity.tvBpmRate.setText(BPM);
+                new InstrumentCover().execute(ivInstrumentCover);
+                new UserProfileCover().execute(ivUserProfileImage);
+
+                if (StudioActivity.fxContent.getVisibility() == View.VISIBLE) {
+                    StudioActivity.eqContent.setVisibility(View.GONE);
+                } else {
+                    StudioActivity.fxContent.setVisibility(View.VISIBLE);
                 }
             }
         });
-        holder.tvDoneFxEq.setOnClickListener(new View.OnClickListener() {
+        holder.rlEQ.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                holder.frameInstrument.setVisibility(View.GONE);
+                String InstName = "", UserName = "", InstLength = "", BPM = "", ivInstrumentCover = "", ivUserProfileImage = "";
+                StudioActivity.frameInstrument.setVisibility(View.VISIBLE);
+                InstName = instrumentList.get(listPosition).getInstrumentName();
+                UserName = instrumentList.get(listPosition).getUserName();
+                InstLength = instrumentList.get(listPosition).getInstrumentLength();
+                BPM = "BPM: " + instrumentList.get(listPosition).getInstrumentBpm().replaceAll("BPM: ", "");
+                ivInstrumentCover = instrumentList.get(listPosition).getInstrumentCover();
+                ivUserProfileImage = instrumentList.get(listPosition).getUserProfilePic();
+                StudioActivity.tvInstrumentName.setText(InstName);
+                StudioActivity.tvUserName.setText(UserName);
+                StudioActivity.tvInstrumentLength.setText(InstLength);
+                StudioActivity.tvBpmRate.setText(BPM);
+                new InstrumentCover().execute(ivInstrumentCover);
+                new UserProfileCover().execute(ivUserProfileImage);
+
+                if (StudioActivity.fxContent.getVisibility() == View.VISIBLE) {
+                    StudioActivity.fxContent.setVisibility(View.GONE);
+                } else {
+                    StudioActivity.eqContent.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        StudioActivity.RltvFxButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (StudioActivity.fxContent.getVisibility() == View.VISIBLE) {
+                    StudioActivity.fxContent.setVisibility(View.GONE);
+                    StudioActivity.frameInstrument.setVisibility(View.GONE);
+                    StudioActivity.eqContent.setVisibility(View.GONE);
+                } else {
+                    StudioActivity.frameInstrument.setVisibility(View.VISIBLE);
+                    StudioActivity.eqContent.setVisibility(View.GONE);
+                    StudioActivity.fxContent.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        StudioActivity.RltvEqButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (StudioActivity.eqContent.getVisibility() == View.VISIBLE) {
+                    StudioActivity.eqContent.setVisibility(View.GONE);
+                    StudioActivity.frameInstrument.setVisibility(View.GONE);
+                    StudioActivity.fxContent.setVisibility(View.GONE);
+                } else {
+                    StudioActivity.frameInstrument.setVisibility(View.VISIBLE);
+                    StudioActivity.fxContent.setVisibility(View.GONE);
+                    StudioActivity.eqContent.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        StudioActivity.tvDoneFxEq.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                StudioActivity.fxContent.setVisibility(View.GONE);
+                StudioActivity.frameInstrument.setVisibility(View.GONE);
+                StudioActivity.eqContent.setVisibility(View.GONE);
             }
         });
 
@@ -354,7 +418,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 if (list.size() == 0) {
                     list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo)));
                 } else {
-                    list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble),String.valueOf(Pan),String.valueOf(Pitch),String.valueOf(Reverb),String.valueOf(Compression),String.valueOf(Delay),String.valueOf(Tempo)));
+                    list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo)));
                 }
                 melodyMixing.setVocalsound(list);
                 aa = melodyMixing.getVocalsound();
@@ -383,7 +447,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 if (list.size() == 0) {
                     list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo)));
                 } else {
-                    list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble),String.valueOf(Pan),String.valueOf(Pitch),String.valueOf(Reverb),String.valueOf(Compression),String.valueOf(Delay),String.valueOf(Tempo)));
+                    list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo)));
                 }
                 melodyMixing.setVocalsound(list);
                 aa = melodyMixing.getVocalsound();
@@ -408,7 +472,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 if (list.size() == 0) {
                     list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo)));
                 } else {
-                    list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble),String.valueOf(Pan),String.valueOf(Pitch),String.valueOf(Reverb),String.valueOf(Compression),String.valueOf(Delay),String.valueOf(Tempo)));
+                    list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo)));
                 }
                 melodyMixing.setVocalsound(list);
                 aa = melodyMixing.getVocalsound();
@@ -428,11 +492,11 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Base=progress;
+                Base = progress;
                 if (list.size() == 0) {
                     list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo)));
                 } else {
-                    list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble),String.valueOf(Pan),String.valueOf(Pitch),String.valueOf(Reverb),String.valueOf(Compression),String.valueOf(Delay),String.valueOf(Tempo)));
+                    list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo)));
                 }
                 melodyMixing.setVocalsound(list);
                 aa = melodyMixing.getVocalsound();
@@ -452,11 +516,11 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Reverb=progress;
+                Reverb = progress;
                 if (list.size() == 0) {
                     list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo)));
                 } else {
-                    list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble),String.valueOf(Pan),String.valueOf(Pitch),String.valueOf(Reverb),String.valueOf(Compression),String.valueOf(Delay),String.valueOf(Tempo)));
+                    list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo)));
                 }
                 melodyMixing.setVocalsound(list);
                 aa = melodyMixing.getVocalsound();
@@ -476,11 +540,11 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Compression=progress;
+                Compression = progress;
                 if (list.size() == 0) {
                     list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo)));
                 } else {
-                    list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble),String.valueOf(Pan),String.valueOf(Pitch),String.valueOf(Reverb),String.valueOf(Compression),String.valueOf(Delay),String.valueOf(Tempo)));
+                    list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo)));
                 }
                 melodyMixing.setVocalsound(list);
                 aa = melodyMixing.getVocalsound();
@@ -500,11 +564,11 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Delay=progress;
+                Delay = progress;
                 if (list.size() == 0) {
                     list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo)));
                 } else {
-                    list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble),String.valueOf(Pan),String.valueOf(Pitch),String.valueOf(Reverb),String.valueOf(Compression),String.valueOf(Delay),String.valueOf(Tempo)));
+                    list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo)));
                 }
                 melodyMixing.setVocalsound(list);
                 aa = melodyMixing.getVocalsound();
@@ -524,11 +588,11 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Tempo=progress;
+                Tempo = progress;
                 if (list.size() == 0) {
                     list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo)));
                 } else {
-                    list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble),String.valueOf(Pan),String.valueOf(Pitch),String.valueOf(Reverb),String.valueOf(Compression),String.valueOf(Delay),String.valueOf(Tempo)));
+                    list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo)));
                 }
                 melodyMixing.setVocalsound(list);
                 aa = melodyMixing.getVocalsound();
@@ -548,11 +612,11 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Pan=progress;
+                Pan = progress;
                 if (list.size() == 0) {
                     list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo)));
                 } else {
-                    list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble),String.valueOf(Pan),String.valueOf(Pitch),String.valueOf(Reverb),String.valueOf(Compression),String.valueOf(Delay),String.valueOf(Tempo)));
+                    list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo)));
                 }
                 melodyMixing.setVocalsound(list);
                 aa = melodyMixing.getVocalsound();
@@ -573,22 +637,31 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 holder.progressDialog.setMessage("Loading...");
                 holder.progressDialog.show();
                 holder.mp = new MediaPlayer();
+
                 holder.mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 try {
                     holder.mp.setDataSource(instrumentFile);
                     holder.mp.prepareAsync();
+                    mp_start.add(holder.mp);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                holder.mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                    @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        holder.progressDialog.dismiss();
-                        mp.start();
-                        holder.primarySeekBarProgressUpdater();
+                for (MediaPlayer instrument_media : mp_start) {
+                    instrument_media.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            holder.progressDialog.dismiss();
+                            mp.start();
+                            try {
+                                holder.primarySeekBarProgressUpdater();
+                            } catch (Throwable e) {
+                                e.printStackTrace();
+                            }
 
-                    }
-                });
+                        }
+                    });
+                }
+
                 holder.mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                     @Override
                     public boolean onError(MediaPlayer mp, int what, int extra) {
@@ -616,11 +689,12 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             public void onClick(View v) {
                 holder.ivPlay.setVisibility(v.VISIBLE);
                 holder.ivPause.setVisibility(v.GONE);
-                holder.mp.pause();
+               holder.mp.pause();
                 length = holder.mp.getCurrentPosition();
                 holder.melodySlider.setProgress(0);
             }
         });
+
 
         Intent i = new Intent("fetchingInstruments");
         i.putStringArrayListExtra("instruments", instrument_url_count);
@@ -637,12 +711,63 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         //  rvLength = instrumentList.size();
         return instrumentList.size();
     }
-
+    public void onPause() {
+        Bitmap mIcon11 = null;
+    }
 
     @Override
     public int getItemViewType(int position) {
         return (position == instrumentList.size()) ? R.layout.layout_button_sync : R.layout.card_melody_added;
     }
 
+    private class InstrumentCover extends AsyncTask<String, Void, Bitmap> {
+        //ImageView bmImage;
+
+        public InstrumentCover() {
+            //StudioActivity.ivInstrumentCover = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            StudioActivity.ivInstrumentCover.setImageBitmap(result);
+        }
+    }
+
+    private class UserProfileCover extends AsyncTask<String, Void, Bitmap> {
+        //ImageView bmImage;
+
+        public UserProfileCover() {
+            //StudioActivity.ivInstrumentCover = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            StudioActivity.userProfileImage.setImageBitmap(result);
+        }
+    }
 
 }
