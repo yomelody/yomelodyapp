@@ -222,8 +222,15 @@ public class MelodyActivity extends AppCompatActivity {
                 editorFilterString.clear();
                 editorFilterString.apply();
 
-                MelodyPacksFragment mpf = new MelodyPacksFragment();
-                getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
+                if (clicked_button == 0) {
+                    MelodyPacksFragment mpf = new MelodyPacksFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
+
+                } else if (clicked_button == 1) {
+                    RecordingsFragment rf = new RecordingsFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.activity_melody, rf).commit();
+
+                }
                 return false;
             }
 
