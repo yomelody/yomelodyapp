@@ -50,6 +50,7 @@ import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
+import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE1;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
 
 /**
@@ -92,6 +93,7 @@ public class MelodyPacksFragment extends Fragment {
     private String FILE_TYPE = "file_type";
     private String FILTER_TYPE = "filter_type";
     private String FILTER = "filter";
+    private String SAVE_MELODY= "save_melody";
     ArrayList<Genres> genresArrayList = new ArrayList<>();
     ArrayList<UserMelodyCard> userMelodyList = new ArrayList<>();
     ArrayList<UserMelodyPlay> melodyPools = new ArrayList<>();
@@ -99,7 +101,7 @@ public class MelodyPacksFragment extends Fragment {
     ProgressDialog progressDialog;
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
+        fetchGenreNames();
         SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
         SharedPreferences searchPref = getActivity().getSharedPreferences("SearchPref", MODE_PRIVATE);
@@ -256,6 +258,7 @@ public class MelodyPacksFragment extends Fragment {
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
+                    params.put(SAVE_MELODY,"saverecording");
                     return params;
                 }
             };
@@ -682,7 +685,7 @@ public class MelodyPacksFragment extends Fragment {
         }
 
         protected String doInBackground(String... params) {
-            fetchGenreNames();
+//            fetchGenreNames();
             fetchMelodyPacks();
             return null;
         }
