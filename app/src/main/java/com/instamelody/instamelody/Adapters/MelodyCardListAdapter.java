@@ -558,8 +558,13 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 //   int progress1 = utilRecording.getProgressPercentage(mCurrentPosition, mDuration);
 
                 if (mediaPlayer != null && fromUser) {
-                    int playPositionInMilliseconds = mediaPlayer.getDuration() / 100 * holder.melodySlider.getProgress();
-                    mediaPlayer.seekTo(playPositionInMilliseconds);
+                    try {
+                        int playPositionInMilliseconds = mediaPlayer.getDuration() / 100 * holder.melodySlider.getProgress();
+                        mediaPlayer.seekTo(playPositionInMilliseconds);
+                    } catch (IllegalStateException e) {
+                        e.printStackTrace();
+                    }
+
 //                        seekBar.setProgress(progress);
                 } else {
                     // the event was fired from code and you shouldn't call player.seekTo()
