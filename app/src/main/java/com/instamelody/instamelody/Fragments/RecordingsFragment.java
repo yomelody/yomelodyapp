@@ -129,7 +129,7 @@ public class RecordingsFragment extends Fragment {
         }
 
         if (strName == null && strSearch == null) {
-            new LongOperation().execute();
+           fetchRecordings();
         } else if (strSearch != null) {
             fetchSearchData();
         } else if (strArtist != null) {
@@ -392,7 +392,7 @@ public class RecordingsFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-//                params.put(ID, userId);
+                params.put(ID, userId);
                 params.put(KEY_SEARCH, strSearch);
                 return params;
             }
@@ -709,7 +709,7 @@ public class RecordingsFragment extends Fragment {
         }
 
         protected String doInBackground(String... params) {
-            fetchRecordings();
+//            fetchRecordings();
             return null;
         }
 
