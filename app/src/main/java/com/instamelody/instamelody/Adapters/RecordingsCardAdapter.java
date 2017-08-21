@@ -102,7 +102,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
         public MyViewHolder(View itemView) {
             super(itemView);
-
             userProfileImage = (ImageView) itemView.findViewById(R.id.userProfileImage);
             ivRecordingCover = (ImageView) itemView.findViewById(R.id.ivRecordingCover);
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
@@ -552,7 +551,12 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                     }
                     mp = new MediaPlayer();
-                    mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    try{
+                        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    }catch (NullPointerException e){
+                        e.printStackTrace();
+                    }
+
                     try {
                         mp.setDataSource(instrumentFile);
 

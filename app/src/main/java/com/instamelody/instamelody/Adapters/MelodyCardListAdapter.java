@@ -446,7 +446,6 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                             }
 
 
-
                         /*View view = null;
                         holder.ivPause.setVisibility(VISIBLE);
                         view = holder.recyclerView.getChildAt(1);

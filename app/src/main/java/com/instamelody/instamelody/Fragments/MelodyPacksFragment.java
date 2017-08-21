@@ -129,7 +129,8 @@ public class MelodyPacksFragment extends Fragment {
 
         if (strName == null && strSearch == null) {
             new LongOperation().execute();
-        } else if (strName != null) {
+        }
+        else if (strName != null) {
             fetchMelodyFilter();
         } else if (strSearch != null) {
             fetchMelodySearchData();
