@@ -126,7 +126,7 @@ public class MelodyPacksFragment extends Fragment {
         }
 
         //     new Loader().execute();
-
+        fetchGenreNames();
         if (strName == null && strSearch == null) {
             new LongOperation().execute();
         } else if (strName != null) {
@@ -681,7 +681,7 @@ public class MelodyPacksFragment extends Fragment {
         }
 
         protected String doInBackground(String... params) {
-            fetchGenreNames();
+
             fetchMelodyPacks();
             return null;
         }

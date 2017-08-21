@@ -325,6 +325,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     Intent intent = new Intent(v.getContext(), StudioActivity.class);
                     intent.putExtra("clickPosition", position);
                     v.getContext().startActivity(intent);
+                    StudioActivity.list.clear();
                     if (mediaPlayer != null) {
                         try {
                             mediaPlayer.reset();
@@ -412,7 +413,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 holder.rlSeekbarTracer.setVisibility(VISIBLE);
 
                 String position;
-                position = Integer.toString(listPosition + 1);
+                position = melodyList.get(listPosition).getMelodyPackId();
 
                 String play = holder.tvPlayCount.getText().toString().trim();
                 int playValue = Integer.parseInt(play) + 1;
