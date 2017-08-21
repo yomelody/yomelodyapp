@@ -381,6 +381,15 @@ public class ProfileActivity extends AppCompatActivity {
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (RecordingsCardAdapter.mp != null && RecordingsCardAdapter.mp.isPlaying()) {
+                    try {
+                        RecordingsCardAdapter.mp.stop();
+                        RecordingsCardAdapter.mp.reset();
+                        RecordingsCardAdapter.mp.release();
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+                }
                 finish();
             }
         });
@@ -1325,5 +1334,20 @@ public class ProfileActivity extends AppCompatActivity {
         SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
         editorFilterBPM.clear();
         editorFilterBPM.apply();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (RecordingsCardAdapter.mp != null && RecordingsCardAdapter.mp.isPlaying()) {
+            try {
+                RecordingsCardAdapter.mp.stop();
+                RecordingsCardAdapter.mp.reset();
+                RecordingsCardAdapter.mp.release();
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 }
