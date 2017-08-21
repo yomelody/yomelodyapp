@@ -103,7 +103,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.MESSAGE_LIST;
 public class ChatActivity extends AppCompatActivity {
 
     public static TextView tvUserName;
-    FrameLayout flClose;
+    ImageView ivClose;
     EditText etMessage;
     ImageView ivBackButton, ivHomeButton, ivAdjust, ivCamera, ivNewChat, ivRecieverProfilePic, ivSelectedImage;
     TextView tvSend, tvRecieverName;
@@ -150,7 +150,7 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
 
         rlSelectedImage = (RelativeLayout) findViewById(R.id.rlSelectedImage);
-        flClose = (FrameLayout) findViewById(R.id.flClose);
+        ivClose = (ImageView) findViewById(R.id.ivClose);
         ivSelectedImage = (ImageView) findViewById(R.id.ivSelectedImage);
 
 //        parent = getIntent().getStringExtra("from");
@@ -167,10 +167,25 @@ public class ChatActivity extends AppCompatActivity {
             sendImageName = fileInfo.get(position).getName();
             sendImageBitmap = fileInfo.get(position).getBitmap();
             rlSelectedImage.setVisibility(View.VISIBLE);
-            flClose.setVisibility(View.VISIBLE);
+            ivClose.setVisibility(View.VISIBLE);
             ivSelectedImage.setImageBitmap(sendImageBitmap);
             flagFileType = "1";
         }
+
+        SharedPreferences audioShareData = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE);
+        if (audioShareData.getString("recID", null) != null) {
+            String recID = selectedImagePos.getString("recID", null);
+            String userName = selectedImagePos.getString("userName", null);
+            String recName = selectedImagePos.getString("recName", null);
+            String recUrl = selectedImagePos.getString("recUrl", null);
+            String profilePic = selectedImagePos.getString("profilePic", null);
+            String fileType = selectedImagePos.getString("fileType", null);
+            rlSelectedImage.setVisibility(View.VISIBLE);
+            ivClose.setVisibility(View.VISIBLE);
+            ivSelectedImage.setImageBitmap(sendImageBitmap);
+            flagFileType = "2";
+        }
+
 
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
@@ -370,7 +385,7 @@ public class ChatActivity extends AppCompatActivity {
                             InputMethodManager.HIDE_NOT_ALWAYS);
 
                     rlSelectedImage.setVisibility(View.GONE);
-                    flClose.setVisibility(View.GONE);
+                    ivClose.setVisibility(View.GONE);
 //                    sendImageBitmap.recycle();
 
 
@@ -434,7 +449,7 @@ public class ChatActivity extends AppCompatActivity {
 
                             Intent chooserIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                             Date d = new Date();
-                            CharSequence s = DateFormat.format("yyyyMMdd_hh_mm_ss", d.getTime());
+                            CharSequence s = DateFormat.format("yyyyMMdd_hhmmss", d.getTime());
                             File f = new File(Environment.getExternalStorageDirectory(), "IMG_" + s.toString() + ".jpg");
                             chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
                             imageToUploadUri = Uri.fromFile(f);
@@ -464,7 +479,7 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        flClose.setOnClickListener(new View.OnClickListener() {
+        ivClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 flagFileType = "0";
@@ -528,7 +543,7 @@ public class ChatActivity extends AppCompatActivity {
                 sendImageBitmap = ic.compressImage(sendImageName);
                 if (sendImageBitmap != null) {
                     rlSelectedImage.setVisibility(View.VISIBLE);
-                    flClose.setVisibility(View.VISIBLE);
+                    ivClose.setVisibility(View.VISIBLE);
                     ivSelectedImage.setImageBitmap(sendImageBitmap);
                     flagFileType = "1";
                 } else {
@@ -550,7 +565,7 @@ public class ChatActivity extends AppCompatActivity {
                 cursor.close();
                 sendImageName = img_Decodable_Str.substring(img_Decodable_Str.lastIndexOf("/") + 1);
                 rlSelectedImage.setVisibility(View.VISIBLE);
-                flClose.setVisibility(View.VISIBLE);
+                ivClose.setVisibility(View.VISIBLE);
                 ImageCompressor ic = new ImageCompressor(getApplicationContext());
                 sendImageBitmap = ic.compressImage(img_Decodable_Str);
                 ivSelectedImage.setImageBitmap(sendImageBitmap);

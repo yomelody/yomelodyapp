@@ -3,141 +3,15 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:id="@+id/llMessage"
+    <ImageView
+        android:id="@+id/ivSelectedImage"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <RelativeLayout
-            android:id="@+id/rlProfilePic"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:paddingBottom="5dp">
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/userProfileImage"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:src="@drawable/profile1" />
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@+id/rlProfilePic"
-            android:layout_toRightOf="@+id/rlProfilePic">
-
-            <RelativeLayout
-                android:id="@+id/rlMessage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/newest_grey_bubble">
-
-                <TextView
-                    android:id="@+id/chatMessage"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:text=""
-                    android:textColor="#425661"
-                    android:textSize="16sp" />
-
-                <RelativeLayout
-                    android:id="@+id/rlChatImage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/chatMessage"
-                    android:visibility="gone">
-
-                    <ImageView
-                        android:id="@+id/chatImage"
-                        android:layout_width="150dp"
-                        android:layout_height="100dp"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/background_dialog" />
-
-                    <ImageView
-                        android:id="@+id/fileClip"
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:layout_below="@+id/chatImage"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginStart="5dp"
-                        android:background="@drawable/paperclip" />
-
-                    <TextView
-                        android:id="@+id/chatImageName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignBaseline="@+id/fileClip"
-                        android:layout_below="@+id/chatImage"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginStart="5dp"
-                        android:layout_toEndOf="@+id/fileClip"
-                        android:layout_toRightOf="@+id/fileClip"
-                        android:text="photo.jpg"
-                        android:textColor="#425661"
-                        android:textSize="13sp" />
-
-                </RelativeLayout>
-
-                <FrameLayout
-                    android:id="@+id/frameLayout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:paddingBottom="12dp">
-
-                        <ImageView
-                            android:id="@+id/tick"
-                            android:layout_width="11dp"
-                            android:layout_height="8dp"
-                            android:layout_alignParentBottom="true"
-                            android:layout_alignParentEnd="true"
-                            android:layout_alignParentRight="true"
-                            android:layout_marginEnd="24dp"
-                            android:layout_marginRight="24dp"
-                            android:background="@drawable/tick_grey"
-                            android:visibility="gone" />
-
-                        <ImageView
-                            android:id="@+id/doubleTick"
-                            android:layout_width="20dp"
-                            android:layout_height="8dp"
-                            android:layout_alignLeft="@+id/tick"
-                            android:layout_alignParentBottom="true"
-                            android:layout_alignParentEnd="true"
-                            android:layout_alignParentRight="true"
-                            android:layout_alignStart="@+id/tick"
-                            android:layout_marginEnd="24dp"
-                            android:layout_marginRight="24dp"
-                            android:background="@drawable/dubble_tick_grey"
-                            android:visibility="visible" />
-
-                    </RelativeLayout>
-                </FrameLayout>
-            </RelativeLayout>
-        </RelativeLayout>
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/timeStamp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/llMessage"
-        android:layout_marginBottom="10dp"
-        android:text="Friday 11:55 AM"
-        android:textAlignment="center"
-        android:textColor="#425661"
-        android:textSize="12sp" />
-
+        android:layout_height="130dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:adjustViewBounds="true"
+        android:scaleType="fitStart"
+        android:src="@drawable/cover2"
+        android:visibility="visible" />
 </RelativeLayout>

@@ -2,11 +2,13 @@ package com.instamelody.instamelody.Adapters;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,12 +27,14 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.CommentsActivity;
+import com.instamelody.instamelody.ContactsActivity;
 import com.instamelody.instamelody.JoinActivity;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
+import com.instamelody.instamelody.StudioActivity;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
@@ -246,18 +250,45 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 public void onClick(View v) {
                     if (!userId.equals("") && userId != null) {
 
-                        RecordingsModel recording = recordingList.get(getAdapterPosition());
-                        String RecordingURL = recording.getrecordingurl();
-                        Intent shareIntent = new Intent();
-                        shareIntent.setAction(Intent.ACTION_SEND);
-                        shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                        shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt");
-                        shareIntent.putExtra(Intent.EXTRA_TEXT, RecordingURL);
-                        shareIntent.setType("image/jpeg");
-                        shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(Intent.createChooser(shareIntent, "Hello."));
+                        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+                        alertDialog.setTitle("Share in InstaMelody chat?");
+//                        alertDialog.setMessage("Choose yes to share in chat.");
+                        alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                SharedPreferences.Editor editor = context.getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
+                                RecordingsModel recording = recordingList.get(getAdapterPosition());
+                                editor.putString("recID", recording.getRecordingId());
+                                editor.putString("userName", recording.getUserName());
+                                editor.putString("recName",recording.getRecordingName());
+                                editor.putString("recUrl",recording.getrecordingurl());
+                                editor.putString("profilePic",recording.getUserProfilePic());
+                                editor.putString("fileType", "station");
+                                editor.commit();
+                                Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
+                                intent.putExtra("Previous", "rca_studio");
+                                context.startActivity(intent);
+                            }
+                        });
+                        alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                                RecordingsModel recording = recordingList.get(getAdapterPosition());
+                                String RecordingURL = recording.getrecordingurl();
+                                Intent shareIntent = new Intent();
+                                shareIntent.setAction(Intent.ACTION_SEND);
+                                shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                                shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt");
+                                shareIntent.putExtra(Intent.EXTRA_TEXT, RecordingURL);
+                                shareIntent.setType("image/jpeg");
+                                shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                context.startActivity(Intent.createChooser(shareIntent, "Choose Sharing option!"));
+                            }
+                        });
+                        alertDialog.show();
+
+
                     } else {
-                        Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Log in to Share this melody pack", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(context, SignInActivity.class);
                         context.startActivity(intent);
                     }
@@ -269,7 +300,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 public void onClick(View view) {
                     if (!userId.equals("") && userId != null) {
                         //Toast.makeText(context, "comment", Toast.LENGTH_SHORT).show();
-                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID, RecordingURL, CoverUrl, LikeStatus,ProfilePick;
+                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID, RecordingURL, CoverUrl, LikeStatus, ProfilePick;
 
                         RecordingsModel recording = recordingList.get(getAdapterPosition());
 
@@ -291,7 +322,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         melodyID = mpids.get(pos);
                         RecordingURL = recording.getrecordingurl();
                         CoverUrl = recording.getRecordingCover();
-                        ProfilePick=recording.getUserProfilePic();
+                        ProfilePick = recording.getUserProfilePic();
                         SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
                         editor.putString("instruments", "0");
                         editor.putString("bpm", "0");
