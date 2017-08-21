@@ -129,7 +129,7 @@ public class RecordingsFragment extends Fragment {
         }
 
         if (strName == null && strSearch == null) {
-            fetchRecordings();
+            new LongOperation().execute();
         } else if (strSearch != null) {
             fetchSearchData();
         } else if (strArtist != null) {
@@ -194,10 +194,17 @@ public class RecordingsFragment extends Fragment {
                                     genres.setName(titleString);
                                     genres.setId(genreJson.getString(KEY_GENRE_ID));
                                     genresArrayList.add(genres);
-                                    spec = host.newTabSpec(titleString);
-                                    spec.setIndicator(titleString);
-                                    spec.setContent(createTabContent());
-                                    host.addTab(spec);
+                                    try{
+                                        spec = host.newTabSpec(titleString);
+                                        spec.setIndicator(titleString);
+                                        spec.setContent(createTabContent());
+                                        host.addTab(spec);
+                                    }
+                                    catch (NullPointerException e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+
                                 }
                             }
                         } catch (JSONException e) {
@@ -687,7 +694,31 @@ public class RecordingsFragment extends Fragment {
             }
         };
     }
+    private class LongOperation extends AsyncTask<String, Void, String> {
+        protected void onPreExecute() {
+            try {
+                progressDialog = new ProgressDialog(getActivity());
+                progressDialog.setTitle("Processing...");
+                progressDialog.setMessage("Please wait...");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
 
+        }
+
+        protected String doInBackground(String... params) {
+            fetchRecordings();
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+
+            progressDialog.dismiss();
+        }
+
+    }
 
 
     public void SharedPrefClear(){
