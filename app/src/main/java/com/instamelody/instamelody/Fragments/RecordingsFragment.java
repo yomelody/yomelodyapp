@@ -86,9 +86,8 @@ public class RecordingsFragment extends Fragment {
     String userIdNormal, userIdFb, userIdTwitter;
     int statusNormal, statusFb, statusTwitter;
     ProgressDialog progressDialog;
-    LongOperation myTask = null;
     String strName, strSearch, strArtist, strInstruments, strBPM;
-
+    TabHost host=null;
     public RecordingsFragment() {
 
     }
@@ -175,14 +174,18 @@ public class RecordingsFragment extends Fragment {
                         JSONArray jsonArray;
                         String titleString, genreId;
                         TabHost.TabSpec spec;
-                        final TabHost host = (TabHost) getActivity().findViewById(R.id.tabHostRecordings);
-                        host.setup();
+                        try{
+                            host = (TabHost) getActivity().findViewById(R.id.tabHostRecordings);
+                            host.setup();
+                        }
+                        catch (NullPointerException e){
+                            e.printStackTrace();
+                        }
+
 
                         try {
                             jsonObject = new JSONObject(response);
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
-                                myTask = new LongOperation();
-                                myTask.execute();
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     Genres genres = new Genres();
@@ -200,22 +203,27 @@ public class RecordingsFragment extends Fragment {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
-                        host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-                            @Override
-                            public void onTabChanged(String arg0) {
-                                genreString = arg0;
-                                int currentTab = host.getCurrentTab();
-                                if (currentTab == 0) {
-                                    genreString = "";
-                                } else {
-                                    genreString = genresArrayList.get(currentTab).getId();
-                                }
+                        try {
+                            host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+                                @Override
+                                public void onTabChanged(String arg0) {
+                                    genreString = arg0;
+                                    int currentTab = host.getCurrentTab();
+                                    if (currentTab == 0) {
+                                        genreString = "";
+                                    } else {
+                                        genreString = genresArrayList.get(currentTab).getId();
+                                    }
 //                                genreString = String.valueOf(currentTab).trim();
-                                fetchRecordings();
+                                    fetchRecordings();
 
-                            }
-                        });
+                                }
+                            });
+                        }
+                        catch (NullPointerException e)
+                        {
+                            e.printStackTrace();
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -680,68 +688,7 @@ public class RecordingsFragment extends Fragment {
         };
     }
 
-    private class LongOperation extends AsyncTask<String, Void, String> {
-        protected void onPreExecute() {
-            progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setTitle("Processing...");
-            progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
 
-        protected String doInBackground(String... params) {
-
-            /*if (strName == null && strSearch == null) {
-                fetchRecordings();
-            } else if (strSearch != null) {
-                fetchSearchData();
-            } else {
-                fetchRecordingsFilter();
-            }*/
-            try {
-                //Getting data from server
-                String filename = "myfile";
-                String outputString = "Hello world!";
-                URL aurl = new URL(RECORDINGS);
-                URLConnection connection = aurl.openConnection();
-                connection.connect();
-                // getting file length
-                int lengthOfFile = connection.getContentLength();
-                // input stream to read file - with 8k buffer
-                InputStream input = new BufferedInputStream(aurl.openStream(), 8192);
-                try {
-                    FileOutputStream outputStream = getActivity().openFileOutput(filename, Context.MODE_PRIVATE);
-                    outputStream.write(outputString.getBytes());
-                    outputStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                try {
-                    FileInputStream inputStream = getActivity().openFileInput(filename);
-                    BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
-                    StringBuilder total = new StringBuilder();
-                    String line;
-                    while ((line = r.readLine()) != null) {
-                        total.append(line);
-                    }
-                    r.close();
-                    inputStream.close();
-                    Log.d("File", "File contents: " + total);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-
-            progressDialog.dismiss();
-        }
-
-    }
 
     public void SharedPrefClear(){
 
