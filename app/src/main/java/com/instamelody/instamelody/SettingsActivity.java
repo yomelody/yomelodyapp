@@ -30,6 +30,8 @@ public class SettingsActivity extends AppCompatActivity {
     ImageView ivLogoContainer;
     RelativeLayout rlSocialConnect, rlSubscription, rlMyAccount, rlTos, rlPrivacyPolicy,rlInviteContacts,rlRateApp;
     String userId, firstName, lastName, userNameLogin, profilePicLogin;
+    String userIdTwitter, firstNameTwitter, lastNameTwitter, emailFinalTwitter, profilePicTwitter, userNameTwitter;
+    String userIdFb, firstNameFb, lastNameFb,userNameFb;
     CircleImageView userProfileImageSettings;
     int statusNormal;
     Context context;
@@ -74,6 +76,21 @@ public class SettingsActivity extends AppCompatActivity {
             userId = twitterPref.getString("userId", null);
         }
 
+        SharedPreferences twitterEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        userIdTwitter = twitterEditor.getString("userId", null);
+        firstNameTwitter = twitterEditor.getString("firstName", null);
+        lastNameTwitter = twitterEditor.getString("lastName", null);
+        userNameTwitter = twitterEditor.getString("userName", null);
+        emailFinalTwitter = twitterEditor.getString("emailFinal", null);
+        profilePicTwitter = twitterEditor.getString("profilePic", null);
+
+
+        SharedPreferences fbEditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+        userIdFb = fbEditor.getString("userId", null);
+        firstNameFb = fbEditor.getString("firstName", null);
+        lastNameFb = fbEditor.getString("lastName", null);
+        userNameFb = fbEditor.getString("userName", null);
+
         if (userId != null) {
             tvSignIn.setVisibility(View.GONE);
             tvSignOut.setVisibility(View.VISIBLE);
@@ -87,6 +104,24 @@ public class SettingsActivity extends AppCompatActivity {
                 userProfileImageSettings.setVisibility(View.VISIBLE);
                 Picasso.with(SettingsActivity.this).load(profilePicLogin).into(userProfileImageSettings);
 
+            }
+
+            if (userIdFb!= null){
+                tvFirstNameSettings.setText(firstNameFb+"  "+lastNameFb);
+                tvUserNameSettings.setText(userNameFb);
+//                SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+                String fbId = fbPref.getString("fbId", null);
+                ivLogoContainer.setVisibility(View.GONE);
+                userProfileImageSettings.setVisibility(View.VISIBLE);
+                Picasso.with(SettingsActivity.this).load("https://graph.facebook.com/" + fbId + "/picture").into(userProfileImageSettings);
+            }else if (userIdTwitter!= null){
+                tvFirstNameSettings.setText(firstNameTwitter+"  "+lastNameTwitter);
+                tvUserNameSettings.setText(userNameTwitter);
+//                SharedPreferences twitterPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
+                String profilePic1 = twitterPref.getString("profilePic", null);
+                ivLogoContainer.setVisibility(View.GONE);
+                userProfileImageSettings.setVisibility(View.VISIBLE);
+                Picasso.with(SettingsActivity.this).load(profilePic1).into(userProfileImageSettings);
             }
             rlMyAccount.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -150,8 +185,6 @@ public class SettingsActivity extends AppCompatActivity {
                     Uri uri = Uri.parse("https://play.google.com/store?hl=en");
 
                     Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
-                    // To count with Play market backstack, After pressing back button,
-                    // to taken back to our application, we need to add following flags
                     goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
                             Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
                             Intent.FLAG_ACTIVITY_MULTIPLE_TASK);

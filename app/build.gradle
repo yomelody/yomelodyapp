@@ -26,6 +26,8 @@ android {
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+        manifestPlaceholders = [auth0Domain: "@string/com_auth0_domain", auth0Scheme: "demo"]
+
     }
     dexOptions {
 //        javaMaxHeapSize "4g"
@@ -68,6 +70,7 @@ dependencies {
     compile 'com.writingminds:FFmpegAndroid:0.3.2'
     compile 'com.facebook.fresco:fresco:1.4.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.auth0.android:auth0:1.+'
     testCompile 'junit:junit:4.12'
 }
 apply plugin: 'com.google.gms.google-services'
