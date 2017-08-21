@@ -277,13 +277,13 @@
                     android:layout_alignParentTop="true"
                     android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"
-                    android:layout_toEndOf="@+id/textView2"
-                    android:layout_toRightOf="@+id/textView2"
+                    android:layout_toEndOf="@+id/tvForgetPassword"
+                    android:layout_toRightOf="@+id/tvForgetPassword"
                     android:text="-  New Here?"
                     android:textSize="12sp" />
 
                 <TextView
-                    android:id="@+id/textView2"
+                    android:id="@+id/tvForgetPassword"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"

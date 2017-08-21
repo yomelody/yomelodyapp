@@ -95,8 +95,9 @@ public class AudioFragment extends Fragment {
     String userIdNormal, userIdFb, userIdTwitter;
     int statusNormal, statusFb, statusTwitter;
     ProgressDialog progressDialog;
-    LongOperation myTask = null;
+    // LongOperation myTask = null;
     String strName, strSearch, strArtist, strInstruments, strBPM;
+    TabHost host = null;
 
     public AudioFragment() {
 
@@ -137,24 +138,10 @@ public class AudioFragment extends Fragment {
             userId = twitterPref.getString("userId", null);
         }
 
-        fetchGenreNames();
-
-        if (strName == null && strSearch == null) {
-            fetchRecordings();
-        } else if (strSearch != null) {
-            fetchSearchData();
-        } else if (strArtist != null) {
-            fetchRecordingsFilterArtist();
-        } else if (strInstruments != null && strName.equals("# of Instruments")) {
-            fetchRecordingsFilterInstruments();
-        } else if (strBPM != null && strName.equals("BPM")) {
-            fetchRecordingsFilterBPM();
-        } else {
-            fetchRecordingsFilter();
-        }
+        new LongOperation().execute();
 
 
-        adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
+
     }
 
 
@@ -168,14 +155,19 @@ public class AudioFragment extends Fragment {
                         JSONArray jsonArray;
                         String titleString;
                         TabHost.TabSpec spec;
-                        final TabHost host = (TabHost) getActivity().findViewById(R.id.tabHostAudio);
-                        host.setup();
+                        try {
+                            host = (TabHost) getActivity().findViewById(R.id.tabHostAudio);
+                            host.setup();
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
+
 
                         try {
                             jsonObject = new JSONObject(response);
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
-                                myTask = new LongOperation();
-                                myTask.execute();
+                                //   myTask = new LongOperation();
+                                //   myTask.execute();
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     Genres genres = new Genres();
@@ -184,55 +176,34 @@ public class AudioFragment extends Fragment {
                                     genres.setName(titleString);
                                     genres.setId(genreJson.getString(KEY_GENRE_ID));
                                     genresArrayList.add(genres);
-                                    spec = host.newTabSpec(titleString);
-                                    spec.setIndicator(titleString);
-                                    spec.setContent(createTabContent());
-                                    host.addTab(spec);
+                                    try {
+                                        spec = host.newTabSpec(titleString);
+                                        spec.setIndicator(titleString);
+                                        spec.setContent(createTabContent());
+                                        host.addTab(spec);
+                                    } catch (NullPointerException e) {
+                                        e.printStackTrace();
+                                    }
+                                    try {
+                                        SharedPreferences.Editor editorGenre = getActivity().getSharedPreferences("prefGenreName", MODE_PRIVATE).edit();
+                                        editorGenre.putString("GenreName", titleString);
+                                        editorGenre.apply();
+                                    } catch (NullPointerException e) {
+                                        e.printStackTrace();
+                                    }
 
-                                    SharedPreferences.Editor editorGenre = getActivity().getSharedPreferences("prefGenreName", MODE_PRIVATE).edit();
-                                    editorGenre.putString("GenreName", titleString);
-                                    editorGenre.apply();
 
                                 }
-                            }
-                            else
-                            {
+                            } else {
                                 ClearSharedPref();
                             }
                         } catch (JSONException e) {
                             ClearSharedPref();
                             e.printStackTrace();
                         }
-
-                        if (host.getCurrentTab() == 0) {
+                        try {
+                            if (host.getCurrentTab() == 0) {
 //                            Toast.makeText(getActivity(), "All " + host.getCurrentTab(), Toast.LENGTH_SHORT).show();
-                            if (strName == null && strSearch == null) {
-                                fetchRecordings();
-                            } else if (strSearch != null) {
-                                fetchSearchData();
-                            } else if (strArtist != null) {
-                                fetchRecordingsFilterArtist();
-                            } else if (strInstruments != null && strName.equals("# of Instruments")) {
-                                fetchRecordingsFilterInstruments();
-                            } else if (strBPM != null && strName.equals("BPM")) {
-                                fetchRecordingsFilterBPM();
-                            } else {
-                                fetchRecordingsFilter();
-                            }
-
-                        }
-
-                        host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-                            @Override
-                            public void onTabChanged(String arg0) {
-                                genreString = arg0;
-                                int currentTab = host.getCurrentTab();
-                                if (currentTab == 0) {
-                                    genreString = "";
-                                } else {
-                                    genreString = genresArrayList.get(currentTab).getId();
-                                }
-//                                fetchRecordings();
                                 if (strName == null && strSearch == null) {
                                     fetchRecordings();
                                 } else if (strSearch != null) {
@@ -246,9 +217,44 @@ public class AudioFragment extends Fragment {
                                 } else {
                                     fetchRecordingsFilter();
                                 }
-//                                Toast.makeText(getActivity(), "beta: " + genreString, Toast.LENGTH_SHORT).show();
+
                             }
-                        });
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
+
+                        try {
+                            host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+                                @Override
+                                public void onTabChanged(String arg0) {
+                                    genreString = arg0;
+                                    int currentTab = host.getCurrentTab();
+                                    if (currentTab == 0) {
+                                        genreString = "";
+                                    } else {
+                                        genreString = genresArrayList.get(currentTab).getId();
+                                    }
+//                                fetchRecordings();
+                                    if (strName == null && strSearch == null) {
+                                        fetchRecordings();
+                                    } else if (strSearch != null) {
+                                        fetchSearchData();
+                                    } else if (strArtist != null) {
+                                        fetchRecordingsFilterArtist();
+                                    } else if (strInstruments != null && strName.equals("# of Instruments")) {
+                                        fetchRecordingsFilterInstruments();
+                                    } else if (strBPM != null && strName.equals("BPM")) {
+                                        fetchRecordingsFilterBPM();
+                                    } else {
+                                        fetchRecordingsFilter();
+                                    }
+//                                Toast.makeText(getActivity(), "beta: " + genreString, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 },
                 new Response.ErrorListener() {
@@ -298,8 +304,13 @@ public class AudioFragment extends Fragment {
                         recordingList.clear();
                         recordingsPools.clear();
                         new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
-                        adapter.notifyDataSetChanged();
-                        ClearSharedPref();
+                        try{
+                            adapter.notifyDataSetChanged();
+                            ClearSharedPref();
+                        }catch (NullPointerException e){
+                            e.printStackTrace();
+                        }
+
                     }
                 },
                 new Response.ErrorListener() {
@@ -696,48 +707,7 @@ public class AudioFragment extends Fragment {
 
         protected String doInBackground(String... params) {
 
-            /*if (strName == null && strSearch == null) {
-                fetchRecordings();
-            } else if (strSearch != null) {
-                fetchSearchData();
-            } else {
-                fetchRecordingsFilter();
-            }*/
-            try {
-                //Getting data from server
-                String filename = "myfile";
-                String outputString = "Hello world!";
-                URL aurl = new URL(RECORDINGS);
-                URLConnection connection = aurl.openConnection();
-                connection.connect();
-                // getting file length
-                int lengthOfFile = connection.getContentLength();
-                // input stream to read file - with 8k buffer
-                InputStream input = new BufferedInputStream(aurl.openStream(), 8192);
-                try {
-                    FileOutputStream outputStream = getActivity().openFileOutput(filename, Context.MODE_PRIVATE);
-                    outputStream.write(outputString.getBytes());
-                    outputStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                try {
-                    FileInputStream inputStream = getActivity().openFileInput(filename);
-                    BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
-                    StringBuilder total = new StringBuilder();
-                    String line;
-                    while ((line = r.readLine()) != null) {
-                        total.append(line);
-                    }
-                    r.close();
-                    inputStream.close();
-                    Log.d("File", "File contents: " + total);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            fetchGenreNames();
 
             if (strName == null && strSearch == null) {
                 fetchRecordings();
@@ -752,6 +722,7 @@ public class AudioFragment extends Fragment {
             } else {
                 fetchRecordingsFilter();
             }
+            adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
             return null;
         }
 
@@ -763,20 +734,25 @@ public class AudioFragment extends Fragment {
     }
 
     void ClearSharedPref() {
-        SharedPreferences.Editor FilterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
-        FilterPref.clear();
-        FilterPref.commit();
-        SharedPreferences.Editor SearchPref = getActivity().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
-        SearchPref.clear();
-        SearchPref.commit();
-        SharedPreferences.Editor FilterPrefArtist = getActivity().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
-        FilterPrefArtist.clear();
-        FilterPrefArtist.commit();
-        SharedPreferences.Editor FilterPrefInstruments = getActivity().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
-        FilterPrefInstruments.clear();
-        FilterPrefInstruments.commit();
-        SharedPreferences.Editor FilterPrefBPM = getActivity().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
-        FilterPrefBPM.clear();
-        FilterPrefBPM.commit();
+        try {
+
+            SharedPreferences.Editor FilterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+            FilterPref.clear();
+            FilterPref.commit();
+            SharedPreferences.Editor SearchPref = getActivity().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+            SearchPref.clear();
+            SearchPref.commit();
+            SharedPreferences.Editor FilterPrefArtist = getActivity().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
+            FilterPrefArtist.clear();
+            FilterPrefArtist.commit();
+            SharedPreferences.Editor FilterPrefInstruments = getActivity().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
+            FilterPrefInstruments.clear();
+            FilterPrefInstruments.commit();
+            SharedPreferences.Editor FilterPrefBPM = getActivity().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
+            FilterPrefBPM.clear();
+            FilterPrefBPM.commit();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
     }
 }

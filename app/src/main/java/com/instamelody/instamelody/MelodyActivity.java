@@ -30,7 +30,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Fragments.AudioFragment;
 import com.instamelody.instamelody.Fragments.MelodyPacksFragment;
@@ -40,6 +42,8 @@ import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 
 import java.util.ArrayList;
+
+import static android.view.View.VISIBLE;
 
 
 /**
@@ -173,10 +177,10 @@ public class MelodyActivity extends AppCompatActivity {
                 ivHomeButton.setVisibility(View.GONE);
                 appBarMainText.setVisibility(View.GONE);
                 ivMelodyFilter.setVisibility(View.GONE);
-                search1.setVisibility(View.VISIBLE);
+                search1.setVisibility(VISIBLE);
                 ((EditText) search1.findViewById(android.support.v7.appcompat.R.id.search_src_text))
                         .setHintTextColor(getResources().getColor(R.color.colorSearch));
-                btnCancel.setVisibility(View.VISIBLE);
+                btnCancel.setVisibility(VISIBLE);
             }
         });
 
@@ -190,10 +194,10 @@ public class MelodyActivity extends AppCompatActivity {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                rlMelodySearch.setVisibility(View.VISIBLE);
-                ivHomeButton.setVisibility(View.VISIBLE);
-                appBarMainText.setVisibility(View.VISIBLE);
-                ivMelodyFilter.setVisibility(View.VISIBLE);
+                rlMelodySearch.setVisibility(VISIBLE);
+                ivHomeButton.setVisibility(VISIBLE);
+                appBarMainText.setVisibility(VISIBLE);
+                ivMelodyFilter.setVisibility(VISIBLE);
                 search1.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
             }
@@ -203,10 +207,10 @@ public class MelodyActivity extends AppCompatActivity {
         search1.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                rlMelodySearch.setVisibility(View.VISIBLE);
-                ivHomeButton.setVisibility(View.VISIBLE);
-                appBarMainText.setVisibility(View.VISIBLE);
-                ivMelodyFilter.setVisibility(View.VISIBLE);
+                rlMelodySearch.setVisibility(VISIBLE);
+                ivHomeButton.setVisibility(VISIBLE);
+                appBarMainText.setVisibility(VISIBLE);
+                ivMelodyFilter.setVisibility(VISIBLE);
                 search1.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
                 search1.isSubmitButtonEnabled();
@@ -218,8 +222,15 @@ public class MelodyActivity extends AppCompatActivity {
                 editorFilterString.clear();
                 editorFilterString.apply();
 
-                MelodyPacksFragment mpf = new MelodyPacksFragment();
-                getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
+                if (clicked_button == 0) {
+                    MelodyPacksFragment mpf = new MelodyPacksFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
+
+                } else if (clicked_button == 1) {
+                    RecordingsFragment rf = new RecordingsFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.activity_melody, rf).commit();
+
+                }
                 return false;
             }
 
@@ -348,8 +359,13 @@ public class MelodyActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        clearSharePrefMelody();
+        try{
+            super.onBackPressed();
+            clearSharePrefMelody();
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -615,7 +631,7 @@ public class MelodyActivity extends AppCompatActivity {
         builder3.show();
     }
 
-    public void clearSharePrefMelody(){
+    public void clearSharePrefMelody() {
         SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
         editorFilterBPM.clear();
         editorFilterBPM.apply();
@@ -636,4 +652,29 @@ public class MelodyActivity extends AppCompatActivity {
         editorSearchString.clear();
         editorSearchString.apply();
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (MelodyCardListAdapter.mediaPlayer != null) {
+            try {
+                MelodyCardListAdapter.mediaPlayer.stop();
+                MelodyCardListAdapter.mediaPlayer.reset();
+                MelodyCardListAdapter.mediaPlayer.release();
+                try {
+                    MelodyPacksFragment mpf = new MelodyPacksFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+
 }

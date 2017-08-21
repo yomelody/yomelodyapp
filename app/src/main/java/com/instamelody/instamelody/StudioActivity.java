@@ -18,13 +18,11 @@ import android.media.AudioRecord;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.media.audiofx.Equalizer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
@@ -72,10 +70,11 @@ import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
+import com.instamelody.instamelody.Models.MelodyMixing;
+import com.instamelody.instamelody.Models.MixingData;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.utils.AppHelper;
-import com.instamelody.instamelody.utils.UtilsRecording;
 import com.instamelody.instamelody.utils.VolleyMultipartRequest;
 import com.instamelody.instamelody.utils.VolleySingleton;
 import com.squareup.picasso.Picasso;
@@ -227,11 +226,15 @@ public class StudioActivity extends AppCompatActivity {
     long stop_rec_time;
     String time_stop;
     int count = 0;
-    public static FrameLayout frameInstrument;
+    public static FrameLayout frameInstrument ;
     public static RelativeLayout rlFX, rlEQ, eqContent, fxContent, RltvFxButton, RltvEqButton;
     public static TextView tvDoneFxEq, tvInstrumentLength, tvUserName, tvInstrumentName, tvBpmRate;
-    public static ImageView userProfileImage, ivInstrumentCover;
-
+    public static ImageView userProfileImage, ivInstrumentCover,FramesivPause, FramesivPlay;
+    public static SeekBar FramemelodySlider;
+    public static SeekBar volumeSeekbar, sbTreble, sbBase, sbPan, sbPitch, sbReverb, sbCompression, sbDelay, sbTempo;
+    public static MelodyMixing melodyMixing = new MelodyMixing();
+    public static ArrayList<MixingData> list = new ArrayList<MixingData>();
+    public static MediaPlayer mpInst;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -276,6 +279,18 @@ public class StudioActivity extends AppCompatActivity {
         tvBpmRate = (TextView) findViewById(R.id.tvBpmRate);
         userProfileImage = (ImageView) findViewById(R.id.userProfileImage);
         ivInstrumentCover = (ImageView) findViewById(R.id.ivInstrumentCover);
+        volumeSeekbar = (SeekBar) findViewById(R.id.sbVolume);
+        sbTreble = (SeekBar) findViewById(R.id.sbTreble);
+        sbBase = (SeekBar) findViewById(R.id.sbBase);
+        sbReverb = (SeekBar) findViewById(R.id.sbReverb);
+        sbCompression = (SeekBar) findViewById(R.id.sbCompression);
+        sbDelay = (SeekBar) findViewById(R.id.sbDelay);
+        sbTempo = (SeekBar) findViewById(R.id.sbTempo);
+        sbPan = (SeekBar) findViewById(R.id.sbPan);
+        sbPitch = (SeekBar) findViewById(R.id.sbPitch);
+        FramesivPause = (ImageView) findViewById(R.id.FramesivPause);
+        FramesivPlay = (ImageView) findViewById(R.id.FramesivPlay);
+        FramemelodySlider = (SeekBar) findViewById(R.id.FramemelodySlider);
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         firstName = loginSharedPref.getString("firstName", null);
         userNameLogin = loginSharedPref.getString("userName", null);
@@ -2556,6 +2571,11 @@ public class StudioActivity extends AppCompatActivity {
             }
             if (mediaPlayer != null && mediaPlayer.isPlaying()) {
                            ivRecord_pause.performClick();
+            }
+            if(mpInst!=null)
+            {
+                mpInst.stop();
+                mpInst.release();
             }
 
         } catch (Throwable e) {

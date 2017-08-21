@@ -205,27 +205,28 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 
                 @Override
                 public void onClick(View v) {
-                    /*Intent shareIntent = new Intent();
-                    shareIntent.setAction(Intent.ACTION_SEND);
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
-                    shareIntent.setType("image/jpeg");
-                    startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));*/
+                    if (!userId.equals("") && userId != null) {
 
-                    MelodyCard melody = melodyList.get(getAdapterPosition());
-                    MelodyName = melody.getMelodyName();
+                        MelodyCard melody = melodyList.get(getAdapterPosition());
+                        MelodyName = melody.getMelodyName();
 
-                    MelodyCard recording = melodyList.get(getAdapterPosition());
-                    String RecordingURL = recording.getMelodyURL();
+                        MelodyCard recording = melodyList.get(getAdapterPosition());
+                        String RecordingURL = recording.getMelodyURL();
 
-                    Intent shareIntent = new Intent();
-                    shareIntent.setAction(Intent.ACTION_SEND);
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                    shareIntent.setType("text/plain");
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt" + "\n" + RecordingURL);
+                        Intent shareIntent = new Intent();
+                        shareIntent.setAction(Intent.ACTION_SEND);
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                        shareIntent.setType("text/plain");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt" + "\n" + RecordingURL);
 
-                    shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(Intent.createChooser(shareIntent, "Hello."));
-                    SetMelodyShare("", "", "");
+                        shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(Intent.createChooser(shareIntent, "Hello."));
+                        SetMelodyShare("", "", "");
+                    } else {
+                        Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(context, SignInActivity.class);
+                        context.startActivity(intent);
+                    }
 
                 }
 
@@ -239,12 +240,12 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     userId = loginSharedPref.getString("userId", null);
 
                     if (userId != null) {
-                        position = Integer.toString(getAdapterPosition() + 1);
+                       /* position = Integer.toString(getAdapterPosition() + 1);
                         String play = tvPlayCount.getText().toString().trim();
                         int playValue = Integer.parseInt(play) + 1;
                         play = String.valueOf(playValue);
                         tvPlayCount.setText(play);
-                        fetchViewCount(userId, position);
+                        fetchViewCount(userId, position);*/
 
                     } else {
                         //do nothing
@@ -257,8 +258,14 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 @Override
                 public void onClick(View view) {
                     if (!userId.equals("") && userId != null) {
-                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID;
+                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID, RecordingURL, CoverUrl, LikeStatus,ProfilePick;
+                        MelodyCard melody = melodyList.get(getAdapterPosition());
 
+                        if (ivDislikeButton.getVisibility() == VISIBLE) {
+                            LikeStatus = "1";
+                        } else {
+                            LikeStatus = "0";
+                        }
                         instruments = tvInstrumentsUsed.getText().toString().trim();
                         bpm = tvBpmRate.getText().toString().trim();
                         genre = tvMelodyGenre.getText().toString().trim();
@@ -272,7 +279,9 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         shares = tvShareCount.getText().toString().trim();
                         int pos = getAdapterPosition();
                         melodyID = mpids.get(pos);
-
+                        RecordingURL = melody.getMelodyURL();
+                        CoverUrl = melody.getMelodyCover();
+                        ProfilePick=melody.getUserProfilePic();
                         SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
                         editor.putString("instruments", instruments);
                         editor.putString("bpm", bpm);
@@ -285,12 +294,18 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         editor.putString("likes", likes);
                         editor.putString("comments", comments);
                         editor.putString("shares", shares);
-                        editor.putString("bitmapProfile", profile);
+                        editor.putString("bitmapProfile", ProfilePick);
 //                    editor.putString("bitmapCover", cover);
                         editor.putString("melodyID", melodyID);
                         editor.putString("fileType", "admin_melody");
+                        editor.putString("RecordingURL", RecordingURL);
+                        editor.putString("CoverUrl", CoverUrl);
+                        editor.putString("LikeStatus", LikeStatus);
                         editor.commit();
 
+                        SharedPreferences.Editor PreviousActivity = context.getSharedPreferences("PreviousActivity", MODE_PRIVATE).edit();
+                        PreviousActivity.putString("PreviousActivityName", "MelodyActivity.class");
+                        PreviousActivity.commit();
                         Intent intent = new Intent(context, CommentsActivity.class);
                         context.startActivity(intent);
                     } else {
@@ -543,8 +558,13 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 //   int progress1 = utilRecording.getProgressPercentage(mCurrentPosition, mDuration);
 
                 if (mediaPlayer != null && fromUser) {
-                    int playPositionInMilliseconds = mediaPlayer.getDuration() / 100 * holder.melodySlider.getProgress();
-                    mediaPlayer.seekTo(playPositionInMilliseconds);
+                    try {
+                        int playPositionInMilliseconds = mediaPlayer.getDuration() / 100 * holder.melodySlider.getProgress();
+                        mediaPlayer.seekTo(playPositionInMilliseconds);
+                    } catch (IllegalStateException e) {
+                        e.printStackTrace();
+                    }
+
 //                        seekBar.setProgress(progress);
                 } else {
                     // the event was fired from code and you shouldn't call player.seekTo()
@@ -583,7 +603,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
                     }
                 },
                 new Response.ErrorListener() {
