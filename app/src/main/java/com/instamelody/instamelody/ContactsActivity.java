@@ -62,13 +62,10 @@ public class ContactsActivity extends AppCompatActivity {
 
         if (loginSharedPref.getString("userId", null) != null) {
             userId = loginSharedPref.getString("userId", null);
-
         } else if (fbPref.getString("userId", null) != null) {
             userId = fbPref.getString("userId", null);
-
         } else if (twitterPref.getString("userId", null) != null) {
             userId = twitterPref.getString("userId", null);
-
         }
 
         getContacts();

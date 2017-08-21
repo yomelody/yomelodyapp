@@ -360,6 +360,8 @@ public class ChatActivity extends AppCompatActivity {
                     tvSend.setVisibility(View.GONE);
 
                     sendMessage(message, userId/*, temp*/);
+                    getChatMsgs(chatId);
+
 //                    int messageCount = Integer.parseInt(tvMessageCount.getText().toString().trim()) + 1;
 //                    tvMessageCount.setText(String.valueOf(messageCount));
                     InputMethodManager inputManager = (InputMethodManager)
@@ -370,7 +372,7 @@ public class ChatActivity extends AppCompatActivity {
                     rlSelectedImage.setVisibility(View.GONE);
                     flClose.setVisibility(View.GONE);
 //                    sendImageBitmap.recycle();
-                    getChatMsgs(chatId);
+
 
                 } else {
                     Toast.makeText(getApplicationContext(), "Log in to Chat", Toast.LENGTH_SHORT).show();
