@@ -601,6 +601,7 @@ public class StudioActivity extends AppCompatActivity {
                 if (mediaPlayer != null && mediaPlayer.isPlaying()) {
                     //       ivRecord_pause.performClick();
                 }
+                list.clear();
                 Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
                 startActivity(intent);
                 SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("cover response", MODE_PRIVATE).edit();
