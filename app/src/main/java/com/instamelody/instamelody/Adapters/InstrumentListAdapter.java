@@ -71,12 +71,13 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     ArrayList<String> fetch_url_arrayList = new ArrayList<>();
     static int duration1, currentPosition;
     double InstrumentId = 0, Volume = 0, Base = 0, Treble = 0, Pan = 0, Pitch = 0, Reverb = 0, Compression = 0, Delay = 0, Tempo = 0;
-    double threshold=0.125, ratio=2, attack=20, release=250, makeup=1, knee=2.82843, mix=1;
-    String InstaURL=null;
+    double threshold = 0.125, ratio = 2, attack = 20, release = 250, makeup = 1, knee = 2.82843, mix = 1;
+    String InstaURL = null, PositionId;
     Boolean playfrom_studio = false;
     List aa;
     int InstrumentListPosition;
     public static List<MediaPlayer> mp_start = new ArrayList<MediaPlayer>();
+
     public InstrumentListAdapter(ArrayList<MelodyInstruments> instrumentList, Context context) {
         this.instrumentList = instrumentList;
         this.context = context;
@@ -301,19 +302,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 //        Toast.makeText(context, "" + instrumentFile, Toast.LENGTH_SHORT).show();
         Log.d("Instruments size", "" + instrumentFile);
 
-        StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL));
-        //This line commented by Abhishek
+        //StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL,PositionId));
 
-        //   new DownloadInstruments().execute(instrumentFile);
-
-        //  i.putExtra("instruments", instrumentFile);
-//        if (playfrom_studio == true) {
-//            holder.ivPlay.setVisibility(View.GONE);
-//            holder.ivPause.setVisibility(View.VISIBLE);
-//            holder.primarySeekBarProgressUpdater();
-//        }
-        // initControls();
-        //holder.volumeSeekbar.setMax(holder.audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
 
         audioValue = instruments.getAudioType();
         holder.rlFX.setOnClickListener(new View.OnClickListener() {
@@ -328,14 +318,14 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 BPM = "BPM: " + instrumentList.get(listPosition).getInstrumentBpm().replaceAll("BPM: ", "");
                 ivInstrumentCover = instrumentList.get(listPosition).getInstrumentCover();
                 ivUserProfileImage = instrumentList.get(listPosition).getUserProfilePic();
-                InstaURL=instrumentList.get(listPosition).getInstrumentFile();
+                InstaURL = instrumentList.get(listPosition).getInstrumentFile();
                 StudioActivity.tvInstrumentName.setText(InstName);
                 StudioActivity.tvUserName.setText(UserName);
                 StudioActivity.tvInstrumentLength.setText(InstLength);
                 StudioActivity.tvBpmRate.setText(BPM);
                 new InstrumentCover().execute(ivInstrumentCover);
                 new UserProfileCover().execute(ivUserProfileImage);
-
+                //LoadInstrumentData(listPosition);
                 if (StudioActivity.fxContent.getVisibility() == View.VISIBLE) {
                     StudioActivity.eqContent.setVisibility(View.GONE);
                 } else {
@@ -357,14 +347,14 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 BPM = "BPM: " + instrumentList.get(listPosition).getInstrumentBpm().replaceAll("BPM: ", "");
                 ivInstrumentCover = instrumentList.get(listPosition).getInstrumentCover();
                 ivUserProfileImage = instrumentList.get(listPosition).getUserProfilePic();
-                InstaURL=instrumentList.get(listPosition).getInstrumentFile();
+                InstaURL = instrumentList.get(listPosition).getInstrumentFile();
                 StudioActivity.tvInstrumentName.setText(InstName);
                 StudioActivity.tvUserName.setText(UserName);
                 StudioActivity.tvInstrumentLength.setText(InstLength);
                 StudioActivity.tvBpmRate.setText(BPM);
                 new InstrumentCover().execute(ivInstrumentCover);
                 new UserProfileCover().execute(ivUserProfileImage);
-
+                //LoadInstrumentData(listPosition);
                 if (StudioActivity.fxContent.getVisibility() == View.VISIBLE) {
                     StudioActivity.fxContent.setVisibility(View.GONE);
                 } else {
@@ -437,9 +427,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
                 Volume = progress;
                 if (StudioActivity.list.size() == 0) {
-                    StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL));
+                    StudioActivity.list.add(InstrumentListPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
                 } else {
-                    StudioActivity.list.set(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL));
+                    StudioActivity.list.set(InstrumentListPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
                 }
                 StudioActivity.melodyMixing.setVocalsound(StudioActivity.list);
                 aa = StudioActivity.melodyMixing.getVocalsound();
@@ -466,9 +456,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
                 Base = progress;
                 if (StudioActivity.list.size() == 0) {
-                    StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL));
+                    StudioActivity.list.add(InstrumentListPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
                 } else {
-                    StudioActivity.list.set(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL));
+                    StudioActivity.list.set(InstrumentListPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
                 }
                 StudioActivity.melodyMixing.setVocalsound(StudioActivity.list);
                 aa = StudioActivity.melodyMixing.getVocalsound();
@@ -491,9 +481,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 Treble = progress;
                 if (StudioActivity.list.size() == 0) {
-                    StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL));
+                    StudioActivity.list.add(InstrumentListPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
                 } else {
-                    StudioActivity.list.set(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL));
+                    StudioActivity.list.set(InstrumentListPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
                 }
                 StudioActivity.melodyMixing.setVocalsound(StudioActivity.list);
                 aa = StudioActivity.melodyMixing.getVocalsound();
@@ -515,9 +505,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 Base = progress;
                 if (StudioActivity.list.size() == 0) {
-                    StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL));
+                    StudioActivity.list.add(InstrumentListPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
                 } else {
-                    StudioActivity.list.set(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL));
+                    StudioActivity.list.set(InstrumentListPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
                 }
                 StudioActivity.melodyMixing.setVocalsound(StudioActivity.list);
                 aa = StudioActivity.melodyMixing.getVocalsound();
@@ -539,9 +529,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 Reverb = progress;
                 if (StudioActivity.list.size() == 0) {
-                    StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL));
+                    StudioActivity.list.add(InstrumentListPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
                 } else {
-                    StudioActivity.list.set(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL));
+                    StudioActivity.list.set(InstrumentListPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
                 }
                 StudioActivity.melodyMixing.setVocalsound(StudioActivity.list);
                 aa = StudioActivity.melodyMixing.getVocalsound();
@@ -563,9 +553,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 Compression = progress;
                 if (StudioActivity.list.size() == 0) {
-                    StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL));
+                    StudioActivity.list.add(InstrumentListPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
                 } else {
-                    StudioActivity.list.set(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL));
+                    StudioActivity.list.set(InstrumentListPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
                 }
                 StudioActivity.melodyMixing.setVocalsound(StudioActivity.list);
                 aa = StudioActivity.melodyMixing.getVocalsound();
@@ -587,9 +577,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 Delay = progress;
                 if (StudioActivity.list.size() == 0) {
-                    StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL));
+                    StudioActivity.list.add(InstrumentListPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
                 } else {
-                    StudioActivity.list.set(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL));
+                    StudioActivity.list.set(InstrumentListPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
                 }
                 StudioActivity.melodyMixing.setVocalsound(StudioActivity.list);
                 aa = StudioActivity.melodyMixing.getVocalsound();
@@ -611,9 +601,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 Tempo = progress;
                 if (StudioActivity.list.size() == 0) {
-                    StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL));
+                    StudioActivity.list.add(InstrumentListPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
                 } else {
-                    StudioActivity.list.set(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL));
+                    StudioActivity.list.set(InstrumentListPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
                 }
                 StudioActivity.melodyMixing.setVocalsound(StudioActivity.list);
                 aa = StudioActivity.melodyMixing.getVocalsound();
@@ -635,9 +625,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 Pan = progress;
                 if (StudioActivity.list.size() == 0) {
-                    StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL));
+                    StudioActivity.list.add(InstrumentListPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
                 } else {
-                    StudioActivity.list.set(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL));
+                    StudioActivity.list.set(InstrumentListPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
                 }
                 StudioActivity.melodyMixing.setVocalsound(StudioActivity.list);
                 aa = StudioActivity.melodyMixing.getVocalsound();
@@ -856,6 +846,31 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
         protected void onPostExecute(Bitmap result) {
             StudioActivity.userProfileImage.setImageBitmap(result);
+        }
+    }
+
+    private void LoadInstrumentData(int listPosition) {
+        try {
+
+            PositionId = String.valueOf(listPosition);
+            final MelodyInstruments instruments = instrumentList.get(listPosition);
+            if (StudioActivity.list.size() == 0) {
+                StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
+            } else {
+                StudioActivity.list.indexOf(listPosition);
+                boolean IsAvailable = false;
+                for (int i = 0; i <= StudioActivity.list.size(); i++) {
+                    int pos = Integer.parseInt(StudioActivity.list.get(i).PositionId);
+                    if (pos == listPosition) {
+                        IsAvailable = true;
+                    }
+                }
+                if (IsAvailable) {
+                    StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
