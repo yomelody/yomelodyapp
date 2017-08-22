@@ -1,6 +1,7 @@
 package com.instamelody.instamelody;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -34,10 +35,21 @@ import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import io.fabric.sdk.android.Fabric;
+import io.fabric.sdk.android.services.concurrency.AsyncTask;
 
 /**
  * Created by Shubhansh Jaiswal on 11/29/2016.
@@ -94,8 +106,10 @@ public class SocialActivity extends AppCompatActivity {
         SharedPreferences loginSharedPref1 = this.getSharedPreferences("Url_recording", MODE_PRIVATE);
         fetchRecordingUrl = loginSharedPref1.getString("Recording_url", null);
 
-        SharedPreferences editorT = this.getSharedPreferences("thumbnail_url", MODE_PRIVATE);
-        fetchThumbNailUrl= editorT.getString("thumbnailUrl", null);
+        SharedPreferences editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE);
+        fetchThumbNailUrl=editorT.getString("thumbnailUrl", null);
+
+        new newShortAsync().execute();
 
         plus_one_button = (PlusOneButton) findViewById(R.id.plus_one_button);
 //        new URLShort().execute();
@@ -214,7 +228,6 @@ public class SocialActivity extends AppCompatActivity {
 
             }
         });
-
 
     }
 
@@ -354,5 +367,89 @@ public class SocialActivity extends AppCompatActivity {
         super.onResume();
         // Refresh the state of the +1 button each time the activity receives focus.
         plus_one_button.initialize(fetchThumbNailUrl, PLUS_ONE_REQUEST_CODE);
+    }
+
+    private class newShortAsync extends AsyncTask<Void, Void, String> {
+
+        private ProgressDialog pDialog;
+        String longUrl;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+//            progressBar.setVisibility(View.VISIBLE);
+            pDialog = new ProgressDialog(SocialActivity.this);
+            pDialog.setMessage("Contacting Google Servers ...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            longUrl = fetchThumbNailUrl;
+            pDialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            pDialog.dismiss();
+            System.out.println("JSON RESP:" + s);
+            String response = s;
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                ShortUrlId = jsonObject.getString("id");
+                ShortUrl = new URL(ShortUrlId);
+//                System.out.println("ID:" + id);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            BufferedReader reader;
+            StringBuffer buffer;
+            String res = null;
+            String json = "{longUrl:"+ longUrl +"}";
+            try {
+                URL url = new URL("https://www.googleapis.com/urlshortener/v1/url?key=AIzaSyBmWJRuAcgoHTaljlTYsDtutkTb0HFhaHY");
+//                URL url = new URL("https://www.googleapis.com/urlshortener/v1/url");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setReadTimeout(40000);
+                con.setConnectTimeout(40000);
+                con.setRequestMethod("POST");
+                con.setRequestProperty("Content-Type", "application/json");
+                OutputStream os = con.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+
+                writer.write(json);
+                writer.flush();
+                writer.close();
+                os.close();
+
+                int status = con.getResponseCode();
+                InputStream inputStream;
+                if (status == HttpURLConnection.HTTP_OK)
+                    inputStream = con.getInputStream();
+                else
+                    inputStream = con.getErrorStream();
+
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                buffer = new StringBuffer();
+
+                String line = "";
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line);
+                }
+
+                res = buffer.toString();
+
+            } catch (java.io.IOException e) {
+                e.printStackTrace();
+            }
+            return res;
+
+
+        }
     }
 }

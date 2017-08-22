@@ -2013,6 +2013,7 @@ public class StudioActivity extends AppCompatActivity {
             public void onResponse(NetworkResponse response) {
 
                 String urlRecording;
+                String thumbNail;
                 String resultResponse = new String(response.data);
                 Log.d("Server Data", resultResponse);
                 SharedPreferences loginSharedPref = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
@@ -2027,8 +2028,10 @@ public class StudioActivity extends AppCompatActivity {
                     JSONObject r1 = response1.getJSONObject("0");
                     if (r1.has("melody")) {
                         urlRecording = r1.getString("melody");
+                        thumbNail = r1.getString("thumbnail");
                     } else {
                         urlRecording = r1.getString("recording");
+                        thumbNail = r1.getString("thumbnail");
                     }
 
                     if (flag.equals("success")) {
@@ -2091,6 +2094,10 @@ public class StudioActivity extends AppCompatActivity {
                         SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("Url_recording", MODE_PRIVATE).edit();
                         editor.putString("Recording_url", urlRecording);
                         editor.commit();
+
+                        SharedPreferences.Editor editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE).edit();
+                        editorT.putString("thumbnailUrl", thumbNail);
+                        editorT.apply();
 
 
                     }
