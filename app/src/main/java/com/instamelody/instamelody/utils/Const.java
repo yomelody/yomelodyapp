@@ -36,6 +36,7 @@ public class Const {
         public static final String UPDATEPROFILE = BASE_URL + "updateprofile.php";
         public static final String FORGOT_PASSWORD = BASE_URL + "forgot_password.php";
         public static final String GENERE1 = BASE_URL + "genere1.php";
+        public static final String JOINED_USERS = BASE_URL + "joined_users.php";
 
 
 //        public static final String USERS_BIO = BASE_URL + "uploads/melody/instruments/";

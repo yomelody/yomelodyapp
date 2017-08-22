@@ -81,6 +81,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     String Key_file_type = "file_type";
     Context context;
     String userId = "";
+    String addedBy, Rec_id;
     private RecyclerView.ViewHolder lastModifiedHoled = null;
 
     public RecordingsCardAdapter(Context context, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools) {
@@ -147,6 +148,10 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 public void onClick(View view) {
 
                     String instruments, bpm, genre, recordName, userName, duration, date, plays, likes, comments, shares, melodyID;
+                    RecordingsModel rm = recordingList.get(getAdapterPosition());
+
+                    addedBy = rm.getAddedBy();
+                    Rec_id = rm.getRecordingId();
 
                     genre = tvRecordingGenres.getText().toString().trim();
                     recordName = tvRecordingName.getText().toString().trim();
@@ -192,6 +197,8 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                     try {
                         Intent intent = new Intent(context, JoinActivity.class);
+                        intent.putExtra("AddedBy",addedBy);
+                        intent.putExtra("Recording_id",Rec_id);
                         context.startActivity(intent);
                     } catch (Throwable e) {
                         e.printStackTrace();
@@ -269,7 +276,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 public void onClick(View view) {
                     if (!userId.equals("") && userId != null) {
                         //Toast.makeText(context, "comment", Toast.LENGTH_SHORT).show();
-                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID, RecordingURL, CoverUrl, LikeStatus,ProfilePick;
+                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID, RecordingURL, CoverUrl, LikeStatus, ProfilePick;
 
                         RecordingsModel recording = recordingList.get(getAdapterPosition());
 
@@ -291,7 +298,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         melodyID = mpids.get(pos);
                         RecordingURL = recording.getrecordingurl();
                         CoverUrl = recording.getRecordingCover();
-                        ProfilePick=recording.getUserProfilePic();
+                        ProfilePick = recording.getUserProfilePic();
                         SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
                         editor.putString("instruments", "0");
                         editor.putString("bpm", "0");
@@ -552,9 +559,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                     }
                     mp = new MediaPlayer();
-                    try{
+                    try {
                         mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                    }catch (NullPointerException e){
+                    } catch (NullPointerException e) {
                         e.printStackTrace();
                     }
 
@@ -570,7 +577,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     holder.tvViewCount.setText(play);
                     String position;
                     position = recordingList.get(listPosition).getRecordingId();
-                    fetchViewCount(userId,position);
+                    fetchViewCount(userId, position);
                     mp.prepareAsync();
                     mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
@@ -747,6 +754,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         RequestQueue requestQueue1 = Volley.newRequestQueue(context);
         requestQueue1.add(stringRequest);
     }
+
     public void fetchViewCount(final String userId, final String pos) {
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, PLAY_COUNT,

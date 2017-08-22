@@ -17,6 +17,7 @@ import com.instamelody.instamelody.Models.Chat;
 import com.instamelody.instamelody.Models.Comments;
 import com.instamelody.instamelody.Models.Contacts;
 import com.instamelody.instamelody.Models.Genres;
+import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.Message;
@@ -416,6 +417,66 @@ public class ParseContents {
             e.printStackTrace();
         }
         return recordingList;
+    }
+
+    public ArrayList<JoinedArtists> parseJoin(String response, ArrayList<JoinedArtists> JoinArtist, ArrayList<MelodyInstruments> instrumentList) {
+        JSONObject jsonObject;
+        JSONArray jsonArray, instrumentArray, JoinedArray;
+
+        try {
+            jsonObject = new JSONObject(response);
+            if (jsonObject.getString(KEY_FLAG).equals("success")) {
+                jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JoinedArtists join = new JoinedArtists();
+                    JSONObject cardJoin = jsonArray.getJSONObject(i);
+                    join.setUser_id(cardJoin.getString("user_id"));
+                    join.setJoined_image(cardJoin.getString("profile_pic"));
+                    join.setJoined_usr_name(cardJoin.getString("user_name"));
+                    join.setJoined_artists(cardJoin.getString("joined_artists"));
+                    join.setRecording_id(cardJoin.getString("recording_id"));
+                    join.setRecording_name(cardJoin.getString("recording_name"));
+                    join.setRecording_url(cardJoin.getString("recording_url"));
+                    join.setRecording_duration(cardJoin.getString("recording_duration"));
+                    join.setRecording_date(cardJoin.getString("recording_date"));
+                    join.setLike_status(cardJoin.getString("like_status"));
+                    join.setPlay_counts(cardJoin.getString("play_counts"));
+                    join.setLike_counts(cardJoin.getString("like_counts"));
+                    join.setShare_counts(cardJoin.getString("share_counts"));
+                    join.setComment_counts(cardJoin.getString("comment_counts"));
+                    if (cardJoin.isNull(KEY_INSTRUMENTS)) {
+                        Log.d("Instrument error", "Instrument not availble");
+                    } else {
+                        instrumentArray = cardJoin.getJSONArray(KEY_INSTRUMENTS);
+                        for (int j = 0; j < instrumentArray.length(); j++) {
+                            MelodyInstruments melodyInstruments = new MelodyInstruments();
+                            JSONObject instrumentsJson = instrumentArray.getJSONObject(j);
+                            MelodyInstruments.setInstrumentId(instrumentsJson.getInt("instrument_id"));
+                            int a = instrumentsJson.getInt("instrument_id");
+                            melodyInstruments.setInstrumentName(instrumentsJson.getString("instrument_name"));
+                            melodyInstruments.setInstrumentType(instrumentsJson.getString("instrument_type"));
+                            //  melodyInstruments.setMelodyPacksId(instrumentsJson.getInt("melodypackid"));
+                            melodyInstruments.setInstrumentBpm(instrumentsJson.getString("bpm"));
+                            melodyInstruments.setInstrumentFileSize(instrumentsJson.getString("file_size"));
+                            melodyInstruments.setInstrumentFile(instrumentsJson.getString("instrument_url"));
+                            melodyInstruments.setInstrumentLength(instrumentsJson.getString("duration"));
+                            melodyInstruments.setInstrumentCreated(instrumentsJson.getString("uploadeddate"));
+                            melodyInstruments.setUserProfilePic(instrumentsJson.getString("profilepic"));
+                            melodyInstruments.setInstrumentCover(instrumentsJson.getString("coverpic"));
+                            melodyInstruments.setUserName(instrumentsJson.getString("username"));
+                            instrumentList.add(melodyInstruments);
+                        }
+                    }
+
+
+                    JoinArtist.add(join);
+                }
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return JoinArtist;
     }
 
 
