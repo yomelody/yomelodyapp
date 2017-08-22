@@ -13,4 +13,5 @@
     <color name="colorSeekProgress">#0098fe</color>
     <color name="colorSearch">#ABB4B9</color>
 
+    <color name="color_transparent">#00000000</color>
 </resources>
