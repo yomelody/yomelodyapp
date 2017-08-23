@@ -466,7 +466,7 @@ public class ParseContents {
                         }
                     }
 
-
+                    instrumentsList = instrumentList;
                     JoinArtist.add(join);
                 }
 

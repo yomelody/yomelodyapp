@@ -419,6 +419,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 int playValue = Integer.parseInt(play) + 1;
                 play = String.valueOf(playValue);
                 holder.tvPlayCount.setText(play);
+
                 fetchViewCount(userId, position);
                 ParseContents pc = new ParseContents(context);
                 instrumentList = pc.getInstruments();

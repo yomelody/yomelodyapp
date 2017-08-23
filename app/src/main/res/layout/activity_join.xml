@@ -99,6 +99,7 @@
         android:layout_height="match_parent">
 
         <RelativeLayout
+            android:id="@+id/joinFooter"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_alignParentBottom="true"
@@ -134,7 +135,7 @@
                         android:layout_marginLeft="5dp"
                         android:layout_toEndOf="@+id/ivPlayButton"
                         android:layout_toRightOf="@+id/ivPlayButton"
-                        android:text="999"
+
                         android:textColor="@color/cardview_dark_background"
                         android:textSize="12sp" />
 
@@ -178,7 +179,7 @@
                         android:layout_marginStart="5dp"
                         android:layout_toEndOf="@+id/rlLikeContainer"
                         android:layout_toRightOf="@+id/rlLikeContainer"
-                        android:text="999"
+
                         android:textColor="@color/cardview_dark_background"
                         android:textSize="12sp" />
 
@@ -188,7 +189,8 @@
                     android:id="@+id/rlComment"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="0.20">
+                    android:layout_weight="0.20"
+                    >
 
                     <ImageView
                         android:id="@+id/ivCommentButton"
@@ -206,7 +208,6 @@
                         android:layout_marginLeft="5dp"
                         android:layout_toEndOf="@+id/ivCommentButton"
                         android:layout_toRightOf="@+id/ivCommentButton"
-                        android:text="999"
                         android:textColor="@color/cardview_dark_background"
                         android:textSize="12sp" />
 
@@ -234,7 +235,6 @@
                         android:layout_marginLeft="5dp"
                         android:layout_toEndOf="@+id/ivShareButton"
                         android:layout_toRightOf="@+id/ivShareButton"
-                        android:text="999"
                         android:textColor="@color/cardview_dark_background"
                         android:textSize="12sp" />
 
@@ -264,6 +264,87 @@
 
                 </RelativeLayout>
             </LinearLayout>
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/rlCommentFooter_join"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_gravity="bottom"
+            android:visibility="gone"
+            android:background="#fbf7f7">
+
+            <RelativeLayout
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/rlSendCancel"
+                android:layout_toStartOf="@+id/rlSendCancel"
+                android:padding="8dp">
+
+                <EditText
+                    android:id="@+id/etComment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/round_edit_text"
+                    android:gravity="center_vertical"
+                    android:hint="Write something..."
+                    android:maxLines="3"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:scrollIndicators="right"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="#7B888F"
+                    android:textSize="15sp"
+                    android:textStyle="normal" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rlSendCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true">
+
+                    <TextView
+                        android:id="@+id/tvCancel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="8dp"
+                        android:gravity="center"
+                        android:text="Cancel"
+                        android:textColor="#3B6EFE"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/tvSend"
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"
+                        android:layout_marginEnd="14dp"
+                        android:layout_marginRight="14dp"
+                        android:layout_marginLeft="6dp"
+                        android:layout_marginStart="6dp"
+                        android:gravity="center"
+                        android:text="Send"
+                        android:textColor="#3B6EFE"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+
+                </RelativeLayout>
+            </RelativeLayout>
         </RelativeLayout>
     </RelativeLayout>
 

@@ -1,6 +1,7 @@
 package com.instamelody.instamelody;
 
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -9,7 +10,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -25,6 +30,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.InstrumentListAdapter;
+import com.instamelody.instamelody.Adapters.JoinInstrumentListAdp;
 import com.instamelody.instamelody.Adapters.JoinListAdapter;
 import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Models.MelodyInstruments;
@@ -41,24 +47,42 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.JOINED_USERS;
  */
 
 public class JoinActivity extends AppCompatActivity {
-    RecyclerView.Adapter adapter,adapter1;
+    RecyclerView.Adapter adapter, adapter1;
     ArrayList<JoinedArtists> Joined_artist = new ArrayList<>();
     ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     RecyclerView.LayoutManager layoutManager;
     RecyclerView recyclerView;
     RecyclerView recyclerViewInstruments;
+    RecyclerView recyclerViewComment;
     RelativeLayout rlIncluded;
     private String USER_ID = "userid";
     private String RECORDING_ID = "rid";
     String addedBy, RecId;
+    public static TextView play_count, tvLikeCount, tvCommentCount, tvShareCount;
+    public static ImageView ivJoinPlay, ivJoinPause, ivLikeButton, ivDislikeButton;
+    public static RelativeLayout rlLike, rlComment, rlCommentFooter_join, joinFooter;
+    FrameLayout joinMiddile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join);
-
+        play_count = (TextView) findViewById(R.id.tvPlayCount);
+        tvLikeCount = (TextView) findViewById(R.id.tvLikeCount);
+        tvCommentCount = (TextView) findViewById(R.id.tvCommentCount);
+        tvShareCount = (TextView) findViewById(R.id.tvShareCount);
+        ivJoinPlay = (ImageView) findViewById(R.id.ivJoinPlay);
+        ivJoinPause = (ImageView) findViewById(R.id.ivJoinPause);
+        rlLike = (RelativeLayout) findViewById(R.id.rlLikeContainer);
+        ivLikeButton = (ImageView) findViewById(R.id.ivLikeButton);
+        ivDislikeButton = (ImageView) findViewById(R.id.ivDislikeButton);
+        rlComment = (RelativeLayout) findViewById(R.id.rlComment);
         rlIncluded = (RelativeLayout) findViewById(R.id.rlIncluded);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewArtists);
+        recyclerViewComment = (RecyclerView) findViewById(R.id.recyclerViewComment);
+        rlCommentFooter_join = (RelativeLayout) findViewById(R.id.rlCommentFooter_join);
+        joinFooter = (RelativeLayout) findViewById(R.id.joinFooter);
+        joinMiddile=(FrameLayout)findViewById(R.id.joinMiddile);
         recyclerViewInstruments = (RecyclerView) findViewById(R.id.recyclerViewInstruments);
         recyclerViewInstruments.setVisibility(View.VISIBLE);
         recyclerViewInstruments.setHasFixedSize(true);
@@ -87,18 +111,25 @@ public class JoinActivity extends AppCompatActivity {
         });
 
         Intent intent = getIntent();
-        addedBy=  intent.getExtras().getString("AddedBy");
-        RecId=  intent.getExtras().getString("Recording_id");
-        if(addedBy !=null && RecId !=null){
+        addedBy = intent.getExtras().getString("AddedBy");
+        RecId = intent.getExtras().getString("Recording_id");
+        if (addedBy != null && RecId != null) {
             try {
-                getJoined_users(addedBy,RecId);
+                getJoined_users(addedBy, RecId);
             } catch (Throwable e) {
                 e.printStackTrace();
             }
         }
+        rlComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recyclerViewComment.setVisibility(View.VISIBLE);
+                recyclerViewInstruments.setVisibility(View.GONE);
+                joinFooter.setVisibility(View.GONE);
 
-
-
+                rlCommentFooter_join.setVisibility(View.VISIBLE);
+            }
+        });
 
     }
 
@@ -114,11 +145,11 @@ public class JoinActivity extends AppCompatActivity {
                         Log.d("ReturnData", response);
                         Joined_artist.clear();
                         instrumentList.clear();
-                        new ParseContents(getApplicationContext()).parseJoin(response, Joined_artist,instrumentList);
-                        adapter= new JoinListAdapter(Joined_artist,getApplicationContext());
-                      //  adapter1= new InstrumentListAdapter(instrumentList,getApplicationContext());
+                        new ParseContents(getApplicationContext()).parseJoin(response, Joined_artist, instrumentList);
+                        adapter = new JoinListAdapter(Joined_artist, getApplicationContext());
+                        adapter1 = new JoinInstrumentListAdp(instrumentList, getApplicationContext());
                         recyclerView.setAdapter(adapter);
-                    //    recyclerViewInstruments.setAdapter(adapter1);
+                        recyclerViewInstruments.setAdapter(adapter1);
                     }
                 },
                 new Response.ErrorListener() {

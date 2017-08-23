@@ -214,8 +214,8 @@
                                 android:layout_width="110dp"
                                 android:layout_height="110dp"
                                 android:layout_gravity="end|bottom"
-                                android:layout_marginRight="80dp"
                                 android:layout_marginBottom="4dp"
+                                android:layout_marginRight="80dp"
                                 android:visibility="visible"
                                 app:srcCompat="@drawable/dark_mike" />
 
@@ -225,6 +225,7 @@
                                 android:orientation="vertical">
 
                                 <FrameLayout
+                                    android:id="@+id/joinMiddile"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content">
 
@@ -257,13 +258,24 @@
                                         android:textSize="8sp" />
 
                                     <ImageView
-                                        android:id="@+id/ivStation10"
+                                        android:id="@+id/ivJoinPlay"
                                         android:layout_width="40dp"
                                         android:layout_height="40dp"
                                         android:layout_gravity="start|bottom"
                                         android:layout_marginBottom="25dp"
                                         android:layout_marginLeft="65dp"
                                         app:srcCompat="@drawable/bar_play" />
+
+                                    <ImageView
+                                        android:id="@+id/ivJoinPause"
+                                        android:layout_width="40dp"
+                                        android:layout_height="40dp"
+                                        android:layout_gravity="start|bottom"
+                                        android:layout_marginBottom="25dp"
+                                        android:layout_marginLeft="65dp"
+                                        android:visibility="gone"
+                                        app:srcCompat="@drawable/pause" />
+
 
                                     <RelativeLayout
                                         android:layout_width="match_parent"
@@ -527,6 +539,14 @@
             android:layout_marginTop="1dp"
             android:scrollbars="vertical"
             android:visibility="visible" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerViewComment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="41dp"
+            android:layout_marginTop="1dp"
+            android:scrollbars="vertical"
+            android:visibility="gone" />
 
     </LinearLayout>
 </RelativeLayout>
