@@ -73,7 +73,7 @@ public class Update extends AppCompatActivity {
             btnClearPassUpdate, btnClearConfirmPassUpdate, btnClearDOBUpdate, btnClearPhoneUpdate;
     TextView tvDoneUpdate, errorFnameUpdate, errorUnameUpdate, errorPasswordUpdate, errorConfirmPassUpdate,
             errorDOBUpdate, tvDobUpdate, errorPhoneUpdate;
-    String userId, firstName, lastName, userNameLogin, profilePicLogin, dob, mobile, email, date;
+    String userId, firstName, lastName, userNameLogin, profilePicLogin, dob, mobile, email, date,userIdNormal,emailNormal;
     String userIdTwitter, firstNameTwitter, lastNameTwitter, emailFinalTwitter, profilePicTwitter, userNameTwitter;
     String userIdFb, firstNameFb, lastNameFb, emailFinalFb, profilePicFb, userNameFb;
     CircleImageView userProfileImageUpdate;
@@ -95,10 +95,10 @@ public class Update extends AppCompatActivity {
         setContentView(R.layout.activity_update);
 
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-        userId = loginSharedPref.getString("userId", null);
+        userIdNormal = loginSharedPref.getString("userId", null);
         firstName = loginSharedPref.getString("firstName", null);
         lastName = loginSharedPref.getString("lastName", null);
-        email = loginSharedPref.getString("emailFinal", null);
+        emailNormal = loginSharedPref.getString("emailFinal", null);
         userNameLogin = loginSharedPref.getString("userName", null);
         profilePicLogin = loginSharedPref.getString("profilePic", null);
         dob = loginSharedPref.getString("dob", null);
@@ -121,6 +121,24 @@ public class Update extends AppCompatActivity {
         emailFinalFb = fbEditor.getString("emailFinal", null);
         profilePicFb = fbEditor.getString("profilePic", null);
         userNameFb = fbEditor.getString("userName", null);
+
+
+
+        if (userIdNormal!= null){
+            userId = userIdNormal;
+        }else if (userIdFb != null){
+            userId = userIdFb;
+        }else {
+            userId = userIdTwitter;
+        }
+
+        if (emailNormal!= null){
+            email = emailNormal;
+        }else if (emailFinalFb!= null){
+            email = emailFinalFb;
+        }else {
+            email = emailFinalTwitter;
+        }
 
 
         etuFirstName = (EditText) findViewById(R.id.etuFirstName);

@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -21,6 +22,12 @@ import com.facebook.FacebookException;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
+import com.github.gorbin.asne.core.SocialNetwork;
+import com.github.gorbin.asne.core.SocialNetworkManager;
+import com.github.gorbin.asne.core.listener.OnPostingCompleteListener;
+import com.github.gorbin.asne.facebook.FacebookSocialNetwork;
+import com.github.gorbin.asne.googleplus.GooglePlusSocialNetwork;
+import com.github.gorbin.asne.twitter.TwitterSocialNetwork;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -47,9 +54,13 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import io.fabric.sdk.android.Fabric;
 import io.fabric.sdk.android.services.concurrency.AsyncTask;
+
+import static android.R.attr.data;
 
 /**
  * Created by Shubhansh Jaiswal on 11/29/2016.
@@ -58,21 +69,29 @@ import io.fabric.sdk.android.services.concurrency.AsyncTask;
 public class SocialActivity extends AppCompatActivity {
 
     Switch switchFb, switchTwitter, switchSoundCloud, switchGoogle;
-    String fetchRecordingUrl,fetchThumbNailUrl;
+    String fetchRecordingUrl, fetchThumbNailUrl;
     CallbackManager callbackManager;
     ShareDialog shareDialog;
     URL ShortUrl;
     String ShortUrlId;
-    static String TWITTER_CONSUMER_KEY = "HPEUPWqatYYqdX2BXXZCwhRa3";
-    static String TWITTER_CONSUMER_SECRET = "INlgRJqcVyxZe8tzfDhBZ0kYONTlWBY5NO8akXcnzVhERWL67I";
+//    static String TWITTER_CONSUMER_KEY = "HPEUPWqatYYqdX2BXXZCwhRa3";
+//    static String TWITTER_CONSUMER_SECRET = "INlgRJqcVyxZe8tzfDhBZ0kYONTlWBY5NO8akXcnzVhERWL67I";
     TwitterAuthClient client;
     GoogleApiClient mGoogleApiClient;
     private static final int RC_SIGN_IN = 0;
     SignInButton googleSignIn;
     PlusOneButton plus_one_button;
     private static final int PLUS_ONE_REQUEST_CODE = 0;
+    public static final String SOCIAL_NETWORK_TAG = "SocialIntegrationMain.SOCIAL_NETWORK_TAG";
     String cover;
     Bitmap bitmap;
+    SocialNetworkManager commonShare;
+    public static final int TWITTER = TwitterSocialNetwork.ID;
+    public static final int FACEBOOK = FacebookSocialNetwork.ID;
+    public static final int GOOGLE_PLUS = GooglePlusSocialNetwork.ID;
+    String TWITTER_CONSUMER_KEY = getApplicationContext().getString(R.string.TWITTER_CONSUMER_KEY);
+    String TWITTER_CONSUMER_SECRET = getApplicationContext().getString(R.string.TWITTER_CONSUMER_SECRET);
+    String TWITTER_CALLBACK_URL = "oauth://ASNE";
 
 
     @Override
@@ -83,6 +102,9 @@ public class SocialActivity extends AppCompatActivity {
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
+
+        ArrayList<String> fbScope = new ArrayList<String>();
+        fbScope.addAll(Arrays.asList("public_profile, email, user_friends"));
 
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -103,11 +125,12 @@ public class SocialActivity extends AppCompatActivity {
         switchSoundCloud = (Switch) findViewById(R.id.switchSoundCloud);
         switchGoogle = (Switch) findViewById(R.id.switchGoogle);
         googleSignIn = (SignInButton) findViewById(R.id.googleSignIn);
+//        commonShare =(SocialNetworkManager) getFragmentManager().findFragmentByTag()
         SharedPreferences loginSharedPref1 = this.getSharedPreferences("Url_recording", MODE_PRIVATE);
         fetchRecordingUrl = loginSharedPref1.getString("Recording_url", null);
 
         SharedPreferences editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE);
-        fetchThumbNailUrl=editorT.getString("thumbnailUrl", null);
+        fetchThumbNailUrl = editorT.getString("thumbnailUrl", null);
 
         new newShortAsync().execute();
 
@@ -154,6 +177,8 @@ public class SocialActivity extends AppCompatActivity {
                     AlertDialog alert11 = builder1.create();
                     alert11.show();
                 }
+
+
             }
         });
 
@@ -285,6 +310,10 @@ public class SocialActivity extends AppCompatActivity {
                 switchFb.setChecked(false);
             return;
         }
+        /*Fragment fragment = getSupportFragmentManager().findFragmentByTag(SOCIAL_NETWORK_TAG);
+        if (fragment != null) {
+            fragment.onActivityResult(requestCode, resultCode, data);
+        }*/
     }
 
     public void TweetShare() {
@@ -409,7 +438,7 @@ public class SocialActivity extends AppCompatActivity {
             BufferedReader reader;
             StringBuffer buffer;
             String res = null;
-            String json = "{longUrl:"+ longUrl +"}";
+            String json = "{longUrl:" + longUrl + "}";
             try {
                 URL url = new URL("https://www.googleapis.com/urlshortener/v1/url?key=AIzaSyBmWJRuAcgoHTaljlTYsDtutkTb0HFhaHY");
 //                URL url = new URL("https://www.googleapis.com/urlshortener/v1/url");
@@ -452,4 +481,97 @@ public class SocialActivity extends AppCompatActivity {
 
         }
     }
+
+    public void share() {
+        Bundle postParams = new Bundle();
+        postParams.putString(SocialNetwork.BUNDLE_LINK, fetchThumbNailUrl);
+//        socialNetwork.requestPostLink(postParams, "", postingComplete);
+    }
+    private OnPostingCompleteListener postingComplete = new OnPostingCompleteListener() {
+        @Override
+        public void onPostSuccessfully(int socialNetworkID) {
+            Toast.makeText(getApplicationContext(), "Sent", Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        public void onError(int socialNetworkID, String requestID, String errorMessage, Object data) {
+            Toast.makeText(getApplicationContext(), "Error while sending: " + errorMessage, Toast.LENGTH_LONG).show();
+        }
+    };
+
+    private View.OnClickListener shareClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            AlertDialog.Builder ad = alertDialogInit("Would you like to post Link:", fetchThumbNailUrl);
+            ad.setPositiveButton("Post link", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Bundle postParams = new Bundle();
+                    postParams.putString(SocialNetwork.BUNDLE_NAME,
+                            "Simple and easy way to add social networks for android application");
+                    postParams.putString(SocialNetwork.BUNDLE_LINK, fetchThumbNailUrl);
+//                    socialNetwork.requestPostLink(postParams, "", postingComplete);
+                }
+            });
+            ad.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int i) {
+                    dialog.cancel();
+                }
+            });
+            ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                public void onCancel(DialogInterface dialog) {
+                    dialog.cancel();
+                }
+            });
+            ad.create().show();
+        }
+    };
+
+    public AlertDialog.Builder alertDialogInit(String title, String message){
+        AlertDialog.Builder ad = new AlertDialog.Builder(getApplicationContext());
+        ad.setTitle(title);
+        ad.setMessage(message);
+        ad.setCancelable(true);
+        return ad;
+    }
+
+    private View.OnClickListener loginClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            int networkId = 0;
+            switch (view.getId()){
+                case R.id.switchFb:
+                    networkId = FACEBOOK;
+                    break;
+                case R.id.switchTwitter:
+                    networkId = TWITTER;
+                    break;
+                case R.id.switchGoogle:
+                    networkId = GOOGLE_PLUS;
+                    break;
+            }
+            SocialNetwork socialNetwork = commonShare.getSocialNetwork(networkId);
+            if(!socialNetwork.isConnected()) {
+                if(networkId != 0) {
+                    socialNetwork.requestLogin();
+//                    MainActivity.showProgress(socialNetwork, "Loading social person");
+                } else {
+                    Toast.makeText(getApplicationContext(), "Wrong networkId", Toast.LENGTH_LONG).show();
+                }
+            } else {
+//                startProfile(socialNetwork.getID());
+            }
+        }
+    };
+    /*SocialNetwork socialNetwork = commonShare.getSocialNetwork(networkId);
+        if(!socialNetwork.isConnected()) {
+        if(networkId != 0) {
+            socialNetwork.requestLogin();
+            this.showProgress(socialNetwork, "Loading social person");
+        } else {
+            Toast.makeText(getApplicationContext(), "Wrong networkId", Toast.LENGTH_LONG).show();
+        }
+    } else {
+        startProfile(socialNetwork.getID());
+    }*/
 }
