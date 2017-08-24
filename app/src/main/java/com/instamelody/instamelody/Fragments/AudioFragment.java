@@ -345,6 +345,7 @@ public class AudioFragment extends Fragment {
                     params.put(ID, userId);
                     params.put(KEY, STATION);
                     params.put(GENRE, genreString);
+                    params.put("ApiAuthenticationKey","@_$%yomelody%audio#@mixing(app*");
                 } else {
                     params.put(KEY, STATION);
                     params.put(GENRE, genreString);
@@ -470,6 +471,7 @@ public class AudioFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
                 params.put(KEY, STATION);
+                params.put("ApiAuthenticationKey","@_$%yomelody%audio#@mixing(app*");
                 params.put(KEY_SEARCH, strSearch);
                 return params;
             }
@@ -536,6 +538,7 @@ public class AudioFragment extends Fragment {
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
                 params.put(USER_NAME, strArtist);
+                params.put("ApiAuthenticationKey","@_$%yomelody%audio#@mixing(app*");
                 params.put(FILTER, "extrafilter");
                 return params;
             }
@@ -600,6 +603,7 @@ public class AudioFragment extends Fragment {
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, "Instruments");
+                params.put("ApiAuthenticationKey","@_$%yomelody%audio#@mixing(app*");
                 params.put(COUNT, strInstruments);
                 params.put(FILTER, "extrafilter");
                 return params;
@@ -665,6 +669,7 @@ public class AudioFragment extends Fragment {
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
+                params.put("ApiAuthenticationKey","@_$%yomelody%audio#@mixing(app*");
                 params.put(COUNT, strBPM);
                 params.put(FILTER, "extrafilter");
                 return params;
