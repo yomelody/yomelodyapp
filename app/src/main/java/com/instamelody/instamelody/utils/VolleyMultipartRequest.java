@@ -39,12 +39,14 @@ public class VolleyMultipartRequest extends Request<NetworkResponse> {
         this.mHeaders = headers;
     }
 
-    public VolleyMultipartRequest(int method, String url,
-                                  Response.Listener<NetworkResponse> listener,
+    public VolleyMultipartRequest(int method, String url, Response.Listener<NetworkResponse> listener,
                                   Response.ErrorListener errorListener) {
-        super(method, url, errorListener);
-        this.mListener = listener;
-        this.mErrorListener = errorListener;
+
+            super(method, url, errorListener);
+            this.mListener = listener;
+            this.mErrorListener = errorListener;
+
+
     }
 
     @Override

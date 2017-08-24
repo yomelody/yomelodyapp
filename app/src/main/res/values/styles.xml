@@ -43,5 +43,11 @@
     <style name="ToggleSwitchTheme" parent="ThemeOverlay.AppCompat.Light">
         <item name="colorAccent">@color/navy_blue</item>
     </style>
+
+
+
+
+
+
 </resources>
 

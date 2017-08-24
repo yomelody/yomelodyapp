@@ -17,13 +17,10 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -540,6 +537,7 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY_PASSWORD, password);
                 params.put(KEY_DEVICE_TOKEN, DeviceToken);
                 params.put(KEY_DEVICE_TYPE, "Android");
+
                 return params;
             }
         };

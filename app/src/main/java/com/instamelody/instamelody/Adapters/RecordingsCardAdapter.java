@@ -829,4 +829,5 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         RequestQueue requestQueue1 = Volley.newRequestQueue(context);
         requestQueue1.add(stringRequest);
     }
+
 }

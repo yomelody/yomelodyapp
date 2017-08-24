@@ -181,7 +181,7 @@ public class ParseContents {
                     melodyInstruments.setUserName(instrumentsJson.getString(KEY_INSTRUMENT_USERNAME));
                     melodyInstruments.setAudioType("instrument");
                     instrumentList.add(melodyInstruments);
-                    StudioActivity.list.add(j, new MixingData(String.valueOf(instrumentsJson.getInt(KEY_INSTRUMENT_ID)), "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0","0", "0", "0", "0", instrumentsJson.getString(KEY_INSTRUMENT_URL), String.valueOf(j)));
+                    StudioActivity.list.add(j, new MixingData(String.valueOf(instrumentsJson.getInt(KEY_INSTRUMENT_ID)), "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0","0", "0", "0", "0", instrumentsJson.getString(KEY_INSTRUMENT_URL).replace("http://52.89.220.199/api/",""), String.valueOf(j)));
                 }
             }
         } catch (JSONException e) {
