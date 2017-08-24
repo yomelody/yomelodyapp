@@ -16,16 +16,6 @@ public class Message implements Serializable {
     String id, message, createdAt, senderId, file, fileType;
     String profilePic;
 
-    public Message() {
-    }
-
-    public Message(String id, String message, String createdAt, String userProfileImage) {
-        this.id = id;
-        this.message = message;
-        this.createdAt = createdAt;
-        this.profilePic = userProfileImage;
-    }
-
     public String getFile() {
         return file;
     }

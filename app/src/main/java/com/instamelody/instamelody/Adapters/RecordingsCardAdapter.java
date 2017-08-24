@@ -251,21 +251,22 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     if (!userId.equals("") && userId != null) {
 
                         final AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
-                        alertDialog.setTitle("Share in InstaMelody chat?");
+                        alertDialog.setTitle("Share with InstaMelody chat?");
 //                        alertDialog.setMessage("Choose yes to share in chat.");
                         alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                SharedPreferences.Editor editor = context.getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
+
+                                SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
                                 RecordingsModel recording = recordingList.get(getAdapterPosition());
                                 editor.putString("recID", recording.getRecordingId());
-                                editor.putString("userName", recording.getUserName());
-                                editor.putString("recName",recording.getRecordingName());
-                                editor.putString("recUrl",recording.getrecordingurl());
-                                editor.putString("profilePic",recording.getUserProfilePic());
-                                editor.putString("fileType", "station");
-                                editor.commit();
+//                                editor.putString("userName", recording.getUserName());
+//                                editor.putString("recName",recording.getRecordingName());
+//                                editor.putString("recUrl",recording.getrecordingurl());
+//                                editor.putString("profilePic",recording.getUserProfilePic());
+//                                editor.putString("fileType", "station");
+                                editor.apply();
                                 Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
-                                intent.putExtra("Previous", "rca_studio");
+                                intent.putExtra("Previous", "station");
                                 context.startActivity(intent);
                             }
                         });
@@ -285,7 +286,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             }
                         });
                         alertDialog.show();
-
 
                     } else {
                         Toast.makeText(context, "Log in to Share this melody pack", Toast.LENGTH_SHORT).show();

@@ -76,8 +76,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_marginLeft="15dp"
-                            android:layout_marginStart="15dp"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginStart="20dp"
                             android:text="(1 of 2)"
                             android:textColor="#425661" />
 
@@ -86,8 +86,8 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:layout_gravity="center"
-                            android:layout_marginLeft="16dp"
-                            android:layout_marginStart="16dp"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginStart="20dp"
                             app:srcCompat="@drawable/prev_dark" />
 
                     </LinearLayout>
@@ -116,7 +116,7 @@
                             android:layout_alignParentEnd="true"
                             android:layout_alignParentRight="true"
                             android:background="@drawable/tick_white"
-                            android:visibility="visible" />
+                            android:visibility="gone" />
 
                         <ImageView
                             android:id="@+id/doubleTick"
@@ -125,22 +125,22 @@
                             android:layout_alignParentEnd="true"
                             android:layout_alignParentRight="true"
                             android:background="@drawable/dubble_tick_white"
-                            android:visibility="gone" />
+                            android:visibility="visible" />
 
                     </RelativeLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_centerVertical="true">
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="7dp"
+                        android:layout_marginStart="7dp">
 
                         <RelativeLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="10dp"
-                            android:layout_marginLeft="8dp"
-                            android:layout_marginRight="10dp"
-                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="12dp"
+                            android:layout_marginRight="12dp"
                             android:layout_weight="0.80">
 
                             <TextView
@@ -180,7 +180,8 @@
                                 android:layout_width="25dp"
                                 android:layout_height="25dp"
                                 android:layout_centerVertical="true"
-                                app:srcCompat="@drawable/play_fill" />
+                                app:srcCompat="@drawable/play_white"
+                                android:layout_marginRight="5dp"/>
 
                         </RelativeLayout>
                     </LinearLayout>

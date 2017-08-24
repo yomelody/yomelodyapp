@@ -94,19 +94,35 @@ public class ContactsActivity extends AppCompatActivity {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
+                SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                editor.putString("receiverId", "");
+                editor.putString("receiverName", "");
+                editor.putString("receiverImage", "");
+                editor.putString("chatId", "");
+                editor.commit();
+                finish();
+                String caller = getIntent().getStringExtra("Previous");
+                Intent intent;
+                if (caller.equals("chat")) {
+                    intent = new Intent(getApplicationContext(), ChatActivity.class);
+                } else if (caller.equals("station")) {
+                    intent = new Intent(getApplicationContext(), StationActivity.class);
+                } else if (caller.equals("profile")) {
+                    intent = new Intent(getApplicationContext(), ProfileActivity.class);
+                } else if (caller.equals("discover")) {
+                    intent = new Intent(getApplicationContext(), DiscoverActivity.class);
+                } else {
+                    intent = new Intent(getApplicationContext(), MessengerActivity.class);
+                }
                 startActivity(intent);
             }
         });
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
                 intent.putExtra("from", "ContactsActivity");
                 startActivity(intent);
-
-
             }
         });
 
@@ -148,12 +164,17 @@ public class ContactsActivity extends AppCompatActivity {
                 editor.putString("receiverImage", "");
                 editor.putString("chatId", "");
                 editor.commit();
-
                 finish();
                 String caller = getIntent().getStringExtra("Previous");
                 Intent intent;
-                if (caller == "chat") {
+                if (caller.equals("chat")) {
                     intent = new Intent(getApplicationContext(), ChatActivity.class);
+                } else if (caller.equals("station")) {
+                    intent = new Intent(getApplicationContext(), StationActivity.class);
+                } else if (caller.equals("profile")) {
+                    intent = new Intent(getApplicationContext(), ProfileActivity.class);
+                } else if (caller.equals("discover")) {
+                    intent = new Intent(getApplicationContext(), DiscoverActivity.class);
                 } else {
                     intent = new Intent(getApplicationContext(), MessengerActivity.class);
                 }
@@ -191,8 +212,14 @@ public class ContactsActivity extends AppCompatActivity {
         finish();
         String caller = getIntent().getStringExtra("Previous");
         Intent intent;
-        if (caller == "chat") {
+        if (caller.equals("chat")) {
             intent = new Intent(getApplicationContext(), ChatActivity.class);
+        } else if (caller.equals("station")) {
+            intent = new Intent(getApplicationContext(), StationActivity.class);
+        } else if (caller.equals("profile")) {
+            intent = new Intent(getApplicationContext(), ProfileActivity.class);
+        } else if (caller.equals("discover")) {
+            intent = new Intent(getApplicationContext(), DiscoverActivity.class);
         } else {
             intent = new Intent(getApplicationContext(), MessengerActivity.class);
         }

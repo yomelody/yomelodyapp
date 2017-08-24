@@ -60,8 +60,10 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:layout_gravity="center"
-                            android:layout_marginEnd="15dp"
-                            android:layout_marginRight="15dp"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginRight="20dp"
                             app:srcCompat="@drawable/prev_dark" />
 
                         <TextView
@@ -69,8 +71,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_marginEnd="15dp"
-                            android:layout_marginRight="15dp"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginRight="20dp"
                             android:text="(1 of 2)"
                             android:textColor="#425661" />
 
@@ -122,7 +124,7 @@
                             android:layout_height="8dp"
                             android:layout_alignLeft="@+id/tick"
                             android:background="@drawable/dubble_tick_white"
-                            android:visibility="gone" />
+                            android:visibility="visible" />
 
                     </RelativeLayout>
 
@@ -145,14 +147,16 @@
                                 android:layout_height="25dp"
                                 android:layout_centerHorizontal="true"
                                 android:layout_centerVertical="true"
-                                app:srcCompat="@drawable/play_fill" />
+                                app:srcCompat="@drawable/play_white" />
 
                         </RelativeLayout>
 
                         <RelativeLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="0.80">
+                            android:layout_weight="0.80"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginStart="5dp">
 
                             <TextView
                                 android:id="@+id/tvMelodyName"
