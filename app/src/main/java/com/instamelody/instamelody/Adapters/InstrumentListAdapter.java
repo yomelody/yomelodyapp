@@ -860,7 +860,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 StudioActivity.list.indexOf(listPosition);
                 boolean IsAvailable = false;
                 for (int i = 0; i <= StudioActivity.list.size(); i++) {
-                    int pos = Integer.parseInt(StudioActivity.list.get(i).PositionId);
+                    int pos = Integer.parseInt(StudioActivity.list.get(i).positionId);
                     if (pos == listPosition) {
                         IsAvailable = true;
                     }

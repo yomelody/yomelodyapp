@@ -6,37 +6,37 @@ package com.instamelody.instamelody.Models;
 
 
 public class MixingData {
-    public String PositionId;
-    String Id;
-    String Volume;
-    String Bass;
-    String Treble;
-    String Pan;
-    String Pitch;
-    String Reverb;
-    String Compression;
-    String Delay;
-    String Tempo;
-    String threshold;
-    String ratio;
-    String attack;
-    String release;
-    String makeup;
-    String knee;
-    String mix;
-    String instaURL;
+    public String positionId;
+    public String id;
+    public String volume;
+    public String bass;
+    public String treble;
+    public String pan;
+    public String pitch;
+    public String reverb;
+    public String compression;
+    public String delay;
+    public String tempo;
+    public String threshold;
+    public String ratio;
+    public String attack;
+    public String release;
+    public String makeup;
+    public String knee;
+    public String mix;
+    public String fileurl;
 
     public MixingData(String id, String volume, String bass, String treble, String pan, String pitch, String reverb, String compression, String delay, String tempo, String threshold, String ratio, String attack, String release, String makeup, String knee, String mix, String instURL, String PositionId) {
-        this.Id = id;
-        this.Volume = volume;
-        this.Bass = bass;
-        this.Treble = treble;
-        this.Pan = pan;
-        this.Pitch = pitch;
-        this.Reverb = reverb;
-        this.Compression = compression;
-        this.Delay = delay;
-        this.Tempo = tempo;
+        this.id = id;
+        this.volume = volume;
+        this.bass = bass;
+        this.treble = treble;
+        this.pan = pan;
+        this.pitch = pitch;
+        this.reverb = reverb;
+        this.compression = compression;
+        this.delay = delay;
+        this.tempo = tempo;
         this.threshold = threshold;
         this.ratio = ratio;
         this.attack = attack;
@@ -44,8 +44,8 @@ public class MixingData {
         this.makeup = makeup;
         this.knee = knee;
         this.mix = mix;
-        this.instaURL = instURL;
-        this.PositionId = PositionId;
+        this.fileurl = instURL;
+        this.positionId = PositionId;
 
     }
 }

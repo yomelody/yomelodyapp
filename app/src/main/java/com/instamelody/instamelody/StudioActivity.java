@@ -107,6 +107,7 @@ import static android.provider.Contacts.SettingsColumns.KEY;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ADD_RECORDINGS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
+import static com.instamelody.instamelody.utils.Const.ServiceType.MixingAudio_Instruments;
 import static com.instamelody.instamelody.utils.Const.ServiceType.UPLOAD_COVER_MELODY_FILE;
 
 /**
@@ -226,15 +227,28 @@ public class StudioActivity extends AppCompatActivity {
     long stop_rec_time;
     String time_stop;
     int count = 0;
-    public static FrameLayout frameInstrument ;
+    public static FrameLayout frameInstrument;
     public static RelativeLayout rlFX, rlEQ, eqContent, fxContent, RltvFxButton, RltvEqButton;
     public static TextView tvDoneFxEq, tvInstrumentLength, tvUserName, tvInstrumentName, tvBpmRate;
-    public static ImageView userProfileImage, ivInstrumentCover,FramesivPause, FramesivPlay;
+    public static ImageView userProfileImage, ivInstrumentCover, FramesivPause, FramesivPlay;
     public static SeekBar FramemelodySlider;
     public static SeekBar volumeSeekbar, sbTreble, sbBase, sbPan, sbPitch, sbReverb, sbCompression, sbDelay, sbTempo;
     public static MelodyMixing melodyMixing = new MelodyMixing();
     public static ArrayList<MixingData> list = new ArrayList<MixingData>();
     public static MediaPlayer mpInst;
+    String Mixrecording="recording";
+    String MixisMelody="isMelody";
+    String Mixtopic_name="topic_name";
+    String Mixuser_id="user_id";
+    String Mixpublic_flag="public_flag";
+    String MixrecordWith="recordWith";
+    String Mixgenere="genere";
+    String Mixbpms="bpm";
+    String Mixdurations="duration";
+    String Mixvocalsound="vocalsound";
+    String MixCommand="Command";
+    String MixparentRecordingID="parentRecordingID";
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -601,7 +615,7 @@ public class StudioActivity extends AppCompatActivity {
                 if (mediaPlayer != null && mediaPlayer.isPlaying()) {
                     //       ivRecord_pause.performClick();
                 }
-                list.clear();
+
                 Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
                 startActivity(intent);
                 SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("cover response", MODE_PRIVATE).edit();
@@ -660,7 +674,7 @@ public class StudioActivity extends AppCompatActivity {
                 if (mediaPlayer != null && mediaPlayer.isPlaying()) {
                     //            ivRecord_pause.performClick();
                 }
-                try{
+                try {
                     if (MelodyCardListAdapter.mediaPlayer != null && MelodyCardListAdapter.mediaPlayer.isPlaying()) {
                         try {
                             MelodyCardListAdapter.mediaPlayer.stop();
@@ -670,7 +684,7 @@ public class StudioActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
-                }catch (IllegalStateException e){
+                } catch (IllegalStateException e) {
                     e.printStackTrace();
                 }
 
@@ -1207,13 +1221,12 @@ public class StudioActivity extends AppCompatActivity {
                     mRecordingThread = null;
                 }
                 //          onPause();
-                try{
+                try {
                     mediaPlayer.pause();
                     chrono.stop();
-                }catch (NullPointerException e){
+                } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
-
 
 
             }
@@ -1491,7 +1504,8 @@ public class StudioActivity extends AppCompatActivity {
         builder2.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                saveRecordings1();
+                uploadRecordingsMixing("5");
+               // saveRecordings1();
 
                 //  new LongOperation().execute();
 
@@ -1862,29 +1876,17 @@ public class StudioActivity extends AppCompatActivity {
 
 
     public void saveRecordings1() {
-//        final String recName = subEtTopicName.getText().toString().trim();
-////      final String genre = String.valueOf(sp.getSelectedItemPosition());
-//        final String genre = selectedGenre;
-//        final String recType = value;
-//        final String duration = Long.toString(elapsedMillis);
         progressDialog = new ProgressDialog(StudioActivity.this);
         progressDialog.setTitle("Processing...");
         progressDialog.setMessage("Please wait...");
         progressDialog.setCancelable(false);
         progressDialog.show();
-
-
-//        final CountDownLatch countDownLatch = new CountDownLatch(1);
-//        final Object[] responseHolder = new Object[1];
         StringRequest stringRequest = new StringRequest(Request.Method.POST, ADD_RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
-
                         String successmsg = response.toString();
-//                        Toast.makeText(StudioActivity.this, value1 + "  " + "SAVE", Toast.LENGTH_SHORT).show();
-                        //     countDownLatch.countDown();
                         try {
                             JSONObject recordResponse = new JSONObject(successmsg);
                             String flag = recordResponse.getString("flag");
@@ -1895,12 +1897,9 @@ public class StudioActivity extends AppCompatActivity {
 
 
                             JSONObject melodyData = recResponse.getJSONObject("melody_data");
-//
                             idUpload = melodyData.getString("id");
                             packName = melodyData.getString("packname");
                             addedByUser = melodyData.getString("added_by_user");
-//                            coverPick = (String) melodyData.get("cover_pick");
-//                            profilePic = (String) melodyData.get("profile_pick");
                             recGenre = melodyData.getString("gener");
                             bpm = melodyData.getString("bpm");
                             likeCount = melodyData.getString("like_count");
@@ -1908,50 +1907,13 @@ public class StudioActivity extends AppCompatActivity {
                             commentCount = melodyData.getString("comment_count");
                             playCount = melodyData.getString("play_count");
 
-//                            melodyUrl = (String) melodyData.get("melodyurl");
-//                            audioFileType = (String) melodyData.get("audio_file_type");
-//                            audioFileSize = (String) melodyData.get("audiofilesize");
-//                            String imageFileType = (String) melodyData.get("imagefilefype");
-//                            String imageFileSize = (String) melodyData.get("imagefilesize");
                             addDate = melodyData.getString("add_date");
                             melodyRecDuration = melodyData.getString("duration");
-                            /*String parentRecordingId = melodyData.getString("parentRecordingID");
-                            String joinById = melodyData.getString("joinbyid");
-                            String isJoin = melodyData.getString("isJoin");*/
                             Public = melodyData.getString("public");
                             if (flag.equals("success")) {
-                                //   new LongOperation().execute();
 
                                 uploadRecordings(melodyData.getString("id"));
 
-                                /*myTask = new LongOperation();
-                                myTask.execute();*/
-                                /*android.app.AlertDialog.Builder builder1 = new android.app.AlertDialog.Builder(StudioActivity.this);
-                                builder1.setMessage("Wants to share InstaMelody music on Social Networks.....");
-                                builder1.setCancelable(true);
-
-                                builder1.setPositiveButton(
-                                        "Yes",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                Intent i = new Intent(StudioActivity.this, SocialActivity.class);
-                                                startActivity(i);
-                                            }
-                                        });
-
-                                builder1.setNegativeButton(
-                                        "No",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                dialog.cancel();
-//                                                myTask = new LongOperation();
-//                                                myTask.execute();
-                                                frameSync.setVisibility(View.GONE);
-                                            }
-                                        });
-
-                                android.app.AlertDialog alert11 = builder1.create();
-                                alert11.show();*/
                             } else {
                                 Toast.makeText(StudioActivity.this, response, Toast.LENGTH_SHORT).show();
                             }
@@ -1959,12 +1921,7 @@ public class StudioActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                             String error = e.toString();
-                            //    countDownLatch.countDown();
-                            //Toast.makeText(StudioActivity.this, error, Toast.LENGTH_SHORT).show();
-
                         }
-
-
                     }
 
                 },
@@ -1979,9 +1936,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                // params.put(KEY,"admin@123");
                 params.put(ADMIN_INSTRUMENT_ID, String.valueOf(MelodyInstruments.getInstrumentId()));
-                //  params.put(USER_INSTRUMENT_ID,null);
                 params.put(RECORDING_TYPE, value);
                 params.put(USER_ID, userId);
                 params.put(RECORDING_NAME, subEtTopicName.getText().toString().trim());
@@ -1998,157 +1953,179 @@ public class StudioActivity extends AppCompatActivity {
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
-//        try {
-//            countDownLatch.await();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
     }
 
-    public void saveRecordingsMixing() {
-//        final String recName = subEtTopicName.getText().toString().trim();
-////      final String genre = String.valueOf(sp.getSelectedItemPosition());
-//        final String genre = selectedGenre;
-//        final String recType = value;
-//        final String duration = Long.toString(elapsedMillis);
-        progressDialog = new ProgressDialog(StudioActivity.this);
-        progressDialog.setTitle("Processing...");
-        progressDialog.setMessage("Please wait...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+    public void uploadRecordingsMixing(final String id) {
 
+        VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, MixingAudio_Instruments, new Response.Listener<NetworkResponse>() {
+            @Override
+            public void onResponse(NetworkResponse response) {
 
-//        final CountDownLatch countDownLatch = new CountDownLatch(1);
-//        final Object[] responseHolder = new Object[1];
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, ADD_RECORDINGS,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
+                String urlRecording;
+                String resultResponse = new String(response.data);
+                Log.d("Server Data", resultResponse);
+                SharedPreferences loginSharedPref = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+                String userName = loginSharedPref.getString("userName", null);
+                String recPic = loginSharedPref.getString("profilePic", null);
 
+                try {
+                    JSONObject response1 = new JSONObject(resultResponse);
+                    String melodyurl;
+                    String flag = response1.getString("flag");
+                    String msgflag = response1.getString("msg");
+                    JSONObject r1 = response1.getJSONObject("response");
 
-                        String successmsg = response.toString();
-//                        Toast.makeText(StudioActivity.this, value1 + "  " + "SAVE", Toast.LENGTH_SHORT).show();
-                        //     countDownLatch.countDown();
-                        try {
-                            JSONObject recordResponse = new JSONObject(successmsg);
-                            String flag = recordResponse.getString("flag");
-                            String msg1 = recordResponse.getString("msg");
-                            String response2 = recordResponse.getString("response");
+                    if (msgflag.equals("Melody created")) {
+                        JSONObject MelodyResponseDetails = r1.getJSONObject("melody_data");
+                        melodyurl="http://52.89.220.199/api/"+MelodyResponseDetails.getString("melodyurl");
+                        //urlRecording = r1.getString("melody");
+                    } else {
+                        JSONObject RecordingResponseDetails = r1.getJSONObject("melody_data");
+                        melodyurl="http://52.89.220.199/api/"+RecordingResponseDetails.getString("melodyurl");
+                       // urlRecording = r1.getString("recording");
+                    }
 
-                            JSONObject recResponse = recordResponse.getJSONObject("response");
+                    if (flag.equals("success")) {
+                        if (msgflag.equals("Melody created")) {
+                            tvDone.setEnabled(false);
+                            MelodyInstruments melodyInstruments = new MelodyInstruments();
+                            melodyInstruments.setInstrumentName(packName);
+                            melodyInstruments.setInstrumentBpm(bpm);
+                            melodyInstruments.setInstrumentFile("Blank");
+                            melodyInstruments.setInstrumentLength(melodyRecDuration);
+                            melodyInstruments.setUserProfilePic(recPic);
+                            melodyInstruments.setInstrumentCover("#00FDFE");
+                            melodyInstruments.setInstrumentCreated(addDate);
+                            melodyInstruments.setUserName(userName);
+                            melodyInstruments.setInstrumentFile(melodyurl);
+                            instrumentList.add(melodyInstruments);
+                            adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+                            recyclerViewInstruments.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                            ivRecord_play.setVisibility(View.INVISIBLE);
+                            rlRedoButton.setVisibility(View.INVISIBLE);
+                            rlMelodyButton.setVisibility(View.VISIBLE);
+                            switchPublic.setChecked(false);
+                            switchFlag = "0";
+                        } else {
 
-
-                            JSONObject melodyData = recResponse.getJSONObject("melody_data");
-//
-                            idUpload = melodyData.getString("id");
-                            packName = melodyData.getString("packname");
-                            addedByUser = melodyData.getString("added_by_user");
-//                            coverPick = (String) melodyData.get("cover_pick");
-//                            profilePic = (String) melodyData.get("profile_pick");
-                            recGenre = melodyData.getString("gener");
-                            bpm = melodyData.getString("bpm");
-                            likeCount = melodyData.getString("like_count");
-                            shareCount = melodyData.getString("share_count");
-                            commentCount = melodyData.getString("comment_count");
-                            playCount = melodyData.getString("play_count");
-
-//                            melodyUrl = (String) melodyData.get("melodyurl");
-//                            audioFileType = (String) melodyData.get("audio_file_type");
-//                            audioFileSize = (String) melodyData.get("audiofilesize");
-//                            String imageFileType = (String) melodyData.get("imagefilefype");
-//                            String imageFileSize = (String) melodyData.get("imagefilesize");
-                            addDate = melodyData.getString("add_date");
-                            melodyRecDuration = melodyData.getString("duration");
-                            /*String parentRecordingId = melodyData.getString("parentRecordingID");
-                            String joinById = melodyData.getString("joinbyid");
-                            String isJoin = melodyData.getString("isJoin");*/
-                            Public = melodyData.getString("public");
-                            if (flag.equals("success")) {
-                                //   new LongOperation().execute();
-
-                                uploadRecordings(melodyData.getString("id"));
-
-                                /*myTask = new LongOperation();
-                                myTask.execute();*/
-                                /*android.app.AlertDialog.Builder builder1 = new android.app.AlertDialog.Builder(StudioActivity.this);
-                                builder1.setMessage("Wants to share InstaMelody music on Social Networks.....");
-                                builder1.setCancelable(true);
-
-                                builder1.setPositiveButton(
-                                        "Yes",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                Intent i = new Intent(StudioActivity.this, SocialActivity.class);
-                                                startActivity(i);
-                                            }
-                                        });
-
-                                builder1.setNegativeButton(
-                                        "No",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                dialog.cancel();
-//                                                myTask = new LongOperation();
-//                                                myTask.execute();
-                                                frameSync.setVisibility(View.GONE);
-                                            }
-                                        });
-
-                                android.app.AlertDialog alert11 = builder1.create();
-                                alert11.show();*/
-                            } else {
-                                Toast.makeText(StudioActivity.this, response, Toast.LENGTH_SHORT).show();
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            String error = e.toString();
-                            //    countDownLatch.countDown();
-                            //Toast.makeText(StudioActivity.this, error, Toast.LENGTH_SHORT).show();
-
+                            tvDone.setEnabled(false);
+                            /*adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+                            recyclerViewInstruments.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();*/
+                            ivRecord_play.setVisibility(View.INVISIBLE);
+                            rlRedoButton.setVisibility(View.INVISIBLE);
+                            rlMelodyButton.setVisibility(View.VISIBLE);
+                            switchPublic.setChecked(false);
+                            switchFlag = "0";
+                            Toast.makeText(StudioActivity.this, "Saved as Recording", Toast.LENGTH_SHORT).show();
                         }
 
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
 
+                        SharedPreferences.Editor recEditor = getApplication().getSharedPreferences("Recording_MelodyDataResponse", MODE_PRIVATE).edit();
+                        recEditor.clear();
+                        recEditor.commit();
+
+                        SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("Url_recording", MODE_PRIVATE).edit();
+                        editor.putString("Recording_url", melodyurl);
+                        editor.commit();
                     }
 
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(StudioActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
-                        String errormsg = error.toString();
-                        Log.d("Error", errormsg);
-                    }
-                }) {
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Log.d("return message", resultResponse);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                error.printStackTrace();
+
+                Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
+                Log.d("error msg", error.toString());
+            }
+        }) {
             @Override
             protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-               /* params.put(isMelody, String.valueOf(MelodyInstruments.getInstrumentId()));
-                params.put(topic_name, value);
-                params.put(user_id, userId);
-                params.put(public_flag, subEtTopicName.getText().toString().trim());
-                params.put(recordWith , selectedGenre);
-                params.put(genere, recordingDuration);
-                params.put(bpm, switchFlag);
-                params.put(duration, "128");
-                params.put(vocalsound, "128");
-                params.put(parentRecordingID, "128");*/
-                /*Add arrary list*/
+                Map<String, String> params = new HashMap<>();
+                params.put(MixisMelody,value1);
+                params.put(Mixtopic_name,subEtTopicName.getText().toString().trim());
+                params.put(Mixuser_id,userId);
+                params.put(Mixpublic_flag,switchFlag);
+                params.put(MixrecordWith,"withoutMike");
+                params.put(Mixgenere,selectedGenre);
+                params.put(Mixbpms,"128");
+                params.put(Mixdurations,recordingDuration);
+                params.put(MixCommand,"");
+                params.put(MixparentRecordingID,"");
+                //params.put(Mixrecording, list.toString());
 
+                JSONArray myarray = new JSONArray();
+                try {
+                    for (int i=0; i <=list.size()-1;i++){
+                        //arr[i]="questionId_"+i+"_"+"ans_"+i;
+                        //jsonObject.put("params_"+i,arr[i]);
+                        //obj.put("Id", id);
+                        //jsonObject.put(Mixrecording, list.get(i).toString());
+                        JSONObject jsonObject=new JSONObject();
+                        jsonObject.put("Id", list.get(i).id);
+                        jsonObject.put("Volume", list.get(i).volume);
+                        jsonObject.put("Bass", list.get(i).bass);
+                        jsonObject.put("Treble", list.get(i).treble);
+                        jsonObject.put("Pan", list.get(i).pan);
+                        jsonObject.put("Pitch", list.get(i).pitch);
+                        jsonObject.put("Reverb", list.get(i).reverb);
+                        jsonObject.put("Compression", list.get(i).compression);
+                        jsonObject.put("Delay", list.get(i).delay);
+                        jsonObject.put("Tempo", list.get(i).tempo);
+                        jsonObject.put("threshold", list.get(i).threshold);
+                        jsonObject.put("ratio", list.get(i).ratio);
+                        jsonObject.put("attack", list.get(i).attack);
+                        jsonObject.put("release", list.get(i).release);
+                        jsonObject.put("makeup", list.get(i).makeup);
+                        jsonObject.put("knee", list.get(i).knee);
+                        jsonObject.put("mix", list.get(i).mix);
+                        jsonObject.put("fileurl", list.get(i).fileurl);
+                        jsonObject.put("PositionId", list.get(i).positionId);
+
+
+                        myarray.put(i,jsonObject);
+
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+                params.put(Mixrecording,myarray.toString());
                 return params;
             }
-        };
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(600000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            @Override
+            protected Map<String, DataPart> getByteData() {
+                Map<String, DataPart> params = new HashMap<>();
+                params.put(Mixvocalsound, new DataPart("InstaMelody.mp3", soundBytes, "audio/amr"));
+                return params;
+            }
+           /* @Override
+            protected Map<String, String> getParams() throws com.android.volley.AuthFailureError {
+                JSONObject paramss = new JSONObject();
+                try {
+                    for (int i=0; i <list.size();i++){
+                        paramss.put(Config.EVENT_ID, eventIDBeacon.get(i));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return paramss;
+            };*/
 
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-//        try {
-//            countDownLatch.await();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        };
+        VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
     }
 
 
@@ -2538,7 +2515,7 @@ public class StudioActivity extends AppCompatActivity {
 
         public String doInBackground(String... params) {
             saveRecordings1();
-            //    uploadRecordings(idUpload);
+            //uploadRecordings(idUpload);
             return null;
         }
 
@@ -2717,10 +2694,9 @@ public class StudioActivity extends AppCompatActivity {
 
             }
             if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                           ivRecord_pause.performClick();
+                ivRecord_pause.performClick();
             }
-            if(mpInst!=null)
-            {
+            if (mpInst != null) {
                 mpInst.stop();
                 mpInst.release();
             }
