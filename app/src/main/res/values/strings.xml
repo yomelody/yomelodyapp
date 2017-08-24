@@ -71,4 +71,5 @@ and social conversations. </string>
 
     <string name="title_activity_comments">CommentsActivity</string>
     <string name="title_activity_join">JoinActivity</string>
+    <string name="title_activity_join_comment">JoinCommentActivity</string>
 </resources>

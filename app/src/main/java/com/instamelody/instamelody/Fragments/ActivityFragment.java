@@ -214,6 +214,7 @@ public class ActivityFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(USER_ID, userId);
+                params.put("key", "passed");
                 return params;
             }
         };

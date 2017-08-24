@@ -197,8 +197,8 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                     try {
                         Intent intent = new Intent(context, JoinActivity.class);
-                        intent.putExtra("AddedBy",addedBy);
-                        intent.putExtra("Recording_id",Rec_id);
+                        intent.putExtra("AddedBy", addedBy);
+                        intent.putExtra("Recording_id", Rec_id);
                         context.startActivity(intent);
                     } catch (Throwable e) {
                         e.printStackTrace();
@@ -312,7 +312,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         editor.putString("comments", comments);
                         editor.putString("shares", shares);
                         editor.putString("bitmapProfile", ProfilePick);
-//                    editor.putString("bitmapCover", cover);
                         editor.putString("melodyID", melodyID);
                         editor.putString("fileType", "user_recording");
                         editor.putString("RecordingURL", RecordingURL);

@@ -332,6 +332,7 @@
                                 </FrameLayout>
 
                                 <RelativeLayout
+                                    android:id="@+id/joincenter"
                                     android:layout_width="match_parent"
                                     android:layout_height="40dp"
                                     android:layout_alignParentBottom="true"
@@ -539,14 +540,6 @@
             android:layout_marginTop="1dp"
             android:scrollbars="vertical"
             android:visibility="visible" />
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerViewComment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="41dp"
-            android:layout_marginTop="1dp"
-            android:scrollbars="vertical"
-            android:visibility="gone" />
 
     </LinearLayout>
 </RelativeLayout>

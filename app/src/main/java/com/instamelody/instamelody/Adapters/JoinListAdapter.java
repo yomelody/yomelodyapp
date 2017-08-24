@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,7 +23,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.instamelody.instamelody.CommentsActivity;
 import com.instamelody.instamelody.JoinActivity;
+import com.instamelody.instamelody.JoinCommentActivity;
 import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.R;
@@ -70,6 +73,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     public JoinListAdapter(ArrayList<JoinedArtists> Joined_artist, Context context) {
         this.Joined_artist = Joined_artist;
         this.context = context;
+        setHasStableIds(true);
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -105,7 +109,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(MyViewHolder holder, final int position) {
         final JoinedArtists joinArt = Joined_artist.get(position);
         holder.Join_usr_name.setText(joinArt.getJoined_usr_name());
         Picasso.with(holder.join_image.getContext()).load(joinArt.getJoined_image()).into(holder.join_image);
@@ -209,6 +213,23 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     Toast.makeText(context, "Log in to like this Recording", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(context, SignInActivity.class);
                     context.startActivity(intent);
+                }
+
+            }
+        });
+
+        JoinActivity.rlComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                try {
+
+                    Intent intent = new Intent(context, JoinCommentActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra("Position", String.valueOf(position));
+                    context.startActivity(intent);
+                } catch (Throwable e) {
+                    e.printStackTrace();
                 }
 
             }
