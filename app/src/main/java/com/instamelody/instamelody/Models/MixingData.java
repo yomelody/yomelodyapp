@@ -6,7 +6,7 @@ package com.instamelody.instamelody.Models;
 
 
 public class MixingData {
-
+    public String PositionId;
     String Id;
     String Volume;
     String Bass;
@@ -17,8 +17,16 @@ public class MixingData {
     String Compression;
     String Delay;
     String Tempo;
+    String threshold;
+    String ratio;
+    String attack;
+    String release;
+    String makeup;
+    String knee;
+    String mix;
+    String instaURL;
 
-    public MixingData(String id, String volume, String bass, String treble, String pan,String pitch,String reverb,String compression,String delay,String tempo ) {
+    public MixingData(String id, String volume, String bass, String treble, String pan, String pitch, String reverb, String compression, String delay, String tempo, String threshold, String ratio, String attack, String release, String makeup, String knee, String mix, String instURL, String PositionId) {
         this.Id = id;
         this.Volume = volume;
         this.Bass = bass;
@@ -29,5 +37,15 @@ public class MixingData {
         this.Compression = compression;
         this.Delay = delay;
         this.Tempo = tempo;
+        this.threshold = threshold;
+        this.ratio = ratio;
+        this.attack = attack;
+        this.release = release;
+        this.makeup = makeup;
+        this.knee = knee;
+        this.mix = mix;
+        this.instaURL = instURL;
+        this.PositionId = PositionId;
+
     }
 }

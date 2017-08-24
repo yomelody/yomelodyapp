@@ -601,6 +601,7 @@ public class StudioActivity extends AppCompatActivity {
                 if (mediaPlayer != null && mediaPlayer.isPlaying()) {
                     //       ivRecord_pause.performClick();
                 }
+                list.clear();
                 Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
                 startActivity(intent);
                 SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("cover response", MODE_PRIVATE).edit();
@@ -2004,6 +2005,152 @@ public class StudioActivity extends AppCompatActivity {
 //        }
     }
 
+    public void saveRecordingsMixing() {
+//        final String recName = subEtTopicName.getText().toString().trim();
+////      final String genre = String.valueOf(sp.getSelectedItemPosition());
+//        final String genre = selectedGenre;
+//        final String recType = value;
+//        final String duration = Long.toString(elapsedMillis);
+        progressDialog = new ProgressDialog(StudioActivity.this);
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+
+//        final CountDownLatch countDownLatch = new CountDownLatch(1);
+//        final Object[] responseHolder = new Object[1];
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, ADD_RECORDINGS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+
+                        String successmsg = response.toString();
+//                        Toast.makeText(StudioActivity.this, value1 + "  " + "SAVE", Toast.LENGTH_SHORT).show();
+                        //     countDownLatch.countDown();
+                        try {
+                            JSONObject recordResponse = new JSONObject(successmsg);
+                            String flag = recordResponse.getString("flag");
+                            String msg1 = recordResponse.getString("msg");
+                            String response2 = recordResponse.getString("response");
+
+                            JSONObject recResponse = recordResponse.getJSONObject("response");
+
+
+                            JSONObject melodyData = recResponse.getJSONObject("melody_data");
+//
+                            idUpload = melodyData.getString("id");
+                            packName = melodyData.getString("packname");
+                            addedByUser = melodyData.getString("added_by_user");
+//                            coverPick = (String) melodyData.get("cover_pick");
+//                            profilePic = (String) melodyData.get("profile_pick");
+                            recGenre = melodyData.getString("gener");
+                            bpm = melodyData.getString("bpm");
+                            likeCount = melodyData.getString("like_count");
+                            shareCount = melodyData.getString("share_count");
+                            commentCount = melodyData.getString("comment_count");
+                            playCount = melodyData.getString("play_count");
+
+//                            melodyUrl = (String) melodyData.get("melodyurl");
+//                            audioFileType = (String) melodyData.get("audio_file_type");
+//                            audioFileSize = (String) melodyData.get("audiofilesize");
+//                            String imageFileType = (String) melodyData.get("imagefilefype");
+//                            String imageFileSize = (String) melodyData.get("imagefilesize");
+                            addDate = melodyData.getString("add_date");
+                            melodyRecDuration = melodyData.getString("duration");
+                            /*String parentRecordingId = melodyData.getString("parentRecordingID");
+                            String joinById = melodyData.getString("joinbyid");
+                            String isJoin = melodyData.getString("isJoin");*/
+                            Public = melodyData.getString("public");
+                            if (flag.equals("success")) {
+                                //   new LongOperation().execute();
+
+                                uploadRecordings(melodyData.getString("id"));
+
+                                /*myTask = new LongOperation();
+                                myTask.execute();*/
+                                /*android.app.AlertDialog.Builder builder1 = new android.app.AlertDialog.Builder(StudioActivity.this);
+                                builder1.setMessage("Wants to share InstaMelody music on Social Networks.....");
+                                builder1.setCancelable(true);
+
+                                builder1.setPositiveButton(
+                                        "Yes",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                Intent i = new Intent(StudioActivity.this, SocialActivity.class);
+                                                startActivity(i);
+                                            }
+                                        });
+
+                                builder1.setNegativeButton(
+                                        "No",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                dialog.cancel();
+//                                                myTask = new LongOperation();
+//                                                myTask.execute();
+                                                frameSync.setVisibility(View.GONE);
+                                            }
+                                        });
+
+                                android.app.AlertDialog alert11 = builder1.create();
+                                alert11.show();*/
+                            } else {
+                                Toast.makeText(StudioActivity.this, response, Toast.LENGTH_SHORT).show();
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            String error = e.toString();
+                            //    countDownLatch.countDown();
+                            //Toast.makeText(StudioActivity.this, error, Toast.LENGTH_SHORT).show();
+
+                        }
+
+
+                    }
+
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(StudioActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
+                        String errormsg = error.toString();
+                        Log.d("Error", errormsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+               /* params.put(isMelody, String.valueOf(MelodyInstruments.getInstrumentId()));
+                params.put(topic_name, value);
+                params.put(user_id, userId);
+                params.put(public_flag, subEtTopicName.getText().toString().trim());
+                params.put(recordWith , selectedGenre);
+                params.put(genere, recordingDuration);
+                params.put(bpm, switchFlag);
+                params.put(duration, "128");
+                params.put(vocalsound, "128");
+                params.put(parentRecordingID, "128");*/
+                /*Add arrary list*/
+
+                return params;
+            }
+        };
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(600000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+//        try {
+//            countDownLatch.await();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+    }
+
 
     public void uploadRecordings(final String id) {
 
@@ -2526,10 +2673,10 @@ public class StudioActivity extends AppCompatActivity {
         try {
             if (InstrumentListAdapter.mp_start != null) {
                 killMediaPlayer_fromInstrument();
-                //   StudioActivity.this.recreate();
                 adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
                 recyclerViewInstruments.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
+                StudioActivity.list.clear();
             }
             if (mps != null) {
 

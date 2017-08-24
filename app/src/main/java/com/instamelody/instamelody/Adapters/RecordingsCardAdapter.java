@@ -85,6 +85,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     String Key_file_type = "file_type";
     Context context;
     String userId = "";
+    String addedBy, Rec_id;
     private RecyclerView.ViewHolder lastModifiedHoled = null;
 
     public RecordingsCardAdapter(Context context, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools) {
@@ -106,7 +107,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
         public MyViewHolder(View itemView) {
             super(itemView);
-
             userProfileImage = (ImageView) itemView.findViewById(R.id.userProfileImage);
             ivRecordingCover = (ImageView) itemView.findViewById(R.id.ivRecordingCover);
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
@@ -131,6 +131,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             ivShareButton = (ImageView) itemView.findViewById(R.id.ivShareButton);
             rlLike = (RelativeLayout) itemView.findViewById(R.id.rlLike);
 
+
             SharedPreferences editorGenre = getApplicationContext().getSharedPreferences("prefGenreName", MODE_PRIVATE);
             genreName = editorGenre.getString("GenreName", null);
 
@@ -151,6 +152,10 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 public void onClick(View view) {
 
                     String instruments, bpm, genre, recordName, userName, duration, date, plays, likes, comments, shares, melodyID;
+                    RecordingsModel rm = recordingList.get(getAdapterPosition());
+
+                    addedBy = rm.getAddedBy();
+                    Rec_id = rm.getRecordingId();
 
                     genre = tvRecordingGenres.getText().toString().trim();
                     recordName = tvRecordingName.getText().toString().trim();
@@ -196,6 +201,8 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                     try {
                         Intent intent = new Intent(context, JoinActivity.class);
+                        intent.putExtra("AddedBy",addedBy);
+                        intent.putExtra("Recording_id",Rec_id);
                         context.startActivity(intent);
                     } catch (Throwable e) {
                         e.printStackTrace();
@@ -583,13 +590,25 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                     }
                     mp = new MediaPlayer();
-                    mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    try {
+                        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
+
                     try {
                         mp.setDataSource(instrumentFile);
 
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    String play = holder.tvViewCount.getText().toString().trim();
+                    int playValue = Integer.parseInt(play) + 1;
+                    play = String.valueOf(playValue);
+                    holder.tvViewCount.setText(play);
+                    String position;
+                    position = recordingList.get(listPosition).getRecordingId();
+                    fetchViewCount(userId, position);
                     mp.prepareAsync();
                     mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
@@ -760,6 +779,50 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 params.put(Key_shared_by_user, shared_by_user);
                 params.put(Key_shared_with, shared_with);
                 params.put(Key_file_type, "admin_melody");
+                return params;
+            }
+        };
+        RequestQueue requestQueue1 = Volley.newRequestQueue(context);
+        requestQueue1.add(stringRequest);
+    }
+
+    public void fetchViewCount(final String userId, final String pos) {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, PLAY_COUNT,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //       Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
+                        JSONObject jsonObject, respObject;
+
+                        try {
+                            jsonObject = new JSONObject(response);
+                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
+                                respObject = jsonObject.getJSONObject(KEY_RESPONSE);
+                                String str = respObject.getString("play_count");
+                                //      Toast.makeText(context, "" + str, Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //       Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
+                        String errorMsg = error.toString();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put(USER_TYPE, "user");
+                params.put(USERID, userId);
+                params.put(FILEID, pos);
+                //    params.put(TYPE, "admin_melody");
+                params.put(TYPE, "recording");
                 return params;
             }
         };

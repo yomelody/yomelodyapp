@@ -117,8 +117,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     String searchGet, search5;
     String artistName, Instruments, BPM;
     ProgressDialog progressDialog;
-    LongOperation myTask = null;
-
+  //  LongOperation myTask = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -410,191 +409,6 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
     }
 
-    public void fetchGenreNames() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        JSONObject jsonObject, genreJson;
-                        JSONArray jsonArray;
-                        TabHost.TabSpec spec;
-                        final TabHost host = (TabHost) findViewById(R.id.tabHostAudio);
-                        host.setup();
-
-                        try {
-                            jsonObject = new JSONObject(response);
-                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
-                                jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    genreJson = jsonArray.getJSONObject(i);
-                                    titleString = genreJson.getString(KEY_GENRE_NAME);
-                                    spec = host.newTabSpec(titleString);
-                                    spec.setIndicator(titleString);
-                                    spec.setContent(createTabContent());
-                                    host.addTab(spec);
-                                }
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        if (host.getCurrentTab() == 0) {
-//                            Toast.makeText(getActivity(), "All " + host.getCurrentTab(), Toast.LENGTH_SHORT).show();
-                        }
-
-                        host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-                            @Override
-                            public void onTabChanged(String arg0) {
-                                int currentTab = host.getCurrentTab();
-                                genreString = String.valueOf(currentTab).trim();
-                                fetchRecordings();
-//                                Toast.makeText(getActivity(), "beta: " + genreString, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        String errorMsg = "";
-                        if (error instanceof TimeoutError) {
-                            errorMsg = "Internet connection timed out";
-                        } else if (error instanceof NoConnectionError) {
-                            errorMsg = "There is no connection";
-                        } else if (error instanceof AuthFailureError) {
-                            errorMsg = "AuthFailureError";
-                        } else if (error instanceof ServerError) {
-                            errorMsg = "We are facing problem in connecting to server";
-                        } else if (error instanceof NetworkError) {
-                            errorMsg = "We are facing problem in connecting to network";
-                        } else if (error instanceof ParseError) {
-                            errorMsg = "ParseError";
-                        }
-//                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                return params;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        requestQueue.add(stringRequest);
-    }
-
-    public void fetchRecordings() {
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
-
-                        Log.d("ReturnData", response);
-                        recordingList.clear();
-                        recordingsPools.clear();
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        String errorMsg = "";
-                        if (error instanceof TimeoutError) {
-                            errorMsg = "Internet connection timed out";
-                        } else if (error instanceof NoConnectionError) {
-                            errorMsg = "There is no connection";
-                        } else if (error instanceof AuthFailureError) {
-                            errorMsg = "AuthFailureError";
-                        } else if (error instanceof ServerError) {
-                            errorMsg = "We are facing problem in connecting to server";
-                        } else if (error instanceof NetworkError) {
-                            errorMsg = "We are facing problem in connecting to network";
-                        } else if (error instanceof ParseError) {
-                            errorMsg = "ParseError";
-                        }
-//                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
-                params.put(KEY, STATION);
-                params.put(GENRE, genreString);
-                params.put(FILE_TYPE, "user_recording");
-                params.put(FILTER_TYPE, strName);
-                params.put(FILTER, "extrafilter");
-                return params;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        requestQueue.add(stringRequest);
-    }
-
-    public void fetchRecordingsFilter() {
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
-
-                        Log.d("ReturnData1", response);
-                        recordingList.clear();
-                        recordingsPools.clear();
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
-                        adapter.notifyDataSetChanged();
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        String errorMsg = "";
-                        if (error instanceof TimeoutError) {
-                            errorMsg = "Internet connection timed out";
-                        } else if (error instanceof NoConnectionError) {
-                            errorMsg = "There is no connection";
-                        } else if (error instanceof AuthFailureError) {
-                            errorMsg = "AuthFailureError";
-                        } else if (error instanceof ServerError) {
-                            errorMsg = "We are facing problem in connecting to server";
-                        } else if (error instanceof NetworkError) {
-                            errorMsg = "We are facing problem in connecting to network";
-                        } else if (error instanceof ParseError) {
-                            errorMsg = "ParseError";
-                        }
-//                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
-                params.put(KEY, STATION);
-                params.put(GENRE, genreString);
-                params.put(FILE_TYPE, "user_recording");
-                params.put(FILTER_TYPE, strName);
-                params.put(FILTER, "extrafilter");
-                return params;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        requestQueue.add(stringRequest);
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -639,65 +453,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         return true;
     }
 
-
-    public void fetchSearchData() {
-
-        SharedPreferences searchPref = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE);
-        strSearch = searchPref.getString("stringSearch", null);
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-//                        Toast.makeText(getApplicationContext(), "" + response, Toast.LENGTH_SHORT).show();
-                        recordingList.clear();
-                        recordingsPools.clear();
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
-                        adapter.notifyDataSetChanged();
-                        Log.d("ReturnDataS", response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        String errorMsg = "";
-                        if (error instanceof TimeoutError) {
-                            errorMsg = "Internet connection timed out";
-                        } else if (error instanceof NoConnectionError) {
-                            errorMsg = "There is no connection";
-                        } else if (error instanceof AuthFailureError) {
-                            errorMsg = "AuthFailureError";
-                        } else if (error instanceof ServerError) {
-                            errorMsg = "We are facing problem in connecting to server";
-                        } else if (error instanceof NetworkError) {
-                            errorMsg = "We are facing problem in connecting to network";
-                        } else if (error instanceof ParseError) {
-                            errorMsg = "ParseError";
-                        }
-//                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
-                params.put(KEY, STATION);
-                params.put(KEY_SEARCH, strSearch);
-                return params;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        requestQueue.add(stringRequest);
-    }
-
     @Override
     public boolean onQueryTextSubmit(String query) {
-//        fetchSearchData();
-        /*searchGet = search1.getQuery().toString();
-        Log.d("msg1", searchGet);
-        fetchSearchData();*/
 
         rlSearch.setVisibility(View.VISIBLE);
         search1.setVisibility(View.GONE);
@@ -721,34 +478,6 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         return false;
     }
 
-
-    private class LongOperation extends AsyncTask<String, Void, String> {
-        protected void onPreExecute() {
-            btnActivity.setEnabled(false);
-            progressDialog = new ProgressDialog(StationActivity.this);
-            progressDialog.setTitle("Processing...");
-            progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-
-        protected String doInBackground(String... params) {
-            AudioFragment aud_fag = new AudioFragment();
-            aud_fag.fetchGenreNames();
-            aud_fag.fetchRecordingsFilter();
-            /*adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList, recordingsPools);
-            adapter.notifyDataSetChanged();*/
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-            adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList, recordingsPools);
-            adapter.notifyDataSetChanged();
-            progressDialog.dismiss();
-            btnActivity.setEnabled(true);
-        }
-
-    }
 
     private void openDialog() {
         LayoutInflater inflater = LayoutInflater.from(StationActivity.this);
@@ -963,43 +692,6 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         editorSearchString.apply();
     }
 
-    private class FetchActivityDetails extends AsyncTask<String, Void, String> {
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog = new ProgressDialog(StationActivity.this);
-            progressDialog.setTitle("Processing...");
-            progressDialog.setMessage("Please wait...");
-            //progressDialog.setCancelable(false);
-            progressDialog.show();
-            btnActivity.setEnabled(false);
-            btnAudio.setEnabled(false);
-
-        }
-
-        protected String doInBackground(String... params) {
-
-            try {
-                String UserID = params[0];
-
-                AudioFragment af = new AudioFragment();
-                getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            if (progressDialog != null) {
-                progressDialog.dismiss();
-                btnActivity.setEnabled(true);
-                btnAudio.setEnabled(true);
-            }
-            // progressDialog.dismiss();
-        }
-    }
 
     @Override
     protected void onPause() {
