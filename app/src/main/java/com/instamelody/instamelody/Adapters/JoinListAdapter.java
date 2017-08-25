@@ -1,5 +1,6 @@
 package com.instamelody.instamelody.Adapters;
 
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -121,6 +122,22 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
+        holder.join_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+              //  JoinActivity.position = position;
+                try{
+                    Intent intent=new Intent(context,JoinActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra("Value",String.valueOf(position));
+                    context.startActivity(intent);
+                }catch (Throwable e){
+                    e.printStackTrace();
+                }
+
+            }
+        });
 
         JoinActivity.ivJoinPlay.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.COMMENT_LIST;
 import static com.instamelody.instamelody.utils.Const.ServiceType.JOINED_USERS;
 
@@ -148,7 +150,7 @@ public class JoinCommentActivity extends AppCompatActivity {
                         Log.d("ReturnData", response);
                         JoinActivity.Joined_artist.clear();
                         JoinActivity.instrumentList.clear();
-                        new ParseContents(getApplicationContext()).parseJoin(response, JoinActivity.Joined_artist, JoinActivity.instrumentList);
+                        //new ParseContents(getApplicationContext()).parseJoin(response, JoinActivity.Joined_artist, JoinActivity.instrumentList);
                         JoinActivity.adapter = new JoinListAdapter(JoinActivity.Joined_artist, getApplicationContext());
                         recyclerView.setAdapter(JoinActivity.adapter);
                     }
@@ -180,6 +182,7 @@ public class JoinCommentActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(USER_ID, addedBy);
                 params.put(RECORDING_ID, RecId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };

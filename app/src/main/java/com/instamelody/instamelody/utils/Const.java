@@ -41,7 +41,6 @@ public class Const {
         public static final String AuthenticationKeyValue = "@_$%yomelody%audio#@mixing(app*";
         public static final String AuthenticationKeyName = "ApiAuthenticationKey";
 
-
 //        public static final String USERS_BIO = BASE_URL + "uploads/melody/instruments/";
     }
 
