@@ -117,11 +117,34 @@
                         android:layout_marginStart="5dp">
 
                         <de.hdodenhof.circleimageview.CircleImageView
-                            android:id="@+id/userProfileImage"
+                            android:id="@+id/userProfileImagePlayer"
                             android:layout_width="38dp"
                             android:layout_height="38dp"
                             android:layout_centerVertical="true"
                             android:src="@drawable/profile1" />
+
+                        <FrameLayout
+                            android:id="@+id/flPlayPausePlayer"
+                            android:layout_width="38dp"
+                            android:layout_height="38dp">
+
+                            <ImageView
+                                android:id="@+id/ivPlayPlayer"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/play_white"
+                                android:visibility="visible" />
+
+                            <ImageView
+                                android:id="@+id/ivPausePlayer"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:src="@drawable/transparent_pause"
+                                android:visibility="gone" />
+
+                        </FrameLayout>
 
                     </RelativeLayout>
 
@@ -167,9 +190,9 @@
                     android:layout_weight="0.5">
 
                     <RelativeLayout
-                        android:id="@+id/rlStart"
+                        android:id="@+id/rlPrevPlayer"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_centerVertical="true"
                         android:layout_marginEnd="5dp"
                         android:layout_marginLeft="5dp"
@@ -188,10 +211,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:layout_toEndOf="@+id/rlStart"
-                        android:layout_toLeftOf="@+id/rlEnd"
-                        android:layout_toRightOf="@+id/rlStart"
-                        android:layout_toStartOf="@+id/rlEnd">
+                        android:layout_toEndOf="@+id/rlPrevPlayer"
+                        android:layout_toLeftOf="@+id/rlNextPlayer"
+                        android:layout_toRightOf="@+id/rlPrevPlayer"
+                        android:layout_toStartOf="@+id/rlNextPlayer">
 
                         <TextView
                             android:id="@+id/tvAudioNamePlayer"
@@ -218,9 +241,9 @@
                     </RelativeLayout>
 
                     <RelativeLayout
-                        android:id="@+id/rlEnd"
+                        android:id="@+id/rlNextPlayer"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"

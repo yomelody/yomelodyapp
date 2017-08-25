@@ -310,8 +310,6 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
-
-
     }
 
     public void displayExceptionMessage(String msg) {

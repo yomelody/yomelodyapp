@@ -200,9 +200,12 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
 
                     try {
+                        SharedPreferences.Editor record = context.getSharedPreferences("RecordingData", MODE_PRIVATE).edit();
+                        record.putString("AddedBy", addedBy);
+                        record.putString("Recording_id", Rec_id);
+                        record.commit();
+
                         Intent intent = new Intent(context, JoinActivity.class);
-                        intent.putExtra("AddedBy", addedBy);
-                        intent.putExtra("Recording_id", Rec_id);
                         context.startActivity(intent);
                     } catch (Throwable e) {
                         e.printStackTrace();
@@ -266,11 +269,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
                                 RecordingsModel recording = recordingList.get(getAdapterPosition());
                                 editor.putString("recID", recording.getRecordingId());
-//                                editor.putString("userName", recording.getUserName());
-//                                editor.putString("recName",recording.getRecordingName());
-//                                editor.putString("recUrl",recording.getrecordingurl());
-//                                editor.putString("profilePic",recording.getUserProfilePic());
-//                                editor.putString("fileType", "station");
                                 editor.apply();
                                 Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
                                 intent.putExtra("Previous", "station");

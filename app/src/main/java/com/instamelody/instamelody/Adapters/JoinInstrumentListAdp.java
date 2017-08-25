@@ -204,7 +204,7 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
 
         final MelodyInstruments instruments = instrumentList.get(listPosition);
         String abc = instrumentList.get(listPosition).getInstrumentFile();
-//        Toast.makeText(context, "" + abc, Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "" + abc, Toast.LENGTH_SHORT).show();
 
         if (coverPicStudio != null) {
             Picasso.with(holder.ivInstrumentCover.getContext()).load(coverPicStudio).into(holder.ivInstrumentCover);
