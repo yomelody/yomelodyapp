@@ -17,7 +17,7 @@ public class SharedAudios {
     }
 
     public String getUserName() {
-        return userName;
+        return "@"+userName;
     }
 
     public void setUserName(String userName) {

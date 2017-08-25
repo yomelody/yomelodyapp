@@ -266,11 +266,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
                                 RecordingsModel recording = recordingList.get(getAdapterPosition());
                                 editor.putString("recID", recording.getRecordingId());
-//                                editor.putString("userName", recording.getUserName());
-//                                editor.putString("recName",recording.getRecordingName());
-//                                editor.putString("recUrl",recording.getrecordingurl());
-//                                editor.putString("profilePic",recording.getUserProfilePic());
-//                                editor.putString("fileType", "station");
                                 editor.apply();
                                 Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
                                 intent.putExtra("Previous", "station");
