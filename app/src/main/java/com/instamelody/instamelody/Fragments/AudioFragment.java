@@ -53,6 +53,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
@@ -342,11 +344,13 @@ public class AudioFragment extends Fragment {
                /* params.put(KEY, STATION);
                 params.put(GENRE, genreString);*/
                 if (userId != null) {
+                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
                     params.put(ID, userId);
                     params.put(KEY, STATION);
                     params.put(GENRE, genreString);
                     params.put("ApiAuthenticationKey","@_$%yomelody%audio#@mixing(app*");
                 } else {
+                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
                     params.put(KEY, STATION);
                     params.put(GENRE, genreString);
 
@@ -402,6 +406,7 @@ public class AudioFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
@@ -470,6 +475,7 @@ public class AudioFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
                 params.put("ApiAuthenticationKey","@_$%yomelody%audio#@mixing(app*");
                 params.put(KEY_SEARCH, strSearch);
@@ -533,6 +539,7 @@ public class AudioFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
@@ -599,6 +606,7 @@ public class AudioFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
@@ -665,6 +673,7 @@ public class AudioFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
@@ -702,6 +711,7 @@ public class AudioFragment extends Fragment {
 
     private class LongOperation extends AsyncTask<String, Void, String> {
         protected void onPreExecute() {
+            fetchGenreNames();
             progressDialog = new ProgressDialog(getActivity());
             progressDialog.setTitle("Processing...");
             progressDialog.setMessage("Please wait...");
@@ -711,8 +721,6 @@ public class AudioFragment extends Fragment {
         }
 
         protected String doInBackground(String... params) {
-
-            fetchGenreNames();
 
             if (strName == null && strSearch == null) {
                 fetchRecordings();
@@ -743,19 +751,19 @@ public class AudioFragment extends Fragment {
 
             SharedPreferences.Editor FilterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
             FilterPref.clear();
-            FilterPref.commit();
+            FilterPref.apply();
             SharedPreferences.Editor SearchPref = getActivity().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
             SearchPref.clear();
-            SearchPref.commit();
+            SearchPref.apply();
             SharedPreferences.Editor FilterPrefArtist = getActivity().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
             FilterPrefArtist.clear();
-            FilterPrefArtist.commit();
+            FilterPrefArtist.apply();
             SharedPreferences.Editor FilterPrefInstruments = getActivity().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
             FilterPrefInstruments.clear();
-            FilterPrefInstruments.commit();
+            FilterPrefInstruments.apply();
             SharedPreferences.Editor FilterPrefBPM = getActivity().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
             FilterPrefBPM.clear();
-            FilterPrefBPM.commit();
+            FilterPrefBPM.apply();
         } catch (NullPointerException e) {
             e.printStackTrace();
         }

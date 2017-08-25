@@ -641,11 +641,11 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 editorFilterString.apply();
 
                 SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
-                editorFilterArtist.putString("stringFilterArtist", artistName);
+                editorFilterArtist.clear();
                 editorFilterArtist.apply();
 
                 SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
-                editorFilterInstruments.putString("stringFilterInstruments", Instruments);
+                editorFilterInstruments.clear();
                 editorFilterInstruments.apply();
 
                 AudioFragment af = new AudioFragment();

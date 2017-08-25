@@ -128,7 +128,6 @@ public class MelodyPacksFragment extends Fragment {
         }
 
         //     new Loader().execute();
-        fetchGenreNames();
         if (strName == null && strSearch == null) {
             new LongOperation().execute();
         }

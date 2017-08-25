@@ -38,7 +38,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
     packagingOptions {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE-FIREBASE.txt'
@@ -71,6 +70,10 @@ dependencies {
     compile 'com.facebook.fresco:fresco:1.4.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.auth0.android:auth0:1.+'
+    compile 'com.github.asne:asne-facebook:0.3.3'
+    compile 'com.github.asne:asne-twitter:0.3.3'
+    compile 'com.github.asne:asne-googleplus:0.3.3'
+    compile 'com.jlubecki.soundcloud:soundcloud-api:1.2.1'
     testCompile 'junit:junit:4.12'
     //    compile files('libs/facebook.jar')
 

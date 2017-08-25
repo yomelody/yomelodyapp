@@ -71,7 +71,6 @@ public class MelodyActivity extends AppCompatActivity {
     private static RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private static RecyclerView recyclerView;
-    LongOperation myTask = null;
     //  LinearLayout tab1,llFragSubs;
 
     @Override
@@ -393,33 +392,6 @@ public class MelodyActivity extends AppCompatActivity {
         searchGet = (String) searchView.getQuery();
 
         return true;
-    }
-
-
-    private class LongOperation extends AsyncTask<String, Void, String> {
-        protected void onPreExecute() {
-            progressDialog = new ProgressDialog(MelodyActivity.this);
-            progressDialog.setTitle("Processing...");
-            progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-
-        protected String doInBackground(String... params) {
-            AudioFragment aud_fag = new AudioFragment();
-            aud_fag.fetchRecordingsFilter();
-            SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
-            editorFilterString.putString("stringFilter", strName);
-            editorFilterString.apply();
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-            adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList, recordingsPools);
-            adapter.notifyDataSetChanged();
-            progressDialog.dismiss();
-        }
-
     }
 
     private void openDialog() {

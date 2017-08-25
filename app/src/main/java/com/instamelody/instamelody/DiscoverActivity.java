@@ -67,6 +67,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.instamelody.instamelody.R.id.appBarMainText;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
@@ -438,6 +440,7 @@ public class DiscoverActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 return params;
@@ -488,6 +491,7 @@ public class DiscoverActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
@@ -697,6 +701,7 @@ public class DiscoverActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
@@ -765,6 +770,8 @@ public class DiscoverActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                params.put(KEY, STATION);
                 params.put(KEY_SEARCH, strSearch);
                 return params;
             }
@@ -823,6 +830,7 @@ public class DiscoverActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
@@ -886,6 +894,7 @@ public class DiscoverActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");

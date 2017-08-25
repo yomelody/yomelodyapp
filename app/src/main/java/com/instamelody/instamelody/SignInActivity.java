@@ -71,6 +71,8 @@ import retrofit2.Call;
 
 import static android.R.attr.id;
 import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.FORGOT_PASSWORD;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LOGIN;
 import static com.instamelody.instamelody.utils.Const.ServiceType.REGISTER;
@@ -532,7 +534,7 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(KEY, "@_$%yomelody%audio#@mixing(app*");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY_EMAIL, email);
                 params.put(KEY_PASSWORD, password);
                 params.put(KEY_DEVICE_TOKEN, DeviceToken);
@@ -635,7 +637,6 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-
                 params.put(KEY_FNAME, firstNamefb);
                 params.put(KEY_LNAME, lastNamefb);
                 params.put(KEY_USERNAME, firstNamefb + lastNamefb);
@@ -766,11 +767,11 @@ public class SignInActivity extends AppCompatActivity {
         builder.setView(subView);
 
         TextView title = new TextView(this);
-        title.setText("Save As");
-        title.setBackgroundColor(Color.DKGRAY);
+        title.setText("Forget Password");
+        title.setBackgroundColor(Color.WHITE);
         title.setPadding(10, 10, 10, 10);
         title.setGravity(Gravity.CENTER);
-        title.setTextColor(Color.WHITE);
+        title.setTextColor(Color.BLACK);
         title.setTextSize(20);
 
         builder.setCustomTitle(title);
