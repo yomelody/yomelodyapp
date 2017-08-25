@@ -41,6 +41,8 @@ import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ACTIVITY;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.RMethod.getServerDiffrenceDate;
 
 /**
@@ -54,7 +56,7 @@ public class ActivityFragment extends Fragment {
     private RecyclerView recyclerView;
     String USER_ID = "user_id";
     String KEY_FLAG = "flag";
-    String KEY_RESPONSE = "responce";
+    String KEY_RESPONSE = "response";
     String id = "id",userId="";
     ProgressDialog progressDialog;
     private static ArrayList<ActivityModel> arraylist;
@@ -214,7 +216,7 @@ public class ActivityFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(USER_ID, userId);
-                params.put("key", "passed");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
