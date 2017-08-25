@@ -70,6 +70,8 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.FOLLOWERS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
@@ -729,7 +731,8 @@ public class ProfileActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(KEY, "");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                params.put(KEY, "Myrecording");
                 params.put(GENRE, genreString);
                 return params;
             }
@@ -903,7 +906,8 @@ public class ProfileActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(KEY, "");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                params.put(KEY, "Myrecording");
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
@@ -971,6 +975,8 @@ public class ProfileActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                params.put(KEY, "Myrecording");
 //                params.put(KEY, STATION);
                 params.put(KEY_SEARCH, strSearch);
                 return params;
@@ -1030,7 +1036,8 @@ public class ProfileActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(KEY, "");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                params.put(KEY, "Myrecording");
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
@@ -1093,7 +1100,8 @@ public class ProfileActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(KEY, "");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                params.put(KEY, "Myrecording");
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, "Instruments");
@@ -1156,7 +1164,8 @@ public class ProfileActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(KEY, "");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                params.put(KEY, "Myrecording");
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);

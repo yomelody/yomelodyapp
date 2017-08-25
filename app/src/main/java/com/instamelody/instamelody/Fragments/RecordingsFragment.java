@@ -46,6 +46,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
@@ -87,7 +89,8 @@ public class RecordingsFragment extends Fragment {
     int statusNormal, statusFb, statusTwitter;
     ProgressDialog progressDialog;
     String strName, strSearch, strArtist, strInstruments, strBPM;
-    TabHost host=null;
+    TabHost host = null;
+
     public RecordingsFragment() {
 
     }
@@ -119,7 +122,6 @@ public class RecordingsFragment extends Fragment {
         statusTwitter = loginTwitterSharedPref.getInt("status", 0);
 
 
-
         if (statusNormal == 1) {
             userId = userIdNormal;
         } else if (statusFb == 1) {
@@ -129,14 +131,14 @@ public class RecordingsFragment extends Fragment {
         }
 
         if (strName == null && strSearch == null) {
-           fetchRecordings();
+            fetchRecordings();
         } else if (strSearch != null) {
             fetchSearchData();
         } else if (strArtist != null) {
             fetchRecordingsFilterArtist();
         } else if (strInstruments != null && strName.equals("# of Instruments")) {
             fetchRecordingsFilterInstruments();
-        }else if(strBPM != null && strName.equals("BPM")){
+        } else if (strBPM != null && strName.equals("BPM")) {
             fetchRecordingsFilterBPM();
         } else {
             fetchRecordingsFilter();
@@ -174,11 +176,10 @@ public class RecordingsFragment extends Fragment {
                         JSONArray jsonArray;
                         String titleString, genreId;
                         TabHost.TabSpec spec;
-                        try{
+                        try {
                             host = (TabHost) getActivity().findViewById(R.id.tabHostRecordings);
                             host.setup();
-                        }
-                        catch (NullPointerException e){
+                        } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
 
@@ -194,14 +195,12 @@ public class RecordingsFragment extends Fragment {
                                     genres.setName(titleString);
                                     genres.setId(genreJson.getString(KEY_GENRE_ID));
                                     genresArrayList.add(genres);
-                                    try{
+                                    try {
                                         spec = host.newTabSpec(titleString);
                                         spec.setIndicator(titleString);
                                         spec.setContent(createTabContent());
                                         host.addTab(spec);
-                                    }
-                                    catch (NullPointerException e)
-                                    {
+                                    } catch (NullPointerException e) {
                                         e.printStackTrace();
                                     }
 
@@ -226,9 +225,7 @@ public class RecordingsFragment extends Fragment {
 
                                 }
                             });
-                        }
-                        catch (NullPointerException e)
-                        {
+                        } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
                     }
@@ -275,6 +272,8 @@ public class RecordingsFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                params.put(KEY, "Myrecording");
                 params.put(USER_ID, userId);
                 params.put(GENRE, genreString);
                 return params;
@@ -327,6 +326,8 @@ public class RecordingsFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(KEY, "@_$%yomelody%audio#@mixing(app*");
                 params.put(ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                params.put(KEY, "Myrecording");
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
@@ -395,6 +396,8 @@ public class RecordingsFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(KEY, "@_$%yomelody%audio#@mixing(app*");
                 params.put(ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                params.put(KEY, "Myrecording");
                 params.put(KEY_SEARCH, strSearch);
                 return params;
             }
@@ -454,6 +457,8 @@ public class RecordingsFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(KEY, "@_$%yomelody%audio#@mixing(app*");
                 params.put(ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                params.put(KEY, "Myrecording");
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
@@ -517,6 +522,8 @@ public class RecordingsFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(KEY, "@_$%yomelody%audio#@mixing(app*");
                 params.put(ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                params.put(KEY, "Myrecording");
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, "Instruments");
@@ -540,7 +547,7 @@ public class RecordingsFragment extends Fragment {
                             JSONObject jsonObject = new JSONObject(rs);
                             String flag = jsonObject.getString("flag");
 //                            Toast.makeText(getActivity(), "" + flag, Toast.LENGTH_SHORT).show();
-                            if (flag.equals("unsuccess")){
+                            if (flag.equals("unsuccess")) {
                                 Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
@@ -583,6 +590,8 @@ public class RecordingsFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(KEY, "@_$%yomelody%audio#@mixing(app*");
                 params.put(ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                params.put(KEY, "Myrecording");
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
@@ -699,6 +708,7 @@ public class RecordingsFragment extends Fragment {
             }
         };
     }
+
     private class LongOperation extends AsyncTask<String, Void, String> {
         protected void onPreExecute() {
             try {
@@ -726,7 +736,7 @@ public class RecordingsFragment extends Fragment {
     }
 
 
-    public void SharedPrefClear(){
+    public void SharedPrefClear() {
 
     }
 }

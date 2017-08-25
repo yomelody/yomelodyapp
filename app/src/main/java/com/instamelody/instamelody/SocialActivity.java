@@ -1,14 +1,19 @@
 package com.instamelody.instamelody;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
@@ -20,6 +25,12 @@ import com.facebook.FacebookException;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
+import com.github.gorbin.asne.core.SocialNetwork;
+import com.github.gorbin.asne.core.SocialNetworkManager;
+import com.github.gorbin.asne.core.listener.OnPostingCompleteListener;
+import com.github.gorbin.asne.facebook.FacebookSocialNetwork;
+import com.github.gorbin.asne.googleplus.GooglePlusSocialNetwork;
+import com.github.gorbin.asne.twitter.TwitterSocialNetwork;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -29,15 +40,32 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.PlusOneButton;
 import com.google.android.gms.plus.PlusShare;
+import com.jlubecki.soundcloud.webapi.android.auth.AuthenticationCallback;
+import com.jlubecki.soundcloud.webapi.android.auth.SoundCloudAuthenticator;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import io.fabric.sdk.android.Fabric;
+import io.fabric.sdk.android.services.concurrency.AsyncTask;
+
+import static android.R.attr.data;
 
 /**
  * Created by Shubhansh Jaiswal on 11/29/2016.
@@ -46,7 +74,7 @@ import io.fabric.sdk.android.Fabric;
 public class SocialActivity extends AppCompatActivity {
 
     Switch switchFb, switchTwitter, switchSoundCloud, switchGoogle;
-    String fetchRecordingUrl,fetchThumbNailUrl;
+    String fetchRecordingUrl, fetchThumbNailUrl;
     CallbackManager callbackManager;
     ShareDialog shareDialog;
     URL ShortUrl;
@@ -59,8 +87,16 @@ public class SocialActivity extends AppCompatActivity {
     SignInButton googleSignIn;
     PlusOneButton plus_one_button;
     private static final int PLUS_ONE_REQUEST_CODE = 0;
+    public static final String SOCIAL_NETWORK_TAG = "SocialIntegrationMain.SOCIAL_NETWORK_TAG";
     String cover;
     Bitmap bitmap;
+    SocialNetworkManager commonShare;
+    public static final int TWITTER = TwitterSocialNetwork.ID;
+    public static final int FACEBOOK = FacebookSocialNetwork.ID;
+    public static final int GOOGLE_PLUS = GooglePlusSocialNetwork.ID;
+    /*String TWITTER_CONSUMER_KEY = "HPEUPWqatYYqdX2BXXZCwhRa3";
+    String TWITTER_CONSUMER_SECRET = getApplicationContext().getString(R.string.TWITTER_CONSUMER_SECRET);
+    String TWITTER_CALLBACK_URL = "oauth://ASNE";*/
 
 
     @Override
@@ -71,6 +107,11 @@ public class SocialActivity extends AppCompatActivity {
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
+
+        ArrayList<String> fbScope = new ArrayList<String>();
+        fbScope.addAll(Arrays.asList("public_profile, email, user_friends"));
+
+
 
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -91,11 +132,14 @@ public class SocialActivity extends AppCompatActivity {
         switchSoundCloud = (Switch) findViewById(R.id.switchSoundCloud);
         switchGoogle = (Switch) findViewById(R.id.switchGoogle);
         googleSignIn = (SignInButton) findViewById(R.id.googleSignIn);
+//        commonShare =(SocialNetworkManager) getFragmentManager().findFragmentByTag()
         SharedPreferences loginSharedPref1 = this.getSharedPreferences("Url_recording", MODE_PRIVATE);
         fetchRecordingUrl = loginSharedPref1.getString("Recording_url", null);
 
-        SharedPreferences editorT = this.getSharedPreferences("thumbnail_url", MODE_PRIVATE);
-        fetchThumbNailUrl= editorT.getString("thumbnailUrl", null);
+        SharedPreferences editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE);
+        fetchThumbNailUrl = editorT.getString("thumbnailUrl", null);
+
+        new newShortAsync().execute();
 
         plus_one_button = (PlusOneButton) findViewById(R.id.plus_one_button);
 //        new URLShort().execute();
@@ -109,11 +153,14 @@ public class SocialActivity extends AppCompatActivity {
         cover = editor1.getString("cover", null);
 
 
-        switchFb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        switchFb.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            public void onClick(View v) {
                 if (fetchThumbNailUrl == null) {
-                    Toast.makeText(SocialActivity.this, "No Recording Found to Share", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SocialActivity.this, "Do recordings to Share", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
+                    intent.putExtra("clickPosition", "fromSocialActivity");
+                    startActivity(intent);
                     switchFb.setEnabled(false);
                 } else {
                     AlertDialog.Builder builder1 = new AlertDialog.Builder(SocialActivity.this);
@@ -147,7 +194,10 @@ public class SocialActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (fetchThumbNailUrl == null) {
-                    Toast.makeText(SocialActivity.this, "No Recording Found to Share", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SocialActivity.this, "Do recordings to Share", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
+                    intent.putExtra("clickPosition", "fromSocialActivity");
+                    startActivity(intent);
                     switchTwitter.setEnabled(false);
                 } else {
                     AlertDialog.Builder builder1 = new AlertDialog.Builder(SocialActivity.this);
@@ -182,9 +232,37 @@ public class SocialActivity extends AppCompatActivity {
         switchSoundCloud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*boolean isAppInstalled = appInstalledOrNot("com.check.application");
+
+                if(isAppInstalled) {
+                    //This intent will help you to launch if the package is already installed
+                    Intent LaunchIntent = getPackageManager()
+                            .getLaunchIntentForPackage("com.check.application");
+                    startActivity(LaunchIntent);
+                } else {
+                    // Do whatever we want to do if application not installed
+                    // For example, Redirect to play store
+
+                    Toast.makeText(SocialActivity.this, "Install  SoundCloud Application from PlayStore to SHARE", Toast.LENGTH_SHORT).show();
+                }*/
                 if (fetchThumbNailUrl == null) {
-                    Toast.makeText(SocialActivity.this, "No Recording found to share", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SocialActivity.this, "Do recordings to Share", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
+                    intent.putExtra("clickPosition", "fromSocialActivity");
+                    startActivity(intent);
                     switchSoundCloud.setEnabled(false);
+                }else {
+                    Intent intent = new Intent("com.soundcloud.android.SHARE")
+                            .putExtra(Intent.EXTRA_STREAM, Uri.parse(fetchRecordingUrl))
+                            .putExtra("com.soundcloud.android.extra.title", "Demo");
+                    // more metadata can be set, see below
+
+                    try {
+                        // takes the user to the SoundCloud sharing screen
+                        startActivityForResult(intent, 0);
+                    } catch (ActivityNotFoundException e) {
+                        // SoundCloud Android app not installed, show a dialog etc.
+                    }
                 }
             }
         });
@@ -193,7 +271,10 @@ public class SocialActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (fetchThumbNailUrl == null) {
-                    Toast.makeText(SocialActivity.this, "No Recording Found to Share", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SocialActivity.this, "Do recordings to Share", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
+                    intent.putExtra("clickPosition", "fromSocialActivity");
+                    startActivity(intent);
                     switchGoogle.setEnabled(false);
                 } else {
                     plus_one_button.setVisibility(View.VISIBLE);
@@ -215,9 +296,7 @@ public class SocialActivity extends AppCompatActivity {
             }
         });
 
-
     }
-
 
     public void FbShare() {
         callbackManager = CallbackManager.Factory.create();
@@ -272,6 +351,10 @@ public class SocialActivity extends AppCompatActivity {
                 switchFb.setChecked(false);
             return;
         }
+        /*Fragment fragment = getSupportFragmentManager().findFragmentByTag(SOCIAL_NETWORK_TAG);
+        if (fragment != null) {
+            fragment.onActivityResult(requestCode, resultCode, data);
+        }*/
     }
 
     public void TweetShare() {
@@ -355,4 +438,190 @@ public class SocialActivity extends AppCompatActivity {
         // Refresh the state of the +1 button each time the activity receives focus.
         plus_one_button.initialize(fetchThumbNailUrl, PLUS_ONE_REQUEST_CODE);
     }
+
+    private class newShortAsync extends AsyncTask<Void, Void, String> {
+
+        private ProgressDialog pDialog;
+        String longUrl;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+//            progressBar.setVisibility(View.VISIBLE);
+            pDialog = new ProgressDialog(SocialActivity.this);
+            pDialog.setMessage("Contacting Google Servers ...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            longUrl = fetchThumbNailUrl;
+            pDialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            pDialog.dismiss();
+            System.out.println("JSON RESP:" + s);
+            String response = s;
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                ShortUrlId = jsonObject.getString("id");
+                ShortUrl = new URL(ShortUrlId);
+//                System.out.println("ID:" + id);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            BufferedReader reader;
+            StringBuffer buffer;
+            String res = null;
+            String json = "{longUrl:" + longUrl + "}";
+            try {
+                URL url = new URL("https://www.googleapis.com/urlshortener/v1/url?key=AIzaSyBmWJRuAcgoHTaljlTYsDtutkTb0HFhaHY");
+//                URL url = new URL("https://www.googleapis.com/urlshortener/v1/url");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setReadTimeout(40000);
+                con.setConnectTimeout(40000);
+                con.setRequestMethod("POST");
+                con.setRequestProperty("Content-Type", "application/json");
+                OutputStream os = con.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+
+                writer.write(json);
+                writer.flush();
+                writer.close();
+                os.close();
+
+                int status = con.getResponseCode();
+                InputStream inputStream;
+                if (status == HttpURLConnection.HTTP_OK)
+                    inputStream = con.getInputStream();
+                else
+                    inputStream = con.getErrorStream();
+
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                buffer = new StringBuffer();
+
+                String line = "";
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line);
+                }
+
+                res = buffer.toString();
+
+            } catch (java.io.IOException e) {
+                e.printStackTrace();
+            }
+            return res;
+        }
+    }
+
+    public void share() {
+        Bundle postParams = new Bundle();
+        postParams.putString(SocialNetwork.BUNDLE_LINK, fetchThumbNailUrl);
+//        socialNetwork.requestPostLink(postParams, "", postingComplete);
+    }
+    private OnPostingCompleteListener postingComplete = new OnPostingCompleteListener() {
+        @Override
+        public void onPostSuccessfully(int socialNetworkID) {
+            Toast.makeText(getApplicationContext(), "Sent", Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        public void onError(int socialNetworkID, String requestID, String errorMessage, Object data) {
+            Toast.makeText(getApplicationContext(), "Error while sending: " + errorMessage, Toast.LENGTH_LONG).show();
+        }
+    };
+
+    private View.OnClickListener shareClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            AlertDialog.Builder ad = alertDialogInit("Would you like to post Link:", fetchThumbNailUrl);
+            ad.setPositiveButton("Post link", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Bundle postParams = new Bundle();
+                    postParams.putString(SocialNetwork.BUNDLE_NAME,
+                            "Simple and easy way to add social networks for android application");
+                    postParams.putString(SocialNetwork.BUNDLE_LINK, fetchThumbNailUrl);
+//                    socialNetwork.requestPostLink(postParams, "", postingComplete);
+                }
+            });
+            ad.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int i) {
+                    dialog.cancel();
+                }
+            });
+            ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                public void onCancel(DialogInterface dialog) {
+                    dialog.cancel();
+                }
+            });
+            ad.create().show();
+        }
+    };
+
+    public AlertDialog.Builder alertDialogInit(String title, String message){
+        AlertDialog.Builder ad = new AlertDialog.Builder(getApplicationContext());
+        ad.setTitle(title);
+        ad.setMessage(message);
+        ad.setCancelable(true);
+        return ad;
+    }
+
+    private View.OnClickListener loginClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            int networkId = 0;
+            switch (view.getId()){
+                case R.id.switchFb:
+                    networkId = FACEBOOK;
+                    break;
+                case R.id.switchTwitter:
+                    networkId = TWITTER;
+                    break;
+                case R.id.switchGoogle:
+                    networkId = GOOGLE_PLUS;
+                    break;
+            }
+            SocialNetwork socialNetwork = commonShare.getSocialNetwork(networkId);
+            if(!socialNetwork.isConnected()) {
+                if(networkId != 0) {
+                    socialNetwork.requestLogin();
+//                    MainActivity.showProgress(socialNetwork, "Loading social person");
+                } else {
+                    Toast.makeText(getApplicationContext(), "Wrong networkId", Toast.LENGTH_LONG).show();
+                }
+            } else {
+//                startProfile(socialNetwork.getID());
+            }
+        }
+    };
+
+    private boolean appInstalledOrNot(String uri) {
+        PackageManager pm = getPackageManager();
+        try {
+            pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+        }
+
+        return false;
+    }
+    /*SocialNetwork socialNetwork = commonShare.getSocialNetwork(networkId);
+        if(!socialNetwork.isConnected()) {
+        if(networkId != 0) {
+            socialNetwork.requestLogin();
+            this.showProgress(socialNetwork, "Loading social person");
+        } else {
+            Toast.makeText(getApplicationContext(), "Wrong networkId", Toast.LENGTH_LONG).show();
+        }
+    } else {
+        startProfile(socialNetwork.getID());
+    }*/
 }
