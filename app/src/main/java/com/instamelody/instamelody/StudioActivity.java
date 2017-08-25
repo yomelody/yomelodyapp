@@ -1504,8 +1504,8 @@ public class StudioActivity extends AppCompatActivity {
         builder2.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //uploadRecordingsMixing("5");
-                saveRecordings1();
+                uploadRecordingsMixing("5");
+                //saveRecordings1();
 
                 //  new LongOperation().execute();
 

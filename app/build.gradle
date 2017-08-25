@@ -73,6 +73,6 @@ dependencies {
     compile 'com.auth0.android:auth0:1.+'
     testCompile 'junit:junit:4.12'
     //    compile files('libs/facebook.jar')
-    compile files('libs/gson-1.4-sources.jar')
+
 }
 apply plugin: 'com.google.gms.google-services'
