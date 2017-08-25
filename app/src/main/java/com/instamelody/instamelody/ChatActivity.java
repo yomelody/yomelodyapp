@@ -36,6 +36,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -85,6 +86,9 @@ import java.util.Map;
 
 import static android.os.Environment.isExternalStorageEmulated;
 import static android.os.Environment.isExternalStorageRemovable;
+import static com.instamelody.instamelody.Adapters.ChatAdapter.AudioOperator;
+import static com.instamelody.instamelody.Adapters.ChatAdapter.playingAudio;
+import static com.instamelody.instamelody.Adapters.ChatAdapter.tvNum;
 import static com.instamelody.instamelody.utils.Const.PUSH_NOTIFICATION;
 import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
 import static com.instamelody.instamelody.utils.Const.ServiceType.CHAT;
@@ -97,13 +101,15 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.MESSAGE_LIST;
 public class ChatActivity extends AppCompatActivity {
 
     public static TextView tvUserName, tvNamePlayer, tvUserNamePlayer, tvAudioNamePlayer, tvNumPlayer;
+    public static ImageView ivPausePlayer, ivPlayPlayer, userProfileImagePlayer;
+    public static RelativeLayout rlChatPlayer;
+    public static FrameLayout flPlayPausePlayer;
     ImageView ivClose;
     EditText etMessage;
     ImageView ivBackButton, ivHomeButton, ivAdjust, ivCamera, ivNewChat, ivRecieverProfilePic, ivSelectedImage;
     TextView tvSend, tvRecieverName, tvAudioName, tvUserNameOnAudio;
     RecyclerView recycleImage, recyclerViewChat;
-    RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton, rlMessage, rlSelectedImage, rlSendAudio;
-    public static RelativeLayout rlChatPlayer;
+    RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton, rlMessage, rlSelectedImage, rlSendAudio, rlPrevPlayer, rlNextPlayer;
 
     RecentImagesAdapter riAdapter;
     ChatAdapter cAdapter;
@@ -162,16 +168,22 @@ public class ChatActivity extends AppCompatActivity {
         }
 
         rlSelectedImage = (RelativeLayout) findViewById(R.id.rlSelectedImage);
-        rlChatPlayer = (RelativeLayout) findViewById(R.id.rlChatPlayer);
         ivClose = (ImageView) findViewById(R.id.ivClose);
         ivSelectedImage = (ImageView) findViewById(R.id.ivSelectedImage);
         rlSendAudio = (RelativeLayout) findViewById(R.id.rlSendAudio);
         tvAudioName = (TextView) findViewById(R.id.tvAudioName);
         tvUserNameOnAudio = (TextView) findViewById(R.id.tvUserNameOnAudio);
+        rlChatPlayer = (RelativeLayout) findViewById(R.id.rlChatPlayer);
         tvNamePlayer = (TextView) findViewById(R.id.tvNamePlayer);
         tvUserNamePlayer = (TextView) findViewById(R.id.tvUserNamePlayer);
         tvAudioNamePlayer = (TextView) findViewById(R.id.tvAudioNamePlayer);
         tvNumPlayer = (TextView) findViewById(R.id.tvNumPlayer);
+        rlPrevPlayer = (RelativeLayout) findViewById(R.id.rlPrevPlayer);
+        rlNextPlayer = (RelativeLayout) findViewById(R.id.rlNextPlayer);
+        ivPausePlayer = (ImageView) findViewById(R.id.ivPausePlayer);
+        ivPlayPlayer = (ImageView) findViewById(R.id.ivPlayPlayer);
+        flPlayPausePlayer = (FrameLayout) findViewById(R.id.flPlayPausePlayer);
+        userProfileImagePlayer = (ImageView) findViewById(R.id.userProfileImagePlayer);
 
 //        parent = getIntent().getStringExtra("from");
         imageFileList.clear();
@@ -381,7 +393,6 @@ public class ChatActivity extends AppCompatActivity {
                     tvSend.setVisibility(View.GONE);
 
                     sendMessage(message, userId/*, temp*/);
-                    getChatMsgs(chatId);
 
 //                    int messageCount = Integer.parseInt(tvMessageCount.getText().toString().trim()) + 1;
 //                    tvMessageCount.setText(String.valueOf(messageCount));
@@ -393,7 +404,6 @@ public class ChatActivity extends AppCompatActivity {
                     rlSelectedImage.setVisibility(View.GONE);
                     ivClose.setVisibility(View.GONE);
 //                    sendImageBitmap.recycle();
-
 
                 } else {
                     Toast.makeText(getApplicationContext(), "Log in to Chat", Toast.LENGTH_SHORT).show();
@@ -491,6 +501,63 @@ public class ChatActivity extends AppCompatActivity {
                 rlSelectedImage.setVisibility(View.GONE);
             }
         });
+
+        flPlayPausePlayer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
+                if(ivPlayPlayer.getVisibility()==View.VISIBLE){
+                    ivPlayPlayer.setVisibility(View.GONE);
+                    ivPausePlayer.setVisibility(View.VISIBLE);
+                }else{
+                    ivPausePlayer.setVisibility(View.GONE);
+                    ivPlayPlayer.setVisibility(View.VISIBLE);
+                }
+                SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
+                String audioUrl = sharedAudios.getRecordingUrl();
+                Picasso.with(userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).into(userProfileImagePlayer);
+                ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
+                ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
+                ChatActivity.tvNumPlayer.setText(tvNum.getText().toString().trim());
+                AudioOperator(audioUrl);
+            }
+        });
+
+        rlPrevPlayer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ivPlayPlayer.setVisibility(View.GONE);
+                ivPausePlayer.setVisibility(View.VISIBLE);
+                playingAudio = playingAudio - 1;
+                String str = "(" + (playingAudio + 1) + " of " + String.valueOf(sharedAudioList.size()) + ")";
+                tvNum.setText(str);
+                SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
+                String audioUrl = sharedAudios.getRecordingUrl();
+                Picasso.with(userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).into(userProfileImagePlayer);
+                ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
+                ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
+                ChatActivity.tvNumPlayer.setText(str);
+                AudioOperator(audioUrl);
+            }
+        });
+
+        rlNextPlayer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ivPlayPlayer.setVisibility(View.GONE);
+                ivPausePlayer.setVisibility(View.VISIBLE);
+                playingAudio = playingAudio + 1;
+                String str = "(" + (playingAudio + 1) + " of " + String.valueOf(sharedAudioList.size()) + ")";
+                tvNum.setText(str);
+                SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
+                String audioUrl = sharedAudios.getRecordingUrl();
+                Picasso.with(userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).into(userProfileImagePlayer);
+                ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
+                ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
+                ChatActivity.tvNumPlayer.setText(str);
+                AudioOperator(audioUrl);
+            }
+        });
     }
 
     @Override
@@ -501,7 +568,6 @@ public class ChatActivity extends AppCompatActivity {
         editor.putString("receiverImage", "");
         editor.putString("chatId", "");
         editor.commit();
-
         finish();
         Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
         startActivity(intent);
@@ -779,7 +845,8 @@ public class ChatActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(NetworkResponse response) {
                             String str = new String(response.data);
-                            Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
+                            getChatMsgs(chatId);
                         }
                     }, new Response.ErrorListener() {
                 @Override
@@ -851,7 +918,12 @@ public class ChatActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(String response) {
                     String str = response;
-                    Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
+                    getChatMsgs(chatId);
+                    SharedPreferences.Editor editor = getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
+                    editor.clear();
+                    editor.apply();
+
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -869,8 +941,9 @@ public class ChatActivity extends AppCompatActivity {
                     } else if (error instanceof NetworkError) {
                         errorMsg = "We are facing problem in connecting to network";
                     } else if (error instanceof ParseError) {
-                        errorMsg = "ParseError";
+                        errorMsg = "Parse error";
                     }
+
                     Toast.makeText(getApplicationContext(), "chat api error response " + errorMsg, Toast.LENGTH_SHORT).show();
                     Log.d("Error", errorMsg);
                     error.printStackTrace();
@@ -879,7 +952,6 @@ public class ChatActivity extends AppCompatActivity {
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<>();
-
                     if (chatType.equals("group")) {
                         if (senderId.equals(user_Id)) {
                             params.put(RECEIVER_ID, receiverId);
@@ -900,7 +972,6 @@ public class ChatActivity extends AppCompatActivity {
                             params.put(RECEIVER_ID, receiverId);
                         }
                     }
-
                     if (flagFileType.equals("2")) {
                         String recID;
                         SharedPreferences audioShareData = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE);
@@ -911,7 +982,6 @@ public class ChatActivity extends AppCompatActivity {
                     } else if (flagFileType.equals("3")) {
                         params.put(FILE_TYPE, "admin_melody");
                     }
-
                     params.put(SENDER_ID, user_Id);
                     params.put(CHAT_ID, chatId);
                     params.put(TITLE, "message");
@@ -922,10 +992,9 @@ public class ChatActivity extends AppCompatActivity {
             };
             RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
             requestQueue.add(stringRequest);
-
-            SharedPreferences.Editor editor = getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
-            editor.clear();
-            editor.apply();
+//            SharedPreferences.Editor editor = getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
+//            editor.clear();
+//            editor.apply();
         }
     }
 
