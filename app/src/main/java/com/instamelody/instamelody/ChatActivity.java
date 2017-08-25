@@ -707,7 +707,7 @@ public class ChatActivity extends AppCompatActivity {
                                                         if (audiosDetailsArray.length() > 0) {
                                                             for (int k = 0; k < sharedAudiosArray.length(); k++) {
                                                                 SharedAudios sharedAudios = new SharedAudios();
-                                                                JSONObject audioJson = sharedAudiosArray.getJSONObject(j);
+                                                                JSONObject audioJson = sharedAudiosArray.getJSONObject(k);
                                                                 sharedAudios.setAddedById(audioJson.getString("added_by_id"));
                                                                 sharedAudios.setUserName(audioJson.getString("user_name"));
                                                                 sharedAudios.setName(audioJson.getString("name"));
