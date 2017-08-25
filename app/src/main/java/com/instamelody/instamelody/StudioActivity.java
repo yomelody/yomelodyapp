@@ -1504,8 +1504,8 @@ public class StudioActivity extends AppCompatActivity {
         builder2.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //uploadRecordingsMixing("5");
-                saveRecordings1();
+                uploadRecordingsMixing("5");
+               // saveRecordings1();
 
                 //  new LongOperation().execute();
 
@@ -2075,7 +2075,7 @@ public class StudioActivity extends AppCompatActivity {
                         //obj.put("Id", id);
                         //jsonObject.put(Mixrecording, list.get(i).toString());
                         JSONObject jsonObject=new JSONObject();
-                        jsonObject.put("Id", list.get(i).id);
+                        jsonObject.put("id", list.get(i).id);
                         jsonObject.put("Volume", list.get(i).volume);
                         jsonObject.put("Bass", list.get(i).bass);
                         jsonObject.put("Treble", list.get(i).treble);

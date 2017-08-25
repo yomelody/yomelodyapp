@@ -211,6 +211,7 @@ public class ProfileActivityFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(USER_ID, userId);
                 params.put("key", "passed");
+                params.put("ApiAuthenticationKey","@_$%yomelody%audio#@mixing(app*");
                 return params;
             }
         };
