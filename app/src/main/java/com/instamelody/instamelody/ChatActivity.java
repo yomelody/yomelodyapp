@@ -96,13 +96,14 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.MESSAGE_LIST;
 
 public class ChatActivity extends AppCompatActivity {
 
-    public static TextView tvUserName;
+    public static TextView tvUserName, tvNamePlayer, tvUserNamePlayer, tvAudioNamePlayer, tvNumPlayer;
     ImageView ivClose;
     EditText etMessage;
     ImageView ivBackButton, ivHomeButton, ivAdjust, ivCamera, ivNewChat, ivRecieverProfilePic, ivSelectedImage;
     TextView tvSend, tvRecieverName, tvAudioName, tvUserNameOnAudio;
     RecyclerView recycleImage, recyclerViewChat;
     RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton, rlMessage, rlSelectedImage, rlSendAudio;
+    public static RelativeLayout rlChatPlayer;
 
     RecentImagesAdapter riAdapter;
     ChatAdapter cAdapter;
@@ -161,11 +162,16 @@ public class ChatActivity extends AppCompatActivity {
         }
 
         rlSelectedImage = (RelativeLayout) findViewById(R.id.rlSelectedImage);
+        rlChatPlayer = (RelativeLayout) findViewById(R.id.rlChatPlayer);
         ivClose = (ImageView) findViewById(R.id.ivClose);
         ivSelectedImage = (ImageView) findViewById(R.id.ivSelectedImage);
         rlSendAudio = (RelativeLayout) findViewById(R.id.rlSendAudio);
         tvAudioName = (TextView) findViewById(R.id.tvAudioName);
         tvUserNameOnAudio = (TextView) findViewById(R.id.tvUserNameOnAudio);
+        tvNamePlayer = (TextView) findViewById(R.id.tvNamePlayer);
+        tvUserNamePlayer = (TextView) findViewById(R.id.tvUserNamePlayer);
+        tvAudioNamePlayer = (TextView) findViewById(R.id.tvAudioNamePlayer);
+        tvNumPlayer = (TextView) findViewById(R.id.tvNumPlayer);
 
 //        parent = getIntent().getStringExtra("from");
         imageFileList.clear();
@@ -701,14 +707,14 @@ public class ChatActivity extends AppCompatActivity {
                                                         if (audiosDetailsArray.length() > 0) {
                                                             for (int k = 0; k < sharedAudiosArray.length(); k++) {
                                                                 SharedAudios sharedAudios = new SharedAudios();
-                                                                JSONObject audioJson = sharedAudiosArray.getJSONObject(j);
+                                                                JSONObject audioJson = sharedAudiosArray.getJSONObject(k);
                                                                 sharedAudios.setAddedById(audioJson.getString("added_by_id"));
                                                                 sharedAudios.setUserName(audioJson.getString("user_name"));
                                                                 sharedAudios.setName(audioJson.getString("name"));
-                                                                sharedAudios.setName(audioJson.getString("profile_url"));
-                                                                sharedAudios.setUserName(audioJson.getString("date_added"));
-                                                                sharedAudios.setUserName(audioJson.getString("duration"));
-                                                                sharedAudios.setUserName(audioJson.getString("recording_url"));
+                                                                sharedAudios.setProfileUrl(audioJson.getString("profile_url"));
+                                                                sharedAudios.setDateAdded(audioJson.getString("date_added"));
+                                                                sharedAudios.setDuration(audioJson.getString("duration"));
+                                                                sharedAudios.setRecordingUrl(audioJson.getString("recording_url"));
                                                                 sharedAudioList.add(sharedAudios);
                                                             }
                                                         }

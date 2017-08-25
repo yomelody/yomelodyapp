@@ -69,7 +69,7 @@ public class RecordingsFragment extends Fragment {
     String genreString = "1";
 
     private String ID = "id";
-    private String KEY = "key";
+    String KEY = "ApiAuthenticationKey";
     private String FILE_TYPE = "file_type";
     private String FILTER_TYPE = "filter_type";
     private String FILTER = "filter";
@@ -325,6 +325,7 @@ public class RecordingsFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+                params.put(KEY, "@_$%yomelody%audio#@mixing(app*");
                 params.put(ID, userId);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
@@ -392,6 +393,7 @@ public class RecordingsFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+                params.put(KEY, "@_$%yomelody%audio#@mixing(app*");
                 params.put(ID, userId);
                 params.put(KEY_SEARCH, strSearch);
                 return params;
@@ -450,6 +452,7 @@ public class RecordingsFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+                params.put(KEY, "@_$%yomelody%audio#@mixing(app*");
                 params.put(ID, userId);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
@@ -512,6 +515,7 @@ public class RecordingsFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+                params.put(KEY, "@_$%yomelody%audio#@mixing(app*");
                 params.put(ID, userId);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
@@ -577,6 +581,7 @@ public class RecordingsFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+                params.put(KEY, "@_$%yomelody%audio#@mixing(app*");
                 params.put(ID, userId);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");

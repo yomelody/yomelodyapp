@@ -60,10 +60,10 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:layout_gravity="center"
-                            android:layout_marginLeft="5dp"
-                            android:layout_marginStart="5dp"
                             android:layout_marginEnd="20dp"
+                            android:layout_marginLeft="5dp"
                             android:layout_marginRight="20dp"
+                            android:layout_marginStart="5dp"
                             app:srcCompat="@drawable/prev_dark" />
 
                         <TextView
@@ -113,8 +113,8 @@
                             android:id="@+id/tick"
                             android:layout_width="11dp"
                             android:layout_height="8dp"
-                            android:layout_marginStart="8dp"
                             android:layout_marginLeft="8dp"
+                            android:layout_marginStart="8dp"
                             android:background="@drawable/tick_white"
                             android:visibility="gone" />
 
@@ -154,9 +154,9 @@
                         <RelativeLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="0.80"
                             android:layout_marginLeft="5dp"
-                            android:layout_marginStart="5dp">
+                            android:layout_marginStart="5dp"
+                            android:layout_weight="0.80">
 
                             <TextView
                                 android:id="@+id/tvMelodyName"
@@ -186,6 +186,31 @@
                     </LinearLayout>
 
                 </RelativeLayout>
+
+                <FrameLayout
+                    android:layout_marginTop="47dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginLeft="7dp"
+                    android:layout_marginRight="0dp"
+                    android:layout_marginStart="7dp">
+
+                    <SeekBar
+                        android:id="@+id/seekBarChat"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:indeterminate="false"
+                        android:paddingEnd="0dp"
+                        android:paddingLeft="0dp"
+                        android:layout_gravity="center"
+                        android:paddingRight="0dp"
+                        android:paddingStart="0dp"
+                        android:progress="50"
+                        android:progressDrawable="@drawable/new_seekbar"/>
+
+                </FrameLayout>
+
             </RelativeLayout>
 
             <TextView

@@ -31,9 +31,7 @@
         <RelativeLayout
             android:id="@+id/rlMessage"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@+id/rlProfilePic"
-            android:layout_toRightOf="@+id/rlProfilePic">
+            android:layout_height="wrap_content">
 
             <RelativeLayout
                 android:id="@+id/rlChatRecording"
@@ -98,8 +96,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="85dp"
                     android:layout_below="@+id/rlChatRecTop"
-                    android:background="@drawable/chat_rec_blue"
-                    android:gravity="end">
+                    android:background="@drawable/chat_rec_blue">
 
                     <RelativeLayout
                         android:layout_width="45dp"
@@ -186,6 +183,31 @@
                         </RelativeLayout>
                     </LinearLayout>
                 </RelativeLayout>
+
+                <FrameLayout
+                    android:layout_marginTop="47dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginLeft="7dp"
+                    android:layout_marginRight="0dp"
+                    android:layout_marginStart="7dp">
+
+                    <SeekBar
+                        android:id="@+id/seekBarChat"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:indeterminate="false"
+                        android:paddingEnd="0dp"
+                        android:paddingLeft="0dp"
+                        android:layout_gravity="center"
+                        android:paddingRight="0dp"
+                        android:paddingStart="0dp"
+                        android:progress="50"
+                        android:progressDrawable="@drawable/new_seekbar"
+                        />
+                </FrameLayout>
+
             </RelativeLayout>
 
             <TextView
