@@ -2,6 +2,8 @@ package com.instamelody.instamelody.Adapters;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.support.annotation.IntegerRes;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,12 +13,14 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.instamelody.instamelody.ChatActivity;
 import com.instamelody.instamelody.Models.AudioDetails;
 import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.SharedAudios;
 import com.instamelody.instamelody.R;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -32,7 +36,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     private ArrayList<Message> chatList = new ArrayList<>();
     private ArrayList<AudioDetails> audioDetailsList = new ArrayList<>();
     private ArrayList<SharedAudios> sharedAudioList = new ArrayList<>();
-
+    MediaPlayer mediaPlayer;
     private String userId;
     private int SELF = 100;
     private int SELF_IMAGE = 101;
@@ -40,7 +44,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     private int OTHER = 103;
     private int OTHER_IMAGE = 104;
     private int OTHER_AUDIO = 105;
-    String playingAudio = "1";
+    private int playingAudio = 0;
 
 //    public ChatAdapter(Context context, ArrayList<Message> chatList) {
 //        this.chatList = chatList;
@@ -74,35 +78,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             ivPrev = (ImageView) itemView.findViewById(R.id.ivPrev);
             ivNext = (ImageView) itemView.findViewById(R.id.ivNext);
             ivSettings = (ImageView) itemView.findViewById(R.id.ivSettings);
-
-            ivPlay.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                }
-            });
-
-            ivPrev.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                }
-            });
-
-            ivNext.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                }
-            });
-
-            ivSettings.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                }
-            });
-
         }
     }
 
@@ -165,19 +140,215 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(final MyViewHolder holder, int position) {
 
         final int itemType = getItemViewType(position);
         if (itemType == SELF_AUDIO || itemType == OTHER_AUDIO) {
             Message message = chatList.get(position);
             AudioDetails audioDetails = audioDetailsList.get(0);
-//            SharedAudios sharedAudios = sharedAudioList.get(sharedAudioList.size()-1);
             Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).into(holder.userProfileImage);
             holder.timeStamp.setText(message.getCreatedAt());
             holder.tvMelodyName.setText(audioDetails.getRecordingTopic());
             holder.tvUserName.setText(audioDetails.getUserName());
-            String str = "(" + playingAudio + " of " + String.valueOf(sharedAudioList.size() + ")");
+            final String str = "(" + (playingAudio + 1) + " of " + String.valueOf(sharedAudioList.size()) + ")";
             holder.tvNum.setText(str);
+
+            holder.ivPlay.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
+                    SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
+                    String audioUrl = sharedAudios.getRecordingUrl();
+                    ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
+                    ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
+                    ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
+                    ChatActivity.tvNumPlayer.setText(holder.tvNum.getText().toString().trim());
+
+//                    holder.progressDialog = new ProgressDialog(v.getContext());
+//                    holder.progressDialog.setMessage("Loading...");
+//                    holder.progressDialog.show();
+//                    holder.ivPause.setVisibility(VISIBLE);
+//                    holder.melodySlider.setVisibility(VISIBLE);
+//                    holder.rlSeekbarTracer.setVisibility(VISIBLE);
+
+//                    String position;
+//                    position = melodyList.get(listPosition).getMelodyPackId();
+//                    String play = holder.tvPlayCount.getText().toString().trim();
+//                    int playValue = Integer.parseInt(play) + 1;
+//                    play = String.valueOf(playValue);
+//                    holder.tvPlayCount.setText(play);
+//                    fetchViewCount(userId, position);
+//                    ParseContents pc = new ParseContents(context);
+//                    instrumentList = pc.getInstruments();
+//                    if (listPosition < instrumentList.size()) {
+//                        audioUrl = melody.getMelodyURL();
+//                    }
+
+                    if (mediaPlayer != null) {
+                        try {
+                            if (mediaPlayer.isPlaying()) {
+                                mediaPlayer.stop();
+                                mediaPlayer.reset();
+                                mediaPlayer.release();
+                                mediaPlayer = null;
+//                                if (lastModifiedHoled != null) {
+//                                    int lastPosition = lastModifiedHoled.getAdapterPosition();
+//                                    lastModifiedHoled.itemView.findViewById(R.id.ivPlay).setVisibility(VISIBLE);
+//                                    lastModifiedHoled.itemView.findViewById(R.id.ivPause).setVisibility(GONE);
+//                                    notifyItemChanged(lastPosition);
+//                                }
+                            }
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    mediaPlayer = new MediaPlayer();
+                    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    try {
+                        mediaPlayer.setDataSource(audioUrl);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    mediaPlayer.prepareAsync();
+                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mediaPlayer) {
+//                            holder.progressDialog.dismiss();
+//                            lastModifiedHoled.itemView.findViewById(R.id.ivPlay).setVisibility(GONE);
+//                            lastModifiedHoled.itemView.findViewById(R.id.ivPause).setVisibility(VISIBLE);
+                            mediaPlayer.start();
+//                            holder.primarySeekBarProgressUpdater();
+                        }
+                    });
+                    mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                        @Override
+                        public boolean onError(MediaPlayer MediaPlayer, int what, int extra) {
+//                            holder.progressDialog.dismiss();
+                            return false;
+                        }
+                    });
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mediaPlayer) {
+//                            duration = mediaPlayer.getDuration();
+//                            holder.progressDialog.dismiss();
+                        }
+                    });
+//                    lastModifiedHoled = holder;
+                }
+            });
+
+            holder.ivPrev.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
+                    playingAudio = playingAudio - 1;
+                    String str = "(" + (playingAudio + 1) + " of " + String.valueOf(sharedAudioList.size()) + ")";
+                    holder.tvNum.setText(str);
+                    SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
+                    String audioUrl = sharedAudios.getRecordingUrl();
+                    ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
+                    ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
+                    ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
+                    ChatActivity.tvNumPlayer.setText(holder.tvNum.getText().toString().trim());
+
+                    if (mediaPlayer != null) {
+                        try {
+                            if (mediaPlayer.isPlaying()) {
+                                mediaPlayer.stop();
+                                mediaPlayer.reset();
+                                mediaPlayer.release();
+                                mediaPlayer = null;
+                            }
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    mediaPlayer = new MediaPlayer();
+                    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    try {
+                        mediaPlayer.setDataSource(audioUrl);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    mediaPlayer.prepareAsync();
+                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mediaPlayer) {
+                            mediaPlayer.start();
+                        }
+                    });
+                    mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                        @Override
+                        public boolean onError(MediaPlayer MediaPlayer, int what, int extra) {
+                            return false;
+                        }
+                    });
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mediaPlayer) {
+                        }
+                    });
+                }
+            });
+
+            holder.ivNext.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
+                    playingAudio = playingAudio + 1;
+                    String str = "(" + (playingAudio + 1) + " of " + String.valueOf(sharedAudioList.size()) + ")";
+                    holder.tvNum.setText(str);
+                    SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
+                    String audioUrl = sharedAudios.getRecordingUrl();
+                    ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
+                    ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
+                    ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
+                    ChatActivity.tvNumPlayer.setText(holder.tvNum.getText().toString().trim());
+
+                    if (mediaPlayer != null) {
+                        try {
+                            if (mediaPlayer.isPlaying()) {
+                                mediaPlayer.stop();
+                                mediaPlayer.reset();
+                                mediaPlayer.release();
+                                mediaPlayer = null;
+                            }
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    mediaPlayer = new MediaPlayer();
+                    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    try {
+                        mediaPlayer.setDataSource(audioUrl);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    mediaPlayer.prepareAsync();
+                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mediaPlayer) {
+                            mediaPlayer.start();
+                        }
+                    });
+                    mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                        @Override
+                        public boolean onError(MediaPlayer MediaPlayer, int what, int extra) {
+                            return false;
+                        }
+                    });
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mediaPlayer) {
+                        }
+                    });
+                }
+            });
+
         } else if (itemType == SELF_IMAGE || itemType == OTHER_IMAGE) {
             Message message = chatList.get(position);
             Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).into(holder.userProfileImage);
