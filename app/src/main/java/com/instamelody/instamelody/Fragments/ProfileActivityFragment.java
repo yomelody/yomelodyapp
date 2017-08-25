@@ -36,16 +36,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ACTIVITY;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.RMethod.getServerDiffrenceDate;
 
 /**
@@ -61,7 +59,7 @@ public class ProfileActivityFragment extends Fragment {
     private static ArrayList<ActivityModel> arraylist;
     String KEY_FLAG = "flag";
     String USER_ID = "user_id";
-    String KEY_RESPONSE = "responce";
+    String KEY_RESPONSE = "response";
     public ProfileActivityFragment() {
     }
 
@@ -210,7 +208,7 @@ public class ProfileActivityFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(USER_ID, userId);
-                params.put("key", "passed");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
