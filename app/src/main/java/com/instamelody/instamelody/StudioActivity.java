@@ -350,6 +350,8 @@ public class StudioActivity extends AppCompatActivity {
         if (intent == null) {
         } else if (intent.getExtras().getString("clickPosition").equals("fromHomeActivity")) {
             //do nothing
+        }else if(intent.getExtras().getString("clickPosition").equals("fromSocialActivity")){
+            //do nothing
         } else {
             melodyPackId = intent.getExtras().getString("clickPosition");
             if (melodyPackId != null) {
@@ -2023,9 +2025,9 @@ public class StudioActivity extends AppCompatActivity {
                 try {
                     JSONObject response1 = new JSONObject(resultResponse);
                     String flag = response1.getString("flag");
-                    String flag2 = response1.getString("0");
+                    String flag2 = response1.getString("response");
                     Log.d("Result", flag2);
-                    JSONObject r1 = response1.getJSONObject("0");
+                    JSONObject r1 = response1.getJSONObject("response");
                     if (r1.has("melody")) {
                         urlRecording = r1.getString("melody");
                         thumbNail = r1.getString("thumbnail");

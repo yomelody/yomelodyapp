@@ -73,6 +73,7 @@ dependencies {
     compile 'com.github.asne:asne-facebook:0.3.3'
     compile 'com.github.asne:asne-twitter:0.3.3'
     compile 'com.github.asne:asne-googleplus:0.3.3'
+    compile 'com.jlubecki.soundcloud:soundcloud-api:1.2.1'
     testCompile 'junit:junit:4.12'
 //    compile files('libs/facebook.jar')
 }

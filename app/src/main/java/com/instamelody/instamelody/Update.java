@@ -87,6 +87,7 @@ public class Update extends AppCompatActivity {
     String pswd;
     int day, month, year;
     int userIdUpdate =0;
+    String finalDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -335,7 +336,13 @@ public class Update extends AppCompatActivity {
         buttonUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!etuConfirmPassWord.getText().toString().equals(etuPassWord.getText().toString())) {
+                if(etuFirstName.getText().toString().trim().equals("")|| etuLastName.getText().toString().trim().equals("")
+                        || etuPassWord.getText().toString().trim().equals("")|| etuConfirmPassWord.getText().toString().trim().equals("")
+                        || etuUsername.getText().toString().trim().equals("")|| etuPhone.getText().toString().trim().equals("")){
+                    Toast.makeText(Update.this, "please fill remaining fields which are empty", Toast.LENGTH_SHORT).show();
+                }
+
+                else if (!etuConfirmPassWord.getText().toString().equals(etuPassWord.getText().toString())) {
                     // Toast.makeText(SignUpActivity.this, "please check your confirm password .", Toast.LENGTH_SHORT).show();
                     errorConfirmPassUpdate.setVisibility(View.VISIBLE);
                     errorConfirmPassUpdate.setText("Password didn't match!");
@@ -356,17 +363,18 @@ public class Update extends AppCompatActivity {
         } else {
             password1 = etuPassWord.getText().toString().trim();
         }
-//        final String dob = tvDob.getText().toString().trim();
-        final String dob = tvDobUpdate.getText().toString().trim();
-        String a = dob.replaceAll(" ", "");
-        try {
-            String b = a.substring(a.indexOf(":"), a.length());
-            date = b.replace(":", "").replace("|", "/");
-        } catch (StringIndexOutOfBoundsException siobe) {
-            System.out.println("invalid input");
+        if (!(tvDobUpdate.getText().toString().trim().equals(dob))){
+            final String dob = tvDobUpdate.getText().toString().trim();
+            String a = dob.replaceAll(" ", "");
+            try {
+                String b = a.substring(a.indexOf(":"), a.length());
+                finalDate = b.replace(":", "").replace("|", "/");
+            } catch (StringIndexOutOfBoundsException siobe) {
+                System.out.println("invalid input");
+            }
+        }else {
+            finalDate = tvDobUpdate.getText().toString().trim();
         }
-
-//        final String date = b.replace(":", "").replace("|", "/");
         final String phone = etuPhone.getText().toString().trim();
         final String usertype = "USER";
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UPDATEPROFILE,
@@ -375,7 +383,9 @@ public class Update extends AppCompatActivity {
                     public void onResponse(String response) {
 
                         String successmsg = response.toString();
-                        Toast.makeText(Update.this, "Profile Updated", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Update.this, "Login with Updated password", Toast.LENGTH_SHORT).show();
+                        Intent i = new Intent(Update.this,SignInActivity.class);
+                        startActivity(i);
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
                             String flag = jsonObject.getString("flag");
@@ -409,7 +419,7 @@ public class Update extends AppCompatActivity {
                 params.put(KEY_EMAIL, email);
                 params.put(KEY_USERNAME, username);
                 params.put(KEY_PASSWORD, password1);
-                params.put(KEY_DOB, date);
+                params.put(KEY_DOB, finalDate);
                 params.put(KEY_PHONE, phone);
                 return params;
             }
