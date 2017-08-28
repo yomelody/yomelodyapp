@@ -1,5 +1,6 @@
 package com.instamelody.instamelody;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -36,6 +38,18 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.auth0.android.Auth0;
+import com.auth0.android.authentication.AuthenticationException;
+import com.auth0.android.callback.BaseCallback;
+import com.auth0.android.lock.AuthenticationCallback;
+import com.auth0.android.lock.Lock;
+import com.auth0.android.lock.LockCallback;
+import com.auth0.android.lock.utils.LockException;
+import com.auth0.android.provider.AuthCallback;
+import com.auth0.android.provider.WebAuthProvider;
+import com.auth0.android.result.Authentication;
+import com.auth0.android.result.Credentials;
+import com.auth0.android.result.UserProfile;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -70,6 +84,7 @@ import io.fabric.sdk.android.Fabric;
 import retrofit2.Call;
 
 import static android.R.attr.id;
+import static android.R.attr.theme;
 import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
@@ -111,12 +126,12 @@ public class SignInActivity extends AppCompatActivity {
     int temp = 0;
 
     EditText etEmail, etPassword;
-    TextView emailRequired, passwordRequired,tvForgetPassword;
+    TextView emailRequired, passwordRequired, tvForgetPassword;
     //    String deviceToken;
 //    String TestdeviceToken;
     ImageView ivuserimg;
     Button btnLogIn, btnClearEmail, btnClearPass;
-    RelativeLayout btnfblogin, btnRlTwitterlogin;
+    RelativeLayout btnfblogin, btnRlTwitterlogin, rlSoundCloud;
     private CallbackManager mcallbckmanager;
     LoginButton fbloginbtn;
     String name, username, firstNamefb, lastNamefb, email, gender, birthday;
@@ -127,6 +142,7 @@ public class SignInActivity extends AppCompatActivity {
     String photoUrlNormalSize;
     Long TwitterId;
     EditText subEtTopicName;
+    private Lock lock;
 
     private TwitterAuthClient client;
     private TwitterLoginButton twitterLoginButton;
@@ -156,6 +172,7 @@ public class SignInActivity extends AppCompatActivity {
         mcallbckmanager = CallbackManager.Factory.create();
         fbloginbtn = (LoginButton) findViewById(R.id.FbLoginReal);
         tvForgetPassword = (TextView) findViewById(R.id.tvForgetPassword);
+        rlSoundCloud = (RelativeLayout) findViewById(R.id.rlSoundCloud);
         SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
         DeviceToken = fcmPref.getString("regId", null);
 //        Log.d("DeviceToken", DeviceToken);
@@ -348,7 +365,49 @@ public class SignInActivity extends AppCompatActivity {
             }
         });
 
+        rlSoundCloud.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loginSoundCloud();
+//                startActivity(lock.newIntent(getApplicationContext()));
+            }
+        });
+
+
+        Auth0 auth0 = new Auth0("rPAyruyB5UnHEbfVMERs2qbyt8KsBe_m", "codingbrains.auth0.com");
+        auth0.setOIDCConformant(true);
+        lock = Lock.newBuilder(auth0, callback)
+                .withAudience("https://codingbrains.auth0.com/userinfo")
+                // ... Options
+                .build(this);
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Your own Activity code
+        lock.onDestroy(this);
+        lock = null;
+    }
+
+
+    private LockCallback callback = new AuthenticationCallback() {
+        @Override
+        public void onAuthentication(Credentials credentials) {
+            //Authenticated
+            credentials.getIdToken();
+        }
+
+        @Override
+        public void onCanceled() {
+            //User pressed back
+        }
+
+        @Override
+        public void onError(LockException error) {
+            //Exception occurred
+        }
+    };
 
     //this callback is the same for default and custom login metods
     private Callback<TwitterSession> authCallback = new Callback<TwitterSession>() {
@@ -371,8 +430,8 @@ public class SignInActivity extends AppCompatActivity {
             twitterAuthClient.requestEmail(session1, new Callback<String>() {
                 @Override
                 public void success(Result<String> result) {
-                    Toast.makeText(SignInActivity.this, ""+result, Toast.LENGTH_LONG).show();
-                    Log.d("TwitterEmail",result.toString());
+                    Toast.makeText(SignInActivity.this, "" + result, Toast.LENGTH_LONG).show();
+                    Log.d("TwitterEmail", result.toString());
                 }
 
                 @Override
@@ -693,7 +752,7 @@ public class SignInActivity extends AppCompatActivity {
                                 twitterEditor.putString("emailFinal", emailfinal);
                                 twitterEditor.putString("profilePic", profilePic);
                                 twitterEditor.putString("coverPic", coverPic);
-                                twitterEditor.putString("userName",userName);
+                                twitterEditor.putString("userName", userName);
 //                                twitterEditor.putString("lastLogin", lastLogin);
 //                                twitterEditor.putString("userName", userName);
                                 twitterEditor.putString("fans", fans);
@@ -758,7 +817,6 @@ public class SignInActivity extends AppCompatActivity {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(SignInActivity.this);
 //        builder.setView(sp);
-
 
 
         AlertDialog.Builder builder2 = new AlertDialog.Builder(this);
@@ -856,6 +914,55 @@ public class SignInActivity extends AppCompatActivity {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
+    }
+
+    private void loginSoundCloud() {
+        Auth0 auth0 = new Auth0(this);
+        auth0.setOIDCConformant(true);
+        WebAuthProvider.init(auth0)
+                .withScheme("demo")
+                .withAudience(String.format("https://%s/userinfo", getString(R.string.com_auth0_domain)))
+                .start(SignInActivity.this, new AuthCallback() {
+                    @Override
+                    public void onFailure(@NonNull Dialog dialog) {
+                        // Show error Dialog to user
+                    }
+
+                    @Override
+                    public void onFailure(AuthenticationException exception) {
+                        // Show error to user
+                    }
+
+                    @Override
+                    public void onSuccess(@NonNull Credentials credentials) {
+                        // Store credentials
+                        credentials.getIdToken();
+                        /*Auth0 auth0 = new Auth0("rPAyruyB5UnHEbfVMERs2qbyt8KsBe_m", "codingbrains.auth0.com");
+                        Auth0 account = new Auth0("rPAyruyB5UnHEbfVMERs2qbyt8KsBe_m", "codingbrains.auth0.com");
+                        account.setOIDCConformant(true);
+
+                        LockCallback callback = new AuthenticationCallback() {
+                            @Override
+                            public void onAuthentication(Credentials credentials) {
+                                //Authenticated
+                            }
+
+                            @Override
+                            public void onCanceled() {
+                                //User pressed back
+                            }
+
+                            @Override
+                            public void onError(LockException error) {
+
+                            }
+                            //Exception occurred
+                        };*/
+
+                        // Navigate to your main activity
+                    }
+                });
+
     }
 }
 

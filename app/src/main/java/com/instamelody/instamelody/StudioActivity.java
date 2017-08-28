@@ -2036,6 +2036,10 @@ public class StudioActivity extends AppCompatActivity {
                         SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("Url_recording", MODE_PRIVATE).edit();
                         editor.putString("Recording_url", melodyurl);
                         editor.commit();
+
+                        SharedPreferences.Editor editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE).edit();
+                        editorT.putString("thumbnailUrl",  "http://52.89.220.199/api/thumbnail_url.php/?cp=http://52.89.220.199/api/uploads/cover.jpg&rc=http://52.89.220.199/api/uploads/recordings/rec1503669372.mp3");
+                        editorT.apply();
                     }
 
 

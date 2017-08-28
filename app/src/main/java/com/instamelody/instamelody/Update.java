@@ -84,7 +84,7 @@ public class Update extends AppCompatActivity {
     String password1;
     DatePickerDialog dpd;
     String formatedDate;
-    String pswd;
+    String passwordNil = "";
     int day, month, year;
     int userIdUpdate =0;
     String finalDate;
@@ -337,7 +337,6 @@ public class Update extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(etuFirstName.getText().toString().trim().equals("")|| etuLastName.getText().toString().trim().equals("")
-                        || etuPassWord.getText().toString().trim().equals("")|| etuConfirmPassWord.getText().toString().trim().equals("")
                         || etuUsername.getText().toString().trim().equals("")|| etuPhone.getText().toString().trim().equals("")){
                     Toast.makeText(Update.this, "please fill remaining fields which are empty", Toast.LENGTH_SHORT).show();
                 }
@@ -358,8 +357,8 @@ public class Update extends AppCompatActivity {
         final String lastname = etuLastName.getText().toString().trim();
         final String username = etuUsername.getText().toString().trim();
         final String password = etuPassWord.getText().toString().trim();
-        if (password == null) {
-            password1 = pswd;
+        if (password.equals("")) {
+            password1 = passwordNil;
         } else {
             password1 = etuPassWord.getText().toString().trim();
         }
@@ -418,6 +417,9 @@ public class Update extends AppCompatActivity {
                 params.put(KEY_LNAME, lastname);
                 params.put(KEY_EMAIL, email);
                 params.put(KEY_USERNAME, username);
+                if ((etuPassWord.getText().toString().trim().equals(""))){
+                    params.put(KEY_PASSWORD, passwordNil);
+                }else
                 params.put(KEY_PASSWORD, password1);
                 params.put(KEY_DOB, finalDate);
                 params.put(KEY_PHONE, phone);
