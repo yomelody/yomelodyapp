@@ -59,13 +59,14 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView chatMessage, timeStamp, tvUserName, tvMelodyName;
+        TextView chatMessage, chatImageName, timeStamp, tvUserName, tvMelodyName;
         ImageView userProfileImage, chatImage, ivPlay, ivSettings;
         RelativeLayout rlChatImage, rlBelowImage;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             chatMessage = (TextView) itemView.findViewById(R.id.chatMessage);
+            chatImageName = (TextView) itemView.findViewById(R.id.chatImageName);
             timeStamp = (TextView) itemView.findViewById(R.id.timeStamp);
             userProfileImage = (ImageView) itemView.findViewById(R.id.userProfileImage);
             chatImage = (ImageView) itemView.findViewById(R.id.chatImage);
@@ -290,7 +291,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).into(holder.userProfileImage);
             if (!message.getFile().equals("")) {
                 holder.rlChatImage.setVisibility(View.VISIBLE);
-                Picasso.with(holder.chatImage.getContext()).load(message.getFile()).into(holder.chatImage);
+                String picUrl = message.getFile();
+                String picName = picUrl.substring(picUrl.lastIndexOf("/") + 1);
+                Picasso.with(holder.chatImage.getContext()).load(picUrl).into(holder.chatImage);
+                holder.chatImageName.setText(picName);
             }
             if (!message.getMessage().equals("")) {
                 holder.chatMessage.setVisibility(View.VISIBLE);
@@ -329,7 +333,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         } catch (IOException e) {
             e.printStackTrace();
         }
-        mediaPlayer.prepareAsync();
+        try {
+            mediaPlayer.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {

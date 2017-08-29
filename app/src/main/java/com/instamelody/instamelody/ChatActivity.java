@@ -91,6 +91,8 @@ import static com.instamelody.instamelody.Adapters.ChatAdapter.playingAudio;
 import static com.instamelody.instamelody.Adapters.ChatAdapter.tvNum;
 import static com.instamelody.instamelody.utils.Const.PUSH_NOTIFICATION;
 import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.CHAT;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MESSAGE_LIST;
 
@@ -152,6 +154,28 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                if (intent.getAction().equals(PUSH_NOTIFICATION)) {
+                    // new push notification is received
+//                    String message = intent.getStringExtra("message");
+//                    String imageUrl = intent.getStringExtra("fileUrl");
+                    String chatId = intent.getStringExtra("chatId");
+                    getChatMsgs(chatId);
+//                    if (imageUrl != null && imageUrl.length() > 4 && Patterns.WEB_URL.matcher(imageUrl).matches()) {
+//                        Bitmap bitmap = getBitmapFromURL(imageUrl);
+//                        if (bitmap != null) {
+//                            tvImgChat.setImageBitmap(bitmap);
+//                        } else {
+//                            Toast.makeText(getApplicationContext(), "No Image!!", Toast.LENGTH_LONG).show();
+//                        }
+//                    }
+                }
+            }
+        };
+
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
         SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
@@ -170,9 +194,9 @@ public class ChatActivity extends AppCompatActivity {
         rlSelectedImage = (RelativeLayout) findViewById(R.id.rlSelectedImage);
         ivClose = (ImageView) findViewById(R.id.ivClose);
         ivSelectedImage = (ImageView) findViewById(R.id.ivSelectedImage);
-        rlSendAudio = (RelativeLayout) findViewById(R.id.rlSendAudio);
-        tvAudioName = (TextView) findViewById(R.id.tvAudioName);
-        tvUserNameOnAudio = (TextView) findViewById(R.id.tvUserNameOnAudio);
+//        rlSendAudio = (RelativeLayout) findViewById(R.id.rlSendAudio);
+//        tvAudioName = (TextView) findViewById(R.id.tvAudioName);
+//        tvUserNameOnAudio = (TextView) findViewById(R.id.tvUserNameOnAudio);
         rlChatPlayer = (RelativeLayout) findViewById(R.id.rlChatPlayer);
         tvNamePlayer = (TextView) findViewById(R.id.tvNamePlayer);
         tvUserNamePlayer = (TextView) findViewById(R.id.tvUserNamePlayer);
@@ -184,10 +208,6 @@ public class ChatActivity extends AppCompatActivity {
         ivPlayPlayer = (ImageView) findViewById(R.id.ivPlayPlayer);
         flPlayPausePlayer = (FrameLayout) findViewById(R.id.flPlayPausePlayer);
         userProfileImagePlayer = (ImageView) findViewById(R.id.userProfileImagePlayer);
-
-//        parent = getIntent().getStringExtra("from");
-        imageFileList.clear();
-        getGalleryImages();
 
         SharedPreferences selectedImagePos = getApplicationContext().getSharedPreferences("selectedImagePos", MODE_PRIVATE);
         if (selectedImagePos.getString("pos", null) != null) {
@@ -204,20 +224,15 @@ public class ChatActivity extends AppCompatActivity {
             flagFileType = "1";
         }
 
+//        parent = getIntent().getStringExtra("from");
+        imageFileList.clear();
+        fileInfo.clear();
+        getGalleryImages();
+
         SharedPreferences audioShareData = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE);
         if (audioShareData.getString("recID", null) != null) {
-//            String recID = audioShareData.getString("recID", null);
-//            String userName = audioShareData.getString("userName", null);
-//            String recName = audioShareData.getString("recName", null);
-//            String recUrl = audioShareData.getString("recUrl", null);
-//            String profilePic = audioShareData.getString("profilePic", null);
-//            String fileType = audioShareData.getString("fileType", null);
             flagFileType = "2";
             sendMessage("", userId);
-//            rlSelectedImage.setVisibility(View.VISIBLE);
-//            rlSendAudio.setVisibility(View.VISIBLE);
-//            tvAudioName.setText(recName);
-//            tvUserNameOnAudio.setText(userName);
         }
 
         SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
@@ -243,10 +258,6 @@ public class ChatActivity extends AppCompatActivity {
         SharedPreferences packPref = getSharedPreferences("PackData", MODE_PRIVATE);
         packId = packPref.getString("PackId", null);
         packType = packPref.getString("PackType", null);
-
-//        checkFile(packId, packType);
-//        final String temp = packPref.getString("PackPresent", null);
-
         getChatMsgs(chatId);
 
         etMessage = (EditText) findViewById(R.id.etMessage);
@@ -274,28 +285,6 @@ public class ChatActivity extends AppCompatActivity {
         recyclerViewChat.setItemAnimator(new DefaultItemAnimator());
         cAdapter = new ChatAdapter(getApplicationContext(), chatList, audioDetailsList, sharedAudioList);
         recyclerViewChat.setAdapter(cAdapter);
-
-        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-
-                if (intent.getAction().equals(PUSH_NOTIFICATION)) {
-                    // new push notification is received
-//                    String message = intent.getStringExtra("message");
-//                    String imageUrl = intent.getStringExtra("fileUrl");
-                    String chatId = intent.getStringExtra("chatId");
-                    getChatMsgs(chatId);
-//                    if (imageUrl != null && imageUrl.length() > 4 && Patterns.WEB_URL.matcher(imageUrl).matches()) {
-//                        Bitmap bitmap = getBitmapFromURL(imageUrl);
-//                        if (bitmap != null) {
-//                            tvImgChat.setImageBitmap(bitmap);
-//                        } else {
-//                            Toast.makeText(getApplicationContext(), "No Image!!", Toast.LENGTH_LONG).show();
-//                        }
-//                    }
-                }
-            }
-        };
 
         SharedPreferences token = this.getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
         deviceToken = token.getString("regId", null);
@@ -391,19 +380,13 @@ public class ChatActivity extends AppCompatActivity {
                     etMessage.getText().clear();
                     ivAdjust.setVisibility(View.VISIBLE);
                     tvSend.setVisibility(View.GONE);
-
-                    sendMessage(message, userId/*, temp*/);
-
-//                    int messageCount = Integer.parseInt(tvMessageCount.getText().toString().trim()) + 1;
-//                    tvMessageCount.setText(String.valueOf(messageCount));
+                    sendMessage(message, userId);
                     InputMethodManager inputManager = (InputMethodManager)
                             getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                             InputMethodManager.HIDE_NOT_ALWAYS);
-
                     rlSelectedImage.setVisibility(View.GONE);
                     ivClose.setVisibility(View.GONE);
-//                    sendImageBitmap.recycle();
 
                 } else {
                     Toast.makeText(getApplicationContext(), "Log in to Chat", Toast.LENGTH_SHORT).show();
@@ -506,10 +489,10 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
-                if(ivPlayPlayer.getVisibility()==View.VISIBLE){
+                if (ivPlayPlayer.getVisibility() == View.VISIBLE) {
                     ivPlayPlayer.setVisibility(View.GONE);
                     ivPausePlayer.setVisibility(View.VISIBLE);
-                }else{
+                } else {
                     ivPausePlayer.setVisibility(View.GONE);
                     ivPlayPlayer.setVisibility(View.VISIBLE);
                 }
@@ -648,15 +631,10 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRestart() {
-        super.onRestart();
-        getChatMsgs(chatId);
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         getChatMsgs(chatId);
+        imageFileList.clear();
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(PUSH_NOTIFICATION));
         NotificationUtils.clearNotifications(getApplicationContext());
@@ -664,8 +642,17 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
         super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+//        String str = String.valueOf(imageFileList.size());
+//        Toast.makeText(this, "onPause" + str, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        getChatMsgs(chatId);
+//        imageFileList.clear();
     }
 
    /* public void checkFile(final String pack_id, final String pack_type) {
@@ -830,6 +817,7 @@ public class ChatActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(CHAT_ID_, chat_Id);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -837,7 +825,7 @@ public class ChatActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
-    public void sendMessage(final String message, final String user_Id/*, final String packAvailable*/) {
+    public void sendMessage(final String message, final String user_Id) {
 
         if (flagFileType.equals("1")) {
             VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, CHAT,
@@ -902,6 +890,7 @@ public class ChatActivity extends AppCompatActivity {
                     params.put(TITLE, "message");
                     params.put(MESSAGE, message);
                     params.put(IS_READ, "0");
+                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
                     return params;
                 }
 
@@ -987,14 +976,12 @@ public class ChatActivity extends AppCompatActivity {
                     params.put(TITLE, "message");
                     params.put(MESSAGE, message);
                     params.put(IS_READ, "0");
+                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
                     return params;
                 }
             };
             RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
             requestQueue.add(stringRequest);
-//            SharedPreferences.Editor editor = getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
-//            editor.clear();
-//            editor.apply();
         }
     }
 
@@ -1007,6 +994,8 @@ public class ChatActivity extends AppCompatActivity {
                 String ExternalStoragePath = ExternalStorageDirectoryPath + "/DCIM/Camera/";
                 File targetDirector = new File(ExternalStoragePath);
 
+                int length;
+                String file, filename;
                 if (targetDirector.listFiles() != null) {
                     File[] files = targetDirector.listFiles(new FilenameFilter() {
                         public boolean accept(File dir, String name) {
@@ -1014,31 +1003,31 @@ public class ChatActivity extends AppCompatActivity {
                         }
                     });
 
-                    int i = files.length - 1;
-                    while (imageFileList.size() < 10) {
-                        File file = files[i];
-                        if (file.getAbsoluteFile().toString().trim().endsWith(".jpg")) {
-                            imageFileList.add(file.getAbsolutePath());
+                    length = files.length;
+                    if (files.length > 9) {
+                        for (int i = length - 1; i >= length - 10; i--) {
+                            RecentImagesModel rim = new RecentImagesModel();
+                            file = files[i].toString();
+                            rim.setFilepath(file);
+                            filename = file.substring(file.lastIndexOf("/") + 1);
+                            rim.setName(filename);
+                            fileInfo.add(rim);
                         }
-                        i--;
+                    } else {
+                        for (int i = length - 1; i >= 0; i--) {
+                            RecentImagesModel rim = new RecentImagesModel();
+                            file = files[i].toString();
+                            rim.setFilepath(file);
+                            filename = file.substring(file.lastIndexOf("/") + 1);
+                            rim.setName(filename);
+                            fileInfo.add(rim);
+                        }
                     }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Failed to read External storage", Toast.LENGTH_LONG).show();
                 }
-
-                String file, filename;
-                int length = imageFileList.size();
-                for (int i = 0; i < length; i++) {
-                    RecentImagesModel rim = new RecentImagesModel();
-                    file = imageFileList.get(i);
-                    rim.setFilepath(file);
-                    filename = file.substring(file.lastIndexOf("/") + 1);
-                    rim.setName(filename);
-                    fileInfo.add(rim);
-                }
-            } else {
-                Toast.makeText(getApplicationContext(), "Failed to read External storage", Toast.LENGTH_LONG).show();
             }
         }
-
         if (isExternalStorageEmulated()) {
             String state = Environment.getExternalStorageState();
             if (Environment.MEDIA_MOUNTED.equals(state) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
@@ -1055,26 +1044,32 @@ public class ChatActivity extends AppCompatActivity {
                         }
                     });
 
-                    if (files.length < 10) {
-                        length = files.length;
+                    length = files.length;
+                    if (files.length > 9) {
+                        for (int i = length - 1; i >= length - 10; i--) {
+                            RecentImagesModel rim = new RecentImagesModel();
+                            file = files[i].toString();
+                            rim.setFilepath(file);
+                            filename = file.substring(file.lastIndexOf("/") + 1);
+                            rim.setName(filename);
+                            fileInfo.add(rim);
+                        }
                     } else {
-                        length = 10;
+                        for (int i = length - 1; i >= 0; i--) {
+                            RecentImagesModel rim = new RecentImagesModel();
+                            file = files[i].toString();
+                            rim.setFilepath(file);
+                            filename = file.substring(file.lastIndexOf("/") + 1);
+                            rim.setName(filename);
+                            fileInfo.add(rim);
+                        }
                     }
-
-                    for (int i = 0; i < length; i++) {
-                        RecentImagesModel rim = new RecentImagesModel();
-                        file = files[i].toString();
-                        rim.setFilepath(file);
-                        filename = file.substring(file.lastIndexOf("/") + 1);
-                        rim.setName(filename);
-                        fileInfo.add(rim);
-                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Failed to read Internal storage", Toast.LENGTH_LONG).show();
                 }
             } else {
-                Toast.makeText(getApplicationContext(), "Failed to read Internal storage", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Failed to read device storage", Toast.LENGTH_LONG).show();
             }
-        } else {
-            Toast.makeText(getApplicationContext(), "Unknown storage found", Toast.LENGTH_LONG).show();
         }
     }
 

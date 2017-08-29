@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "870917113323-n3b4m6so9hluqrabg2lode2aa08criit.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.instamelody.instamelody",
+            "certificate_hash": "0323d16a90ffa4ad08e1d8affbd3a104516954ff"
+          }
+        },
+        {
           "client_id": "870917113323-3ob87s8pnit5vmm9uqu960tuuhh1tei1.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,20 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "870917113323-k0l3rk09mffuc2p3ggi8deqaua61simo.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.CodingBrainsMini.melody"
+              }
+            },
+            {
+              "client_id": "870917113323-3ob87s8pnit5vmm9uqu960tuuhh1tei1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

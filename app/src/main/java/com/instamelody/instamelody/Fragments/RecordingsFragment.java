@@ -241,6 +241,7 @@ public class RecordingsFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -272,10 +273,10 @@ public class RecordingsFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, "Myrecording");
                 params.put(USER_ID, userId);
                 params.put(GENRE, genreString);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -324,14 +325,13 @@ public class RecordingsFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(KEY, "@_$%yomelody%audio#@mixing(app*");
                 params.put(ID, userId);
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, "Myrecording");
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
                 params.put(FILTER, "extrafilter");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -394,11 +394,10 @@ public class RecordingsFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(KEY, "@_$%yomelody%audio#@mixing(app*");
                 params.put(ID, userId);
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, "Myrecording");
                 params.put(KEY_SEARCH, strSearch);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -455,15 +454,14 @@ public class RecordingsFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(KEY, "@_$%yomelody%audio#@mixing(app*");
                 params.put(ID, userId);
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, "Myrecording");
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
                 params.put(USER_NAME, strArtist);
                 params.put(FILTER, "extrafilter");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -520,15 +518,14 @@ public class RecordingsFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(KEY, "@_$%yomelody%audio#@mixing(app*");
                 params.put(ID, userId);
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, "Myrecording");
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, "Instruments");
                 params.put(COUNT, strInstruments);
                 params.put(FILTER, "extrafilter");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -588,15 +585,14 @@ public class RecordingsFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(KEY, "@_$%yomelody%audio#@mixing(app*");
                 params.put(ID, userId);
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, "Myrecording");
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
                 params.put(COUNT, strBPM);
                 params.put(FILTER, "extrafilter");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };

@@ -50,6 +50,8 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.instamelody.instamelody.Adapters.InstrumentListAdapter.audioUrl;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LIKESAPI;
 import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
 /*import static com.instamelody.instamelody.R.id.melodySlider;
@@ -623,6 +625,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 params.put(FILE_ID, pos);
                 params.put(TYPE, "admin_melody");
                 params.put(LIKES, likeState);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -667,6 +670,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 params.put(FILEID, pos);
                 //    params.put(TYPE, "admin_melody");
                 params.put(TYPE, "melody");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -742,6 +746,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 params.put(Key_shared_by_user, shared_by_user);
                 params.put(Key_shared_with, shared_with);
                 params.put(Key_file_type, "admin_melody");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };

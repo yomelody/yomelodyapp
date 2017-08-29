@@ -105,6 +105,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.provider.Contacts.SettingsColumns.KEY;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ADD_RECORDINGS;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MixingAudio_Instruments;
@@ -358,7 +360,6 @@ public class StudioActivity extends AppCompatActivity {
         String dateString = sdf.format(date);
         recording_date.setText(dateString);
         melody_date.setText(dateString);
-
 
         Intent intent = getIntent();
         if (intent == null) {
@@ -1766,6 +1767,7 @@ public class StudioActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(FILE_TYPE, "admin_melody");
                 params.put(KEY, "admin@123");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -1946,6 +1948,7 @@ public class StudioActivity extends AppCompatActivity {
                 params.put(RECORDING_DURATION, recordingDuration);
                 params.put(SHARE_PUBLIC, switchFlag);
                 params.put(RECORDING_BPM, "128");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -2104,6 +2107,7 @@ public class StudioActivity extends AppCompatActivity {
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(Mixrecording,myarray.toString());
                 return params;
             }
@@ -2271,7 +2275,7 @@ public class StudioActivity extends AppCompatActivity {
                                 params.put(IS_MELODY, value1);
                                 params.put(ID_MELODY_REC, id);
                                 params.put(USER_ID1, userId);
-
+                                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                                 return params;
                             }
 
@@ -2315,7 +2319,7 @@ public class StudioActivity extends AppCompatActivity {
                 params.put(ID_MELODY_REC, id);
 //                params.put(ID_MELODY_REC, "150");
                 params.put(USER_ID1, userId);
-
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
 
@@ -2378,6 +2382,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };

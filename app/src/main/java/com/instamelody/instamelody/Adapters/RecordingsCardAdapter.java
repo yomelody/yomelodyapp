@@ -50,6 +50,8 @@ import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.facebook.FacebookSdk.getApplicationContext;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LIKESAPI;
 import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
 
@@ -731,6 +733,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     params.put(FILE_ID, pos);
                     params.put(TYPE, "user_recording");
                     params.put(LIKES, likeState);
+                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
                     return params;
                 }
             };
@@ -776,6 +779,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 params.put(Key_shared_by_user, shared_by_user);
                 params.put(Key_shared_with, shared_with);
                 params.put(Key_file_type, "admin_melody");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -820,6 +824,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 params.put(FILEID, pos);
                 //    params.put(TYPE, "admin_melody");
                 params.put(TYPE, "recording");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
