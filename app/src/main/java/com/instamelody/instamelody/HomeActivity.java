@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -17,18 +18,39 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.login.LoginManager;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.fabric.sdk.android.Fabric;
 
 import static com.instamelody.instamelody.utils.Const.PUSH_NOTIFICATION;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
+import static com.instamelody.instamelody.utils.Const.ServiceType.LOGIN;
+import static com.instamelody.instamelody.utils.Const.ServiceType.LOGOUT;
 
 /**
  * Created by Shubhansh Jaiswal on 11/29/2016.
@@ -49,6 +71,7 @@ public class HomeActivity extends AppCompatActivity {
     String KEY_APP_ID = "appid";
     String KEY_DEVICE_TOKEN = "device_token";
     String REGISTER_URL = "http://35.165.96.167/api/registration.php";
+    String USER_ID = "user_id";
 
     SignUpActivity obj = new SignUpActivity();
     Button Settings;
@@ -63,7 +86,7 @@ public class HomeActivity extends AppCompatActivity {
     public static HomeActivity fa;
     TextView tvFirstName, tvUserName, message_count;
     String Name, userName, profilePic, fbEmail, profilepic2, fbFirstName, fbUserName, fbLastName, fbProfilePic, name2, userName2, galleryPrfPic, fbId;
-    String firstName, lastName, userNameLogin, profilePicLogin;
+    String firstName, lastName, userNameLogin, profilePicLogin, userIdNormal;
     int statusNormal, statusFb, statusTwitter;
     CircleImageView userProfileImage;
     int count = 0;
@@ -129,6 +152,7 @@ public class HomeActivity extends AppCompatActivity {
         lastName = loginSharedPref.getString("lastName", null);
         userNameLogin = loginSharedPref.getString("userName", null);
         profilePicLogin = loginSharedPref.getString("profilePic", null);
+        userIdNormal = loginSharedPref.getString("userId", null);
         statusNormal = loginSharedPref.getInt("status", 0);
 
         if (statusNormal == 1) {
@@ -262,6 +286,7 @@ public class HomeActivity extends AppCompatActivity {
                 LoginManager.getInstance().logOut();
                 SignOut.setVisibility(View.INVISIBLE);
                 SignIn.setVisibility(View.VISIBLE);
+                logOut();
                 HomeActivity.this.recreate();
             }
         });
@@ -372,6 +397,57 @@ public class HomeActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
     }*/
+
+    public void logOut() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, LOGOUT,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String successmsg = response.toString();
+                        Toast.makeText(HomeActivity.this, "" + successmsg, Toast.LENGTH_SHORT).show();
+
+                        try {
+                            JSONObject jsonObject = new JSONObject(successmsg);
+                            String flag = jsonObject.getString("flag");
+                            String msg = jsonObject.getString("msg");
+                            Toast.makeText(HomeActivity.this, "" + flag, Toast.LENGTH_SHORT).show();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            errorMsg = "There is either no connection or it timed out.";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "ServerError";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "Network Error";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                params.put(USER_ID, userIdNormal);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
 
 }
 

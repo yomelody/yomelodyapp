@@ -40,6 +40,7 @@ public class Const {
         public static final String AuthenticationKeyName = "ApiAuthenticationKey";
         public static final String MixingAudio_Instruments = BASE_URL + "tempMixing.php";
         public static final String JOINED_USERS = BASE_URL + "joined_users.php";
+        public static final String LOGOUT = BASE_URL + "logout.php.php";
 
 //        public static final String USERS_BIO = BASE_URL + "uploads/melody/instruments/";
     }

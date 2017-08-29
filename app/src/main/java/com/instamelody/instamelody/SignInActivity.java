@@ -78,6 +78,7 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.fabric.sdk.android.Fabric;
@@ -147,6 +148,8 @@ public class SignInActivity extends AppCompatActivity {
     private TwitterAuthClient client;
     private TwitterLoginButton twitterLoginButton;
     private boolean customButtonLogin;
+    private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
+    private boolean pendingPublishReauthorization = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -401,6 +404,7 @@ public class SignInActivity extends AppCompatActivity {
         @Override
         public void onCanceled() {
             //User pressed back
+
         }
 
         @Override
@@ -937,33 +941,12 @@ public class SignInActivity extends AppCompatActivity {
                     public void onSuccess(@NonNull Credentials credentials) {
                         // Store credentials
                         credentials.getIdToken();
-                        /*Auth0 auth0 = new Auth0("rPAyruyB5UnHEbfVMERs2qbyt8KsBe_m", "codingbrains.auth0.com");
-                        Auth0 account = new Auth0("rPAyruyB5UnHEbfVMERs2qbyt8KsBe_m", "codingbrains.auth0.com");
-                        account.setOIDCConformant(true);
-
-                        LockCallback callback = new AuthenticationCallback() {
-                            @Override
-                            public void onAuthentication(Credentials credentials) {
-                                //Authenticated
-                            }
-
-                            @Override
-                            public void onCanceled() {
-                                //User pressed back
-                            }
-
-                            @Override
-                            public void onError(LockException error) {
-
-                            }
-                            //Exception occurred
-                        };*/
-
                         // Navigate to your main activity
                     }
                 });
 
     }
+
 }
 
 
