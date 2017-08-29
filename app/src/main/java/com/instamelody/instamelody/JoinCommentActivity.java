@@ -135,7 +135,6 @@ public class JoinCommentActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     public void getJoined_users(final String addedBy, final String RecId) {
@@ -227,10 +226,9 @@ public class JoinCommentActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-
-
                 params.put(FILE_ID, melodyID);
                 params.put(FILE_TYPE, fileType);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };

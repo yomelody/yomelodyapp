@@ -47,6 +47,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.USER_CHAT_ID;
 
 /**
@@ -274,6 +276,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("senderID", user_id);
                 params.put("receiverID", reciever_id);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };

@@ -46,6 +46,8 @@ import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ACTIVITY;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.RMethod.getServerDiffrenceDate;
 
 /**
@@ -211,7 +213,7 @@ public class ProfileActivityFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(USER_ID, userId);
                 params.put("key", "passed");
-                params.put("ApiAuthenticationKey","@_$%yomelody%audio#@mixing(app*");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };

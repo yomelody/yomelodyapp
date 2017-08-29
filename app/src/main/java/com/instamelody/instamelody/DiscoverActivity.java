@@ -155,7 +155,6 @@ public class DiscoverActivity extends AppCompatActivity {
             userId = userIdTwitter;
         }
 
-
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
         discover = (ImageView) findViewById(R.id.discover);
         message = (ImageView) findViewById(R.id.message);
@@ -404,6 +403,7 @@ public class DiscoverActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -440,9 +440,9 @@ public class DiscoverActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -491,12 +491,12 @@ public class DiscoverActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
                 params.put(FILTER, "extrafilter");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -701,13 +701,13 @@ public class DiscoverActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
                 params.put(USER_NAME, artistName);
                 params.put(FILTER, "extrafilter");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -770,9 +770,9 @@ public class DiscoverActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
                 params.put(KEY_SEARCH, strSearch);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -830,13 +830,13 @@ public class DiscoverActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, "Instruments");
                 params.put(COUNT, Instruments);
                 params.put(FILTER, "extrafilter");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -894,13 +894,13 @@ public class DiscoverActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
                 params.put(COUNT, BPM);
                 params.put(FILTER, "extrafilter");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };

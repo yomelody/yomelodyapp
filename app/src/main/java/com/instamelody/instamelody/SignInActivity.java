@@ -526,7 +526,7 @@ public class SignInActivity extends AppCompatActivity {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(SignInActivity.this, "this here" + errorMsg, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SignInActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
@@ -534,12 +534,11 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY_EMAIL, email);
                 params.put(KEY_PASSWORD, password);
                 params.put(KEY_DEVICE_TOKEN, DeviceToken);
                 params.put(KEY_DEVICE_TYPE, "Android");
-
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -646,6 +645,7 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);
                 params.put(KEY_DEVICE_TYPE, "android");
                 params.put(KEY_PROFILE_PIC, FbProf1);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -742,6 +742,7 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);
                 params.put(KEY_DEVICE_TYPE, "android");
                 params.put(KEY_PROFILE_PIC, photoUrlNormalSize);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -851,6 +852,7 @@ public class SignInActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(KEY_EMAIL, subEtTopicName.getText().toString().trim());
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };

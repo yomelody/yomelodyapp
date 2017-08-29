@@ -48,6 +48,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.COMMENTS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.COMMENT_LIST;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LIKESAPI;
@@ -362,6 +364,7 @@ public class CommentsActivity extends AppCompatActivity {
 
                 params.put(FILE_ID, melodyID);
                 params.put(FILE_TYPE, fileType);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -414,7 +417,7 @@ public class CommentsActivity extends AppCompatActivity {
                 params.put(FILE_TYPE, fileType);
                 params.put(USER_ID, userId);
                 params.put(TOPIC, melodyName);
-
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -448,6 +451,7 @@ public class CommentsActivity extends AppCompatActivity {
                     params.put(FILE_ID, pos);
                     params.put(TYPE, fileType);
                     params.put(LIKES, likeState);
+                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
                     return params;
                 }
             };

@@ -45,6 +45,8 @@ import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.facebook.FacebookSdk.getApplicationContext;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LIKESAPI;
 import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
 
@@ -297,6 +299,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                 params.put(FILEID, pos);
                 //    params.put(TYPE, "admin_melody");
                 params.put(TYPE, "recording");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -331,6 +334,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     params.put(FILE_ID, pos);
                     params.put(TYPE, "user_recording");
                     params.put(LIKES, likeState);
+                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
                     return params;
                 }
             };

@@ -27,50 +27,19 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TabHost;
 import android.support.v7.widget.SearchView;
-
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkError;
-import com.android.volley.NoConnectionError;
-import com.android.volley.ParseError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.ServerError;
-import com.android.volley.TimeoutError;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.instamelody.instamelody.Adapters.InstrumentListAdapter;
-import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Fragments.AudioFragment;
-import com.instamelody.instamelody.Fragments.MelodyPacksFragment;
 import com.instamelody.instamelody.Models.RecordingsModel;
-
 import android.graphics.Color;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.instamelody.instamelody.Fragments.ActivityFragment;
 import com.instamelody.instamelody.Models.RecordingsPool;
-import com.instamelody.instamelody.Parse.ParseContents;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
-import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
 /**
  * Created by Saurabh Singh on 1/13/2017.

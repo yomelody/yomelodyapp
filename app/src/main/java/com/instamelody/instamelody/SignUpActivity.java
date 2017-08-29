@@ -78,6 +78,8 @@ import static android.R.attr.minDate;
 import static android.R.attr.negativeButtonText;
 import static com.facebook.internal.FacebookRequestErrorClassification.KEY_NAME;
 import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.REGISTER;
 import static com.instamelody.instamelody.utils.Const.ServiceType.UPLOAD_FILE;
 
@@ -127,7 +129,7 @@ public class SignUpActivity extends AppCompatActivity {
     DatePickerDialog dpd;
     String formatedDate;
     String date;
-    int day,month,year;
+    int day, month, year;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -237,9 +239,9 @@ public class SignUpActivity extends AppCompatActivity {
                                          etphone.requestFocus();
 //                                         alertDialog.show();
 
-                                          day = dpd.getDatePicker().getDayOfMonth();
-                                          month = dpd.getDatePicker().getMonth();
-                                          year = dpd.getDatePicker().getYear();
+                                         day = dpd.getDatePicker().getDayOfMonth();
+                                         month = dpd.getDatePicker().getMonth();
+                                         year = dpd.getDatePicker().getYear();
 
 
                                          SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
@@ -454,7 +456,7 @@ public class SignUpActivity extends AppCompatActivity {
                                                  errorDOB.setText("required");
 
                                              }
-                                             if (String.valueOf (day)==("") && String.valueOf(month)==("")&&String.valueOf(year)==("")) {
+                                             if (String.valueOf(day) == ("") && String.valueOf(month) == ("") && String.valueOf(year) == ("")) {
                                                  errorDOB.setVisibility(View.VISIBLE);
                                                  errorDOB.setText("required");
                                              }
@@ -732,7 +734,7 @@ public class SignUpActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<>();
                 params.put(USER_ID, n);
                 params.put(FILE_TYPE, String.valueOf(1));
-
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
 
@@ -834,6 +836,7 @@ public class SignUpActivity extends AppCompatActivity {
                 params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);
                 params.put(KEY_DEVICE_TYPE, "android");
                 params.put(KEY_USER_TYPE, "1");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
 
@@ -870,5 +873,4 @@ public class SignUpActivity extends AppCompatActivity {
         }
         return check;
     }
-
 }

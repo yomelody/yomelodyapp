@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.CONTACT_LIST;
 
 /**
@@ -270,7 +272,7 @@ public class ContactsActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("myid", userId);
                 params.put("key", "passed");
-
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };

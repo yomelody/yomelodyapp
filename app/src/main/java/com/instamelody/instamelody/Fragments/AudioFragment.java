@@ -139,13 +139,8 @@ public class AudioFragment extends Fragment {
         } else if (twitterPref.getString("userId", null) != null) {
             userId = twitterPref.getString("userId", null);
         }
-
         new LongOperation().execute();
-
-
-
     }
-
 
     public void fetchGenreNames() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
@@ -163,7 +158,6 @@ public class AudioFragment extends Fragment {
                         } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
-
 
                         try {
                             jsonObject = new JSONObject(response);
@@ -193,8 +187,6 @@ public class AudioFragment extends Fragment {
                                     } catch (NullPointerException e) {
                                         e.printStackTrace();
                                     }
-
-
                                 }
                             } else {
                                 ClearSharedPref();
@@ -284,6 +276,7 @@ public class AudioFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -344,16 +337,14 @@ public class AudioFragment extends Fragment {
                /* params.put(KEY, STATION);
                 params.put(GENRE, genreString);*/
                 if (userId != null) {
-                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
                     params.put(ID, userId);
                     params.put(KEY, STATION);
                     params.put(GENRE, genreString);
-                    params.put("ApiAuthenticationKey","@_$%yomelody%audio#@mixing(app*");
-                } else {
                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                } else {
                     params.put(KEY, STATION);
                     params.put(GENRE, genreString);
-
+                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 }
                 return params;
             }
@@ -406,12 +397,12 @@ public class AudioFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
                 params.put(FILTER, "extrafilter");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -475,10 +466,9 @@ public class AudioFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
-                params.put("ApiAuthenticationKey","@_$%yomelody%audio#@mixing(app*");
                 params.put(KEY_SEARCH, strSearch);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -539,14 +529,13 @@ public class AudioFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
                 params.put(USER_NAME, strArtist);
-                params.put("ApiAuthenticationKey","@_$%yomelody%audio#@mixing(app*");
                 params.put(FILTER, "extrafilter");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -606,14 +595,13 @@ public class AudioFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, "Instruments");
-                params.put("ApiAuthenticationKey","@_$%yomelody%audio#@mixing(app*");
                 params.put(COUNT, strInstruments);
                 params.put(FILTER, "extrafilter");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -673,14 +661,13 @@ public class AudioFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
-                params.put("ApiAuthenticationKey","@_$%yomelody%audio#@mixing(app*");
                 params.put(COUNT, strBPM);
                 params.put(FILTER, "extrafilter");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };

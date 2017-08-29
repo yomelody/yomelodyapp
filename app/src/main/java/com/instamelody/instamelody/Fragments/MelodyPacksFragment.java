@@ -49,8 +49,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
-import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE1;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
 
 /**
@@ -93,12 +94,13 @@ public class MelodyPacksFragment extends Fragment {
     private String FILE_TYPE = "file_type";
     private String FILTER_TYPE = "filter_type";
     private String FILTER = "filter";
-    private String SAVE_MELODY= "save_melody";
+    private String SAVE_MELODY = "save_melody";
     ArrayList<Genres> genresArrayList = new ArrayList<>();
     ArrayList<UserMelodyCard> userMelodyList = new ArrayList<>();
     ArrayList<UserMelodyPlay> melodyPools = new ArrayList<>();
     TabHost host = null;
     ProgressDialog progressDialog;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         fetchGenreNames();
@@ -130,8 +132,7 @@ public class MelodyPacksFragment extends Fragment {
         //     new Loader().execute();
         if (strName == null && strSearch == null) {
             new LongOperation().execute();
-        }
-        else if (strName != null) {
+        } else if (strName != null) {
             fetchMelodyFilter();
         } else if (strSearch != null) {
             fetchMelodySearchData();
@@ -251,13 +252,13 @@ public class MelodyPacksFragment extends Fragment {
                             } catch (Throwable throwable) {
                                 Log.d("Error", throwable.toString());
                             }
-
                         }
                     }) {
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(SAVE_MELODY,"saverecording");
+                    params.put(SAVE_MELODY, "saverecording");
+                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
                     return params;
                 }
             };
@@ -328,26 +329,26 @@ public class MelodyPacksFragment extends Fragment {
                 if (packId.equals("7") && userId != null) {
                     params.put(USER_ID, userId);
                     params.put(FILE_TYPE, "user_melody");
+                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 } else if (userId != null) {
                     params.put(users_id, userId);
                     params.put(GENRE, packId);
                     params.put(FILE_TYPE, "admin_melody");
+                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 } else {
                     params.put(GENRE, packId);
                     params.put(FILE_TYPE, "admin_melody");
+                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 }
-                try{
+                try {
                     SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
                     String userId = loginSharedPref.getString("userId", null);
-                }catch (NullPointerException e){
+                } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
-
 //                if (userId != null) {
 ////                    params.put(USER_ID, userId);
 //                }
-
-
                 return params;
             }
 
@@ -402,6 +403,7 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(FILE_TYPE, "admin_melody");
                 params.put(FILTER_TYPE, strName);
                 params.put(FILTER, "extrafilter");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -462,6 +464,7 @@ public class MelodyPacksFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(FILE_TYPE, "admin_melody");
                 params.put(KEY_SEARCH, strSearch);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -524,6 +527,7 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(FILTER_TYPE, strName);
                 params.put(USER_NAME, strArtist);
                 params.put(FILTER, "extrafilter");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -586,6 +590,7 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(FILTER_TYPE, "Instruments");
                 params.put(COUNT, strInstruments);
                 params.put(FILTER, "extrafilter");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -647,6 +652,7 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(FILTER_TYPE, strName);
                 params.put(COUNT, strBPM);
                 params.put(FILTER, "extrafilter");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
