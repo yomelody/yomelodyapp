@@ -35,7 +35,6 @@ public class Const {
         public static final String USERS_BIO = BASE_URL + "users_bio.php";
         public static final String UPDATEPROFILE = BASE_URL + "updateprofile.php";
         public static final String FORGOT_PASSWORD = BASE_URL + "forgot_password.php";
-        public static final String GENERE1 = BASE_URL + "genere1.php";
         public static final String AuthenticationKeyValue = "@_$%yomelody%audio#@mixing(app*";
         public static final String AuthenticationKeyName = "ApiAuthenticationKey";
         public static final String MixingAudio_Instruments = BASE_URL + "tempMixing.php";

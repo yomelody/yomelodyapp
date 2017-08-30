@@ -276,13 +276,13 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View view) {
                 SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
                 editor.clear();
-                editor.commit();
+                editor.apply();
                 SharedPreferences.Editor tEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
                 tEditor.clear();
-                tEditor.commit();
+                tEditor.apply();
                 SharedPreferences.Editor fbeditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
                 fbeditor.clear();
-                fbeditor.commit();
+                fbeditor.apply();
                 LoginManager.getInstance().logOut();
                 SignOut.setVisibility(View.INVISIBLE);
                 SignIn.setVisibility(View.VISIBLE);

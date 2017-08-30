@@ -116,7 +116,7 @@ public class AudioFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        fetchGenreNames();
         SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
         SharedPreferences searchPref = getActivity().getSharedPreferences("SearchPref", MODE_PRIVATE);
@@ -141,7 +141,6 @@ public class AudioFragment extends Fragment {
         }
 
         new LongOperation().execute();
-
 
 
     }
@@ -284,6 +283,7 @@ public class AudioFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -306,10 +306,10 @@ public class AudioFragment extends Fragment {
                         recordingList.clear();
                         recordingsPools.clear();
                         new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
-                        try{
+                        try {
                             adapter.notifyDataSetChanged();
                             ClearSharedPref();
-                        }catch (NullPointerException e){
+                        } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
 
@@ -348,7 +348,6 @@ public class AudioFragment extends Fragment {
                     params.put(ID, userId);
                     params.put(KEY, STATION);
                     params.put(GENRE, genreString);
-                    params.put("ApiAuthenticationKey","@_$%yomelody%audio#@mixing(app*");
                 } else {
                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
                     params.put(KEY, STATION);
@@ -477,7 +476,7 @@ public class AudioFragment extends Fragment {
                 params.put(ID, userId);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, STATION);
-                params.put("ApiAuthenticationKey","@_$%yomelody%audio#@mixing(app*");
+                params.put("ApiAuthenticationKey", "@_$%yomelody%audio#@mixing(app*");
                 params.put(KEY_SEARCH, strSearch);
                 return params;
             }
@@ -545,7 +544,7 @@ public class AudioFragment extends Fragment {
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
                 params.put(USER_NAME, strArtist);
-                params.put("ApiAuthenticationKey","@_$%yomelody%audio#@mixing(app*");
+                params.put("ApiAuthenticationKey", "@_$%yomelody%audio#@mixing(app*");
                 params.put(FILTER, "extrafilter");
                 return params;
             }
@@ -611,7 +610,7 @@ public class AudioFragment extends Fragment {
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, "Instruments");
-                params.put("ApiAuthenticationKey","@_$%yomelody%audio#@mixing(app*");
+                params.put("ApiAuthenticationKey", "@_$%yomelody%audio#@mixing(app*");
                 params.put(COUNT, strInstruments);
                 params.put(FILTER, "extrafilter");
                 return params;
@@ -678,7 +677,7 @@ public class AudioFragment extends Fragment {
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
-                params.put("ApiAuthenticationKey","@_$%yomelody%audio#@mixing(app*");
+                params.put("ApiAuthenticationKey", "@_$%yomelody%audio#@mixing(app*");
                 params.put(COUNT, strBPM);
                 params.put(FILTER, "extrafilter");
                 return params;

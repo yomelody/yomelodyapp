@@ -51,6 +51,8 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.REGISTER;
 import static com.instamelody.instamelody.utils.Const.ServiceType.UPDATEPROFILE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.UPLOAD_FILE;
@@ -423,6 +425,8 @@ public class Update extends AppCompatActivity {
                 params.put(KEY_PASSWORD, password1);
                 params.put(KEY_DOB, finalDate);
                 params.put(KEY_PHONE, phone);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+
                 return params;
             }
 
@@ -451,7 +455,7 @@ public class Update extends AppCompatActivity {
                 Map<String, String> params = new HashMap<>();
                 params.put(USER_ID, userId);
                 params.put(FILE_TYPE, String.valueOf(1));
-
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
 

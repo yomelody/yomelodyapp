@@ -78,6 +78,8 @@ import static android.R.attr.minDate;
 import static android.R.attr.negativeButtonText;
 import static com.facebook.internal.FacebookRequestErrorClassification.KEY_NAME;
 import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.REGISTER;
 import static com.instamelody.instamelody.utils.Const.ServiceType.UPLOAD_FILE;
 
@@ -834,6 +836,7 @@ public class SignUpActivity extends AppCompatActivity {
                 params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);
                 params.put(KEY_DEVICE_TYPE, "android");
                 params.put(KEY_USER_TYPE, "1");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
 

@@ -105,6 +105,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.provider.Contacts.SettingsColumns.KEY;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ADD_RECORDINGS;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MixingAudio_Instruments;
@@ -236,18 +238,18 @@ public class StudioActivity extends AppCompatActivity {
     public static MelodyMixing melodyMixing = new MelodyMixing();
     public static ArrayList<MixingData> list = new ArrayList<MixingData>();
     public static MediaPlayer mpInst;
-    String Mixrecording="recording";
-    String MixisMelody="isMelody";
-    String Mixtopic_name="topic_name";
-    String Mixuser_id="user_id";
-    String Mixpublic_flag="public_flag";
-    String MixrecordWith="recordWith";
-    String Mixgenere="genere";
-    String Mixbpms="bpm";
-    String Mixdurations="duration";
-    String Mixvocalsound="vocalsound";
-    String MixCommand="Command";
-    String MixparentRecordingID="parentRecordingID";
+    String Mixrecording = "recording";
+    String MixisMelody = "isMelody";
+    String Mixtopic_name = "topic_name";
+    String Mixuser_id = "user_id";
+    String Mixpublic_flag = "public_flag";
+    String MixrecordWith = "recordWith";
+    String Mixgenere = "genere";
+    String Mixbpms = "bpm";
+    String Mixdurations = "duration";
+    String Mixvocalsound = "vocalsound";
+    String MixCommand = "Command";
+    String MixparentRecordingID = "parentRecordingID";
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -364,7 +366,7 @@ public class StudioActivity extends AppCompatActivity {
         if (intent == null) {
         } else if (intent.getExtras().getString("clickPosition").equals("fromHomeActivity")) {
             //do nothing
-        }else if(intent.getExtras().getString("clickPosition").equals("fromSocialActivity")){
+        } else if (intent.getExtras().getString("clickPosition").equals("fromSocialActivity")) {
             //do nothing
         } else {
             melodyPackId = intent.getExtras().getString("clickPosition");
@@ -1507,7 +1509,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 uploadRecordingsMixing("5");
-                //saveRecordings1();
+//                saveRecordings1();
 
                 //  new LongOperation().execute();
 
@@ -1765,7 +1767,7 @@ public class StudioActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(FILE_TYPE, "admin_melody");
-                params.put(KEY, "admin@123");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -1913,9 +1915,8 @@ public class StudioActivity extends AppCompatActivity {
                             melodyRecDuration = melodyData.getString("duration");
                             Public = melodyData.getString("public");
                             if (flag.equals("success")) {
-
-                                uploadRecordings(melodyData.getString("id"));
-
+//                                uploadRecordings(melodyData.getString("id"));
+                                uploadRecordings(idUpload);
                             } else {
                                 Toast.makeText(StudioActivity.this, response, Toast.LENGTH_SHORT).show();
                             }
@@ -1946,6 +1947,7 @@ public class StudioActivity extends AppCompatActivity {
                 params.put(RECORDING_DURATION, recordingDuration);
                 params.put(SHARE_PUBLIC, switchFlag);
                 params.put(RECORDING_BPM, "128");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -1979,12 +1981,12 @@ public class StudioActivity extends AppCompatActivity {
 
                     if (msgflag.equals("Melody created")) {
                         JSONObject MelodyResponseDetails = r1.getJSONObject("melody_data");
-                        melodyurl="http://52.89.220.199/api/"+MelodyResponseDetails.getString("melodyurl");
+                        melodyurl = "http://52.89.220.199/api/" + MelodyResponseDetails.getString("melodyurl");
                         //urlRecording = r1.getString("melody");
                     } else {
                         JSONObject RecordingResponseDetails = r1.getJSONObject("melody_data");
-                        melodyurl="http://52.89.220.199/api/"+RecordingResponseDetails.getString("melodyurl");
-                       // urlRecording = r1.getString("recording");
+                        melodyurl = "http://52.89.220.199/api/" + RecordingResponseDetails.getString("melodyurl");
+                        // urlRecording = r1.getString("recording");
                     }
 
                     if (flag.equals("success")) {
@@ -2038,7 +2040,7 @@ public class StudioActivity extends AppCompatActivity {
                         editor.commit();
 
                         SharedPreferences.Editor editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE).edit();
-                        editorT.putString("thumbnailUrl",  "http://52.89.220.199/api/thumbnail_url.php/?cp=http://52.89.220.199/api/uploads/cover.jpg&rc=http://52.89.220.199/api/uploads/recordings/rec1503669372.mp3");
+                        editorT.putString("thumbnailUrl", "http://bit.ly/2vrZbbK");
                         editorT.apply();
                     }
 
@@ -2061,26 +2063,27 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put(MixisMelody,value1);
-                params.put(Mixtopic_name,subEtTopicName.getText().toString().trim());
-                params.put(Mixuser_id,userId);
-                params.put(Mixpublic_flag,switchFlag);
-                params.put(MixrecordWith,"withoutMike");
-                params.put(Mixgenere,selectedGenre);
-                params.put(Mixbpms,"128");
-                params.put(Mixdurations,recordingDuration);
-                params.put(MixCommand,"");
-                params.put(MixparentRecordingID,"");
+                params.put(MixisMelody, value1);
+                params.put(Mixtopic_name, subEtTopicName.getText().toString().trim());
+                params.put(Mixuser_id, userId);
+                params.put(Mixpublic_flag, switchFlag);
+                params.put(MixrecordWith, "withoutMike");
+                params.put(Mixgenere, selectedGenre);
+                params.put(Mixbpms, "128");
+                params.put(Mixdurations, recordingDuration);
+                params.put(MixCommand, "");
+                params.put(MixparentRecordingID, "");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 //params.put(Mixrecording, list.toString());
 
                 JSONArray myarray = new JSONArray();
                 try {
-                    for (int i=0; i <=list.size()-1;i++){
+                    for (int i = 0; i <= list.size() - 1; i++) {
                         //arr[i]="questionId_"+i+"_"+"ans_"+i;
                         //jsonObject.put("params_"+i,arr[i]);
                         //obj.put("Id", id);
                         //jsonObject.put(Mixrecording, list.get(i).toString());
-                        JSONObject jsonObject=new JSONObject();
+                        JSONObject jsonObject = new JSONObject();
                         jsonObject.put("Id", list.get(i).id);
                         jsonObject.put("Volume", list.get(i).volume);
                         jsonObject.put("Bass", list.get(i).bass);
@@ -2102,15 +2105,16 @@ public class StudioActivity extends AppCompatActivity {
                         jsonObject.put("PositionId", list.get(i).positionId);
 
 
-                        myarray.put(i,jsonObject);
+                        myarray.put(i, jsonObject);
 
                     }
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
-                params.put(Mixrecording,myarray.toString());
+                params.put(Mixrecording, myarray.toString());
                 return params;
             }
+
             @Override
             protected Map<String, DataPart> getByteData() {
                 Map<String, DataPart> params = new HashMap<>();
@@ -2151,10 +2155,10 @@ public class StudioActivity extends AppCompatActivity {
 
                 try {
                     JSONObject response1 = new JSONObject(resultResponse);
-                    String flag = response1.getString("flag");
+                    String flag = response1.getString("0");
                     String flag2 = response1.getString("response");
                     Log.d("Result", flag2);
-                    JSONObject r1 = response1.getJSONObject("response");
+                    JSONObject r1 = response1.getJSONObject("0");
                     if (r1.has("melody")) {
                         urlRecording = r1.getString("melody");
                         thumbNail = r1.getString("thumbnail");
@@ -2230,7 +2234,6 @@ public class StudioActivity extends AppCompatActivity {
 
 
                     }
-
                     if (flag.equals("success")) {
                         VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPLOAD_COVER_MELODY_FILE, new Response.Listener<NetworkResponse>() {
                             @Override
@@ -2275,7 +2278,7 @@ public class StudioActivity extends AppCompatActivity {
                                 params.put(IS_MELODY, value1);
                                 params.put(ID_MELODY_REC, id);
                                 params.put(USER_ID1, userId);
-
+                                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                                 return params;
                             }
 
@@ -2319,7 +2322,7 @@ public class StudioActivity extends AppCompatActivity {
                 params.put(ID_MELODY_REC, id);
 //                params.put(ID_MELODY_REC, "150");
                 params.put(USER_ID1, userId);
-
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
 
@@ -2382,6 +2385,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
