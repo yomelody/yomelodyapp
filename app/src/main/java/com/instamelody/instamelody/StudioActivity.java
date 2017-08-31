@@ -109,7 +109,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.Authentication
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
-import static com.instamelody.instamelody.utils.Const.ServiceType.MixingAudio_Instruments;
+import static com.instamelody.instamelody.utils.Const.ServiceType.MIXING_AUDIO_INSTRUMENTS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.UPLOAD_COVER_MELODY_FILE;
 
 /**
@@ -1962,7 +1962,7 @@ public class StudioActivity extends AppCompatActivity {
 
     public void uploadRecordingsMixing(final String id) {
 
-        VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, MixingAudio_Instruments, new Response.Listener<NetworkResponse>() {
+        VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, MIXING_AUDIO_INSTRUMENTS, new Response.Listener<NetworkResponse>() {
             @Override
             public void onResponse(NetworkResponse response) {
 

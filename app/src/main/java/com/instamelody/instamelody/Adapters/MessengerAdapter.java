@@ -81,7 +81,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
                     }
                     editor.commit();
                     receiverName = chatList.get(getAdapterPosition()).getReceiverName();
-                    receiverImage = chatList.get(getAdapterPosition()).getUserProfileImage();
+                    receiverImage = chatList.get(getAdapterPosition()).getProfilePic();
                     chatID = chatList.get(getAdapterPosition()).getChatID();
                     editor.putString("senderId", senderId);
                     editor.putString("receiverId", receiverId);
@@ -127,14 +127,16 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
     public void onBindViewHolder(final MyViewHolder holder, int listPosition) {
 
         Chat chat = chatList.get(listPosition);
-        if (receiverId.contains(",")) {
+        if (chat.getChatType().equals("group")) {
             holder.tvUserName.setText(chat.getGroupName());
+            Picasso.with(holder.userProfileImage.getContext()).load(chat.getGroupPic()).into(holder.userProfileImage);
+            holder.tvMsg.setText(chat.getSenderName() + " : " + chat.getMessage());
         } else {
             holder.tvUserName.setText(chat.getReceiverName());
+            Picasso.with(holder.userProfileImage.getContext()).load(chat.getProfilePic()).into(holder.userProfileImage);
+            holder.tvMsg.setText(chat.getMessage());
         }
-        holder.tvMsg.setText(chat.getMessage());
         holder.tvTime.setText(chat.getSendAt());
-        Picasso.with(holder.userProfileImage.getContext()).load(chat.getUserProfileImage()).into(holder.userProfileImage);
     }
 
     @Override

@@ -294,39 +294,39 @@
             android:layout_alignParentRight="true"
             android:visibility="gone">
 
+            <ImageView
+                android:id="@+id/ivSelectedImage"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="6dp"
+                android:layout_marginEnd="6dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:layout_marginStart="6dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                android:src="@drawable/cover3"
+                android:visibility="gone" />
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true">
+
                 <ImageView
-                    android:id="@+id/ivSelectedImage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:scaleType="fitXY"
-                    android:layout_marginLeft="6dp"
-                    android:layout_marginStart="6dp"
-                    android:layout_marginRight="6dp"
-                    android:layout_marginEnd="6dp"
-                    android:layout_marginBottom="6dp"
-                    android:adjustViewBounds="true"
-                    android:src="@drawable/cover3"
-                    android:visibility="gone" />
+                    android:id="@+id/ivClose"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@drawable/red_close" />
 
-                <FrameLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true">
-
-                    <ImageView
-                        android:id="@+id/ivClose"
-                        android:layout_width="35dp"
-                        android:layout_height="35dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginTop="2dp"
-                        android:background="@drawable/red_close" />
-
-                </FrameLayout>
+            </FrameLayout>
 
         </RelativeLayout>
 
@@ -424,5 +424,135 @@
                 </RelativeLayout>
             </RelativeLayout>
         </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlUpdateGroup"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="80dp"
+            android:background="@drawable/background_home3"
+            android:visibility="gone">
+
+            <RelativeLayout
+                android:id="@+id/relativeLayout5"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true">
+
+                <TextView
+                    android:id="@+id/tvDone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp"
+                    android:gravity="center"
+                    android:shadowColor="@android:color/black"
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="2"
+                    android:text=" Done "
+                    android:textColor="@android:color/white"
+                    android:textSize="14dp"
+                    android:textStyle="normal|bold" />
+
+                <TextView
+                    android:id="@+id/tvEdit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginRight="20dp"
+                    android:gravity="center"
+                    android:shadowColor="@android:color/black"
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="2"
+                    android:text="  Edit  "
+                    android:textColor="@android:color/white"
+                    android:textSize="14dp"
+                    android:textStyle="normal|bold"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/tvUpdate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginRight="20dp"
+                    android:gravity="center"
+                    android:shadowColor="@android:color/black"
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="2"
+                    android:text="Update"
+                    android:textColor="@android:color/white"
+                    android:textSize="14dp"
+                    android:textStyle="normal|bold"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/relativeLayout6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/relativeLayout5">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/ivGroupImage"
+                    android:layout_width="130dp"
+                    android:layout_height="130dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="16dp"
+                    android:saveEnabled="false"
+                    android:src="@drawable/profile1" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/relativeLayout6"
+                android:layout_marginTop="19dp">
+
+                <EditText
+                    android:id="@+id/etGroupName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:inputType="textCapWords|textPersonName"
+                    android:text="New Group"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="#FFFFFF"
+                    android:textColorLink="@color/homeBlinker"
+                    android:textSize="18sp"
+                    android:textStyle="normal" />
+
+            </RelativeLayout>
+        </RelativeLayout>
+
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>
