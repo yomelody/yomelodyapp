@@ -71,7 +71,7 @@ public class RecordingsFragment extends Fragment {
     String genreString = "1";
 
     private String ID = "id";
-    String KEY = "ApiAuthenticationKey";
+    String KEY = "key";
     private String FILE_TYPE = "file_type";
     private String FILTER_TYPE = "filter_type";
     private String FILTER = "filter";

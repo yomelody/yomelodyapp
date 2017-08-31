@@ -12,8 +12,10 @@
     <string name="facebook_app_id">164934724003307</string>
     <string name="TWITTER_CONSUMER_KEY">HPEUPWqatYYqdX2BXXZCwhRa3</string>
     <string name="TWITTER_CONSUMER_SECRET">INlgRJqcVyxZe8tzfDhBZ0kYONTlWBY5NO8akXcnzVhERWL67I</string>
-    <string name="com_auth0_client_id">tjnEDsnpv6fVi96gUYoaEdu96MuCHtsz</string>
+    <string name="com_auth0_client_id">iTH04RnLqN0KuQMwWYtfbBJxTHRO4ysH</string>
     <string name="com_auth0_domain">codingbrains.auth0.com</string>
+    <string name="Auth_Client_Secret">fR6erXK-QK0UU7Gc-cRbsYX9qSHxV2a_PNLcSU2bY3CM3uJBOMTqUmuF-sTCCM5W</string>
+
     <string name="Description">InstaMelody is an Instrumental Recording Studio
 Application, Particularly used for adding Instru-
 mental music and melody to audio recording voice messages

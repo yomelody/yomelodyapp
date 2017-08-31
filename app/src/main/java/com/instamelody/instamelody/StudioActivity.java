@@ -63,7 +63,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ByteArrayPool;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.share.Sharer;
+import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
 import com.instamelody.instamelody.Adapters.InstrumentListAdapter;
 import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
@@ -78,6 +83,9 @@ import com.instamelody.instamelody.utils.AppHelper;
 import com.instamelody.instamelody.utils.VolleyMultipartRequest;
 import com.instamelody.instamelody.utils.VolleySingleton;
 import com.squareup.picasso.Picasso;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -91,6 +99,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
@@ -102,8 +111,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.fabric.sdk.android.Fabric;
 
 import static android.provider.Contacts.SettingsColumns.KEY;
+import static com.instamelody.instamelody.SignInActivity.TWITTER_CONSUMER_KEY;
+import static com.instamelody.instamelody.SocialActivity.TWITTER_CONSUMER_SECRET;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ADD_RECORDINGS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
@@ -238,18 +250,20 @@ public class StudioActivity extends AppCompatActivity {
     public static MelodyMixing melodyMixing = new MelodyMixing();
     public static ArrayList<MixingData> list = new ArrayList<MixingData>();
     public static MediaPlayer mpInst;
-    String Mixrecording="recording";
-    String MixisMelody="isMelody";
-    String Mixtopic_name="topic_name";
-    String Mixuser_id="user_id";
-    String Mixpublic_flag="public_flag";
-    String MixrecordWith="recordWith";
-    String Mixgenere="genere";
-    String Mixbpms="bpm";
-    String Mixdurations="duration";
-    String Mixvocalsound="vocalsound";
-    String MixCommand="Command";
-    String MixparentRecordingID="parentRecordingID";
+    String Mixrecording = "recording";
+    String MixisMelody = "isMelody";
+    String Mixtopic_name = "topic_name";
+    String Mixuser_id = "user_id";
+    String Mixpublic_flag = "public_flag";
+    String MixrecordWith = "recordWith";
+    String Mixgenere = "genere";
+    String Mixbpms = "bpm";
+    String Mixdurations = "duration";
+    String Mixvocalsound = "vocalsound";
+    String MixCommand = "Command";
+    String MixparentRecordingID = "parentRecordingID";
+    CallbackManager callbackManager;
+    URL ShortUrl;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -365,7 +379,7 @@ public class StudioActivity extends AppCompatActivity {
         if (intent == null) {
         } else if (intent.getExtras().getString("clickPosition").equals("fromHomeActivity")) {
             //do nothing
-        }else if(intent.getExtras().getString("clickPosition").equals("fromSocialActivity")){
+        } else if (intent.getExtras().getString("clickPosition").equals("fromSocialActivity")) {
             //do nothing
         } else {
             melodyPackId = intent.getExtras().getString("clickPosition");
@@ -1507,8 +1521,8 @@ public class StudioActivity extends AppCompatActivity {
         builder2.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                uploadRecordingsMixing("5");
-               // saveRecordings1();
+//                uploadRecordingsMixing("5");
+                saveRecordings1();
 
                 //  new LongOperation().execute();
 
@@ -1766,7 +1780,7 @@ public class StudioActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(FILE_TYPE, "admin_melody");
-                params.put(KEY, "admin@123");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
@@ -1899,7 +1913,6 @@ public class StudioActivity extends AppCompatActivity {
 
                             JSONObject recResponse = recordResponse.getJSONObject("response");
 
-
                             JSONObject melodyData = recResponse.getJSONObject("melody_data");
                             idUpload = melodyData.getString("id");
                             packName = melodyData.getString("packname");
@@ -1915,9 +1928,23 @@ public class StudioActivity extends AppCompatActivity {
                             melodyRecDuration = melodyData.getString("duration");
                             Public = melodyData.getString("public");
                             if (flag.equals("success")) {
-
+                                MelodyInstruments melodyInstruments = new MelodyInstruments();
+                                melodyInstruments.setInstrumentName(packName);
+                                melodyInstruments.setInstrumentBpm(bpm);
+                                melodyInstruments.setInstrumentFile("Blank");
+                                melodyInstruments.setInstrumentLength(melodyRecDuration);
+//                                melodyInstruments.setUserProfilePic(recPic);
+                                melodyInstruments.setInstrumentCover("#00FDFE");
+                                melodyInstruments.setInstrumentCreated(addDate);
+                                melodyInstruments.setUserName(userName);
+//                                melodyInstruments.setInstrumentFile(urlRecording);
+//                        melodyInstruments.setAudioType("recording");
+                                instrumentList.add(melodyInstruments);
+                                adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+                                recyclerViewInstruments.setAdapter(adapter);
+                                adapter.notifyDataSetChanged();
                                 uploadRecordings(melodyData.getString("id"));
-
+//                                uploadRecordings(idUpload);
                             } else {
                                 Toast.makeText(StudioActivity.this, response, Toast.LENGTH_SHORT).show();
                             }
@@ -1982,12 +2009,12 @@ public class StudioActivity extends AppCompatActivity {
 
                     if (msgflag.equals("Melody created")) {
                         JSONObject MelodyResponseDetails = r1.getJSONObject("melody_data");
-                        melodyurl="http://52.89.220.199/api/"+MelodyResponseDetails.getString("melodyurl");
+                        melodyurl = "http://52.89.220.199/api/" + MelodyResponseDetails.getString("melodyurl");
                         //urlRecording = r1.getString("melody");
                     } else {
                         JSONObject RecordingResponseDetails = r1.getJSONObject("melody_data");
-                        melodyurl="http://52.89.220.199/api/"+RecordingResponseDetails.getString("melodyurl");
-                       // urlRecording = r1.getString("recording");
+                        melodyurl = "http://52.89.220.199/api/" + RecordingResponseDetails.getString("melodyurl");
+                        // urlRecording = r1.getString("recording");
                     }
 
                     if (flag.equals("success")) {
@@ -2039,6 +2066,10 @@ public class StudioActivity extends AppCompatActivity {
                         SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("Url_recording", MODE_PRIVATE).edit();
                         editor.putString("Recording_url", melodyurl);
                         editor.commit();
+
+                        SharedPreferences.Editor editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE).edit();
+                        editorT.putString("thumbnailUrl", "http://bit.ly/2vrZbbK");
+                        editorT.apply();
                     }
 
 
@@ -2060,26 +2091,27 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put(MixisMelody,value1);
-                params.put(Mixtopic_name,subEtTopicName.getText().toString().trim());
-                params.put(Mixuser_id,userId);
-                params.put(Mixpublic_flag,switchFlag);
-                params.put(MixrecordWith,"withoutMike");
-                params.put(Mixgenere,selectedGenre);
-                params.put(Mixbpms,"128");
-                params.put(Mixdurations,recordingDuration);
-                params.put(MixCommand,"");
-                params.put(MixparentRecordingID,"");
+                params.put(MixisMelody, value1);
+                params.put(Mixtopic_name, subEtTopicName.getText().toString().trim());
+                params.put(Mixuser_id, userId);
+                params.put(Mixpublic_flag, switchFlag);
+                params.put(MixrecordWith, "withoutMike");
+                params.put(Mixgenere, selectedGenre);
+                params.put(Mixbpms, "128");
+                params.put(Mixdurations, recordingDuration);
+                params.put(MixCommand, "");
+                params.put(MixparentRecordingID, "");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 //params.put(Mixrecording, list.toString());
 
                 JSONArray myarray = new JSONArray();
                 try {
-                    for (int i=0; i <=list.size()-1;i++){
+                    for (int i = 0; i <= list.size() - 1; i++) {
                         //arr[i]="questionId_"+i+"_"+"ans_"+i;
                         //jsonObject.put("params_"+i,arr[i]);
                         //obj.put("Id", id);
                         //jsonObject.put(Mixrecording, list.get(i).toString());
-                        JSONObject jsonObject=new JSONObject();
+                        JSONObject jsonObject = new JSONObject();
                         jsonObject.put("id", list.get(i).id);
                         jsonObject.put("Volume", list.get(i).volume);
                         jsonObject.put("Bass", list.get(i).bass);
@@ -2101,16 +2133,17 @@ public class StudioActivity extends AppCompatActivity {
                         jsonObject.put("PositionId", list.get(i).positionId);
 
 
-                        myarray.put(i,jsonObject);
+                        myarray.put(i, jsonObject);
 
                     }
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                params.put(Mixrecording,myarray.toString());
+                params.put(Mixrecording, myarray.toString());
                 return params;
             }
+
             @Override
             protected Map<String, DataPart> getByteData() {
                 Map<String, DataPart> params = new HashMap<>();
@@ -2151,10 +2184,10 @@ public class StudioActivity extends AppCompatActivity {
 
                 try {
                     JSONObject response1 = new JSONObject(resultResponse);
-                    String flag = response1.getString("flag");
-                    String flag2 = response1.getString("response");
-                    Log.d("Result", flag2);
-                    JSONObject r1 = response1.getJSONObject("response");
+                    String flag = response1.getString("0");
+                    String flag1 = response1.getString("flag");
+                    Log.d("Result", flag);
+                    JSONObject r1 = response1.getJSONObject("0");
                     if (r1.has("melody")) {
                         urlRecording = r1.getString("melody");
                         thumbNail = r1.getString("thumbnail");
@@ -2163,12 +2196,11 @@ public class StudioActivity extends AppCompatActivity {
                         thumbNail = r1.getString("thumbnail");
                     }
 
-                    if (flag.equals("success")) {
-
+                    if (flag1.equals("success")) {
                         //adapter.notifyItemInserted(instrumentList.size()-1);
                         if (r1.has("melody")) {
                             tvDone.setEnabled(false);
-                            MelodyInstruments melodyInstruments = new MelodyInstruments();
+                           /* MelodyInstruments melodyInstruments = new MelodyInstruments();
                             melodyInstruments.setInstrumentName(packName);
                             melodyInstruments.setInstrumentBpm(bpm);
                             melodyInstruments.setInstrumentFile("Blank");
@@ -2182,7 +2214,7 @@ public class StudioActivity extends AppCompatActivity {
                             instrumentList.add(melodyInstruments);
                             adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
                             recyclerViewInstruments.setAdapter(adapter);
-                            adapter.notifyDataSetChanged();
+                            adapter.notifyDataSetChanged();*/
                             ivRecord_play.setVisibility(View.INVISIBLE);
                             rlRedoButton.setVisibility(View.INVISIBLE);
                             rlMelodyButton.setVisibility(View.VISIBLE);
@@ -2205,7 +2237,6 @@ public class StudioActivity extends AppCompatActivity {
                 recording_time.setText("00:00:00");*/
                             // StudioActivity.this.recreate();
                         }
-
                         if (progressDialog != null) {
                             if (progressDialog.isShowing()) {
                                 progressDialog.dismiss();
@@ -2228,9 +2259,29 @@ public class StudioActivity extends AppCompatActivity {
                         editorT.putString("thumbnailUrl", thumbNail);
                         editorT.apply();
 
+                        SharedPreferences switchFbEditor = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE);
+                        int switchFbStatus = switchFbEditor.getInt("switch", 0);
+
+                        if (switchFbStatus == 1) {
+                            FbShare();
+                            SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
+                            switchFbEditor1.clear();
+                            switchFbEditor1.apply();
+                        } else if (switchFbStatus == 2 && switchFbStatus!=1) {
+                            TweetShare();
+                            SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
+                            switchFbEditor1.clear();
+                            switchFbEditor1.apply();
+                        }else if (switchFbStatus == 3){
+                            FbShare();
+                            TweetShare();
+                            SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
+                            switchFbEditor1.clear();
+                            switchFbEditor1.apply();
+                        }
+
 
                     }
-
                     if (flag.equals("success")) {
                         VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPLOAD_COVER_MELODY_FILE, new Response.Listener<NetworkResponse>() {
                             @Override
@@ -2718,6 +2769,74 @@ public class StudioActivity extends AppCompatActivity {
         } catch (Throwable e) {
             e.printStackTrace();
         }
+    }
+
+    public void FbShare() {
+        SharedPreferences editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE);
+        String fetchThumbNailUrl = editorT.getString("thumbnailUrl", null);
+
+        callbackManager = CallbackManager.Factory.create();
+        shareDialog = new ShareDialog(this);
+        // this part is optional
+        shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
+            @Override
+            public void onSuccess(Sharer.Result result) {
+                Toast.makeText(StudioActivity.this, "Recording Uploaded", Toast.LENGTH_SHORT).show();
+                SharedPreferences.Editor editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE).edit();
+                editorT.clear();
+                editorT.apply();
+            }
+
+            @Override
+            public void onCancel() {
+
+                Toast.makeText(StudioActivity.this, "Recording not Uploaded", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+
+            }
+
+        });
+
+        if (ShareDialog.canShow(ShareLinkContent.class)) {
+            ShareLinkContent linkContent = new ShareLinkContent.Builder()
+                    .setContentUrl(Uri.parse(fetchThumbNailUrl))
+//                    .setImageUrl(Uri.parse(cover))
+                    .build();
+            shareDialog.show(linkContent, ShareDialog.Mode.FEED);
+        }
+    }
+
+    public void TweetShare() {
+        SharedPreferences editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE);
+        String fetchThumbNailUrl = editorT.getString("thumbnailUrl", null);
+
+        try {
+            ShortUrl = new URL(fetchThumbNailUrl);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
+        Fabric.with(this, new TwitterCore(authConfig), new TweetComposer());
+
+        /*Bundle bundle = getIntent().getExtras().getBundle(SHARE_DATA);
+        String description = bundle.getString(SHARE_DESCRIPTION);
+        String title = bundle.getString(SHARE_TITLE);
+        String picture = bundle.getString(SHARE_PICTURE_LINK);
+        String link = bundle.getString(SHARE_LINK);*/
+
+        TweetComposer.Builder builder = null;
+
+
+        builder = new TweetComposer.Builder(this)
+//                    .text(title + "" + description)
+                .text("Audio Url")
+                .url(ShortUrl);
+//                .image(Uri.parse(cover));
+        builder.show();
     }
 
 

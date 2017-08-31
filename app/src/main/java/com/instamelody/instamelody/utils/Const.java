@@ -35,11 +35,12 @@ public class Const {
         public static final String USERS_BIO = BASE_URL + "users_bio.php";
         public static final String UPDATEPROFILE = BASE_URL + "updateprofile.php";
         public static final String FORGOT_PASSWORD = BASE_URL + "forgot_password.php";
-        public static final String GENERE1 = BASE_URL + "genere1.php";
         public static final String JOINED_USERS = BASE_URL + "joined_users.php";
         public static final String MixingAudio_Instruments = BASE_URL + "tempMixing.php";
         public static final String AuthenticationKeyValue = "@_$%yomelody%audio#@mixing(app*";
         public static final String AuthenticationKeyName = "ApiAuthenticationKey";
+        public static final String JOINED_USERS = BASE_URL + "joined_users.php";
+        public static final String LOGOUT = BASE_URL + "logout.php.php";
 
 //        public static final String USERS_BIO = BASE_URL + "uploads/melody/instruments/";
     }

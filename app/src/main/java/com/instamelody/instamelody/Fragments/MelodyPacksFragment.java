@@ -128,22 +128,9 @@ public class MelodyPacksFragment extends Fragment {
             userId = twitterPref.getString("userId", null);
             //MelodyUser=userId;
         }
-
+        new LongOperation().execute();
         //     new Loader().execute();
-        if (strName == null && strSearch == null) {
-            new LongOperation().execute();
-        } else if (strName != null) {
-            fetchMelodyFilter();
-        } else if (strSearch != null) {
-            fetchMelodySearchData();
-        } else if (strArtist != null) {
-            fetchMelodyFilterArtist();
-        } else if (strInstruments != null && strName.equals("# of Instruments")) {
-            fetchMelodyFilterInstruments();
-        } else if (strBPM != null && strName.equals("BPM")) {
-            fetchMelodyFilterBPM();
-        }
-        adapter = new MelodyCardListAdapter(melodyList, getActivity());
+
 
 
       /*  if (strName == null) {
@@ -330,15 +317,18 @@ public class MelodyPacksFragment extends Fragment {
                     params.put(USER_ID, userId);
                     params.put(FILE_TYPE, "user_melody");
                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
+
                 } else if (userId != null) {
                     params.put(users_id, userId);
                     params.put(GENRE, packId);
                     params.put(FILE_TYPE, "admin_melody");
                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
+
                 } else {
                     params.put(GENRE, packId);
                     params.put(FILE_TYPE, "admin_melody");
                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
+
                 }
                 try {
                     SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
@@ -521,7 +511,6 @@ public class MelodyPacksFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "admin_melody");
                 params.put(FILTER_TYPE, strName);
@@ -584,7 +573,6 @@ public class MelodyPacksFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "admin_melody");
                 params.put(FILTER_TYPE, "Instruments");
@@ -690,13 +678,24 @@ public class MelodyPacksFragment extends Fragment {
         }
 
         protected String doInBackground(String... params) {
-
-            fetchMelodyPacks();
+            if (strName == null && strSearch == null) {
+                fetchMelodyPacks();
+            } else if (strSearch != null) {
+                fetchMelodySearchData();
+            } else if (strArtist != null) {
+                fetchMelodyFilterArtist();
+            } else if (strInstruments != null && strName.equals("# of Instruments")) {
+                fetchMelodyFilterInstruments();
+            } else if (strBPM != null && strName.equals("BPM")) {
+                fetchMelodyFilterBPM();
+            } else {
+                fetchMelodyFilter();
+            }
             return null;
         }
 
         protected void onPostExecute(String result) {
-
+            adapter = new MelodyCardListAdapter(melodyList, getActivity());
             progressDialog.dismiss();
         }
 

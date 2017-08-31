@@ -53,7 +53,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     String audioValue;
     static String audioUrl;
     private static String audioFilePath;
-    private static String instrumentFile;
+    private static String instrumentFile,instrumentFile1;
     int length;
     String coverPicStudio;
     int statusNormal, statusFb, statusTwitter;
@@ -151,6 +151,10 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             tvInstrumentLength = (TextView) itemView.findViewById(R.id.tvInstrumentLength);
             tvInstrumentName = (TextView) itemView.findViewById(R.id.tvInstrumentName);
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
+
+            SharedPreferences editor = getApplicationContext().getSharedPreferences("Url_recording", MODE_PRIVATE);
+            instrumentFile1=editor.getString("Recording_url", null);
+
 
             audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
             ivPause.setOnClickListener(new View.OnClickListener() {
@@ -651,7 +655,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
                 holder.mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 try {
-                    holder.mp.setDataSource(instrumentFile);
+                    holder.mp.setDataSource(instrumentFile1);
                     holder.mp.prepareAsync();
                     mp_start.add(holder.mp);
                 } catch (IOException e) {

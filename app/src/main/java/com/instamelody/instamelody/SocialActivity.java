@@ -73,7 +73,7 @@ import static android.R.attr.data;
 
 public class SocialActivity extends AppCompatActivity {
 
-    Switch switchFb, switchTwitter, switchSoundCloud, switchGoogle;
+    public static Switch switchFb, switchTwitter, switchSoundCloud, switchGoogle;
     String fetchRecordingUrl, fetchThumbNailUrl;
     CallbackManager callbackManager;
     ShareDialog shareDialog;
@@ -97,6 +97,7 @@ public class SocialActivity extends AppCompatActivity {
     /*String TWITTER_CONSUMER_KEY = "HPEUPWqatYYqdX2BXXZCwhRa3";
     String TWITTER_CONSUMER_SECRET = getApplicationContext().getString(R.string.TWITTER_CONSUMER_SECRET);
     String TWITTER_CALLBACK_URL = "oauth://ASNE";*/
+    int switchBtn = 0;
 
 
     @Override
@@ -110,8 +111,6 @@ public class SocialActivity extends AppCompatActivity {
 
         ArrayList<String> fbScope = new ArrayList<String>();
         fbScope.addAll(Arrays.asList("public_profile, email, user_friends"));
-
-
 
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -139,7 +138,7 @@ public class SocialActivity extends AppCompatActivity {
         SharedPreferences editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE);
         fetchThumbNailUrl = editorT.getString("thumbnailUrl", null);
 
-        new newShortAsync().execute();
+//        new newShortAsync().execute();
 
         plus_one_button = (PlusOneButton) findViewById(R.id.plus_one_button);
 //        new URLShort().execute();
@@ -156,13 +155,20 @@ public class SocialActivity extends AppCompatActivity {
         switchFb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fetchThumbNailUrl == null) {
+                if (switchFb.isChecked()) {
+                    switchFb.setChecked(true);
+                    switchBtn = 1;
+                    SharedPreferences.Editor switchFbEditor = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
+                    switchFbEditor.putInt("switch", switchBtn);
+                    switchFbEditor.apply();
+                }
+                /*if (fetchThumbNailUrl == null) {
                     Toast.makeText(SocialActivity.this, "Do recordings to Share", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
                     intent.putExtra("clickPosition", "fromSocialActivity");
                     startActivity(intent);
                     switchFb.setEnabled(false);
-                } else {
+                }*/ /*else {
                     AlertDialog.Builder builder1 = new AlertDialog.Builder(SocialActivity.this);
                     builder1.setMessage("Wants to share InstaMelody music on facebook??");
                     builder1.setCancelable(true);
@@ -186,20 +192,27 @@ public class SocialActivity extends AppCompatActivity {
 
                     AlertDialog alert11 = builder1.create();
                     alert11.show();
-                }
+                }*/
             }
         });
 
         switchTwitter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fetchThumbNailUrl == null) {
+                if (switchTwitter.isChecked()) {
+                    switchTwitter.setChecked(true);
+                    switchBtn = 2;
+                    SharedPreferences.Editor switchFbEditor = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
+                    switchFbEditor.putInt("switch", switchBtn);
+                    switchFbEditor.apply();
+                }
+                /*if (fetchThumbNailUrl == null) {
                     Toast.makeText(SocialActivity.this, "Do recordings to Share", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
                     intent.putExtra("clickPosition", "fromSocialActivity");
                     startActivity(intent);
                     switchTwitter.setEnabled(false);
-                } else {
+                }*/ /*else {
                     AlertDialog.Builder builder1 = new AlertDialog.Builder(SocialActivity.this);
                     builder1.setMessage("Wants to share InstaMelody music on twitter??");
                     builder1.setCancelable(true);
@@ -224,7 +237,7 @@ public class SocialActivity extends AppCompatActivity {
 
                     AlertDialog alert11 = builder1.create();
                     alert11.show();
-                }
+                }*/
 
             }
         });
@@ -251,7 +264,7 @@ public class SocialActivity extends AppCompatActivity {
                     intent.putExtra("clickPosition", "fromSocialActivity");
                     startActivity(intent);
                     switchSoundCloud.setEnabled(false);
-                }else {
+                } else {
                     Intent intent = new Intent("com.soundcloud.android.SHARE")
                             .putExtra(Intent.EXTRA_STREAM, Uri.parse(fetchRecordingUrl))
                             .putExtra("com.soundcloud.android.extra.title", "Demo");
@@ -287,7 +300,6 @@ public class SocialActivity extends AppCompatActivity {
                                     .setText("Welcome to the Google+ platform.")
                                     .setContentUrl(Uri.parse(fetchThumbNailUrl))
                                     .getIntent();
-
                             startActivityForResult(shareIntent, 0);
                         }
                     });
@@ -296,6 +308,14 @@ public class SocialActivity extends AppCompatActivity {
             }
         });
 
+        if ((switchTwitter.isChecked() && switchFb.isChecked())) {
+            switchTwitter.setChecked(true);
+            switchFb.setChecked(true);
+            switchBtn = 3;
+            SharedPreferences.Editor switchFbEditor = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
+            switchFbEditor.putInt("switch", switchBtn);
+            switchFbEditor.apply();
+        }
     }
 
     public void FbShare() {
@@ -340,7 +360,7 @@ public class SocialActivity extends AppCompatActivity {
         if (requestCode == TwitterAuthConfig.DEFAULT_AUTH_REQUEST_CODE) {
             //  twitter related handling
             client.onActivityResult(requestCode, resultCode, data);
-            switchTwitter.setEnabled(false);
+            switchTwitter.setChecked(false);
         } else if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             plus_one_button.setVisibility(View.GONE);
@@ -380,9 +400,8 @@ public class SocialActivity extends AppCompatActivity {
         builder = new TweetComposer.Builder(this)
 //                    .text(title + "" + description)
                 .text("Audio Url")
-                .url(ShortUrl)
-                .image(Uri.parse(cover));
-
+                .url(ShortUrl);
+//                .image(Uri.parse(cover));
         builder.show();
     }
 
@@ -526,6 +545,7 @@ public class SocialActivity extends AppCompatActivity {
         postParams.putString(SocialNetwork.BUNDLE_LINK, fetchThumbNailUrl);
 //        socialNetwork.requestPostLink(postParams, "", postingComplete);
     }
+
     private OnPostingCompleteListener postingComplete = new OnPostingCompleteListener() {
         @Override
         public void onPostSuccessfully(int socialNetworkID) {
@@ -566,7 +586,7 @@ public class SocialActivity extends AppCompatActivity {
         }
     };
 
-    public AlertDialog.Builder alertDialogInit(String title, String message){
+    public AlertDialog.Builder alertDialogInit(String title, String message) {
         AlertDialog.Builder ad = new AlertDialog.Builder(getApplicationContext());
         ad.setTitle(title);
         ad.setMessage(message);
@@ -578,7 +598,7 @@ public class SocialActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             int networkId = 0;
-            switch (view.getId()){
+            switch (view.getId()) {
                 case R.id.switchFb:
                     networkId = FACEBOOK;
                     break;
@@ -590,8 +610,8 @@ public class SocialActivity extends AppCompatActivity {
                     break;
             }
             SocialNetwork socialNetwork = commonShare.getSocialNetwork(networkId);
-            if(!socialNetwork.isConnected()) {
-                if(networkId != 0) {
+            if (!socialNetwork.isConnected()) {
+                if (networkId != 0) {
                     socialNetwork.requestLogin();
 //                    MainActivity.showProgress(socialNetwork, "Loading social person");
                 } else {
