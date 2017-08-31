@@ -126,7 +126,6 @@ public class Update extends AppCompatActivity {
         userNameFb = fbEditor.getString("userName", null);
 
 
-
         if (userIdNormal!= null){
             userId = userIdNormal;
         }else if (userIdFb != null){
@@ -385,6 +384,15 @@ public class Update extends AppCompatActivity {
 
                         String successmsg = response.toString();
                         Toast.makeText(Update.this, "Login with Updated password", Toast.LENGTH_SHORT).show();
+                        SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
+                        editor.clear();
+                        editor.apply();
+                        SharedPreferences.Editor tEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
+                        tEditor.clear();
+                        tEditor.apply();
+                        SharedPreferences.Editor fbeditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
+                        fbeditor.clear();
+                        fbeditor.apply();
                         Intent i = new Intent(Update.this,SignInActivity.class);
                         startActivity(i);
                         try {
@@ -426,7 +434,6 @@ public class Update extends AppCompatActivity {
                 params.put(KEY_DOB, finalDate);
                 params.put(KEY_PHONE, phone);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-
                 return params;
             }
 
