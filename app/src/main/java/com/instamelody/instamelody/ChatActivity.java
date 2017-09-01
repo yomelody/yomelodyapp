@@ -95,6 +95,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.Authentication
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.CHAT;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MESSAGE_LIST;
+import static com.instamelody.instamelody.utils.Const.ServiceType.UPDATE_GROUP;
 
 /**
  * Created by Shubhansh Jaiswal on 17/01/17.
@@ -107,16 +108,16 @@ public class ChatActivity extends AppCompatActivity {
     public static RelativeLayout rlChatPlayer;
     public static FrameLayout flPlayPausePlayer;
     ImageView ivClose;
-    EditText etMessage;
-    ImageView ivBackButton, ivHomeButton, ivAdjust, ivCamera, ivNewChat, ivRecieverProfilePic, ivSelectedImage;
-    TextView tvSend, tvRecieverName, tvAudioName, tvUserNameOnAudio;
+    EditText etMessage, etGroupName;
+    ImageView ivBackButton, ivHomeButton, ivAdjust, ivCamera, ivNewChat, ivRecieverProfilePic, ivSelectedImage, ivGroupImage;
+    TextView tvSend, tvRecieverName, tvDone, tvEdit, tvUpdate;
     RecyclerView recycleImage, recyclerViewChat;
-    RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton, rlMessage, rlSelectedImage, rlSendAudio, rlPrevPlayer, rlNextPlayer;
+    RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton, rlMessage, rlSelectedImage, rlUserName, rlPrevPlayer, rlNextPlayer, rlUpdateGroup;
 
     RecentImagesAdapter riAdapter;
     ChatAdapter cAdapter;
     LayoutInflater inflater;
-    Bitmap sendImageBitmap;
+    Bitmap sendImageBitmap, groupImageBitmap;
     private Uri imageToUploadUri;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
 
@@ -140,13 +141,15 @@ public class ChatActivity extends AppCompatActivity {
     String TITLE = "title";
     String MESSAGE = "message";
     String KEY_FLAG = "flag";
-    String userId, chatId, receiverId, receiverName, packId, packType, receiverImage, deviceToken, parent;
+    String userId, chatId, receiverId, receiverName, packId, packType, receiverImage, groupImage, deviceToken, parent;
     String username = "";
     String senderId = "";
     String chatType = "";
     String group = "";
     String sendImageName = "";
+    String sendGroupImageName = "";
     String flagFileType = "0"; // 0 = null, 1 = image file, 2 = station audio file , 3 = admin_melody audio file
+    int updateGroupFlag = 0;
 
     @TargetApi(18)
     @Override
@@ -191,12 +194,10 @@ public class ChatActivity extends AppCompatActivity {
             username = twitterPref.getString("userName", null);
         }
 
+        rlUserName = (RelativeLayout) findViewById(R.id.rlUserName);
         rlSelectedImage = (RelativeLayout) findViewById(R.id.rlSelectedImage);
         ivClose = (ImageView) findViewById(R.id.ivClose);
         ivSelectedImage = (ImageView) findViewById(R.id.ivSelectedImage);
-//        rlSendAudio = (RelativeLayout) findViewById(R.id.rlSendAudio);
-//        tvAudioName = (TextView) findViewById(R.id.tvAudioName);
-//        tvUserNameOnAudio = (TextView) findViewById(R.id.tvUserNameOnAudio);
         rlChatPlayer = (RelativeLayout) findViewById(R.id.rlChatPlayer);
         tvNamePlayer = (TextView) findViewById(R.id.tvNamePlayer);
         tvUserNamePlayer = (TextView) findViewById(R.id.tvUserNamePlayer);
@@ -208,6 +209,12 @@ public class ChatActivity extends AppCompatActivity {
         ivPlayPlayer = (ImageView) findViewById(R.id.ivPlayPlayer);
         flPlayPausePlayer = (FrameLayout) findViewById(R.id.flPlayPausePlayer);
         userProfileImagePlayer = (ImageView) findViewById(R.id.userProfileImagePlayer);
+        rlUpdateGroup = (RelativeLayout) findViewById(R.id.rlUpdateGroup);
+        tvDone = (TextView) findViewById(R.id.tvDone);
+        tvEdit = (TextView) findViewById(R.id.tvEdit);
+        tvUpdate = (TextView) findViewById(R.id.tvUpdate);
+        ivGroupImage = (ImageView) findViewById(R.id.ivGroupImage);
+        etGroupName = (EditText) findViewById(R.id.etGroupName);
 
         SharedPreferences selectedImagePos = getApplicationContext().getSharedPreferences("selectedImagePos", MODE_PRIVATE);
         if (selectedImagePos.getString("pos", null) != null) {
@@ -243,6 +250,7 @@ public class ChatActivity extends AppCompatActivity {
         receiverImage = prefs.getString("receiverImage", null);
         chatId = prefs.getString("chatId", null);
         chatType = prefs.getString("chatType", null);
+        groupImage = prefs.getString("groupImage", null);
         tvUserName = (TextView) findViewById(R.id.tvUserName);
         tvUserName.setText(receiverName);
 
@@ -333,7 +341,6 @@ public class ChatActivity extends AppCompatActivity {
                 editor.putString("receiverImage", "");
                 editor.putString("chatId", "");
                 editor.commit();
-
                 finish();
             }
         });
@@ -541,6 +548,58 @@ public class ChatActivity extends AppCompatActivity {
                 AudioOperator(audioUrl);
             }
         });
+
+        rlUserName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (chatType.equals("group")) {
+                    rlUpdateGroup.setVisibility(View.VISIBLE);
+                    Picasso.with(ivGroupImage.getContext()).load(groupImage).into(ivGroupImage);
+                    etGroupName.setText(receiverName);
+                }
+            }
+        });
+
+        tvDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rlUpdateGroup.setVisibility(View.GONE);
+            }
+        });
+
+        tvEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ivGroupImage.setEnabled(true);
+                etGroupName.setEnabled(true);
+                tvEdit.setVisibility(View.GONE);
+                tvUpdate.setVisibility(View.VISIBLE);
+            }
+        });
+
+        ivGroupImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updateGroupFlag = 1;
+                Intent getIntent = new Intent(Intent.ACTION_PICK);
+                getIntent.setType("image/*");
+                Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(galleryIntent, PICK_GALLERY_IMAGE);
+            }
+        });
+
+        tvUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String groupName = etGroupName.getText().toString().trim();
+                ivGroupImage.setEnabled(false);
+                etGroupName.setEnabled(false);
+                tvUpdate.setVisibility(View.GONE);
+                tvEdit.setVisibility(View.VISIBLE);
+                updateGroup(chatId, groupName);
+            }
+        });
     }
 
     @Override
@@ -609,23 +668,42 @@ public class ChatActivity extends AppCompatActivity {
         }
 
         if (requestCode == PICK_GALLERY_IMAGE && resultCode == RESULT_OK && null != data) {
-            try {
-                Uri selectedImage = data.getData();
-                String[] filePathColumn = {MediaStore.Images.Media.DATA};
-                Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-                cursor.moveToFirst();
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                String img_Decodable_Str = cursor.getString(columnIndex);
-                cursor.close();
-                sendImageName = img_Decodable_Str.substring(img_Decodable_Str.lastIndexOf("/") + 1);
-                rlSelectedImage.setVisibility(View.VISIBLE);
-                ivSelectedImage.setVisibility(View.VISIBLE);
-                ImageCompressor ic = new ImageCompressor(getApplicationContext());
-                sendImageBitmap = ic.compressImage(img_Decodable_Str);
-                ivSelectedImage.setImageBitmap(sendImageBitmap);
-                flagFileType = "1";
-            } catch (Throwable e) {
-                e.printStackTrace();
+            if (updateGroupFlag == 1) {
+                try {
+                    Uri selectedImage = data.getData();
+                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                    Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                    cursor.moveToFirst();
+                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                    String img_Decodable_Str = cursor.getString(columnIndex);
+                    cursor.close();
+                    sendGroupImageName = img_Decodable_Str.substring(img_Decodable_Str.lastIndexOf("/") + 1);
+                    ImageCompressor ic = new ImageCompressor(getApplicationContext());
+                    groupImageBitmap = ic.compressImage(img_Decodable_Str);
+                    ivGroupImage.setImageBitmap(groupImageBitmap);
+                    updateGroupFlag = 0;
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    Uri selectedImage = data.getData();
+                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                    Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                    cursor.moveToFirst();
+                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                    String img_Decodable_Str = cursor.getString(columnIndex);
+                    cursor.close();
+                    sendImageName = img_Decodable_Str.substring(img_Decodable_Str.lastIndexOf("/") + 1);
+                    rlSelectedImage.setVisibility(View.VISIBLE);
+                    ivSelectedImage.setVisibility(View.VISIBLE);
+                    ImageCompressor ic = new ImageCompressor(getApplicationContext());
+                    sendImageBitmap = ic.compressImage(img_Decodable_Str);
+                    ivSelectedImage.setImageBitmap(sendImageBitmap);
+                    flagFileType = "1";
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -1109,5 +1187,57 @@ public class ChatActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("exception", e.toString());
         }
+    }
+
+    public void updateGroup(final String chatingId, final String groupName) {
+        VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPDATE_GROUP,
+                new Response.Listener<NetworkResponse>() {
+                    @Override
+                    public void onResponse(NetworkResponse response) {
+                        String str = new String(response.data);
+//                            Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                String errorMsg = "";
+                if (error instanceof TimeoutError) {
+                    errorMsg = "Internet connection timed out";
+                } else if (error instanceof NoConnectionError) {
+                    errorMsg = "There is no connection";
+                } else if (error instanceof AuthFailureError) {
+                    errorMsg = "AuthFailureError";
+                } else if (error instanceof ServerError) {
+                    errorMsg = "We are facing problem in connecting to server";
+                } else if (error instanceof NetworkError) {
+                    errorMsg = "We are facing problem in connecting to network";
+                } else if (error instanceof ParseError) {
+                    errorMsg = "Parse error";
+                }
+
+                Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                Log.d("Error", errorMsg);
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+
+                params.put("groupName", groupName);
+                params.put("chatID", chatingId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                return params;
+            }
+
+            @Override
+            protected Map<String, DataPart> getByteData() {
+                Map<String, DataPart> params = new HashMap<>();
+                params.put("groupPic", new DataPart(sendGroupImageName, AppHelper.getFileDataFromDrawable(getBaseContext(), groupImageBitmap), "image/jpeg"));
+                return params;
+            }
+        };
+        VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
     }
 }

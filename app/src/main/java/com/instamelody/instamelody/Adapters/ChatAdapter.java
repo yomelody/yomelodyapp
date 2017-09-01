@@ -147,11 +147,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         final int itemType = getItemViewType(position);
         if (itemType == SELF_AUDIO || itemType == OTHER_AUDIO) {
             Message message = chatList.get(position);
-            AudioDetails audioDetails = audioDetailsList.get(0);
             Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).into(holder.userProfileImage);
             holder.timeStamp.setText(message.getCreatedAt());
-            holder.tvMelodyName.setText(audioDetails.getRecordingTopic());
-            holder.tvUserName.setText(audioDetails.getUserName());
+            if(audioDetailsList.size() > 0){
+                AudioDetails audioDetails = audioDetailsList.get(0);
+                holder.tvMelodyName.setText(audioDetails.getRecordingTopic());
+                holder.tvUserName.setText(audioDetails.getUserName());
+            }
             str = "(" + (playingAudio + 1) + " of " + String.valueOf(sharedAudioList.size()) + ")";
             tvNum.setText(str);
 

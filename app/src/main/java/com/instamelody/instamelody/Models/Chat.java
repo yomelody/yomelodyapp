@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+import static com.instamelody.instamelody.utils.Const.ServiceType.BASE_URL;
 
 /**
  * Created by Shubhansh Jaiswal on 04/05/17.
@@ -17,11 +18,13 @@ public class Chat {
     String senderName;
     String receiverID;
     String receiverName;
-    String groupName;
-    String coverPick;
-    String userProfileImage;
+    String coverPic;
+    String profilePic;
     String message;
     String chatID;
+    String chatType;
+    String groupName;
+    String groupPic;
     String isRead;
     String sendAt;
 
@@ -65,28 +68,20 @@ public class Chat {
         this.receiverName = receiverName;
     }
 
-    public String getGroupName() {
-        return groupName;
+    public String getCoverPic() {
+        return coverPic;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
+    public void setCoverPic(String coverPic) {
+        this.coverPic = coverPic;
     }
 
-    public String getCoverPick() {
-        return coverPick;
+    public String getProfilePic() {
+        return profilePic;
     }
 
-    public void setCoverPick(String coverPick) {
-        this.coverPick = coverPick;
-    }
-
-    public String getUserProfileImage() {
-        return userProfileImage;
-    }
-
-    public void setUserProfileImage(String userProfileImage) {
-        this.userProfileImage = userProfileImage;
+    public void setProfilePic(String profilePic) {
+        this.profilePic = profilePic;
     }
 
     public String getMessage() {
@@ -103,6 +98,30 @@ public class Chat {
 
     public void setChatID(String chatID) {
         this.chatID = chatID;
+    }
+
+    public String getChatType() {
+        return chatType;
+    }
+
+    public void setChatType(String chatType) {
+        this.chatType = chatType;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    public String getGroupPic() {
+        return groupPic;
+    }
+
+    public void setGroupPic(String groupPic) {
+        this.groupPic = groupPic;
     }
 
     public String getIsRead() {

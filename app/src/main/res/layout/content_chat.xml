@@ -10,14 +10,16 @@
     tools:showIn="@layout/activity_chat">
 
     <RelativeLayout
+        android:id="@+id/relativeLayout4"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginTop="1dp"
         android:background="#E4E4E4">
 
         <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:id="@+id/rlUserName"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:layout_marginLeft="5dp"
             android:layout_marginStart="5dp"
@@ -28,6 +30,7 @@
                 android:id="@+id/tvUserName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_marginLeft="4dp"
                 android:ellipsize="end"
                 android:maxLines="1"
@@ -71,7 +74,6 @@
                 android:textSize="14sp" />
 
         </RelativeLayout>
-
     </RelativeLayout>
 
     <RelativeLayout
@@ -81,10 +83,10 @@
         android:layout_marginTop="40dp">
 
         <android.support.v7.widget.RecyclerView
-            android:layout_marginTop="2dp"
             android:id="@+id/recyclerViewChat"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="2dp"
             android:scrollbars="none" />
 
         <RelativeLayout
@@ -93,7 +95,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="60dp"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/ivRecieverProfilePic"
@@ -138,9 +140,7 @@
                     android:textStyle="italic" />
 
             </RelativeLayout>
-
         </RelativeLayout>
-
     </RelativeLayout>
-
 </RelativeLayout>
+

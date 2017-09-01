@@ -29,7 +29,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
 
     ArrayList<Chat> chatList = new ArrayList<>();
     Context context;
-    String receiverId = "", chatID = "", receiverName = "", groupName = "", receiverImage = "", senderId = "", userId;
+    String receiverId = "", chatID = "", receiverName = "", groupName = "", receiverImage = "", senderId = "", userId, groupImage = "";
 
     public MessengerAdapter(ArrayList<Chat> chatList, Context context) {
         this.chatList = chatList;
@@ -71,24 +71,24 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
                     receiverId = chatList.get(getAdapterPosition()).getReceiverID();
                     receiverName = chatList.get(getAdapterPosition()).getReceiverName();
                     groupName = chatList.get(getAdapterPosition()).getGroupName();
+                    receiverImage = chatList.get(getAdapterPosition()).getProfilePic();
+                    chatID = chatList.get(getAdapterPosition()).getChatID();
+                    groupImage = chatList.get(getAdapterPosition()).getGroupPic();
                     SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                     if (receiverId.contains(",")) {
                         editor.putString("chatType", "group");
                         editor.putString("receiverName", groupName);
+                        editor.putString("groupImage", groupImage);
                     } else {
                         editor.putString("chatType", "single");
                         editor.putString("receiverName", receiverName);
+                        editor.putString("receiverImage", receiverImage);
                     }
                     editor.commit();
-                    receiverName = chatList.get(getAdapterPosition()).getReceiverName();
-                    receiverImage = chatList.get(getAdapterPosition()).getUserProfileImage();
-                    chatID = chatList.get(getAdapterPosition()).getChatID();
                     editor.putString("senderId", senderId);
                     editor.putString("receiverId", receiverId);
-                    editor.putString("receiverImage", receiverImage);
                     editor.putString("chatId", chatID);
                     editor.commit();
-
                     Intent intent = new Intent(context, ChatActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.putExtra("from", "MessengerActivity");
@@ -103,14 +103,19 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
                     String showProfileUserId;
                     String senderID = chatList.get(getAdapterPosition()).getSenderID();
                     String receiverID = chatList.get(getAdapterPosition()).getReceiverID();
+                    String chatType = chatList.get(getAdapterPosition()).getChatType();
                     if (senderID.equals(userId)) {
                         showProfileUserId = receiverID;
                     } else {
                         showProfileUserId = senderID;
                     }
-                    Intent intent = new Intent(view.getContext(), ProfileActivity.class);
-                    intent.putExtra("showProfileUserId", showProfileUserId);
-                    view.getContext().startActivity(intent);
+                    if (chatType.equals("single")) {
+                        Intent intent = new Intent(view.getContext(), ProfileActivity.class);
+                        intent.putExtra("showProfileUserId", showProfileUserId);
+                        view.getContext().startActivity(intent);
+                    } else {
+
+                    }
                 }
             });
         }
@@ -127,14 +132,16 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
     public void onBindViewHolder(final MyViewHolder holder, int listPosition) {
 
         Chat chat = chatList.get(listPosition);
-        if (receiverId.contains(",")) {
+        if (chat.getChatType().equals("group")) {
             holder.tvUserName.setText(chat.getGroupName());
+            Picasso.with(holder.userProfileImage.getContext()).load(chat.getGroupPic()).into(holder.userProfileImage);
+            holder.tvMsg.setText(chat.getSenderName() + " : " + chat.getMessage());
         } else {
             holder.tvUserName.setText(chat.getReceiverName());
+            Picasso.with(holder.userProfileImage.getContext()).load(chat.getProfilePic()).into(holder.userProfileImage);
+            holder.tvMsg.setText(chat.getMessage());
         }
-        holder.tvMsg.setText(chat.getMessage());
         holder.tvTime.setText(chat.getSendAt());
-        Picasso.with(holder.userProfileImage.getContext()).load(chat.getUserProfileImage()).into(holder.userProfileImage);
     }
 
     @Override

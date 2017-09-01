@@ -1,32 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_home3">
 
     <RelativeLayout
+        android:id="@+id/relativeLayout5"
         android:layout_width="wrap_content"
-        android:layout_height="200dp"
+        android:layout_height="40dp"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:background="@drawable/background_dialog_corners">
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true">
 
-        <ImageView
-            android:id="@+id/ivSelectedImage"
+        <TextView
+            android:id="@+id/tvDoneUpdate"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:scaleType="fitXY"
-            android:adjustViewBounds="true"
-            android:src="@drawable/cover3"
-            android:visibility="visible" />
-
-        <FrameLayout
-            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/background_dialog_corners">
-        </FrameLayout>
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:gravity="center"
+            android:shadowColor="@android:color/black"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:text="Done"
+            android:textColor="@android:color/white"
+            android:textSize="16dp"
+            android:textStyle="normal|bold" />
 
     </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/relativeLayout5">
+
+        <TextView
+            android:id="@+id/tvGroupDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:shadowColor="@android:color/black"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:text="Group Details"
+            android:textColor="#FFFFFF"
+            android:textSize="16dp"
+            android:textStyle="normal|bold" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/userProfileImageUpdate"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_below="@+id/tvGroupDetails"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:saveEnabled="false"
+            android:src="@drawable/profile1" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/linear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/relativeLayout6"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+
+            <EditText
+                android:id="@+id/etuFirstName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:background="@android:color/transparent"
+                android:ems="10"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:inputType="textCapWords|textPersonName"
+                android:text="New Group"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="#FFFFFF"
+                android:textColorLink="@color/homeBlinker"
+                android:textSize="16sp"
+                android:textStyle="normal" />
+
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/buttonEditProfile"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/round_button"
+            android:text="Edit Group"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textColor="#FFFFFF"
+            android:visibility="visible" />
+
+        <Button
+            android:id="@+id/buttonUpdate"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/round_button"
+            android:text="Update"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textColor="#FFFFFF"
+            android:visibility="gone" />
+    </LinearLayout>
 </RelativeLayout>
+

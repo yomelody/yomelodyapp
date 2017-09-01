@@ -190,11 +190,13 @@ public class MessengerActivity extends AppCompatActivity {
                                     chat.setSenderName(commentJson.getString("sender_name"));
                                     chat.setReceiverID(commentJson.getString("receiverID"));
                                     chat.setReceiverName(commentJson.getString("receiver_name"));
-                                    chat.setGroupName(commentJson.getString("group_name"));
-                                    chat.setCoverPick(commentJson.getString("coverPick"));
-                                    chat.setUserProfileImage(commentJson.getString("profilePick"));
+                                    chat.setCoverPic(commentJson.getString("coverPick"));
+                                    chat.setProfilePic(commentJson.getString("profilePick"));
                                     chat.setMessage(commentJson.getString("message"));
                                     chat.setChatID(commentJson.getString("chatID"));
+                                    chat.setChatType(commentJson.getString("chat_type"));
+                                    chat.setGroupName(commentJson.getString("group_name"));
+                                    chat.setGroupPic(commentJson.getString("group_pick"));
                                     chat.setIsRead(commentJson.getString("isread"));
                                     chat.setSendAt(commentJson.getString("sendat"));
                                     chatList.add(chat);

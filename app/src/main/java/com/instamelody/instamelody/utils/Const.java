@@ -9,7 +9,7 @@ public class Const {
     // web services
     public class ServiceType {
         private static final String HOST_URL = "http://52.89.220.199/";
-        private static final String BASE_URL = HOST_URL + "api/";
+        public static final String BASE_URL = HOST_URL + "api/";
         public static final String LOGIN = BASE_URL + "login.php";
         public static final String REGISTER = BASE_URL + "registration.php";
         public static final String GENERE = BASE_URL + "genere.php";
@@ -36,7 +36,8 @@ public class Const {
         public static final String UPDATEPROFILE = BASE_URL + "updateprofile.php";
         public static final String FORGOT_PASSWORD = BASE_URL + "forgot_password.php";
         public static final String JOINED_USERS = BASE_URL + "joined_users.php";
-        public static final String MixingAudio_Instruments = BASE_URL + "tempMixing.php";
+        public static final String MIXING_AUDIO_INSTRUMENTS = BASE_URL + "tempMixing.php";
+        public static final String UPDATE_GROUP = BASE_URL + "UpdateGroup.php";
         public static final String AuthenticationKeyValue = "@_$%yomelody%audio#@mixing(app*";
         public static final String AuthenticationKeyName = "ApiAuthenticationKey";
         public static final String JOINED_USERS = BASE_URL + "joined_users.php";
