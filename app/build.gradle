@@ -19,7 +19,7 @@ android {
     buildToolsVersion "25.0.0"
     defaultConfig {
         applicationId "com.instamelody.instamelody"
-        minSdkVersion 16
+        minSdkVersion 18
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -42,6 +42,8 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE-FIREBASE.txt'
         exclude 'META-INF/NOTICE'
+    }
+    productFlavors {
     }
 }
 dependencies {
@@ -77,6 +79,5 @@ dependencies {
     compile 'com.jlubecki.soundcloud:soundcloud-api:1.2.1'
     testCompile 'junit:junit:4.12'
     //    compile files('libs/facebook.jar')
-
 }
 apply plugin: 'com.google.gms.google-services'
