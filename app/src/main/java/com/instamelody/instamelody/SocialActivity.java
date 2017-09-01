@@ -156,7 +156,7 @@ public class SocialActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (switchFb.isChecked()) {
-                    switchFb.setChecked(true);
+//                    switchFb.setChecked(true);
                     switchBtn = 1;
                     SharedPreferences.Editor switchFbEditor = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
                     switchFbEditor.putInt("switch", switchBtn);
@@ -200,11 +200,12 @@ public class SocialActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (switchTwitter.isChecked()) {
-                    switchTwitter.setChecked(true);
+//                    switchTwitter.setChecked(true);
                     switchBtn = 2;
                     SharedPreferences.Editor switchFbEditor = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
                     switchFbEditor.putInt("switch", switchBtn);
                     switchFbEditor.apply();
+
                 }
                 /*if (fetchThumbNailUrl == null) {
                     Toast.makeText(SocialActivity.this, "Do recordings to Share", Toast.LENGTH_SHORT).show();
@@ -309,8 +310,8 @@ public class SocialActivity extends AppCompatActivity {
         });
 
         if ((switchTwitter.isChecked() && switchFb.isChecked())) {
-            switchTwitter.setChecked(true);
-            switchFb.setChecked(true);
+//            switchTwitter.setChecked(true);
+//            switchFb.setChecked(true);
             switchBtn = 3;
             SharedPreferences.Editor switchFbEditor = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
             switchFbEditor.putInt("switch", switchBtn);
@@ -454,6 +455,8 @@ public class SocialActivity extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
+        switchFb.isChecked();
+        switchTwitter.isChecked();
         // Refresh the state of the +1 button each time the activity receives focus.
         plus_one_button.initialize(fetchThumbNailUrl, PLUS_ONE_REQUEST_CODE);
     }
