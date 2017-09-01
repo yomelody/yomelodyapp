@@ -372,7 +372,7 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loginSoundCloud();
-//                startActivity(lock.newIntent(getApplicationContext()));
+                //   startActivity(lock.newIntent(getApplicationContext()));
             }
         });
 
@@ -942,7 +942,12 @@ public class SignInActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(@NonNull Credentials credentials) {
                         // Store credentials
-                        credentials.getIdToken();
+                        String idToken = credentials.getIdToken();
+                        String accessToken = credentials.getAccessToken();
+                        SharedPreferences.Editor soundCloudCredentialE = getApplicationContext().getSharedPreferences("SoundCloudCred", MODE_PRIVATE).edit();
+                        soundCloudCredentialE.putString("idToken", idToken);
+                        soundCloudCredentialE.putString("accessToken",accessToken);
+                        soundCloudCredentialE.apply();
                         // Navigate to your main activity
                     }
                 });

@@ -2266,12 +2266,12 @@ public class StudioActivity extends AppCompatActivity {
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
                             switchFbEditor1.clear();
                             switchFbEditor1.apply();
-                        } else if (switchFbStatus == 2 && switchFbStatus!=1) {
+                        } else if (switchFbStatus == 2) {
                             TweetShare();
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
                             switchFbEditor1.clear();
                             switchFbEditor1.apply();
-                        }else if (switchFbStatus == 3){
+                        } if (switchFbStatus == 3){
                             FbShare();
                             TweetShare();
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();

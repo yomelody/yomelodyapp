@@ -383,7 +383,7 @@ public class Update extends AppCompatActivity {
                     public void onResponse(String response) {
 
                         String successmsg = response.toString();
-                        Toast.makeText(Update.this, "Login with Updated password", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Update.this, "Login to Proceed", Toast.LENGTH_SHORT).show();
                         SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
                         editor.clear();
                         editor.apply();

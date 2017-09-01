@@ -623,6 +623,7 @@ public class ProfileActivity extends AppCompatActivity {
                 params.put(KEY, PASSED);
                 params.put(USER_ID, showProfileUserId);
                 params.put(MY_ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -698,6 +699,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -734,6 +736,7 @@ public class ProfileActivity extends AppCompatActivity {
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 params.put(KEY, "Myrecording");
                 params.put(GENRE, genreString);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -789,6 +792,7 @@ public class ProfileActivity extends AppCompatActivity {
                 params.put(KEY, PASSED);
                 params.put(USER_ID, showProfileUserId);
                 params.put(FOLLOWER_ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
