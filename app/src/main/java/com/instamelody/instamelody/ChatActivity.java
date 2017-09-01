@@ -141,12 +141,13 @@ public class ChatActivity extends AppCompatActivity {
     String TITLE = "title";
     String MESSAGE = "message";
     String KEY_FLAG = "flag";
-    String userId, chatId, receiverId, receiverName, packId, packType, receiverImage, deviceToken, parent;
+    String userId, chatId, receiverId, receiverName, packId, packType, receiverImage, groupImage, deviceToken, parent;
     String username = "";
     String senderId = "";
     String chatType = "";
     String group = "";
     String sendImageName = "";
+    String sendGroupImageName = "";
     String flagFileType = "0"; // 0 = null, 1 = image file, 2 = station audio file , 3 = admin_melody audio file
     int updateGroupFlag = 0;
 
@@ -249,6 +250,7 @@ public class ChatActivity extends AppCompatActivity {
         receiverImage = prefs.getString("receiverImage", null);
         chatId = prefs.getString("chatId", null);
         chatType = prefs.getString("chatType", null);
+        groupImage = prefs.getString("groupImage", null);
         tvUserName = (TextView) findViewById(R.id.tvUserName);
         tvUserName.setText(receiverName);
 
@@ -339,7 +341,6 @@ public class ChatActivity extends AppCompatActivity {
                 editor.putString("receiverImage", "");
                 editor.putString("chatId", "");
                 editor.commit();
-
                 finish();
             }
         });
@@ -551,7 +552,12 @@ public class ChatActivity extends AppCompatActivity {
         rlUserName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                rlUpdateGroup.setVisibility(View.VISIBLE);
+
+                if (chatType.equals("group")) {
+                    rlUpdateGroup.setVisibility(View.VISIBLE);
+                    Picasso.with(ivGroupImage.getContext()).load(groupImage).into(ivGroupImage);
+                    etGroupName.setText(receiverName);
+                }
             }
         });
 
@@ -671,6 +677,7 @@ public class ChatActivity extends AppCompatActivity {
                     int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
                     String img_Decodable_Str = cursor.getString(columnIndex);
                     cursor.close();
+                    sendGroupImageName = img_Decodable_Str.substring(img_Decodable_Str.lastIndexOf("/") + 1);
                     ImageCompressor ic = new ImageCompressor(getApplicationContext());
                     groupImageBitmap = ic.compressImage(img_Decodable_Str);
                     ivGroupImage.setImageBitmap(groupImageBitmap);
@@ -1227,7 +1234,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             protected Map<String, DataPart> getByteData() {
                 Map<String, DataPart> params = new HashMap<>();
-                params.put("groupPic", new DataPart(groupName, AppHelper.getFileDataFromDrawable(getBaseContext(), groupImageBitmap), "image/jpeg"));
+                params.put("groupPic", new DataPart(sendGroupImageName, AppHelper.getFileDataFromDrawable(getBaseContext(), groupImageBitmap), "image/jpeg"));
                 return params;
             }
         };

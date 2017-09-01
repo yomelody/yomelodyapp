@@ -432,7 +432,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="80dp"
             android:background="@drawable/background_home3"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <RelativeLayout
                 android:id="@+id/relativeLayout5"
@@ -552,7 +552,7 @@
                     android:textStyle="normal" />
 
             </RelativeLayout>
-        </RelativeLayout>
 
+        </RelativeLayout>
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>
