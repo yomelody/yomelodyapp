@@ -432,7 +432,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="80dp"
             android:background="@drawable/background_home3"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <RelativeLayout
                 android:id="@+id/relativeLayout5"
@@ -520,8 +520,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="16dp"
-                    android:saveEnabled="false"
-                    android:src="@drawable/profile1" />
+                    android:saveEnabled="false" />
 
             </RelativeLayout>
 
@@ -544,7 +543,6 @@
                     android:fontFamily="sans-serif-medium"
                     android:gravity="center"
                     android:inputType="textCapWords|textPersonName"
-                    android:text="New Group"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textColor="#FFFFFF"
                     android:textColorLink="@color/homeBlinker"
