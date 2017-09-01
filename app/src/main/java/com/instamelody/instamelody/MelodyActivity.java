@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -30,11 +29,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
-import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
-import com.instamelody.instamelody.Fragments.AudioFragment;
 import com.instamelody.instamelody.Fragments.MelodyPacksFragment;
 import com.instamelody.instamelody.Fragments.RecordingsFragment;
 import com.instamelody.instamelody.Fragments.SubscriptionsFragment;
@@ -629,7 +624,7 @@ public class MelodyActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        if (MelodyCardListAdapter.mediaPlayer != null) {
+        /*if (MelodyCardListAdapter.mediaPlayer != null) {
             try {
                 MelodyCardListAdapter.mediaPlayer.stop();
                 MelodyCardListAdapter.mediaPlayer.reset();
@@ -645,7 +640,7 @@ public class MelodyActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-        }
+        }*/
     }
 
 
