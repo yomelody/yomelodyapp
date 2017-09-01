@@ -225,7 +225,7 @@
                         android:layout_height="match_parent"
                         android:layout_centerVertical="true"
                         android:gravity="center"
-                        android:text="Followers : "
+                        android:text="Following : "
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         android:textColor="#495C67" />
 

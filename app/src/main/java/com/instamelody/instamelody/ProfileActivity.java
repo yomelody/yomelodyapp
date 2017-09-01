@@ -537,13 +537,13 @@ public class ProfileActivity extends AppCompatActivity {
                                     } else {
                                         tv_records.setText(0);
                                     }
-                                    fans = userJson.getString("fans");
+                                    fans = userJson.getString("followers");
                                     if (!fans.equals("")) {
                                         tv_fans.setText(fans);
                                     } else {
                                         tv_fans.setText(0);
                                     }
-                                    followers = userJson.getString("followers");
+                                    followers = userJson.getString("fans");
                                     if (!followers.equals("")) {
                                         tv_following.setText(followers);
                                     } else {
