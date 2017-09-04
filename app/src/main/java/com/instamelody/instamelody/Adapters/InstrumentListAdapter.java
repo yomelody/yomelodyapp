@@ -43,7 +43,6 @@ import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.MixingData;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.StudioActivity;
-import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
 import java.io.BufferedInputStream;
@@ -81,6 +80,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     String instrumentName, melodyName;
     int rvLength;
     Context context;
+
     SoundPool mSoundPool;
     public static ArrayList<String> instruments_url = new ArrayList<String>();
     View mLayout;
@@ -103,7 +103,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     private int mBufferSize;
     private short[] mAudioBuffer;
     private boolean mShouldContinue = true;
-
+    MediaPlayer pts;
     int duration;
     short MAX_STRENGTH_FOR_BASS = 1000;
 
@@ -123,7 +123,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     private TextToSpeech tts;
     /*VoiceEffecter manager;
     VoiceEffecter.Parameters parameters;*/
-
+    ViewHolder viewHolder;
 
     public static String audioFilePath;
     MediaRecorder recorder = null;
@@ -139,13 +139,13 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         this.hasLoadButton = hasLoadButton;
         notifyDataSetChanged();
     }
-
+    SeekBar melodySlider;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         ImageView userProfileImage, ivInstrumentCover, ivPlay, ivPause;
         TextView tvInstrumentName, tvUserName, tvInstrumentLength, tvBpmRate, tvSync, tvDoneFxEq, tvFxButton, tvEqButton;
-        SeekBar melodySlider;
+
         FrameLayout frameInstrument;
         RelativeLayout rlSeekbarTracer, rlSync;
         ImageView grey_circle, blue_circle;
@@ -231,11 +231,10 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             statusFb = fbPref.getInt("status", 0);
 
 
-            melodySlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            /*melodySlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
                     int mCurrentPosition = currentPosition / 1000;
                     int mDuration = duration1 / 1000;
                     UtilsRecording utilRecording = new UtilsRecording();
@@ -248,9 +247,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     } else {
                         // the event was fired from code and you shouldn't call player.seekTo()
                     }
-//
                 }
-
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
                 }
@@ -258,15 +255,14 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
                 }
-            });
-
-
+            });*/
         }
 
 
         private void primarySeekBarProgressUpdater() {
             Handler mHandler1 = new Handler();
             try {
+
                 melodySlider.setProgress((int) (((float) mp.getCurrentPosition() / mp.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
                 if (mp!=null) {
                     Runnable notification = new Runnable() {
@@ -316,9 +312,24 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             } catch (Throwable e) {
                 e.printStackTrace();
             }
-
-
         }
+       /*private void FrameprimarySeekBarProgressUpdaterRecording() {
+            Handler mHandler1 = new Handler();
+            try {
+                //holder.itemView.findViewById(R.id.melodySlider);
+                melodySlider.setProgress((int) (((float) pts.getCurrentPosition() / pts.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
+                if (pts!=null) {
+                    Runnable notification = new Runnable() {
+                        public void run() {
+                            FrameprimarySeekBarProgressUpdaterRecording();
+                        }
+                    };
+                    mHandler1.postDelayed(notification, 100);
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }*/
     }
 
 
@@ -330,16 +341,18 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
 
     }
-
+    static class ViewHolder {
+        SeekBar seekBar;
+    }
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
-
+        //viewHolder=new ViewHolder();
+        //viewHolder.seekBar=(SeekBar)holder.melodySlider.findViewById(R.id.melodySlider);
         String aafs = FirebaseInstanceId.getInstance().getToken();
         final MelodyInstruments instruments = instrumentList.get(listPosition);
         String abc = instrumentList.get(listPosition).getInstrumentFile();
-
-
+       // holder.melodySlider.setProgress(0);
         if (coverPicStudio != null) {
             Picasso.with(holder.ivInstrumentCover.getContext()).load(coverPicStudio).into(holder.ivInstrumentCover);
         } else if (instruments.getInstrumentCover().charAt(0) == '#') {
@@ -410,6 +423,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
             }
         });
+
         holder.rlEQ.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -604,7 +618,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 }
                 StudioActivity.melodyMixing.setVocalsound(StudioActivity.list);
                 aa = StudioActivity.melodyMixing.getVocalsound();
-
 
                 equalizer.setEnabled(true);
                 equalizer.setBandLevel(eqaulizerBandIndex,(short)(progress+lowerEquilizerBandLevel));
@@ -804,7 +817,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 holder.ivPause.setVisibility(v.GONE);
                 holder.mp.pause();
                 length = holder.mp.getCurrentPosition();
-                holder.melodySlider.setProgress(0);
+                //holder.melodySlider.setProgress(0);
             }
         });
 
@@ -917,6 +930,14 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 try {
 
                     new PrepareInstruments().execute();
+                    /*for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                        //MediaPlayer pts;
+                        pts = mediaPlayersAll.get(i);
+                        pts.start();
+
+                        //holder.melodySlider.findViewById(R.id.melodySlider);
+
+                    }*/
 
                 } catch (IllegalStateException e) {
                     e.printStackTrace();
@@ -1206,6 +1227,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             try {
                 try {
                     StudioActivity.frameProgress.setVisibility(View.VISIBLE);
+
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
@@ -1215,7 +1237,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         }
 
         protected Bitmap doInBackground(String... urls) {
-            try {
+
                 try {
                     if (InstrumentCountSize == 0) {
                         InstrumentCountSize = MelodyInstruments.getInstrumentCount();
@@ -1227,14 +1249,13 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                             mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
                             mpall.prepare();
                             mediaPlayersAll.add(mpall);
+
                         }
                     }
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
+
             return null;
         }
 
@@ -1250,7 +1271,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     MediaPlayer pts;
                     pts = mediaPlayersAll.get(i);
                     pts.start();
+
                 }
+                FrameprimarySeekBarProgressUpdaterRecording();
                 recordAudio();
                 if (!mRecordingThread.isAlive()) {
                     try {
@@ -1394,6 +1417,23 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             ex.printStackTrace();
         }
         return PrgVal;
+    }
+    private void FrameprimarySeekBarProgressUpdaterRecording() {
+        Handler mHandler1 = new Handler();
+        try {
+
+            melodySlider.setProgress((int) (((float) pts.getCurrentPosition() / pts.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
+            if (pts!=null) {
+                Runnable notification = new Runnable() {
+                    public void run() {
+                        FrameprimarySeekBarProgressUpdaterRecording();
+                    }
+                };
+                mHandler1.postDelayed(notification, 100);
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 
     public void playAurdio() throws IOException {
