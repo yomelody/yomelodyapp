@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -268,6 +269,7 @@ public class ChatActivity extends AppCompatActivity {
         packType = packPref.getString("PackType", null);
         getChatMsgs(chatId);
 
+//        groupImageBitmap = ((BitmapDrawable) ivGroupImage.getDrawable()).getBitmap();
         etMessage = (EditText) findViewById(R.id.etMessage);
         etMessage.setHintTextColor(Color.parseColor("#7B888F"));
         inflater = LayoutInflater.from(ChatActivity.this);
@@ -581,11 +583,30 @@ public class ChatActivity extends AppCompatActivity {
         ivGroupImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                updateGroupFlag = 1;
-                Intent getIntent = new Intent(Intent.ACTION_PICK);
-                getIntent.setType("image/*");
-                Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(galleryIntent, PICK_GALLERY_IMAGE);
+
+                if (checkPermissions()) {
+                    updateGroupFlag = 1;
+                    Intent getIntent = new Intent(Intent.ACTION_PICK);
+                    getIntent.setType("image/*");
+                    Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    startActivityForResult(galleryIntent, PICK_GALLERY_IMAGE);
+
+//                    rlBtnTakePhotoOrVideo.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View view) {
+//                            Intent chooserIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//                            Date d = new Date();
+//                            CharSequence s = DateFormat.format("yyyyMMdd_hhmmss", d.getTime());
+//                            File f = new File(Environment.getExternalStorageDirectory(), "IMG_" + s.toString() + ".jpg");
+//                            chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+//                            imageToUploadUri = Uri.fromFile(f);
+//                            startActivityForResult(chooserIntent, TAKE_CAMERA_PHOTO);
+//                            alertDialog.cancel();
+//                        }
+//                    });
+                } else {
+                    setPermissions();
+                }
             }
         });
 
@@ -1190,54 +1211,102 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public void updateGroup(final String chatingId, final String groupName) {
-        VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPDATE_GROUP,
-                new Response.Listener<NetworkResponse>() {
-                    @Override
-                    public void onResponse(NetworkResponse response) {
-                        String str = new String(response.data);
+        if (groupImageBitmap == null) {
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, UPDATE_GROUP, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    String str = response;
 //                            Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
 
-                String errorMsg = "";
-                if (error instanceof TimeoutError) {
-                    errorMsg = "Internet connection timed out";
-                } else if (error instanceof NoConnectionError) {
-                    errorMsg = "There is no connection";
-                } else if (error instanceof AuthFailureError) {
-                    errorMsg = "AuthFailureError";
-                } else if (error instanceof ServerError) {
-                    errorMsg = "We are facing problem in connecting to server";
-                } else if (error instanceof NetworkError) {
-                    errorMsg = "We are facing problem in connecting to network";
-                } else if (error instanceof ParseError) {
-                    errorMsg = "Parse error";
+                    String errorMsg = "";
+                    if (error instanceof TimeoutError) {
+                        errorMsg = "Internet connection timed out";
+                    } else if (error instanceof NoConnectionError) {
+                        errorMsg = "There is no connection";
+                    } else if (error instanceof AuthFailureError) {
+                        errorMsg = "AuthFailureError";
+                    } else if (error instanceof ServerError) {
+                        errorMsg = "We are facing problem in connecting to server";
+                    } else if (error instanceof NetworkError) {
+                        errorMsg = "We are facing problem in connecting to network";
+                    } else if (error instanceof ParseError) {
+                        errorMsg = "Parse error";
+                    } else {
+                        errorMsg = error.toString();
+                    }
+
+                    Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                    Log.d("Error", errorMsg);
+                    error.printStackTrace();
+                }
+            }) {
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("groupName", groupName);
+                    params.put("chatID", chatingId);
+                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                    return params;
+                }
+            };
+            RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+            requestQueue.add(stringRequest);
+        } else {
+            VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPDATE_GROUP,
+                    new Response.Listener<NetworkResponse>() {
+                        @Override
+                        public void onResponse(NetworkResponse response) {
+                            String str = new String(response.data);
+//                            Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                    String errorMsg = "";
+                    if (error instanceof TimeoutError) {
+                        errorMsg = "Internet connection timed out";
+                    } else if (error instanceof NoConnectionError) {
+                        errorMsg = "There is no connection";
+                    } else if (error instanceof AuthFailureError) {
+                        errorMsg = "AuthFailureError";
+                    } else if (error instanceof ServerError) {
+                        errorMsg = "We are facing problem in connecting to server";
+                    } else if (error instanceof NetworkError) {
+                        errorMsg = "We are facing problem in connecting to network";
+                    } else if (error instanceof ParseError) {
+                        errorMsg = "Parse error";
+                    } else {
+                        errorMsg = error.toString();
+                    }
+
+                    Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                    Log.d("Error", errorMsg);
+                    error.printStackTrace();
+                }
+            }) {
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<>();
+
+                    params.put("groupName", groupName);
+                    params.put("chatID", chatingId);
+                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                    return params;
                 }
 
-                Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
-                Log.d("Error", errorMsg);
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-
-                params.put("groupName", groupName);
-                params.put("chatID", chatingId);
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                return params;
-            }
-
-            @Override
-            protected Map<String, DataPart> getByteData() {
-                Map<String, DataPart> params = new HashMap<>();
-                params.put("groupPic", new DataPart(sendGroupImageName, AppHelper.getFileDataFromDrawable(getBaseContext(), groupImageBitmap), "image/jpeg"));
-                return params;
-            }
-        };
-        VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
+                @Override
+                protected Map<String, DataPart> getByteData() {
+                    Map<String, DataPart> params = new HashMap<>();
+                    params.put("groupPic", new DataPart(sendGroupImageName, AppHelper.getFileDataFromDrawable(getBaseContext(), groupImageBitmap), "image/jpeg"));
+                    return params;
+                }
+            };
+            VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
+        }
     }
 }

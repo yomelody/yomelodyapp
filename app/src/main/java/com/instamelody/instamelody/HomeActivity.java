@@ -283,20 +283,18 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-
-
-                        if (checkPermissions()) {
-                            Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
-                            intent.putExtra("clickPosition", "fromHomeActivity");
-                            startActivity(intent);
-                        } else {
-                            setPermissions();
-                        }
-
+                    if (checkPermissions()) {
+                        Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
+                        intent.putExtra("clickPosition", "fromHomeActivity");
+                        startActivity(intent);
+                    } else {
+                        setPermissions();
+                    }
+                } else {
+                    Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
+                    intent.putExtra("clickPosition", "fromHomeActivity");
+                    startActivity(intent);
                 }
-
-
-
             }
         });
 
@@ -304,17 +302,16 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-
-
-                        if (checkPermissions()) {
-                            Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
-                            startActivity(intent);
-                        } else {
-                            setPermissions();
-                        }
-
+                    if (checkPermissions()) {
+                        Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
+                        startActivity(intent);
+                    } else {
+                        setPermissions();
+                    }
+                } else {
+                    Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
+                    startActivity(intent);
                 }
-
             }
         });
 

@@ -537,13 +537,13 @@ public class ProfileActivity extends AppCompatActivity {
                                     } else {
                                         tv_records.setText(0);
                                     }
-                                    fans = userJson.getString("followers");
+                                    fans = userJson.getString("fans");
                                     if (!fans.equals("")) {
                                         tv_fans.setText(fans);
                                     } else {
                                         tv_fans.setText(0);
                                     }
-                                    followers = userJson.getString("fans");
+                                    followers = userJson.getString("following");
                                     if (!followers.equals("")) {
                                         tv_following.setText(followers);
                                     } else {
@@ -790,7 +790,6 @@ public class ProfileActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(KEY, PASSED);
                 params.put(USER_ID, showProfileUserId);
-                params.put(FOLLOWER_ID, userId);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
