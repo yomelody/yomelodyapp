@@ -284,7 +284,6 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
 
-
                         if (checkPermissions()) {
                             Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
                             intent.putExtra("clickPosition", "fromHomeActivity");
@@ -293,6 +292,12 @@ public class HomeActivity extends AppCompatActivity {
                             setPermissions();
                         }
 
+                }
+                else
+                {
+                    Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
+                    intent.putExtra("clickPosition", "fromHomeActivity");
+                    startActivity(intent);
                 }
 
 
@@ -305,7 +310,6 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
 
-
                         if (checkPermissions()) {
                             Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
                             startActivity(intent);
@@ -314,6 +318,11 @@ public class HomeActivity extends AppCompatActivity {
                         }
 
                 }
+                else{
+                    Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
+                    startActivity(intent);
+                }
+
 
             }
         });
