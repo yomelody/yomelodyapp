@@ -455,10 +455,27 @@ public class SocialActivity extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
-        switchFb.isChecked();
-        switchTwitter.isChecked();
+//        switchFb.setChecked(true);
+//        switchTwitter.setChecked(true);
         // Refresh the state of the +1 button each time the activity receives focus.
         plus_one_button.initialize(fetchThumbNailUrl, PLUS_ONE_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if (switchFb.isChecked()){
+            switchFb.setChecked(true);
+        }
+        if (switchTwitter.isChecked()){
+            switchTwitter.setChecked(true);
+        }
+        if (switchSoundCloud.isChecked()){
+            switchSoundCloud.setChecked(true);
+        }
+        if (switchGoogle.isChecked()){
+            switchGoogle.setChecked(true);
+        }
     }
 
     private class newShortAsync extends AsyncTask<Void, Void, String> {

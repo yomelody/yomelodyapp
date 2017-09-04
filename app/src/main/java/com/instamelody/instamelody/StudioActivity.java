@@ -1529,8 +1529,8 @@ public class StudioActivity extends AppCompatActivity {
         builder2.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                uploadRecordingsMixing("5");
-                // saveRecordings1();
+//                uploadRecordingsMixing("5");
+                 saveRecordings1();
 
                 //  new LongOperation().execute();
 
@@ -1969,6 +1969,7 @@ public class StudioActivity extends AppCompatActivity {
                 params.put(RECORDING_DURATION, recordingDuration);
                 params.put(SHARE_PUBLIC, switchFlag);
                 params.put(RECORDING_BPM, "128");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -2054,11 +2055,11 @@ public class StudioActivity extends AppCompatActivity {
 
                         SharedPreferences.Editor recEditor = getApplication().getSharedPreferences("Recording_MelodyDataResponse", MODE_PRIVATE).edit();
                         recEditor.clear();
-                        recEditor.commit();
+                        recEditor.apply();
 
                         SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("Url_recording", MODE_PRIVATE).edit();
                         editor.putString("Recording_url", melodyurl);
-                        editor.commit();
+                        editor.apply();
 
                         SharedPreferences.Editor editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE).edit();
                         editorT.putString("thumbnailUrl", "http://bit.ly/2xCRux3");
@@ -2199,10 +2200,10 @@ public class StudioActivity extends AppCompatActivity {
 
                 try {
                     JSONObject response1 = new JSONObject(resultResponse);
-                    String flag = response1.getString("flag");
-                    String flag2 = response1.getString("response");
+                    String flag = response1.getString("0");
+                    String flag2 = response1.getString("flag");
                     Log.d("Result", flag2);
-                    JSONObject r1 = response1.getJSONObject("response");
+                    JSONObject r1 = response1.getJSONObject("0");
                     if (r1.has("melody")) {
                         urlRecording = r1.getString("melody");
                         thumbNail = r1.getString("thumbnail");
@@ -2211,7 +2212,7 @@ public class StudioActivity extends AppCompatActivity {
                         thumbNail = r1.getString("thumbnail");
                     }
 
-                    if (flag.equals("success")) {
+                    if (flag2.equals("success")) {
 
                         //adapter.notifyItemInserted(instrumentList.size()-1);
                         if (r1.has("melody")) {
@@ -2266,15 +2267,36 @@ public class StudioActivity extends AppCompatActivity {
 
                         SharedPreferences.Editor recEditor = getApplication().getSharedPreferences("Recording_MelodyDataResponse", MODE_PRIVATE).edit();
                         recEditor.clear();
-                        recEditor.commit();
+                        recEditor.apply();
 
                         SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("Url_recording", MODE_PRIVATE).edit();
                         editor.putString("Recording_url", urlRecording);
-                        editor.commit();
+                        editor.apply();
 
                         SharedPreferences.Editor editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE).edit();
                         editorT.putString("thumbnailUrl", thumbNail);
                         editorT.apply();
+
+                        SharedPreferences switchFbEditor = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE);
+                        int switchFbStatus = switchFbEditor.getInt("switch", 0);
+
+                        if (switchFbStatus == 1) {
+                            FbShare();
+                            SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
+                            switchFbEditor1.clear();
+                            switchFbEditor1.apply();
+                        } else if (switchFbStatus == 2) {
+                            TweetShare();
+                            SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
+                            switchFbEditor1.clear();
+                            switchFbEditor1.apply();
+                        } if (switchFbStatus == 3){
+                            FbShare();
+                            TweetShare();
+                            SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
+                            switchFbEditor1.clear();
+                            switchFbEditor1.apply();
+                        }
 
 
                     }
@@ -2293,16 +2315,16 @@ public class StudioActivity extends AppCompatActivity {
                                 try {
                                     JSONObject coverResponse = new JSONObject(resultResponse);
                                     String flag = coverResponse.getString("flag");
+                                    String flag2 = coverResponse.getString("response");
                                     JSONObject coverR1 = coverResponse.getJSONObject("response");
                                     String coverPic = coverR1.getString("profilepic");
 
                                     SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("cover response", MODE_PRIVATE).edit();
                                     editor.putString("coverPicStudio", coverPic);
-                                    editor.commit();
+                                    editor.apply();
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-
                                 Log.d("return message", resultResponse);
                             }
                         }, new Response.ErrorListener() {
@@ -2323,6 +2345,8 @@ public class StudioActivity extends AppCompatActivity {
                                 params.put(IS_MELODY, value1);
                                 params.put(ID_MELODY_REC, id);
                                 params.put(USER_ID1, userId);
+                                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+
 
                                 return params;
                             }
@@ -2367,6 +2391,8 @@ public class StudioActivity extends AppCompatActivity {
                 params.put(ID_MELODY_REC, id);
 //                params.put(ID_MELODY_REC, "150");
                 params.put(USER_ID1, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+
 
                 return params;
             }

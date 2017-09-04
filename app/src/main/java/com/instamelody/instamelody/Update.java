@@ -75,7 +75,7 @@ public class Update extends AppCompatActivity {
             btnClearPassUpdate, btnClearConfirmPassUpdate, btnClearDOBUpdate, btnClearPhoneUpdate;
     TextView tvDoneUpdate, errorFnameUpdate, errorUnameUpdate, errorPasswordUpdate, errorConfirmPassUpdate,
             errorDOBUpdate, tvDobUpdate, errorPhoneUpdate;
-    String userId, firstName, lastName, userNameLogin, profilePicLogin, dob, mobile, email, date, userIdNormal, emailNormal;
+    String userId, firstName, lastName, userNameLogin, profilePicLogin, dob, mobile, email, date,userIdNormal,emailNormal;
     String userIdTwitter, firstNameTwitter, lastNameTwitter, emailFinalTwitter, profilePicTwitter, userNameTwitter;
     String userIdFb, firstNameFb, lastNameFb, emailFinalFb, profilePicFb, userNameFb;
     CircleImageView userProfileImageUpdate;
@@ -86,9 +86,9 @@ public class Update extends AppCompatActivity {
     String password1;
     DatePickerDialog dpd;
     String formatedDate;
-    String pswd;
+    String passwordNil = "";
     int day, month, year;
-    int userIdUpdate = 0;
+    int userIdUpdate =0;
     String finalDate;
 
     @Override
@@ -126,19 +126,19 @@ public class Update extends AppCompatActivity {
         userNameFb = fbEditor.getString("userName", null);
 
 
-        if (userIdNormal != null) {
+        if (userIdNormal!= null){
             userId = userIdNormal;
-        } else if (userIdFb != null) {
+        }else if (userIdFb != null){
             userId = userIdFb;
-        } else {
+        }else {
             userId = userIdTwitter;
         }
 
-        if (emailNormal != null) {
+        if (emailNormal!= null){
             email = emailNormal;
-        } else if (emailFinalFb != null) {
+        }else if (emailFinalFb!= null){
             email = emailFinalFb;
-        } else {
+        }else {
             email = emailFinalTwitter;
         }
 
@@ -162,7 +162,7 @@ public class Update extends AppCompatActivity {
         tvDobUpdate.setText(dob);
         Picasso.with(Update.this).load(profilePicLogin).into(userProfileImageUpdate);
 
-        if (userIdFb != null) {
+        if (userIdFb!= null){
             etuFirstName.setText(firstNameFb);
             etuLastName.setText(lastNameFb);
             etuEmailUpdate.setText(emailFinalFb);
@@ -171,7 +171,7 @@ public class Update extends AppCompatActivity {
             SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
             String fbId = fbPref.getString("fbId", null);
             Picasso.with(Update.this).load("https://graph.facebook.com/" + fbId + "/picture").into(userProfileImageUpdate);
-        } else if (userIdTwitter != null) {
+        }else if (userIdTwitter!= null){
             etuFirstName.setText(firstNameTwitter);
             etuLastName.setText(lastNameTwitter);
             etuEmailUpdate.setText(emailFinalTwitter);
@@ -196,30 +196,6 @@ public class Update extends AppCompatActivity {
             }
         });
 
-        userProfileImageUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (v == userProfileImageUpdate) {
-                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(Update.this);
-                    alertDialog.setTitle("Choose Option...");
-                    alertDialog.setMessage("Select your options: Camera or Gallery");
-                    alertDialog.setIcon(R.drawable.profile_bold);
-                    alertDialog.setPositiveButton("select file", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            showFileChooser();
-                        }
-                    });
-                    alertDialog.setNegativeButton("Open Camera", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            //uploadImage();
-                            Intent photoCaptureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                            startActivityForResult(photoCaptureIntent, requestCode);
-                        }
-                    });
-                    alertDialog.show();
-                }
-            }
-        });
 
         tvDobUpdate.setOnClickListener(new View.OnClickListener() {
                                            @Override
@@ -309,6 +285,31 @@ public class Update extends AppCompatActivity {
                 etuConfirmPassWord.setHint("Confirm Password");
                 userProfileImageUpdate.setEnabled(true);
 
+                userProfileImageUpdate.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (v == userProfileImageUpdate) {
+                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(Update.this);
+                            alertDialog.setTitle("Choose Option...");
+                            alertDialog.setMessage("Select your options: Camera or Gallery");
+                            alertDialog.setIcon(R.drawable.profile_bold);
+                            alertDialog.setPositiveButton("select file", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    showFileChooser();
+                                }
+                            });
+                            alertDialog.setNegativeButton("Open Camera", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //uploadImage();
+                                    Intent photoCaptureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                    startActivityForResult(photoCaptureIntent, requestCode);
+                                }
+                            });
+                            alertDialog.show();
+                        }
+                    }
+                });
+
                 View v1 = findViewById(R.id.activity_update);
                 Drawable d = v1.getBackground();
                 d.setAlpha(255);
@@ -337,11 +338,12 @@ public class Update extends AppCompatActivity {
         buttonUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (etuFirstName.getText().toString().trim().equals("") || etuLastName.getText().toString().trim().equals("")
-                        || etuPassWord.getText().toString().trim().equals("") || etuConfirmPassWord.getText().toString().trim().equals("")
-                        || etuUsername.getText().toString().trim().equals("") || etuPhone.getText().toString().trim().equals("")) {
+                if(etuFirstName.getText().toString().trim().equals("")|| etuLastName.getText().toString().trim().equals("")
+                        || etuUsername.getText().toString().trim().equals("")|| etuPhone.getText().toString().trim().equals("")){
                     Toast.makeText(Update.this, "please fill remaining fields which are empty", Toast.LENGTH_SHORT).show();
-                } else if (!etuConfirmPassWord.getText().toString().equals(etuPassWord.getText().toString())) {
+                }
+
+                else if (!etuConfirmPassWord.getText().toString().equals(etuPassWord.getText().toString())) {
                     // Toast.makeText(SignUpActivity.this, "please check your confirm password .", Toast.LENGTH_SHORT).show();
                     errorConfirmPassUpdate.setVisibility(View.VISIBLE);
                     errorConfirmPassUpdate.setText("Password didn't match!");
@@ -357,12 +359,12 @@ public class Update extends AppCompatActivity {
         final String lastname = etuLastName.getText().toString().trim();
         final String username = etuUsername.getText().toString().trim();
         final String password = etuPassWord.getText().toString().trim();
-        if (password == null) {
-            password1 = pswd;
+        if (password.equals("")) {
+            password1 = passwordNil;
         } else {
             password1 = etuPassWord.getText().toString().trim();
         }
-        if (!(tvDobUpdate.getText().toString().trim().equals(dob))) {
+        if (!(tvDobUpdate.getText().toString().trim().equals(dob))){
             final String dob = tvDobUpdate.getText().toString().trim();
             String a = dob.replaceAll(" ", "");
             try {
@@ -371,7 +373,7 @@ public class Update extends AppCompatActivity {
             } catch (StringIndexOutOfBoundsException siobe) {
                 System.out.println("invalid input");
             }
-        } else {
+        }else {
             finalDate = tvDobUpdate.getText().toString().trim();
         }
         final String phone = etuPhone.getText().toString().trim();
@@ -382,8 +384,17 @@ public class Update extends AppCompatActivity {
                     public void onResponse(String response) {
 
                         String successmsg = response.toString();
-                        Toast.makeText(Update.this, "Login with Updated password", Toast.LENGTH_SHORT).show();
-                        Intent i = new Intent(Update.this, SignInActivity.class);
+                        Toast.makeText(Update.this, "Login to Proceed", Toast.LENGTH_SHORT).show();
+                        SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
+                        editor.clear();
+                        editor.apply();
+                        SharedPreferences.Editor tEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
+                        tEditor.clear();
+                        tEditor.apply();
+                        SharedPreferences.Editor fbeditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
+                        fbeditor.clear();
+                        fbeditor.apply();
+                        Intent i = new Intent(Update.this,SignInActivity.class);
                         startActivity(i);
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
@@ -417,7 +428,10 @@ public class Update extends AppCompatActivity {
                 params.put(KEY_LNAME, lastname);
                 params.put(KEY_EMAIL, email);
                 params.put(KEY_USERNAME, username);
-                params.put(KEY_PASSWORD, password1);
+                if ((etuPassWord.getText().toString().trim().equals(""))){
+                    params.put(KEY_PASSWORD, passwordNil);
+                }else
+                    params.put(KEY_PASSWORD, password1);
                 params.put(KEY_DOB, finalDate);
                 params.put(KEY_PHONE, phone);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
@@ -461,6 +475,8 @@ public class Update extends AppCompatActivity {
                 params.put(FILE1, new DataPart("img.jpg", AppHelper.getFileDataFromDrawable(getBaseContext(), userProfileImageUpdate.getDrawable()), "image/jpeg"));
                 return params;
             }
+
+
         };
         VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
     }

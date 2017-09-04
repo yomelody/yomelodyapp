@@ -831,10 +831,10 @@ public class SignInActivity extends AppCompatActivity {
 
         TextView title = new TextView(this);
         title.setText("Forget Password");
-        title.setBackgroundColor(Color.WHITE);
+        title.setBackgroundColor(Color.DKGRAY);
         title.setPadding(10, 10, 10, 10);
         title.setGravity(Gravity.CENTER);
-        title.setTextColor(Color.BLACK);
+        title.setTextColor(Color.WHITE);
         title.setTextSize(20);
 
         builder.setCustomTitle(title);
@@ -871,7 +871,7 @@ public class SignInActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         String successmsg = response.toString();
-                        Toast.makeText(SignInActivity.this, "A link to reset password has been sent to your email address.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SignInActivity.this, " UserName and new password has been sent to your email address.", Toast.LENGTH_SHORT).show();
                         tvForgetPassword.setEnabled(true);
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
