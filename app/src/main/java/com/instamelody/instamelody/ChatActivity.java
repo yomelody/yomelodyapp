@@ -235,6 +235,7 @@ public class ChatActivity extends AppCompatActivity {
         }
 
 //        parent = getIntent().getStringExtra("from");
+
         imageFileList.clear();
         fileInfo.clear();
         getGalleryImages();
@@ -1129,7 +1130,7 @@ public class ChatActivity extends AppCompatActivity {
                         }
                     }
                 } else {
-                    Toast.makeText(getApplicationContext(), "Failed to read External storage", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(), "Failed to read External storage", Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -1170,10 +1171,10 @@ public class ChatActivity extends AppCompatActivity {
                         }
                     }
                 } else {
-                    Toast.makeText(getApplicationContext(), "Failed to read Internal storage", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(), "Failed to read Internal storage", Toast.LENGTH_LONG).show();
                 }
             } else {
-                Toast.makeText(getApplicationContext(), "Failed to read device storage", Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(), "Failed to read device storage", Toast.LENGTH_LONG).show();
             }
         }
     }

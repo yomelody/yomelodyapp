@@ -8,7 +8,6 @@
         android:id="@+id/llMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:padding="10dp">
@@ -33,9 +32,7 @@
         <RelativeLayout
             android:id="@+id/rlMessage"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@+id/rlProfilePic"
-            android:layout_toRightOf="@+id/rlProfilePic">
+            android:layout_height="wrap_content">
 
             <RelativeLayout
                 android:id="@+id/rlChatRecording"
@@ -61,8 +58,6 @@
                             android:layout_height="20dp"
                             android:layout_gravity="center"
                             android:layout_marginEnd="20dp"
-                            android:layout_marginLeft="5dp"
-                            android:layout_marginRight="20dp"
                             android:layout_marginStart="5dp"
                             app:srcCompat="@drawable/prev_dark" />
 
@@ -72,7 +67,6 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_marginEnd="20dp"
-                            android:layout_marginRight="20dp"
                             android:text="(1 of 2)"
                             android:textColor="#425661" />
 
@@ -82,7 +76,6 @@
                             android:layout_height="20dp"
                             android:layout_gravity="center"
                             android:layout_marginEnd="95dp"
-                            android:layout_marginRight="95dp"
                             app:srcCompat="@drawable/next_dark" />
 
                         <ImageView
@@ -106,14 +99,12 @@
                         android:layout_width="35dp"
                         android:layout_height="20dp"
                         android:layout_alignParentBottom="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true">
+                        android:layout_alignParentEnd="true">
 
                         <ImageView
                             android:id="@+id/tick"
                             android:layout_width="11dp"
                             android:layout_height="8dp"
-                            android:layout_marginLeft="8dp"
                             android:layout_marginStart="8dp"
                             android:background="@drawable/tick_white"
                             android:visibility="gone" />
@@ -122,7 +113,7 @@
                             android:id="@+id/doubleTick"
                             android:layout_width="20dp"
                             android:layout_height="8dp"
-                            android:layout_alignLeft="@+id/tick"
+                            android:layout_alignStart="@+id/tick"
                             android:background="@drawable/dubble_tick_white"
                             android:visibility="visible" />
 
@@ -137,7 +128,6 @@
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
-                            android:layout_marginLeft="15dp"
                             android:layout_marginStart="15dp"
                             android:layout_weight="0.15">
 
@@ -154,7 +144,6 @@
                         <RelativeLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="5dp"
                             android:layout_marginStart="5dp"
                             android:layout_weight="0.80">
 
@@ -163,7 +152,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
-                                android:layout_alignParentRight="true"
                                 android:maxLength="25"
                                 android:text="Sing to Me"
                                 android:textColor="#FFFFFF"
@@ -175,7 +163,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
-                                android:layout_alignParentRight="true"
                                 android:layout_below="@+id/tvMelodyName"
                                 android:layout_marginTop="2dp"
                                 android:text="sillypoet"
@@ -188,26 +175,24 @@
                 </RelativeLayout>
 
                 <FrameLayout
-                    android:layout_marginTop="47dp"
                     android:layout_width="match_parent"
                     android:layout_height="16dp"
                     android:layout_marginEnd="0dp"
-                    android:layout_marginLeft="7dp"
-                    android:layout_marginRight="0dp"
-                    android:layout_marginStart="7dp">
+                    android:layout_marginStart="7dp"
+                    android:layout_marginTop="47dp">
 
                     <SeekBar
                         android:id="@+id/seekBarChat"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_gravity="center"
                         android:indeterminate="false"
                         android:paddingEnd="0dp"
                         android:paddingLeft="0dp"
-                        android:layout_gravity="center"
                         android:paddingRight="0dp"
                         android:paddingStart="0dp"
                         android:progress="50"
-                        android:progressDrawable="@drawable/new_seekbar"/>
+                        android:progressDrawable="@drawable/new_seekbar" />
 
                 </FrameLayout>
 

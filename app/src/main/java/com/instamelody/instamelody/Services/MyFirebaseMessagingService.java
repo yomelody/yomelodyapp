@@ -71,23 +71,25 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private void handleDataMessage(JSONObject json) {
         Log.e("fbs", "push json: " + json.toString());
         try {
-            JSONObject data = json.getJSONObject("data");
+            JSONObject data = new JSONObject(json.toString());
             JSONObject body = data.getJSONObject("body");
-
             String message = body.getString("message");
             String senderId = body.getString("senderid");
             String senderName = body.getString("sender_name");
             String chatId = body.getString("chat_id");
-            String fileUrl = body.getString("file_url");
-            String title = body.getString("title");
-
-//            String title = data.getString("title");
-//            boolean isBackground = data.getBoolean("is_background");
-//            String timestamp = data.getString("timestamp");
-//            JSONObject payload = data.getJSONObject("payload");
+            String fileUrl = "", title = "", fileId = "";
+            if (body.has("file_url")) {
+                fileUrl = body.getString("file_url");
+            }
+            if (body.has("title")) {
+                title = body.getString("title");
+            }
+            if (body.has("file_id")) {
+                fileId = body.getString("file_id");
+            }
 
             Log.e("fbs", "message: " + message);
-//            Log.e("fbs", "file_id: " + file_id);
+            Log.e("fbs", "file_id: " + fileId);
             Log.e("fbs", "senderId: " + senderId);
             Log.e("fbs", "senderName " + senderName);
             Log.e("fbs", "chatId: " + chatId);
@@ -96,9 +98,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) { // app is in foreground, broadcast the push message
                 Intent pushNotification = new Intent(PUSH_NOTIFICATION);
+
                 pushNotification.putExtra("chatId", chatId);
-//                pushNotification.putExtra("message", message);
-//                pushNotification.putExtra("fileUrl", fileUrl);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
                 // play notification sound
                 if (flagSoundPlayedAlready.equals("false")) {
@@ -110,8 +111,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 resultIntent.putExtra("sender_name", senderName);
                 resultIntent.putExtra("message", message);
                 resultIntent.putExtra("chat_id", chatId);
+
                 if (TextUtils.isEmpty(fileUrl)) { // check for image attachment
                     showNotificationMessage(getApplicationContext(), title, senderId, senderName, message, chatId, /*file_id,*/ resultIntent);
+                } else if (TextUtils.isEmpty(fileId)) {
+                    showNotificationMessageWithBigImage(getApplicationContext(), title, senderId, senderName, message, chatId, /*file_id,*/ resultIntent, fileUrl);
                 } else { // image is present, show notification with image
                     showNotificationMessageWithBigImage(getApplicationContext(), title, senderId, senderName, message, chatId, /*file_id,*/ resultIntent, fileUrl);
                 }
@@ -135,51 +139,3 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         notificationUtils.showNotificationMessage(senderId, title, senderName, message, chatId, /*fileId,*/ intent, imageUrl);
     }
 }
-
-/*   try
-    {
-        JSONObject json = new JSONObject(remoteMessage.getData().toString());
-        JSONObject msgobj = json.getJSONObject("message");
-        chat_id = msgobj.getString("chat_id");
-    } catch(
-    JSONException e)
-
-    {
-        e.printStackTrace();
-    }
-
-        Log.d("str",chat_id);
-    Bundle bundle = new Bundle();
-        bundle.putString("chat_id",chat_id);
-    Intent intent = new Intent(this, ChatActivity.class);
-        intent.putExtras(bundle);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//        intent.addFlags(Intent.FLAG_FROM_BACKGROUND);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
-    Bitmap icon = BitmapFactory.decodeResource(context.getResources(), R.drawable.instamelody_logo);
-    Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-    NotificationCompat.Builder notificationBuilder = new
-            NotificationCompat.Builder(this)
-            .setSmallIcon(R.drawable.instamelody_logo)
-            .setLargeIcon(icon)
-            .setContentTitle("InstaMelody")
-            .setContentText(remoteMessage.getNotification().getBody())
-            .setSound(defaultSoundUri)
-            .setAutoCancel(true)
-            .setContentIntent(pendingIntent);
-    NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(0,notificationBuilder.build());
-//
-//        SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
-//        String chatId = prefs.getString("chatId", null);
-//        ChatActivity ca = new ChatActivity();
-//        ca.getChatMsgs(chatId);
-//
-//        if (remoteMessage.getData().size() > 0) {
-//            String str = remoteMessage.getData().toString();
-//            Log.d("FirebaseText",str);
-//        }
-}*/
-
-
