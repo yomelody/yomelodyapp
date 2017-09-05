@@ -161,7 +161,6 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             } else if (twitterPref.getString("userId", null) != null) {
                 userId = twitterPref.getString("userId", null);
             }
-            // MelodyName=tvMelodyName.getText().toString().trim();
 
 
             rlLike.setOnClickListener(new View.OnClickListener() {

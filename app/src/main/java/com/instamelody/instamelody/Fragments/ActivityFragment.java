@@ -154,21 +154,15 @@ public class ActivityFragment extends Fragment {
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
                                 ArrayList<ActivityModel> list = new ArrayList<ActivityModel>();
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                   /* arraylist.add(new ActivityModel(
-                                            ActivityData.id_[i],
-                                            ActivityData.userProfileImage[i],
-                                            ActivityData.UserNameArray1[i],
-                                            ActivityData.Topic[i],
-                                            ActivityData.Time[i]
+                                JSONArray newJsonArray = new JSONArray();
+                                for (int i = jsonArray.length()-1; i>=0; i--) {
+                                    newJsonArray.put(jsonArray.get(i));
+                                }
+                                for (int i = 0; i < newJsonArray.length(); i++) {
 
-
-                                    ));
-*/
-                                    JSONObject c = jsonArray.getJSONObject(i);
+                                    JSONObject c = newJsonArray.getJSONObject(i);
                                     arraylist.add(new ActivityModel(
                                             Integer.parseInt(c.getString("id")),
-//                                             Integer.parseInt(c.getString("id")),
                                             c.getString("activity_name"),
                                             c.getString("topic"),
                                             DateTime(c.getString("activity_created_time")),
