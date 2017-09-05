@@ -788,8 +788,8 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(KEY, PASSED);
                 params.put(USER_ID, showProfileUserId);
+                params.put(FOLLOWER_ID, userId);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }

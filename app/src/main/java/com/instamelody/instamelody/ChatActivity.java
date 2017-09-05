@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -22,6 +23,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -233,6 +235,7 @@ public class ChatActivity extends AppCompatActivity {
         }
 
 //        parent = getIntent().getStringExtra("from");
+
         imageFileList.clear();
         fileInfo.clear();
         getGalleryImages();
@@ -583,27 +586,31 @@ public class ChatActivity extends AppCompatActivity {
         ivGroupImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 if (checkPermissions()) {
-                    updateGroupFlag = 1;
-                    Intent getIntent = new Intent(Intent.ACTION_PICK);
-                    getIntent.setType("image/*");
-                    Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(galleryIntent, PICK_GALLERY_IMAGE);
-
-//                    rlBtnTakePhotoOrVideo.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View view) {
-//                            Intent chooserIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//                            Date d = new Date();
-//                            CharSequence s = DateFormat.format("yyyyMMdd_hhmmss", d.getTime());
-//                            File f = new File(Environment.getExternalStorageDirectory(), "IMG_" + s.toString() + ".jpg");
-//                            chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-//                            imageToUploadUri = Uri.fromFile(f);
-//                            startActivityForResult(chooserIntent, TAKE_CAMERA_PHOTO);
-//                            alertDialog.cancel();
-//                        }
-//                    });
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(ChatActivity.this);
+                    alertDialog.setTitle("Select your option");
+                    alertDialog.setPositiveButton("Open Gallery", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            updateGroupFlag = 1;
+                            Intent getIntent = new Intent(Intent.ACTION_PICK);
+                            getIntent.setType("image/*");
+                            Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            startActivityForResult(galleryIntent, PICK_GALLERY_IMAGE);
+                        }
+                    });
+                    alertDialog.setNegativeButton("Open Camera", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            updateGroupFlag = 1;
+                            Intent chooserIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                            Date d = new Date();
+                            CharSequence s = DateFormat.format("yyyyMMdd_hhmmss", d.getTime());
+                            File f = new File(Environment.getExternalStorageDirectory(), "IMG_" + s.toString() + ".jpg");
+                            chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                            imageToUploadUri = Uri.fromFile(f);
+                            startActivityForResult(chooserIntent, TAKE_CAMERA_PHOTO);
+                        }
+                    });
+                    alertDialog.show();
                 } else {
                     setPermissions();
                 }
@@ -1123,7 +1130,7 @@ public class ChatActivity extends AppCompatActivity {
                         }
                     }
                 } else {
-                    Toast.makeText(getApplicationContext(), "Failed to read External storage", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(), "Failed to read External storage", Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -1164,10 +1171,10 @@ public class ChatActivity extends AppCompatActivity {
                         }
                     }
                 } else {
-                    Toast.makeText(getApplicationContext(), "Failed to read Internal storage", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(), "Failed to read Internal storage", Toast.LENGTH_LONG).show();
                 }
             } else {
-                Toast.makeText(getApplicationContext(), "Failed to read device storage", Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(), "Failed to read device storage", Toast.LENGTH_LONG).show();
             }
         }
     }

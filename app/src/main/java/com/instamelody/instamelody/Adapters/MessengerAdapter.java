@@ -139,6 +139,11 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
         } else {
             holder.tvUserName.setText(chat.getReceiverName());
             Picasso.with(holder.userProfileImage.getContext()).load(chat.getProfilePic()).into(holder.userProfileImage);
+//            if (userId.equals(chat.getSenderID())){
+//                holder.tvMsg.setText("You" + " : " + chat.getMessage());
+//            }else{
+//                holder.tvMsg.setText(chat.getSenderName() + " : " + chat.getMessage());
+//            }
             holder.tvMsg.setText(chat.getMessage());
         }
         holder.tvTime.setText(chat.getSendAt());
