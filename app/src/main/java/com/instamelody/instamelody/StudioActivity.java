@@ -71,6 +71,8 @@ import com.facebook.FacebookSdk;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.instamelody.instamelody.Adapters.InstrumentListAdapter;
 import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
 import com.instamelody.instamelody.Models.Genres;
@@ -86,6 +88,7 @@ import com.instamelody.instamelody.utils.VolleySingleton;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import org.json.JSONArray;
@@ -170,6 +173,7 @@ public class StudioActivity extends AppCompatActivity {
     ArrayList<String> genresName = new ArrayList<>();
     ArrayList<String> genresId = new ArrayList<>();
     String KEY_GENRE_ID = "id";
+    TwitterAuthClient client;
 
     List<String> genreList = new ArrayList<>();
 
@@ -265,6 +269,7 @@ public class StudioActivity extends AppCompatActivity {
     String MixparentRecordingID = "parentRecordingID";
     CallbackManager callbackManager;
     URL ShortUrl;
+    boolean fbValue, twitterValue;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -378,7 +383,6 @@ public class StudioActivity extends AppCompatActivity {
         String dateString = sdf.format(date);
         recording_date.setText(dateString);
         melody_date.setText(dateString);
-
 
 
         final Intent intent = getIntent();
@@ -644,7 +648,7 @@ public class StudioActivity extends AppCompatActivity {
                 startActivity(intent);
                 SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("cover response", MODE_PRIVATE).edit();
                 editor.clear();
-                editor.commit();
+                editor.apply();
             }
         });
 
@@ -1269,7 +1273,6 @@ public class StudioActivity extends AppCompatActivity {
                 StudioActivity.this.recreate();
 
 
-
             }
         });
 
@@ -1530,7 +1533,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 //                uploadRecordingsMixing("5");
-                 saveRecordings1();
+                saveRecordings1();
 
                 //  new LongOperation().execute();
 
@@ -2078,7 +2081,8 @@ public class StudioActivity extends AppCompatActivity {
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
                             switchFbEditor1.clear();
                             switchFbEditor1.apply();
-                        } if (switchFbStatus == 3){
+                        }
+                        if (switchFbStatus == 3) {
                             FbShare();
                             TweetShare();
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
@@ -2146,7 +2150,6 @@ public class StudioActivity extends AppCompatActivity {
                         jsonObject.put("mix", list.get(i).mix);
                         jsonObject.put("fileurl", list.get(i).fileurl);
                         jsonObject.put("PositionId", list.get(i).positionId);
-
 
                         myarray.put(i, jsonObject);
 
@@ -2277,22 +2280,34 @@ public class StudioActivity extends AppCompatActivity {
                         editorT.putString("thumbnailUrl", thumbNail);
                         editorT.apply();
 
-                        SharedPreferences switchFbEditor = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE);
-                        int switchFbStatus = switchFbEditor.getInt("switch", 0);
+                       /* SharedPreferences switchFbEditor = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE);
+                        int switchFbStatus = switchFbEditor.getInt("switch", 0);*/
 
-                        if (switchFbStatus == 1) {
+                        SharedPreferences switchFbEditor = getApplicationContext().getSharedPreferences("SwitchStatusFb", MODE_PRIVATE);
+                        fbValue = switchFbEditor.getBoolean("switchFb", false);
+
+                        SharedPreferences switchTwitterEditor = getApplicationContext().getSharedPreferences("SwitchStatusTwitter", MODE_PRIVATE);
+                        twitterValue = switchTwitterEditor.getBoolean("switchTwitter", false);
+
+                        SharedPreferences switchSoundCloudEditor = getApplicationContext().getSharedPreferences("SwitchStatusSoundCloud", MODE_PRIVATE);
+                        boolean soundCloudValue = switchSoundCloudEditor.getBoolean("switchSoundCloud", false);
+
+                        SharedPreferences switchGoogleEditor = getApplicationContext().getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE);
+                        boolean googleValue = switchGoogleEditor.getBoolean("switchGoogle", false);
+
+                        if (fbValue == true && ((fbValue && twitterValue)) != true) {
                             FbShare();
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
                             switchFbEditor1.clear();
                             switchFbEditor1.apply();
-                        } else if (switchFbStatus == 2) {
+                        } else if (twitterValue == true && (fbValue && twitterValue) != true) {
                             TweetShare();
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
                             switchFbEditor1.clear();
                             switchFbEditor1.apply();
-                        } if (switchFbStatus == 3){
+                        }
+                        if ((fbValue && twitterValue) == true) {
                             FbShare();
-                            TweetShare();
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
                             switchFbEditor1.clear();
                             switchFbEditor1.apply();
@@ -2392,7 +2407,6 @@ public class StudioActivity extends AppCompatActivity {
 //                params.put(ID_MELODY_REC, "150");
                 params.put(USER_ID1, userId);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-
 
                 return params;
             }
@@ -2552,6 +2566,14 @@ public class StudioActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == TwitterAuthConfig.DEFAULT_AUTH_REQUEST_CODE) {
+            //  twitter related handling
+            client.onActivityResult(requestCode, resultCode, data);
+        } else {
+            if (callbackManager.onActivityResult(requestCode, resultCode, data))
+                return;
+        }
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && null != data) {
             Uri filePath = data.getData();
@@ -2810,6 +2832,7 @@ public class StudioActivity extends AppCompatActivity {
             e.printStackTrace();
         }*/
     }
+
     public void FbShare() {
         SharedPreferences editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE);
         String fetchThumbNailUrl = editorT.getString("thumbnailUrl", null);
@@ -2820,10 +2843,18 @@ public class StudioActivity extends AppCompatActivity {
         shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
             @Override
             public void onSuccess(Sharer.Result result) {
+               if ((fbValue && twitterValue) == true){
+                   progressDialog = new ProgressDialog(StudioActivity.this);
+                   progressDialog.setTitle("Processing...");
+                   progressDialog.setMessage("Please wait...");
+                   progressDialog.setCancelable(false);
+                   progressDialog.show();
+                   TweetShare();
+               }
                 Toast.makeText(StudioActivity.this, "Recording Uploaded", Toast.LENGTH_SHORT).show();
-                SharedPreferences.Editor editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE).edit();
+                /*SharedPreferences.Editor editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE).edit();
                 editorT.clear();
-                editorT.apply();
+                editorT.apply();*/
             }
 
             @Override
@@ -2876,6 +2907,12 @@ public class StudioActivity extends AppCompatActivity {
                 .url(ShortUrl);
 //                .image(Uri.parse(cover));
         builder.show();
+        if (progressDialog != null){
+            if (progressDialog.isShowing()){
+                progressDialog.dismiss();
+            }
+        }
+
     }
 
 

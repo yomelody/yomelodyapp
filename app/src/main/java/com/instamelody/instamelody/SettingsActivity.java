@@ -1,7 +1,9 @@
 package com.instamelody.instamelody;
 
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -28,10 +30,10 @@ public class SettingsActivity extends AppCompatActivity {
     TextView tvDone, tvSignIn, tvSignOut, tvFirstNameSettings, tvUserNameSettings;
     SeekBar seekBarDisc;
     ImageView ivLogoContainer;
-    RelativeLayout rlSocialConnect, rlSubscription, rlMyAccount, rlTos, rlPrivacyPolicy,rlInviteContacts,rlRateApp;
+    RelativeLayout rlSocialConnect, rlSubscription, rlMyAccount, rlTos, rlPrivacyPolicy, rlInviteContacts, rlRateApp;
     String userId, firstName, lastName, userNameLogin, profilePicLogin;
     String userIdTwitter, firstNameTwitter, lastNameTwitter, emailFinalTwitter, profilePicTwitter, userNameTwitter;
-    String userIdFb, firstNameFb, lastNameFb,userNameFb;
+    String userIdFb, firstNameFb, lastNameFb, userNameFb;
     CircleImageView userProfileImageSettings;
     int statusNormal;
     Context context;
@@ -43,7 +45,7 @@ public class SettingsActivity extends AppCompatActivity {
         rlSocialConnect = (RelativeLayout) findViewById(R.id.rlSocialConnect);
         rlSubscription = (RelativeLayout) findViewById(R.id.rlSubscription);
         rlMyAccount = (RelativeLayout) findViewById(R.id.rlMyAccount);
-        rlInviteContacts = (RelativeLayout)findViewById(R.id.rlInviteContacts);
+        rlInviteContacts = (RelativeLayout) findViewById(R.id.rlInviteContacts);
         tvDone = (TextView) findViewById(R.id.tvDone);
         tvSignIn = (TextView) findViewById(R.id.tvSignIn);
         tvSignOut = (TextView) findViewById(R.id.tvSignOut);
@@ -106,16 +108,16 @@ public class SettingsActivity extends AppCompatActivity {
 
             }
 
-            if (userIdFb!= null){
-                tvFirstNameSettings.setText(firstNameFb+"  "+lastNameFb);
+            if (userIdFb != null) {
+                tvFirstNameSettings.setText(firstNameFb + "  " + lastNameFb);
                 tvUserNameSettings.setText(userNameFb);
 //                SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
                 String fbId = fbPref.getString("fbId", null);
                 ivLogoContainer.setVisibility(View.GONE);
                 userProfileImageSettings.setVisibility(View.VISIBLE);
                 Picasso.with(SettingsActivity.this).load("https://graph.facebook.com/" + fbId + "/picture").into(userProfileImageSettings);
-            }else if (userIdTwitter!= null){
-                tvFirstNameSettings.setText(firstNameTwitter+"  "+lastNameTwitter);
+            } else if (userIdTwitter != null) {
+                tvFirstNameSettings.setText(firstNameTwitter + "  " + lastNameTwitter);
                 tvUserNameSettings.setText(userNameTwitter);
 //                SharedPreferences twitterPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
                 String profilePic1 = twitterPref.getString("profilePic", null);
@@ -143,7 +145,7 @@ public class SettingsActivity extends AppCompatActivity {
             rlPrivacyPolicy.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(SettingsActivity.this,PrivacyPolicy.class);
+                    Intent intent = new Intent(SettingsActivity.this, PrivacyPolicy.class);
                     startActivity(intent);
                 }
             });
@@ -151,7 +153,7 @@ public class SettingsActivity extends AppCompatActivity {
             rlTos.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(SettingsActivity.this,PrivacyPolicy.class);
+                    Intent intent = new Intent(SettingsActivity.this, PrivacyPolicy.class);
                     startActivity(intent);
                 }
             });
@@ -202,11 +204,42 @@ public class SettingsActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
 
-                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    /*Intent intent = new Intent(Intent.ACTION_SEND);
                     intent.setType("text/plain");
                     intent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store?hl=en");
                     intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Check out this site!");
-                    startActivity(Intent.createChooser(intent, "Share"));
+                    startActivity(Intent.createChooser(intent, "Share"));*/
+
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(SettingsActivity.this);
+                    builder1.setMessage("Wants to invite existing InstaMelody Artist from your contact list ?");
+                    builder1.setCancelable(true);
+
+                    builder1.setPositiveButton(
+                            "Yes",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    Intent i = new Intent(SettingsActivity.this, ContactsActivity.class);
+                                    startActivity(i);
+                                }
+                            });
+
+                    builder1.setNegativeButton(
+                            "No",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    Intent intent = new Intent(Intent.ACTION_SEND);
+                                    intent.setType("text/plain");
+                                    intent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store?hl=en");
+                                    intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Check out this site!");
+                                    startActivity(Intent.createChooser(intent, "Share"));
+                                    dialog.cancel();
+                                }
+                            });
+
+                    AlertDialog alert11 = builder1.create();
+                    alert11.show();
+
+
                 }
             });
 
@@ -301,7 +334,7 @@ public class SettingsActivity extends AppCompatActivity {
             rlTos.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(SettingsActivity.this,PrivacyPolicy.class);
+                    Intent intent = new Intent(SettingsActivity.this, PrivacyPolicy.class);
                     startActivity(intent);
                 }
             });
@@ -309,11 +342,10 @@ public class SettingsActivity extends AppCompatActivity {
             rlPrivacyPolicy.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(SettingsActivity.this,PrivacyPolicy.class);
+                    Intent intent = new Intent(SettingsActivity.this, PrivacyPolicy.class);
                     startActivity(intent);
                 }
             });
-
 
 
             tvSignOut.setOnClickListener(new View.OnClickListener() {
