@@ -243,7 +243,7 @@ public class ChatActivity extends AppCompatActivity {
         SharedPreferences audioShareData = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE);
         if (audioShareData.getString("recID", null) != null) {
             flagFileType = "2";
-            sendMessage("", userId);
+            sendMessage("Audio", userId);
         }
 
         SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
