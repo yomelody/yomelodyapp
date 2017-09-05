@@ -65,8 +65,6 @@ import com.facebook.FacebookSdk;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.instamelody.instamelody.Adapters.InstrumentListAdapter;
 import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
 import com.instamelody.instamelody.Models.Genres;
@@ -260,6 +258,7 @@ public class StudioActivity extends AppCompatActivity {
     CallbackManager callbackManager;
     URL ShortUrl;
     boolean fbValue, twitterValue;
+    public static MediaPlayer mpall;
     public static ArrayList<MediaPlayer> mediaPlayersAll = new ArrayList<MediaPlayer>();
 
 
@@ -360,7 +359,7 @@ public class StudioActivity extends AppCompatActivity {
         rlSync = (RelativeLayout) findViewById(R.id.rlSync);
         SharedPreferences loginSharedPref1 = this.getSharedPreferences("Url_recording", MODE_PRIVATE);
         fetchRecordingUrl = loginSharedPref1.getString("Recording_url", null);
-        rlMelodyButton.setVisibility(View.VISIBLE);
+
         fetchGenreNames();
         elapsedMillis = SystemClock.elapsedRealtime() - chrono.getBase();
         int hours = (int) (timeElapsed / 3600000);
@@ -491,7 +490,59 @@ public class StudioActivity extends AppCompatActivity {
         audioFilePath = Environment.getExternalStorageDirectory().getAbsolutePath()+ "/InstaMelody.mp3";
 
 
-                editor.apply();
+                //editor.apply();
+        rlMelodyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                if (StudioActivity.mpall != null) {
+                    StudioActivity.mpall.stop();
+                    for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
+                        StudioActivity.mediaPlayersAll.get(i).stop();
+
+                    }
+                }
+
+                if (mRecordingThread != null) {
+                    mRecordingThread.stopRunning();
+                }
+
+                if (isRecording) {
+                    StudioActivity.ivRecord.setEnabled(false);
+                    StudioActivity.handler.removeCallbacksAndMessages(null);
+
+                    if (recorder != null) {
+                        try {
+                            recorder.stop();
+
+                        } catch (RuntimeException ex) {
+                            //Ignore
+                        }
+                    }
+                    recorder.release();
+                    recorder = null;
+                    isRecording = false;
+                    StudioActivity.tvDone.setEnabled(true);
+                    StudioActivity.chrono.stop();
+                } else {
+                    try {
+
+                        StudioActivity.rlRecordingButton.setEnabled(true);
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+
+                Intent intent = new Intent(StudioActivity.this, MelodyActivity.class);
+                startActivity(intent);
+                SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("cover response", MODE_PRIVATE).edit();
+                editor.clear();
+                editor.commit();
+            }
+        });
 
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -848,8 +899,8 @@ public class StudioActivity extends AppCompatActivity {
         builder2.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-//                uploadRecordingsMixing("5");
-                saveRecordings1();
+                uploadRecordingsMixing("5");
+                //saveRecordings1();
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtTopicName.getWindowToken(), 0);
             }
@@ -1153,30 +1204,36 @@ public class StudioActivity extends AppCompatActivity {
                         editorT.putString("thumbnailUrl", "http://bit.ly/2xCRux3");
                         editorT.apply();
 
-                        SharedPreferences switchFbEditor = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE);
-                        int switchFbStatus = switchFbEditor.getInt("switch", 0);
+                        SharedPreferences switchFbEditor = getApplicationContext().getSharedPreferences("SwitchStatusFb", MODE_PRIVATE);
+                        fbValue = switchFbEditor.getBoolean("switchFb", false);
 
-                        if (switchFbStatus == 1) {
+                        SharedPreferences switchTwitterEditor = getApplicationContext().getSharedPreferences("SwitchStatusTwitter", MODE_PRIVATE);
+                        twitterValue = switchTwitterEditor.getBoolean("switchTwitter", false);
+
+                        SharedPreferences switchSoundCloudEditor = getApplicationContext().getSharedPreferences("SwitchStatusSoundCloud", MODE_PRIVATE);
+                        boolean soundCloudValue = switchSoundCloudEditor.getBoolean("switchSoundCloud", false);
+
+                        SharedPreferences switchGoogleEditor = getApplicationContext().getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE);
+                        boolean googleValue = switchGoogleEditor.getBoolean("switchGoogle", false);
+
+                        if (fbValue == true && ((fbValue && twitterValue)) != true) {
                             FbShare();
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
                             switchFbEditor1.clear();
                             switchFbEditor1.apply();
-                        } else if (switchFbStatus == 2) {
+                        } else if (twitterValue == true && (fbValue && twitterValue) != true) {
                             TweetShare();
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
                             switchFbEditor1.clear();
                             switchFbEditor1.apply();
                         }
-                        if (switchFbStatus == 3) {
+                        if ((fbValue && twitterValue) == true) {
                             FbShare();
-                            TweetShare();
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
                             switchFbEditor1.clear();
                             switchFbEditor1.apply();
                         }
-
                     }
-
 
                 } catch (JSONException e) {
                     e.printStackTrace();

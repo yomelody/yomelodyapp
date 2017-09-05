@@ -39,7 +39,6 @@ import android.widget.Toast;
 
 import com.android.volley.toolbox.ByteArrayPool;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.instamelody.instamelody.MelodyActivity;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.MixingData;
 import com.instamelody.instamelody.R;
@@ -80,7 +79,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     String fbName, fbUserName, fbId;
     String instrumentName, melodyName;
     int rvLength;
-    Context context;
+
 
     SoundPool mSoundPool;
     public static ArrayList<String> instruments_url = new ArrayList<String>();
@@ -114,7 +113,11 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         this.context = context;
 
     }
+    private Context context;
 
+    public InstrumentListAdapter(Context context) {
+        this.context = context;
+    }
     /*For Treble base and volume*/
     private BassBoost bass;
     private Equalizer equalizer;
@@ -1102,11 +1105,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             }
         });
 
-        StudioActivity.rlMelodyButton.setOnClickListener(new View.OnClickListener() {
+        /*StudioActivity.rlMelodyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
 
 
                 if (StudioActivity.mpall != null) {
@@ -1136,6 +1137,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     recorder.release();
                     recorder = null;
                     isRecording = false;
+                    StudioActivity.tvDone.setEnabled(true);
+                    StudioActivity.chrono.stop();
                 } else {
                     try {
 
@@ -1145,17 +1148,15 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     }
 
                 }
-                StudioActivity.tvDone.setEnabled(true);
-                StudioActivity.chrono.stop();
 
 
-                Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
-                getApplicationContext().startActivity(intent);
+                Intent intent = new Intent(context, MelodyActivity.class);
+                v.getContext().startActivity(intent);
                 SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("cover response", MODE_PRIVATE).edit();
                 editor.clear();
                 editor.commit();
             }
-        });
+        });*/
 
         Intent i = new Intent("fetchingInstruments");
         i.putStringArrayListExtra("instruments", instrument_url_count);
