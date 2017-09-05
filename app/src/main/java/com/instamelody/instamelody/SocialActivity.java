@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
@@ -86,6 +87,7 @@ public class SocialActivity extends AppCompatActivity {
     PlusOneButton plus_one_button;
     private static final int PLUS_ONE_REQUEST_CODE = 0;
     String cover;
+    TextView tvDone;
 
 
     @Override
@@ -122,6 +124,7 @@ public class SocialActivity extends AppCompatActivity {
         SharedPreferences editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE);
         fetchThumbNailUrl = editorT.getString("thumbnailUrl", null);
         plus_one_button = (PlusOneButton) findViewById(R.id.plus_one_button);
+        tvDone = (TextView) findViewById(R.id.tvDone);
 
 
         SharedPreferences editor1 = this.getSharedPreferences("commentData1", MODE_PRIVATE);
@@ -225,6 +228,14 @@ public class SocialActivity extends AppCompatActivity {
                     switchGoogleEditor.putBoolean("switchGoogle", false);
                     switchGoogleEditor.apply();
                 }
+            }
+        });
+
+        tvDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(SocialActivity.this,SettingsActivity.class);
+                startActivity(i);
             }
         });
     }

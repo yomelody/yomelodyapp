@@ -698,6 +698,9 @@ public class SignInActivity extends AppCompatActivity {
                 }) {
             @Override
             protected Map<String, String> getParams() {
+                if (fbEmail==null){
+                    fbEmail = "amol@codingbrains.com";
+                }
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(KEY_FNAME, firstNamefb);
                 params.put(KEY_LNAME, lastNamefb);
@@ -707,7 +710,6 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY_USER_TYPE, "2");
                 params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);
                 params.put(KEY_DEVICE_TYPE, "android");
-                params.put(KEY_PROFILE_PIC, FbProf1);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
