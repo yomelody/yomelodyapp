@@ -483,7 +483,6 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         lastModifiedHoled.itemView.findViewById(R.id.ivPause).setVisibility(VISIBLE);
                         mediaPlayer.start();
                         holder.primarySeekBarProgressUpdater();
-
                     }
                 });
                 mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {

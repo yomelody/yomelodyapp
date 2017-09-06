@@ -1015,10 +1015,6 @@ public class ChatActivity extends AppCompatActivity {
                     String str = response;
 //                    Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
                     getChatMsgs(chatId);
-                    SharedPreferences.Editor editor = getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
-                    editor.clear();
-                    editor.apply();
-
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -1071,6 +1067,9 @@ public class ChatActivity extends AppCompatActivity {
                         String recID;
                         SharedPreferences audioShareData = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE);
                         recID = audioShareData.getString("recID", null);
+                        SharedPreferences.Editor editor = getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
+                        editor.putString("recID", null);
+                        editor.apply();
                         params.put(FILE, recID);
                         params.put(FILE_TYPE, "station");
 
@@ -1129,8 +1128,6 @@ public class ChatActivity extends AppCompatActivity {
                             fileInfo.add(rim);
                         }
                     }
-                } else {
-//                    Toast.makeText(getApplicationContext(), "Failed to read External storage", Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -1170,11 +1167,7 @@ public class ChatActivity extends AppCompatActivity {
                             fileInfo.add(rim);
                         }
                     }
-                } else {
-//                    Toast.makeText(getApplicationContext(), "Failed to read Internal storage", Toast.LENGTH_LONG).show();
                 }
-            } else {
-//                Toast.makeText(getApplicationContext(), "Failed to read device storage", Toast.LENGTH_LONG).show();
             }
         }
     }

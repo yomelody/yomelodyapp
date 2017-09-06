@@ -134,16 +134,19 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
         Chat chat = chatList.get(listPosition);
         if (chat.getChatType().equals("group")) {
             holder.tvUserName.setText(chat.getGroupName());
-            Picasso.with(holder.userProfileImage.getContext()).load(chat.getGroupPic()).into(holder.userProfileImage);
+            Picasso.with(holder.userProfileImage.getContext()).load(chat.getGroupPic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(holder.userProfileImage);
+
             holder.tvMsg.setText(chat.getSenderName() + " : " + chat.getMessage());
         } else {
             holder.tvUserName.setText(chat.getReceiverName());
-            Picasso.with(holder.userProfileImage.getContext()).load(chat.getProfilePic()).into(holder.userProfileImage);
+            Picasso.with(holder.userProfileImage.getContext()).load(chat.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(holder.userProfileImage);
+
 //            if (userId.equals(chat.getSenderID())){
 //                holder.tvMsg.setText("You" + " : " + chat.getMessage());
 //            }else{
 //                holder.tvMsg.setText(chat.getSenderName() + " : " + chat.getMessage());
 //            }
+
             holder.tvMsg.setText(chat.getMessage());
         }
         holder.tvTime.setText(chat.getSendAt());
