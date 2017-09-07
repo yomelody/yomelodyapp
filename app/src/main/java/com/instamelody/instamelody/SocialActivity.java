@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +44,7 @@ import com.google.android.gms.plus.PlusOneButton;
 import com.google.android.gms.plus.PlusShare;
 import com.jlubecki.soundcloud.webapi.android.auth.AuthenticationCallback;
 import com.jlubecki.soundcloud.webapi.android.auth.SoundCloudAuthenticator;
+import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
@@ -63,6 +65,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import io.fabric.sdk.android.Fabric;
 import io.fabric.sdk.android.services.concurrency.AsyncTask;
 
@@ -87,7 +90,13 @@ public class SocialActivity extends AppCompatActivity {
     PlusOneButton plus_one_button;
     private static final int PLUS_ONE_REQUEST_CODE = 0;
     String cover;
-    TextView tvDone;
+    TextView tvDone,tvFirstNameSocial,tvUserNameSocial;
+    String userId, firstName, lastName, userNameLogin, profilePicLogin;
+    String userIdTwitter, firstNameTwitter, lastNameTwitter, emailFinalTwitter, profilePicTwitter, userNameTwitter;
+    String userIdFb, firstNameFb, lastNameFb, userNameFb;
+    int statusNormal;
+    CircleImageView userProfileImageSocial;
+    ImageView ivLogoContainer;
 
 
     @Override
@@ -125,10 +134,93 @@ public class SocialActivity extends AppCompatActivity {
         fetchThumbNailUrl = editorT.getString("thumbnailUrl", null);
         plus_one_button = (PlusOneButton) findViewById(R.id.plus_one_button);
         tvDone = (TextView) findViewById(R.id.tvDone);
+        tvFirstNameSocial = (TextView) findViewById(R.id.tvFirstNameSocial);
+        tvUserNameSocial = (TextView) findViewById(R.id.tvUserNameSocial);
+        userProfileImageSocial = (CircleImageView) findViewById(R.id.userProfileImageSocial);
+        ivLogoContainer = (ImageView) findViewById(R.id.ivLogoContainer);
+
+
+        SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+        userId = loginSharedPref.getString("userId", null);
+        firstName = loginSharedPref.getString("firstName", null);
+        lastName = loginSharedPref.getString("lastName", null);
+        userNameLogin = loginSharedPref.getString("userName", null);
+        profilePicLogin = loginSharedPref.getString("profilePic", null);
+        statusNormal = loginSharedPref.getInt("status", 0);
+
+//        seekBarDisc = (SeekBar)findViewById(R.id.seekBarDisc);
+
+        SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+
+        SharedPreferences profileEditor = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE);
+        SharedPreferences profileImageEditor = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE);
+        if (profileImageEditor.getString("ProfileImage",null) != null){
+            ivLogoContainer.setVisibility(View.GONE);
+            userProfileImageSocial.setVisibility(View.VISIBLE);
+            Picasso.with(SocialActivity.this).load(profileImageEditor.getString("ProfileImage",null)).into(userProfileImageSocial);
+        }
+        if (profileEditor.getString("updateId",null) != null){
+            tvFirstNameSocial.setText(profileEditor.getString("updateFirstName", null) + " "+profileEditor.getString("updateLastName",null));
+            tvUserNameSocial.setText("@" +profileEditor.getString("updateUserName",null));
+        }
+
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
+        }
+
+        SharedPreferences twitterEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        userIdTwitter = twitterEditor.getString("userId", null);
+        firstNameTwitter = twitterEditor.getString("firstName", null);
+        lastNameTwitter = twitterEditor.getString("lastName", null);
+        userNameTwitter = twitterEditor.getString("userName", null);
+        emailFinalTwitter = twitterEditor.getString("emailFinal", null);
+        profilePicTwitter = twitterEditor.getString("profilePic", null);
+
+
+        SharedPreferences fbEditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+        userIdFb = fbEditor.getString("userId", null);
+        firstNameFb = fbEditor.getString("firstName", null);
+        lastNameFb = fbEditor.getString("lastName", null);
+        userNameFb = fbEditor.getString("userName", null);
 
 
         SharedPreferences editor1 = this.getSharedPreferences("commentData1", MODE_PRIVATE);
         cover = editor1.getString("cover", null);
+
+        if (statusNormal == 1) {
+            tvFirstNameSocial.setText(firstName + " " + lastName);
+            tvUserNameSocial.setText("@" + userNameLogin);
+        }
+
+        if (profilePicLogin != null) {
+            ivLogoContainer.setVisibility(View.GONE);
+            userProfileImageSocial.setVisibility(View.VISIBLE);
+            Picasso.with(SocialActivity.this).load(profilePicLogin).into(userProfileImageSocial);
+
+        }
+
+        if (userIdFb != null) {
+            tvFirstNameSocial.setText(firstNameFb + "  " + lastNameFb);
+            tvUserNameSocial.setText("@"+ userNameFb);
+//                SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+            String fbId = fbPref.getString("fbId", null);
+            ivLogoContainer.setVisibility(View.GONE);
+            userProfileImageSocial.setVisibility(View.VISIBLE);
+            Picasso.with(SocialActivity.this).load("https://graph.facebook.com/" + fbId + "/picture").into(userProfileImageSocial);
+        } else if (userIdTwitter != null) {
+            tvFirstNameSocial.setText(firstNameTwitter + "  " + lastNameTwitter);
+            tvUserNameSocial.setText("@"+ userNameTwitter);
+//                SharedPreferences twitterPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
+            String profilePic1 = twitterPref.getString("profilePic", null);
+            ivLogoContainer.setVisibility(View.GONE);
+            userProfileImageSocial.setVisibility(View.VISIBLE);
+            Picasso.with(SocialActivity.this).load(profilePic1).into(userProfileImageSocial);
+        }
 
 
         switchFb.setOnClickListener(new View.OnClickListener() {
@@ -205,7 +297,7 @@ public class SocialActivity extends AppCompatActivity {
                     startActivity(intent);
                     switchGoogle.setEnabled(false);
                 } else {
-                    plus_one_button.setVisibility(View.VISIBLE);
+                    /*plus_one_button.setVisibility(View.VISIBLE);
                     plus_one_button.setEnabled(true);
                     plus_one_button.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -217,7 +309,7 @@ public class SocialActivity extends AppCompatActivity {
                                     .getIntent();
                             startActivityForResult(shareIntent, 0);
                         }
-                    });
+                    });*/
                 }
                 if (switchGoogle.isChecked()) {
                     SharedPreferences.Editor switchGoogleEditor = getApplicationContext().getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE).edit();

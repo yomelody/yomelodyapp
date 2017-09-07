@@ -29,6 +29,7 @@ import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.CommentsActivity;
 import com.instamelody.instamelody.ContactsActivity;
 import com.instamelody.instamelody.JoinActivity;
+import com.instamelody.instamelody.MessengerActivity;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.ProfileActivity;
@@ -272,7 +273,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 RecordingsModel recording = recordingList.get(getAdapterPosition());
                                 editor.putString("recID", recording.getRecordingId());
                                 editor.apply();
-                                Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
+                                Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
                                 intent.putExtra("Previous", "station");
                                 context.startActivity(intent);
                             }

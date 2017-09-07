@@ -543,7 +543,7 @@ public class ProfileActivity extends AppCompatActivity {
                                     } else {
                                         tv_fans.setText(0);
                                     }
-                                    followers = userJson.getString("followers");
+                                    followers = userJson.getString("following");
                                     if (!followers.equals("")) {
                                         tv_following.setText(followers);
                                     } else {
@@ -788,7 +788,6 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(KEY, PASSED);
                 params.put(USER_ID, showProfileUserId);
                 params.put(FOLLOWER_ID, userId);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);

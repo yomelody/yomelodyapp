@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -89,7 +90,7 @@ public class HomeActivity extends AppCompatActivity {
     public static HomeActivity fa;
     TextView tvFirstName, tvUserName, message_count;
     String Name, userName, profilePic, fbEmail, profilepic2, fbFirstName, fbUserName, fbLastName, fbProfilePic, name2, userName2, galleryPrfPic, fbId;
-    String firstName, lastName, userNameLogin, profilePicLogin,userIdNormal;
+    String firstName, lastName, userNameLogin, profilePicLogin, userIdNormal;
     int statusNormal, statusFb, statusTwitter;
     CircleImageView userProfileImage;
     int count = 0;
@@ -134,7 +135,7 @@ public class HomeActivity extends AppCompatActivity {
                     message_count.setText(count);
                     SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                     editor.putString("messageCount", String.valueOf(count));
-                    editor.commit();
+                    editor.apply();
                 }
             }
         };
@@ -157,6 +158,24 @@ public class HomeActivity extends AppCompatActivity {
         profilePicLogin = loginSharedPref.getString("profilePic", null);
         userIdNormal = loginSharedPref.getString("userId", null);
         statusNormal = loginSharedPref.getInt("status", 0);
+
+
+        SharedPreferences profileEditor = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE);
+        SharedPreferences profileImageEditor = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE);
+        if (profileEditor.getString("updateId", null) != null) {
+            if (profileImageEditor.getString("ProfileImage", null) != null) {
+                ivProfile.setVisibility(View.GONE);
+                userProfileImage.setVisibility(View.VISIBLE);
+                userProfileImage.setDrawingCacheEnabled(true);
+//            Picasso.with(HomeActivity.this).load(profileImageEditor.getString("ProfileImage", null)).into(userProfileImage);
+                Picasso.with(HomeActivity.this).load(profileImageEditor.getString("ProfileImage", null)).into(userProfileImage);
+            }
+            SignOut.setVisibility(View.VISIBLE);
+            SignIn.setVisibility(View.INVISIBLE);
+            tvFirstName.setText(profileEditor.getString("updateFirstName", null) + " " + profileEditor.getString("updateLastName", null));
+            tvUserName.setText("@" + profileEditor.getString("updateUserName", null));
+        }
+
 
         if (statusNormal == 1) {
             SignOut.setVisibility(View.VISIBLE);
@@ -279,13 +298,19 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View view) {
                 SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
                 editor.clear();
-                editor.commit();
+                editor.apply();
                 SharedPreferences.Editor tEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
                 tEditor.clear();
-                tEditor.commit();
+                tEditor.apply();
                 SharedPreferences.Editor fbeditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
                 fbeditor.clear();
-                fbeditor.commit();
+                fbeditor.apply();
+                SharedPreferences.Editor profileEditor = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE).edit();
+                profileEditor.clear();
+                profileEditor.apply();
+                SharedPreferences.Editor profileImageEditor = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE).edit();
+                profileImageEditor.clear();
+                profileImageEditor.apply();
                 LoginManager.getInstance().logOut();
                 SignOut.setVisibility(View.INVISIBLE);
                 SignIn.setVisibility(View.VISIBLE);
@@ -308,17 +333,19 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
 
+                    if (checkPermissions()) {
+                        Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
+                        intent.putExtra("clickPosition", "fromHomeActivity");
+                        startActivity(intent);
+                    } else {
+                        setPermissions();
+                    }
 
-                        if (checkPermissions()) {
-                            Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
-                            intent.putExtra("clickPosition", "fromHomeActivity");
-                            startActivity(intent);
-                        } else {
-                            setPermissions();
-                        }
-
+                } else {
+                    Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
+                    intent.putExtra("clickPosition", "fromHomeActivity");
+                    startActivity(intent);
                 }
-
 
 
             }
@@ -329,15 +356,18 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
 
+                    if (checkPermissions()) {
+                        Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
+                        startActivity(intent);
+                    } else {
+                        setPermissions();
+                    }
 
-                        if (checkPermissions()) {
-                            Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
-                            startActivity(intent);
-                        } else {
-                            setPermissions();
-                        }
-
+                } else {
+                    Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
+                    startActivity(intent);
                 }
+
 
             }
         });
@@ -524,6 +554,15 @@ public class HomeActivity extends AppCompatActivity {
                 }
                 break;
         }
+    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if ((keyCode == KeyEvent.KEYCODE_BACK))
+        {
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
 }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.support.annotation.IntegerRes;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -75,8 +74,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             tvMelodyName = (TextView) itemView.findViewById(R.id.tvMelodyName);
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
             ivPlay = (ImageView) itemView.findViewById(R.id.ivPlay);
-            ivPrev = (ImageView) itemView.findViewById(R.id.ivPrev);
-            ivNext = (ImageView) itemView.findViewById(R.id.ivNext);
             ivSettings = (ImageView) itemView.findViewById(R.id.ivSettings);
         }
     }
@@ -94,6 +91,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             itemView = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.chat_view_recording_self, parent, false);
             tvNum = (TextView) itemView.findViewById(R.id.tvNum);
+            ivPrev = (ImageView) itemView.findViewById(R.id.ivPrev);
+            ivNext = (ImageView) itemView.findViewById(R.id.ivNext);
         } else if (viewType == OTHER_IMAGE) {
             itemView = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.chat_view_image_other, parent, false);
@@ -101,6 +100,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             itemView = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.chat_view_recording_other, parent, false);
             tvNum = (TextView) itemView.findViewById(R.id.tvNum);
+            ivPrev = (ImageView) itemView.findViewById(R.id.ivPrev);
+            ivNext = (ImageView) itemView.findViewById(R.id.ivNext);
         } else {
             itemView = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.chat_view_other, parent, false);
@@ -147,9 +148,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         final int itemType = getItemViewType(position);
         if (itemType == SELF_AUDIO || itemType == OTHER_AUDIO) {
             Message message = chatList.get(position);
-            Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).into(holder.userProfileImage);
+            Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loadgif)).error(context.getResources().getDrawable(R.drawable.loadgif)).into(holder.userProfileImage);
             holder.timeStamp.setText(message.getCreatedAt());
-            if(audioDetailsList.size() > 0){
+            if (audioDetailsList.size() > 0) {
                 AudioDetails audioDetails = audioDetailsList.get(0);
                 holder.tvMelodyName.setText(audioDetails.getRecordingTopic());
                 holder.tvUserName.setText(audioDetails.getUserName());
@@ -166,7 +167,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                     ivPausePlayer.setVisibility(View.VISIBLE);
                     SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
                     String audioUrl = sharedAudios.getRecordingUrl();
-                    Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).into(ChatActivity.userProfileImagePlayer);
+                    Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loadgif)).error(context.getResources().getDrawable(R.drawable.loadgif)).into(ChatActivity.userProfileImagePlayer);
                     ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
                     ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
                     ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
@@ -290,12 +291,12 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
         } else if (itemType == SELF_IMAGE || itemType == OTHER_IMAGE) {
             Message message = chatList.get(position);
-            Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).into(holder.userProfileImage);
+            Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loadgif)).error(context.getResources().getDrawable(R.drawable.loadgif)).into(holder.userProfileImage);
             if (!message.getFile().equals("")) {
                 holder.rlChatImage.setVisibility(View.VISIBLE);
                 String picUrl = message.getFile();
                 String picName = picUrl.substring(picUrl.lastIndexOf("/") + 1);
-                Picasso.with(holder.chatImage.getContext()).load(picUrl).into(holder.chatImage);
+                Picasso.with(holder.chatImage.getContext()).load(picUrl).placeholder(context.getResources().getDrawable(R.drawable.loadgif)).error(context.getResources().getDrawable(R.drawable.loadgif)).into(holder.chatImage);
                 holder.chatImageName.setText(picName);
             }
             if (!message.getMessage().equals("")) {
@@ -304,7 +305,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             }
         } else {
             Message message = chatList.get(position);
-            Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).into(holder.userProfileImage);
+            Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loadgif)).error(context.getResources().getDrawable(R.drawable.loadgif)).into(holder.userProfileImage);
             holder.chatMessage.setText(message.getMessage());
             holder.timeStamp.setText(message.getCreatedAt());
         }
@@ -315,7 +316,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         return chatList.size();
     }
 
-    public static void AudioOperator(String audioLink){
+    public static void AudioOperator(String audioLink) {
         if (mediaPlayer != null) {
             try {
                 if (mediaPlayer.isPlaying()) {

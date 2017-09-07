@@ -566,6 +566,8 @@ public class SignInActivity extends AppCompatActivity {
                                 editor.commit();
 
                                 Intent i = new Intent(getApplicationContext(), HomeActivity.class);
+                                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(i);
                             }
                         } catch (JSONException e) {
@@ -614,6 +616,8 @@ public class SignInActivity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }
         return super.onKeyDown(keyCode, event);
