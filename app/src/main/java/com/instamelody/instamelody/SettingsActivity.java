@@ -70,6 +70,20 @@ public class SettingsActivity extends AppCompatActivity {
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
         SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
 
+        SharedPreferences profileEditor = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE);
+        SharedPreferences profileImageEditor = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE);
+        if (profileImageEditor.getString("ProfileImage",null) != null){
+            ivLogoContainer.setVisibility(View.GONE);
+            userProfileImageSettings.setVisibility(View.VISIBLE);
+            Picasso.with(SettingsActivity.this).load(profileImageEditor.getString("ProfileImage",null)).into(userProfileImageSettings);
+        }
+        if (profileEditor.getString("updateId",null) != null){
+            tvFirstNameSettings.setText(profileEditor.getString("updateFirstName", null) + " "+profileEditor.getString("updateLastName",null));
+            tvUserNameSettings.setText("@" +profileEditor.getString("updateUserName",null));
+        }
+
+
+
         if (loginSharedPref.getString("userId", null) != null) {
             userId = loginSharedPref.getString("userId", null);
         } else if (fbPref.getString("userId", null) != null) {
@@ -93,7 +107,7 @@ public class SettingsActivity extends AppCompatActivity {
         lastNameFb = fbEditor.getString("lastName", null);
         userNameFb = fbEditor.getString("userName", null);
 
-        if (userId != null) {
+        if (userId != null || profileEditor.getString("updateId",null) != null) {
             tvSignIn.setVisibility(View.GONE);
             tvSignOut.setVisibility(View.VISIBLE);
             if (statusNormal == 1) {
@@ -110,7 +124,7 @@ public class SettingsActivity extends AppCompatActivity {
 
             if (userIdFb != null) {
                 tvFirstNameSettings.setText(firstNameFb + "  " + lastNameFb);
-                tvUserNameSettings.setText(userNameFb);
+                tvUserNameSettings.setText("@" +userNameFb);
 //                SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
                 String fbId = fbPref.getString("fbId", null);
                 ivLogoContainer.setVisibility(View.GONE);
@@ -118,7 +132,7 @@ public class SettingsActivity extends AppCompatActivity {
                 Picasso.with(SettingsActivity.this).load("https://graph.facebook.com/" + fbId + "/picture").into(userProfileImageSettings);
             } else if (userIdTwitter != null) {
                 tvFirstNameSettings.setText(firstNameTwitter + "  " + lastNameTwitter);
-                tvUserNameSettings.setText(userNameTwitter);
+                tvUserNameSettings.setText("@"+ userNameTwitter);
 //                SharedPreferences twitterPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
                 String profilePic1 = twitterPref.getString("profilePic", null);
                 ivLogoContainer.setVisibility(View.GONE);
@@ -256,6 +270,12 @@ public class SettingsActivity extends AppCompatActivity {
                     SharedPreferences.Editor fbeditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
                     fbeditor.clear();
                     fbeditor.apply();
+                    SharedPreferences.Editor profileEditor = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE).edit();
+                    profileEditor.clear();
+                    profileEditor.apply();
+                    SharedPreferences.Editor profileImageEditor = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE).edit();
+                    profileImageEditor.clear();
+                    profileImageEditor.apply();
                     LoginManager.getInstance().logOut();
                     HomeActivity.SignOut.setVisibility(View.INVISIBLE);
                     HomeActivity.SignIn.setVisibility(View.VISIBLE);

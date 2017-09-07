@@ -1284,7 +1284,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     InstrumentCountSize = MelodyInstruments.getInstrumentCount();
 
                     for (int i = 0; i < InstrumentCountSize; i++) {
-                        Log.d("Instrument url----------------:", "" + instrumentList.get(i).getInstrumentFile());
+                        Log.d("Instrument url :", "" + instrumentList.get(i).getInstrumentFile());
                         StudioActivity.mpall = new MediaPlayer();
                         StudioActivity.mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
                         StudioActivity.mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
@@ -1313,23 +1313,23 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     final MediaPlayer pts;
                     pts = StudioActivity.mediaPlayersAll.get(i);
                     pts.start();
-                    final SeekBar seekBar = lstViewHolder.get(i).seekBar;
-                    Runnable runnable = new Runnable() {
-                        @Override
-                        public void run() {
+//                    final SeekBar seekBar = lstViewHolder.get(i).seekBar;
+//                    Runnable runnable = new Runnable() {
+//                        @Override
+//                        public void run() {
+//
+//                            int currentPosition = pts.getCurrentPosition() / 1000;
+//                            int duration = pts.getDuration() / 1000;
+//                            int progress = (currentPosition * 100) / duration;
+//
+//                            //seekBar.setProgress((int) (((float) pts.getCurrentPosition() / pts.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
+//                            seekBar.setProgress(progress);
+//
+//                            StudioActivity.handler.postDelayed(this, 3000);
+//                        }
+//                    };
 
-                            int currentPosition = pts.getCurrentPosition() / 1000;
-                            int duration = pts.getDuration() / 1000;
-                            int progress = (currentPosition * 100) / duration;
-
-                            //seekBar.setProgress((int) (((float) pts.getCurrentPosition() / pts.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
-                            seekBar.setProgress(progress);
-
-                            StudioActivity.handler.postDelayed(this, 3000);
-                        }
-                    };
-
-                    StudioActivity.handler.postDelayed(runnable, 3000);
+                    //StudioActivity.handler.postDelayed(runnable, 3000);
                 }
                 recordAudio();
                 if (!mRecordingThread.isAlive()) {

@@ -1,6 +1,7 @@
 package com.instamelody.instamelody;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -34,6 +36,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.facebook.login.LoginManager;
 import com.instamelody.instamelody.utils.AppHelper;
 import com.instamelody.instamelody.utils.VolleyMultipartRequest;
 import com.instamelody.instamelody.utils.VolleySingleton;
@@ -48,6 +51,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -75,7 +80,7 @@ public class Update extends AppCompatActivity {
             btnClearPassUpdate, btnClearConfirmPassUpdate, btnClearDOBUpdate, btnClearPhoneUpdate;
     TextView tvDoneUpdate, errorFnameUpdate, errorUnameUpdate, errorPasswordUpdate, errorConfirmPassUpdate,
             errorDOBUpdate, tvDobUpdate, errorPhoneUpdate;
-    String userId, firstName, lastName, userNameLogin, profilePicLogin, dob, mobile, email, date,userIdNormal,emailNormal;
+    String userId, firstName, lastName, userNameLogin, profilePicLogin, dob, mobile, email, date, userIdNormal, emailNormal;
     String userIdTwitter, firstNameTwitter, lastNameTwitter, emailFinalTwitter, profilePicTwitter, userNameTwitter;
     String userIdFb, firstNameFb, lastNameFb, emailFinalFb, profilePicFb, userNameFb;
     CircleImageView userProfileImageUpdate;
@@ -88,14 +93,18 @@ public class Update extends AppCompatActivity {
     String formatedDate;
     String passwordNil = "";
     int day, month, year;
-    int userIdUpdate =0;
+    int userIdUpdate = 0;
     String finalDate;
+    public static ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update);
+
+        SharedPreferences profileEditor = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE);
+        SharedPreferences profileImageEditor = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE);
 
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userIdNormal = loginSharedPref.getString("userId", null);
@@ -126,19 +135,23 @@ public class Update extends AppCompatActivity {
         userNameFb = fbEditor.getString("userName", null);
 
 
-        if (userIdNormal!= null){
+        if (userIdNormal != null) {
             userId = userIdNormal;
-        }else if (userIdFb != null){
+        } else if (userIdFb != null) {
             userId = userIdFb;
-        }else {
+        } else if (profileEditor.getString("updateId", null) != null) {
+            userId = profileEditor.getString("updateId", null);
+        } else {
             userId = userIdTwitter;
         }
 
-        if (emailNormal!= null){
+        if (emailNormal != null) {
             email = emailNormal;
-        }else if (emailFinalFb!= null){
+        } else if (emailFinalFb != null) {
             email = emailFinalFb;
-        }else {
+        } else if (profileEditor.getString("updateEmail", null) != null) {
+            email = profileEditor.getString("updateEmail", null);
+        } else {
             email = emailFinalTwitter;
         }
 
@@ -153,16 +166,28 @@ public class Update extends AppCompatActivity {
         userProfileImageUpdate = (CircleImageView) findViewById(R.id.userProfileImageUpdate);
         tvDobUpdate = (TextView) findViewById(R.id.tvDobUpdate);
         errorConfirmPassUpdate = (TextView) findViewById(R.id.errorConfirmPassUpdate);
+        if (userIdNormal != null) {
+            etuFirstName.setText(firstName);
+            etuLastName.setText(lastName);
+            etuEmailUpdate.setText(email);
+            etuUsername.setText(userNameLogin);
+            etuPhone.setText(mobile);
+            tvDobUpdate.setText(dob);
+            Picasso.with(Update.this).load(profilePicLogin).into(userProfileImageUpdate);
+        } else if (profileEditor.getString("updateId", null) != null) {
+            etuFirstName.setText(profileEditor.getString("updateFirstName", null));
+            etuLastName.setText(profileEditor.getString("updateLastName", null));
+            etuEmailUpdate.setText(profileEditor.getString("updateEmail", null));
+            etuUsername.setText(profileEditor.getString("updateUserName", null));
+            etuPhone.setText(profileEditor.getString("updateMobile", null));
+            tvDobUpdate.setText(profileEditor.getString("updateDOB", null));
+            if (profileImageEditor.getString("ProfileImage", null) != null) {
+                Picasso.with(Update.this).load(profileImageEditor.getString("ProfileImage", null)).into(userProfileImageUpdate);
+            }
+        }
 
-        etuFirstName.setText(firstName);
-        etuLastName.setText(lastName);
-        etuEmailUpdate.setText(email);
-        etuUsername.setText(userNameLogin);
-        etuPhone.setText(mobile);
-        tvDobUpdate.setText(dob);
-        Picasso.with(Update.this).load(profilePicLogin).into(userProfileImageUpdate);
 
-        if (userIdFb!= null){
+        if (userIdFb != null) {
             etuFirstName.setText(firstNameFb);
             etuLastName.setText(lastNameFb);
             etuEmailUpdate.setText(emailFinalFb);
@@ -171,7 +196,7 @@ public class Update extends AppCompatActivity {
             SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
             String fbId = fbPref.getString("fbId", null);
             Picasso.with(Update.this).load("https://graph.facebook.com/" + fbId + "/picture").into(userProfileImageUpdate);
-        }else if (userIdTwitter!= null){
+        } else if (userIdTwitter != null) {
             etuFirstName.setText(firstNameTwitter);
             etuLastName.setText(lastNameTwitter);
             etuEmailUpdate.setText(emailFinalTwitter);
@@ -338,17 +363,17 @@ public class Update extends AppCompatActivity {
         buttonUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(etuFirstName.getText().toString().trim().equals("")|| etuLastName.getText().toString().trim().equals("")
-                        || etuUsername.getText().toString().trim().equals("")|| etuPhone.getText().toString().trim().equals("")){
+                if (etuFirstName.getText().toString().trim().equals("") || etuLastName.getText().toString().trim().equals("")
+                        || etuUsername.getText().toString().trim().equals("") || etuPhone.getText().toString().trim().equals("")) {
                     Toast.makeText(Update.this, "please fill remaining fields which are empty", Toast.LENGTH_SHORT).show();
-                }
-
-                else if (!etuConfirmPassWord.getText().toString().equals(etuPassWord.getText().toString())) {
+                } else if (!etuConfirmPassWord.getText().toString().equals(etuPassWord.getText().toString())) {
                     // Toast.makeText(SignUpActivity.this, "please check your confirm password .", Toast.LENGTH_SHORT).show();
                     errorConfirmPassUpdate.setVisibility(View.VISIBLE);
                     errorConfirmPassUpdate.setText("Password didn't match!");
                 } else {
-                    updateData();
+                    LongOperation myTask = new LongOperation();
+                    myTask.execute();
+
                 }
             }
         });
@@ -364,7 +389,7 @@ public class Update extends AppCompatActivity {
         } else {
             password1 = etuPassWord.getText().toString().trim();
         }
-        if (!(tvDobUpdate.getText().toString().trim().equals(dob))){
+        if (!(tvDobUpdate.getText().toString().trim().equals(dob))) {
             final String dob = tvDobUpdate.getText().toString().trim();
             String a = dob.replaceAll(" ", "");
             try {
@@ -373,39 +398,61 @@ public class Update extends AppCompatActivity {
             } catch (StringIndexOutOfBoundsException siobe) {
                 System.out.println("invalid input");
             }
-        }else {
+        } else {
             finalDate = tvDobUpdate.getText().toString().trim();
         }
         final String phone = etuPhone.getText().toString().trim();
         final String usertype = "USER";
+
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UPDATEPROFILE,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
                         String successmsg = response.toString();
-                        Toast.makeText(Update.this, "Login to Proceed", Toast.LENGTH_SHORT).show();
-                        SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
-                        editor.clear();
-                        editor.apply();
-                        SharedPreferences.Editor tEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
-                        tEditor.clear();
-                        tEditor.apply();
-                        SharedPreferences.Editor fbeditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
-                        fbeditor.clear();
-                        fbeditor.apply();
-                        Intent i = new Intent(Update.this,SignInActivity.class);
-                        startActivity(i);
+//                        Toast.makeText(Update.this, "Login to Proceed", Toast.LENGTH_SHORT).show();
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
                             String flag = jsonObject.getString("flag");
+                            String msg = jsonObject.getString("msg");
+                            String response1 = jsonObject.getString("response");
+                            JSONObject jsonObjectResponse = jsonObject.getJSONObject("response");
+                            String updateId = jsonObjectResponse.getString("id");
+                            String updateUserName = jsonObjectResponse.getString("username");
+                            String updateEmail = jsonObjectResponse.getString("email");
+                            String updateFirstName = jsonObjectResponse.getString("fname");
+                            String updateLastName = jsonObjectResponse.getString("lname");
+                            String updateDOB = jsonObjectResponse.getString("dob");
+                            String updateMobile = jsonObjectResponse.getString("mobile");
                             if (flag.equals("success")) {
-                                String msg = jsonObject.getString("msg");
                                 if (userProfileImageUpdate != null) {
                                     updateImage();
                                 }
 //                                Toast.makeText(Update.this, "" + msg, Toast.LENGTH_SHORT).show();
                             }
+
+                            SharedPreferences.Editor profileEditor = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE).edit();
+                            profileEditor.putString("updateId", updateId);
+                            profileEditor.putString("updateUserName", updateUserName);
+                            profileEditor.putString("updateEmail", updateEmail);
+                            profileEditor.putString("updateFirstName", updateFirstName);
+                            profileEditor.putString("updateLastName", updateLastName);
+                            profileEditor.putString("updateDOB", updateDOB);
+                            profileEditor.putString("updateMobile", updateMobile);
+                            profileEditor.apply();
+
+
+                            SharedPreferences profilePref = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE);
+                            if (profilePref.getString("updateId", null) != null) {
+                                etuFirstName.setText(profilePref.getString("updateFirstName", null));
+                                etuLastName.setText(profilePref.getString("updateLastName", null));
+                                etuEmailUpdate.setText(profilePref.getString("updateEmail", null));
+                                etuUsername.setText(profilePref.getString("updateUserName", null));
+                                etuPhone.setText(profilePref.getString("updateMobile", null));
+                                tvDobUpdate.setText(profilePref.getString("updateDOB", null));
+                            }
+
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -428,9 +475,9 @@ public class Update extends AppCompatActivity {
                 params.put(KEY_LNAME, lastname);
                 params.put(KEY_EMAIL, email);
                 params.put(KEY_USERNAME, username);
-                if ((etuPassWord.getText().toString().trim().equals(""))){
+                if ((etuPassWord.getText().toString().trim().equals(""))) {
                     params.put(KEY_PASSWORD, passwordNil);
-                }else
+                } else
                     params.put(KEY_PASSWORD, password1);
                 params.put(KEY_DOB, finalDate);
                 params.put(KEY_PHONE, phone);
@@ -449,6 +496,29 @@ public class Update extends AppCompatActivity {
             public void onResponse(NetworkResponse response) {
                 String resultResponse = new String(response.data);
 //                Toast.makeText(getApplicationContext(), "Profile Picture Updated", Toast.LENGTH_SHORT).show();
+                try {
+                    JSONObject jsonObject = new JSONObject(resultResponse);
+                    String flag = jsonObject.getString("flag");
+                    String response2 = jsonObject.getString("response");
+                    JSONObject jsonObjectResponse = jsonObject.getJSONObject("response");
+                    String updateProfileImage = jsonObjectResponse.getString("profilepic");
+
+                    SharedPreferences.Editor profileImageEditor = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE).edit();
+                    profileImageEditor.putString("ProfileImage", updateProfileImage);
+                    profileImageEditor.apply();
+
+                    SharedPreferences profileImagePref = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE);
+                    profileImagePref.getString("ProfileImage", null);
+                    if (profileImagePref.getString("ProfileImage", null) != null) {
+                        Picasso.with(Update.this).load(profileImagePref.getString("ProfileImage", null)).into(userProfileImageUpdate);
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
             }
         }, new Response.ErrorListener() {
             @Override
@@ -486,6 +556,63 @@ public class Update extends AppCompatActivity {
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+
+    }
+
+    private class LongOperation extends AsyncTask<String, Void, String> {
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(Update.this);
+            progressDialog.setTitle("Processing...");
+            progressDialog.setMessage("Please wait...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+            long delayInMillis = 5000;
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    progressDialog.dismiss();
+                }
+            }, delayInMillis);
+        }
+
+        protected String doInBackground(String... params) {
+            updateData();
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+            SharedPreferences profileEditor = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE);
+            SharedPreferences profileImageEditor = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE);
+            if (profileEditor.getString("updateId", null) != null) {
+                if (profileImageEditor.getString("ProfileImage", null) != null) {
+                    Picasso.with(Update.this).load(profileImageEditor.getString("ProfileImage", null)).into(userProfileImageUpdate);
+                }
+                etuFirstName.setText(profileEditor.getString("updateFirstName", null));
+                etuUsername.setText(profileEditor.getString("updateUserName", null));
+                etuLastName.setText(profileEditor.getString("updateLastName", null));
+                etuEmailUpdate.setText(profileEditor.getString("updateEmail", null));
+                etuPhone.setText(profileEditor.getString("updateMobile", null));
+                tvDobUpdate.setText(profileEditor.getString("updateDOB", null));
+            }
+            Toast.makeText(Update.this, "Profile Updated", Toast.LENGTH_SHORT).show();
+            SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
+            editor.clear();
+            editor.apply();
+            SharedPreferences.Editor tEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
+            tEditor.clear();
+            tEditor.apply();
+            SharedPreferences.Editor fbeditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
+            fbeditor.clear();
+            fbeditor.apply();
+            SharedPreferences.Editor profileEditor1 = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE).edit();
+            profileEditor1.clear();
+            profileEditor1.apply();
+            SharedPreferences.Editor profileImageEditor1 = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE).edit();
+            profileImageEditor1.clear();
+            profileImageEditor1.apply();
+            LoginManager.getInstance().logOut();
+        }
 
     }
 

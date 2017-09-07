@@ -1,5 +1,6 @@
 package com.instamelody.instamelody;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -65,6 +66,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
+import com.google.android.gms.plus.PlusShare;
 import com.instamelody.instamelody.Adapters.InstrumentListAdapter;
 import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
 import com.instamelody.instamelody.Models.Genres;
@@ -257,9 +259,10 @@ public class StudioActivity extends AppCompatActivity {
     String MixparentRecordingID = "parentRecordingID";
     CallbackManager callbackManager;
     URL ShortUrl;
-    boolean fbValue, twitterValue;
+    boolean fbValue, twitterValue, googleValue;
     public static MediaPlayer mpall;
     public static ArrayList<MediaPlayer> mediaPlayersAll = new ArrayList<MediaPlayer>();
+    int TWEETER_REQ_CODE = 0;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -487,10 +490,10 @@ public class StudioActivity extends AppCompatActivity {
         mAudioBuffer = new short[mBufferSize / 2];
 
 
-        audioFilePath = Environment.getExternalStorageDirectory().getAbsolutePath()+ "/InstaMelody.mp3";
+        audioFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/InstaMelody.mp3";
 
 
-                //editor.apply();
+        //editor.apply();
         rlMelodyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -551,7 +554,7 @@ public class StudioActivity extends AppCompatActivity {
 
                 if (mpall != null) {
                     mpall.stop();
-                    if(mediaPlayersAll.size()>0) {
+                    if (mediaPlayersAll.size() > 0) {
                         for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                             mediaPlayersAll.get(i).stop();
                         }
@@ -569,7 +572,7 @@ public class StudioActivity extends AppCompatActivity {
 
                 if (mpall != null) {
                     mpall.stop();
-                    if(mediaPlayersAll.size()>0) {
+                    if (mediaPlayersAll.size() > 0) {
                         for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                             mediaPlayersAll.get(i).stop();
                         }
@@ -587,7 +590,7 @@ public class StudioActivity extends AppCompatActivity {
 
                 if (mpall != null) {
                     mpall.stop();
-                    if(mediaPlayersAll.size()>0) {
+                    if (mediaPlayersAll.size() > 0) {
                         for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                             mediaPlayersAll.get(i).stop();
                         }
@@ -604,7 +607,7 @@ public class StudioActivity extends AppCompatActivity {
 
                 if (mpall != null) {
                     mpall.stop();
-                    if(mediaPlayersAll.size()>0) {
+                    if (mediaPlayersAll.size() > 0) {
                         for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                             mediaPlayersAll.get(i).stop();
                         }
@@ -621,7 +624,7 @@ public class StudioActivity extends AppCompatActivity {
 
                 if (mpall != null) {
                     mpall.stop();
-                    if(mediaPlayersAll.size()>0) {
+                    if (mediaPlayersAll.size() > 0) {
                         for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                             mediaPlayersAll.get(i).stop();
                         }
@@ -638,7 +641,7 @@ public class StudioActivity extends AppCompatActivity {
 
                 if (mpall != null) {
                     mpall.stop();
-                    if(mediaPlayersAll.size()>0) {
+                    if (mediaPlayersAll.size() > 0) {
                         for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                             mediaPlayersAll.get(i).stop();
                         }
@@ -1214,7 +1217,7 @@ public class StudioActivity extends AppCompatActivity {
                         boolean soundCloudValue = switchSoundCloudEditor.getBoolean("switchSoundCloud", false);
 
                         SharedPreferences switchGoogleEditor = getApplicationContext().getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE);
-                        boolean googleValue = switchGoogleEditor.getBoolean("switchGoogle", false);
+                        googleValue = switchGoogleEditor.getBoolean("switchGoogle", false);
 
                         if (fbValue == true && ((fbValue && twitterValue)) != true) {
                             FbShare();
@@ -1223,6 +1226,11 @@ public class StudioActivity extends AppCompatActivity {
                             switchFbEditor1.apply();
                         } else if (twitterValue == true && (fbValue && twitterValue) != true) {
                             TweetShare();
+                            SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
+                            switchFbEditor1.clear();
+                            switchFbEditor1.apply();
+                        } else if (googleValue == true && ((fbValue && twitterValue)) != true) {
+                            googlePlusShare();
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
                             switchFbEditor1.clear();
                             switchFbEditor1.apply();
@@ -1435,7 +1443,7 @@ public class StudioActivity extends AppCompatActivity {
                         boolean soundCloudValue = switchSoundCloudEditor.getBoolean("switchSoundCloud", false);
 
                         SharedPreferences switchGoogleEditor = getApplicationContext().getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE);
-                        boolean googleValue = switchGoogleEditor.getBoolean("switchGoogle", false);
+                        googleValue = switchGoogleEditor.getBoolean("switchGoogle", false);
 
                         if (fbValue == true && ((fbValue && twitterValue)) != true) {
                             FbShare();
@@ -1447,8 +1455,13 @@ public class StudioActivity extends AppCompatActivity {
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
                             switchFbEditor1.clear();
                             switchFbEditor1.apply();
+                        } else if (googleValue == true && ((fbValue && twitterValue)) != true) {
+                            googlePlusShare();
+                            SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
+                            switchFbEditor1.clear();
+                            switchFbEditor1.apply();
                         }
-                        if ((fbValue && twitterValue) == true) {
+                        if ((fbValue && twitterValue && googleValue) == true) {
                             FbShare();
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
                             switchFbEditor1.clear();
@@ -1691,15 +1704,24 @@ public class StudioActivity extends AppCompatActivity {
     }
 
 
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == TwitterAuthConfig.DEFAULT_AUTH_REQUEST_CODE) {
+        if ((requestCode == TwitterAuthConfig.DEFAULT_AUTH_REQUEST_CODE) || requestCode == TWEETER_REQ_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+
+                Toast.makeText(this, "Share on Tweeter Done", Toast.LENGTH_SHORT).show();
+                if ((fbValue && twitterValue && googleValue) == true) {
+                    googlePlusShare();
+                }
+
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+
+                Toast.makeText(this, "Share on Tweeter Done", Toast.LENGTH_SHORT).show();
+            }
             //  twitter related handling
-            client.onActivityResult(requestCode, resultCode, data);
+//            client.onActivityResult(requestCode, resultCode, data);
         } else {
             if (callbackManager.onActivityResult(requestCode, resultCode, data))
                 return;
@@ -1724,7 +1746,7 @@ public class StudioActivity extends AppCompatActivity {
         try {
             if (mpall != null) {
                 mpall.stop();
-                if(mediaPlayersAll.size()>0) {
+                if (mediaPlayersAll.size() > 0) {
                     for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                         mediaPlayersAll.get(i).stop();
 
@@ -1809,7 +1831,7 @@ public class StudioActivity extends AppCompatActivity {
                 }
                 if (mpall != null) {
                     mpall.stop();
-                    if(mediaPlayersAll.size()>0) {
+                    if (mediaPlayersAll.size() > 0) {
                         for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                             mediaPlayersAll.get(i).stop();
 
@@ -1821,7 +1843,6 @@ public class StudioActivity extends AppCompatActivity {
             } catch (NullPointerException e) {
                 e.printStackTrace();
             }
-
 
 
         } catch (Throwable e) {
@@ -1839,14 +1860,17 @@ public class StudioActivity extends AppCompatActivity {
         shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
             @Override
             public void onSuccess(Sharer.Result result) {
-               if ((fbValue && twitterValue) == true){
-                   progressDialog = new ProgressDialog(StudioActivity.this);
-                   progressDialog.setTitle("Processing...");
-                   progressDialog.setMessage("Please wait...");
-                   progressDialog.setCancelable(false);
-                   progressDialog.show();
-                   TweetShare();
-               }
+                if ((fbValue && twitterValue) == true) {
+                    progressDialog = new ProgressDialog(StudioActivity.this);
+                    progressDialog.setTitle("Processing...");
+                    progressDialog.setMessage("Please wait...");
+                    progressDialog.setCancelable(false);
+                    progressDialog.show();
+                    TweetShare();
+                } /*else if ((fbValue && twitterValue && googleValue) == true) {
+                    TweetShare();
+//                    googlePlusShare();
+                }*/
                 Toast.makeText(StudioActivity.this, "Recording Uploaded", Toast.LENGTH_SHORT).show();
                 /*SharedPreferences.Editor editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE).edit();
                 editorT.clear();
@@ -1890,15 +1914,30 @@ public class StudioActivity extends AppCompatActivity {
         builder = new TweetComposer.Builder(this)
                 .text("Audio Url")
                 .url(ShortUrl);
-        builder.show();
-        if (progressDialog != null){
-            if (progressDialog.isShowing()){
+//        builder.show();
+        Intent i = new TweetComposer.Builder(this)
+                .text("")
+                .url(ShortUrl)
+                .createIntent();
+        startActivityForResult(i, TWEETER_REQ_CODE);
+        if (progressDialog != null) {
+            if (progressDialog.isShowing()) {
                 progressDialog.dismiss();
             }
         }
 
     }
 
+    public void googlePlusShare() {
+        SharedPreferences editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE);
+        String fetchThumbNailUrl = editorT.getString("thumbnailUrl", null);
+        Intent shareIntent = new PlusShare.Builder(StudioActivity.this)
+                .setType("text/plain")
+                .setText("")
+                .setContentUrl(Uri.parse(fetchThumbNailUrl))
+                .getIntent();
+        startActivityForResult(shareIntent, 0);
+    }
 
 }
 
