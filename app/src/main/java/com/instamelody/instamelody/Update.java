@@ -367,7 +367,7 @@ public class Update extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (etuFirstName.getText().toString().trim().equals("") || etuLastName.getText().toString().trim().equals("")
-                        || etuUsername.getText().toString().trim().equals("") || etuPhone.getText().toString().trim().equals("")) {
+                        || etuUsername.getText().toString().trim().equals("")) {
                     Toast.makeText(Update.this, "please fill remaining fields which are empty", Toast.LENGTH_SHORT).show();
                 } else if (!etuConfirmPassWord.getText().toString().equals(etuPassWord.getText().toString())) {
                     // Toast.makeText(SignUpActivity.this, "please check your confirm password .", Toast.LENGTH_SHORT).show();
