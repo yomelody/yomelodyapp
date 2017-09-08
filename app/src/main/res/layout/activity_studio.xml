@@ -99,6 +99,23 @@
 
     <include layout="@layout/content_studio" />
 
+    <FrameLayout
+        android:id="@+id/frameProgress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/frameProg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+
+            />
+
+    </FrameLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -982,7 +999,6 @@
                                                 android:thumb="@drawable/slider_fxeq_thumb" />
 
 
-
                                             <RelativeLayout
                                                 android:layout_width="match_parent"
                                                 android:layout_height="wrap_content"
@@ -1089,23 +1105,4 @@
 
 
     </RelativeLayout>
-    <FrameLayout
-        android:id="@+id/frameProgress"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clickable="true"
-        android:visibility="gone">
-
-        <ProgressBar
-            android:id="@+id/frameProg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-
-            />
-
-
-
-
-    </FrameLayout>
 </android.support.design.widget.CoordinatorLayout>
