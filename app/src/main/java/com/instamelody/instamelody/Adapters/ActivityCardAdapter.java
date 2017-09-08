@@ -30,7 +30,7 @@ public class ActivityCardAdapter extends RecyclerView.Adapter<ActivityCardAdapte
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView tvmsg, tvtopic, tvtime;
+        TextView tvmsg, tvtopic, tvtime,tvfFirst,tvSecond;
         ImageView userprofileimage;
         CardView mCardView;
 
@@ -41,6 +41,8 @@ public class ActivityCardAdapter extends RecyclerView.Adapter<ActivityCardAdapte
             this.tvmsg = (TextView) itemView.findViewById(R.id.msg);
             this.tvtopic = (TextView) itemView.findViewById(R.id.topic);
             this.tvtime = (TextView) itemView.findViewById(R.id.time);
+            this.tvfFirst = (TextView) itemView.findViewById(R.id.msgFrom);
+            this.tvSecond = (TextView) itemView.findViewById(R.id.msgTo);
             this.mCardView = (CardView) itemView.findViewById(R.id.card_activity);
 
             userprofileimage.setOnClickListener(new View.OnClickListener() {
@@ -74,6 +76,8 @@ public class ActivityCardAdapter extends RecyclerView.Adapter<ActivityCardAdapte
         TextView tvmsg = holder.tvmsg;
         TextView tvtopic = holder.tvtopic;
         TextView tvtime = holder.tvtime;
+        TextView tvfrom=holder.tvfFirst;
+        TextView tvsecond=holder.tvSecond;
         ImageView userprofileimage = holder.userprofileimage;
         userprofileimage.setImageResource(R.drawable.profile1);
 
@@ -88,6 +92,8 @@ public class ActivityCardAdapter extends RecyclerView.Adapter<ActivityCardAdapte
         tvmsg.setText(activityList.get(listPosition).getTvmsg());
         tvtopic.setText(activityList.get(listPosition).gettvtopic());
         tvtime.setText(activityList.get(listPosition).getTvtime());
+        tvfrom.setText(activityList.get(listPosition).getMsgsecond_user());
+        tvsecond.setText(activityList.get(listPosition).getMsgfirst_user());
     }
 
     @Override
