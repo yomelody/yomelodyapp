@@ -21,6 +21,10 @@ import com.instamelody.instamelody.Models.SharedAudios;
 import com.instamelody.instamelody.R;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -38,7 +42,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     Context context;
     private ArrayList<Message> chatList = new ArrayList<>();
     private ArrayList<AudioDetails> audioDetailsList = new ArrayList<>();
-    private ArrayList<SharedAudios> sharedAudioList = new ArrayList<>();
+    //    private ArrayList<SharedAudios> sharedAudioList = new ArrayList<>();
     public static MediaPlayer mediaPlayer;
     private String userId;
     private int SELF = 100;
@@ -52,16 +56,14 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     public static ImageView ivPrev, ivNext;
     public static TextView tvNum;
 
-    public ChatAdapter(Context context, ArrayList<Message> chatList, ArrayList<AudioDetails> audioDetailsList, ArrayList<SharedAudios> sharedAudioList) {
+    public ChatAdapter(Context context, ArrayList<Message> chatList) {
         this.chatList = chatList;
-        this.audioDetailsList = audioDetailsList;
-        this.sharedAudioList = sharedAudioList;
         this.context = context;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView chatMessage, chatImageName, timeStamp, tvUserName, tvMelodyName;
-        ImageView userProfileImage, chatImage, ivPlay, ivSettings;
+        ImageView userProfileImage, chatImage, ivPlay, ivSettings, ivTick, ivDoubleTick;
         RelativeLayout rlChatImage, rlBelowImage;
         SeekBar seekBarChat;
 
@@ -79,6 +81,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             ivPlay = (ImageView) itemView.findViewById(R.id.ivPlay);
             ivSettings = (ImageView) itemView.findViewById(R.id.ivSettings);
             seekBarChat = (SeekBar) itemView.findViewById(R.id.seekBarChat);
+            ivTick = (ImageView) itemView.findViewById(R.id.tick);
+            ivDoubleTick = (ImageView) itemView.findViewById(R.id.doubleTick);
         }
 
         private void primarySeekBarProgressUpdater() {
@@ -169,111 +173,150 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         final int itemType = getItemViewType(position);
         if (itemType == SELF_AUDIO || itemType == OTHER_AUDIO) {
             Message message = chatList.get(position);
-            Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(holder.userProfileImage);
+            Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
             holder.timeStamp.setText(message.getCreatedAt());
-            if (audioDetailsList.size() > 0) {
-                AudioDetails audioDetails = audioDetailsList.get(0);
-                holder.tvMelodyName.setText(audioDetails.getRecordingTopic());
-                holder.tvUserName.setText(audioDetails.getUserName());
+            if(message.getIsRead().equals("1")){
+                holder.ivTick.setVisibility(View.GONE);
+                holder.ivDoubleTick.setVisibility(View.VISIBLE);
             }
-            str = "(" + (playingAudio + 1) + " of " + String.valueOf(sharedAudioList.size()) + ")";
-            tvNum.setText(str);
+            JSONArray audiosDetailsArray = message.getAudioDetails();
+            if (audiosDetailsArray.length() > 0) {
+                for (int j = 0; j < audiosDetailsArray.length(); j++) {
+                    try {
+                        ArrayList<SharedAudios> sharedAudioList = new ArrayList<>();
+                        JSONObject detailsJson = audiosDetailsArray.getJSONObject(j);
+//                        detailsJson.getString("recording_id");
+//                        detailsJson.getString("added_by");
+//                        detailsJson.getString("name");
+                        holder.tvMelodyName.setText(detailsJson.getString("recording_topic"));
+                        String s = "@" + detailsJson.getString("user_name");
+                        holder.tvUserName.setText(s);
+                        if (!detailsJson.get("recordings").equals(null) && !detailsJson.get("recordings").equals("")) {
+                            JSONArray sharedAudiosArray = detailsJson.getJSONArray("recordings");
 
-            holder.seekBarChat.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-                    if (mediaPlayer != null && fromUser) {
-                        try {
-                            int playPositionInMilliseconds = mediaPlayer.getDuration() / 100 * holder.seekBarChat.getProgress();
-                            mediaPlayer.seekTo(playPositionInMilliseconds);
-                        } catch (IllegalStateException e) {
-                            e.printStackTrace();
+                            if (sharedAudiosArray.length() > 0) {
+                                for (int k = 0; k < sharedAudiosArray.length(); k++) {
+                                    SharedAudios sharedAudios = new SharedAudios();
+                                    JSONObject audioJson = sharedAudiosArray.getJSONObject(k);
+                                    sharedAudios.setAddedById(audioJson.getString("added_by_id"));
+                                    sharedAudios.setUserName(audioJson.getString("user_name"));
+                                    sharedAudios.setName(audioJson.getString("name"));
+                                    sharedAudios.setProfileUrl(audioJson.getString("profile_url"));
+                                    sharedAudios.setDateAdded(audioJson.getString("date_added"));
+                                    sharedAudios.setDuration(audioJson.getString("duration"));
+                                    sharedAudios.setRecordingUrl(audioJson.getString("recording_url"));
+                                    sharedAudioList.add(sharedAudios);
+                                }
+                            }
                         }
-//                        seekBar.setProgress(duration);
-                    } else {
-                        // the event was fired from code and you shouldn't call player.seekTo()
+                        str = "(" + (playingAudio + 1) + " of " + String.valueOf(sharedAudioList.size()) + ")";
+                        tvNum.setText(str);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
                 }
+            }
 
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-                }
+//            holder.seekBarChat.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//
+//                @Override
+//                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//
+//                    if (mediaPlayer != null && fromUser) {
+//                        try {
+//                            int playPositionInMilliseconds = mediaPlayer.getDuration() / 100 * holder.seekBarChat.getProgress();
+//                            mediaPlayer.seekTo(playPositionInMilliseconds);
+//                        } catch (IllegalStateException e) {
+//                            e.printStackTrace();
+//                        }
+////                        seekBar.setProgress(duration);
+//                    } else {
+//                        // the event was fired from code and you shouldn't call player.seekTo()
+//                    }
+//                }
+//
+//                @Override
+//                public void onStartTrackingTouch(SeekBar seekBar) {
+//                }
+//
+//                @Override
+//                public void onStopTrackingTouch(SeekBar seekBar) {
+//                }
+//            });
 
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                }
-            });
-
-            holder.ivPlay.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
-                    ivPlayPlayer.setVisibility(View.GONE);
-                    ivPausePlayer.setVisibility(View.VISIBLE);
-                    SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
-                    String audioUrl = sharedAudios.getRecordingUrl();
-                    Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(ChatActivity.userProfileImagePlayer);
-                    ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
-                    ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
-                    ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
-                    ChatActivity.tvNumPlayer.setText(tvNum.getText().toString().trim());
-                    AudioOperator(audioUrl);
-                }
-            });
-
-            ivPrev.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
-                    ivPlayPlayer.setVisibility(View.GONE);
-                    ivPausePlayer.setVisibility(View.VISIBLE);
-                    playingAudio = playingAudio - 1;
-                    str = "(" + (playingAudio + 1) + " of " + String.valueOf(sharedAudioList.size()) + ")";
-                    tvNum.setText(str);
-                    SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
-                    String audioUrl = sharedAudios.getRecordingUrl();
-                    Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(ChatActivity.userProfileImagePlayer);
-                    ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
-                    ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
-                    ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
-                    ChatActivity.tvNumPlayer.setText(tvNum.getText().toString().trim());
-                    AudioOperator(audioUrl);
-                }
-            });
-
-            ivNext.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
-                    ivPlayPlayer.setVisibility(View.GONE);
-                    ivPausePlayer.setVisibility(View.VISIBLE);
-                    playingAudio = playingAudio + 1;
-                    str = "(" + (playingAudio + 1) + " of " + String.valueOf(sharedAudioList.size()) + ")";
-                    tvNum.setText(str);
-                    SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
-                    String audioUrl = sharedAudios.getRecordingUrl();
-                    Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(ChatActivity.userProfileImagePlayer);
-                    ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
-                    ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
-                    ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
-                    ChatActivity.tvNumPlayer.setText(tvNum.getText().toString().trim());
-                    AudioOperator(audioUrl);
-                }
-            });
+//            holder.ivPlay.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
+//                    ivPlayPlayer.setVisibility(View.GONE);
+//                    ivPausePlayer.setVisibility(View.VISIBLE);
+//                    SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
+//                    String audioUrl = sharedAudios.getRecordingUrl();
+//                    Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(ChatActivity.userProfileImagePlayer);
+//                    ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
+//                    ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
+//                    ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
+//                    ChatActivity.tvNumPlayer.setText(tvNum.getText().toString().trim());
+//                    AudioOperator(audioUrl);
+//                }
+//            });
+//
+//            ivPrev.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//
+//                    ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
+//                    ivPlayPlayer.setVisibility(View.GONE);
+//                    ivPausePlayer.setVisibility(View.VISIBLE);
+//                    playingAudio = playingAudio - 1;
+//                    str = "(" + (playingAudio + 1) + " of " + String.valueOf(sharedAudioList.size()) + ")";
+//                    tvNum.setText(str);
+//                    SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
+//                    String audioUrl = sharedAudios.getRecordingUrl();
+//                    Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(ChatActivity.userProfileImagePlayer);
+//                    ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
+//                    ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
+//                    ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
+//                    ChatActivity.tvNumPlayer.setText(tvNum.getText().toString().trim());
+//                    AudioOperator(audioUrl);
+//                }
+//            });
+//
+//            ivNext.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//
+//                    ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
+//                    ivPlayPlayer.setVisibility(View.GONE);
+//                    ivPausePlayer.setVisibility(View.VISIBLE);
+//                    playingAudio = playingAudio + 1;
+//                    str = "(" + (playingAudio + 1) + " of " + String.valueOf(sharedAudioList.size()) + ")";
+//                    tvNum.setText(str);
+//                    SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
+//                    String audioUrl = sharedAudios.getRecordingUrl();
+//                    Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(ChatActivity.userProfileImagePlayer);
+//                    ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
+//                    ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
+//                    ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
+//                    ChatActivity.tvNumPlayer.setText(tvNum.getText().toString().trim());
+//                    AudioOperator(audioUrl);
+//                }
+//            });
 
         } else if (itemType == SELF_IMAGE || itemType == OTHER_IMAGE) {
             Message message = chatList.get(position);
-            Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(holder.userProfileImage);
+            Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
             if (!message.getFile().equals("")) {
                 holder.rlChatImage.setVisibility(View.VISIBLE);
                 String picUrl = message.getFile();
                 String picName = picUrl.substring(picUrl.lastIndexOf("/") + 1);
                 Picasso.with(holder.chatImage.getContext()).load(picUrl).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(holder.chatImage);
                 holder.chatImageName.setText(picName);
+                if(message.getIsRead().equals("1")){
+                    holder.ivTick.setVisibility(View.GONE);
+                    holder.ivDoubleTick.setVisibility(View.VISIBLE);
+                }
             }
             if (!message.getMessage().equals("")) {
                 holder.chatMessage.setVisibility(View.VISIBLE);
@@ -281,9 +324,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             }
         } else {
             Message message = chatList.get(position);
-            Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(holder.userProfileImage);
+            Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
             holder.chatMessage.setText(message.getMessage());
             holder.timeStamp.setText(message.getCreatedAt());
+            if(message.getIsRead().equals("1")){
+                holder.ivTick.setVisibility(View.GONE);
+                holder.ivDoubleTick.setVisibility(View.VISIBLE);
+            }
         }
     }
 
