@@ -68,8 +68,10 @@ import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
 import com.google.android.gms.plus.PlusShare;
 import com.instamelody.instamelody.Adapters.InstrumentListAdapter;
+import com.instamelody.instamelody.Adapters.JoinInstrumentListAdp;
 import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
 import com.instamelody.instamelody.Models.Genres;
+import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.MelodyMixing;
@@ -113,6 +115,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.ADD_RECORDINGS
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
+import static com.instamelody.instamelody.utils.Const.ServiceType.JOINED_USERS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MixingAudio_InstrumentsAudio;
 import static com.instamelody.instamelody.utils.Const.ServiceType.UPLOAD_COVER_MELODY_FILE;
@@ -186,6 +189,7 @@ public class StudioActivity extends AppCompatActivity {
     public static RecordingThread mRecordingThread;
     public static MediaRecorder recorder;
     private final int requestCode = 20;
+    public static ArrayList<JoinedArtists> Joined_artist = new ArrayList<>();
     static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     public static boolean isRecording = false;
     public static MediaPlayer mediaPlayer;
@@ -197,10 +201,10 @@ public class StudioActivity extends AppCompatActivity {
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";//JSONArray
 
-    String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, melodyPackId, instrumentCount;
+    String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, melodyPackId, joinRecordingId, instrumentCount;
     String selectedGenre;
     int statusNormal, statusFb, statusTwitter;
-    String melodyName, instrumentName;
+    String melodyName, instrumentName, joinRecordingName, joinInstrumentName;
     public static Switch switchPublic;
     public static RelativeLayout rlMelodyButton, rlRecordingButton, rlRedoButton, rlListeningButton, rlSetCover, rlInviteButton, rlPublic;
     public static FrameLayout frameTrans, frameSync, frameProgress;
@@ -219,6 +223,7 @@ public class StudioActivity extends AppCompatActivity {
     //SeekBar melodySlider;
     String array[] = {""};
     ArrayList<String> instruments_count = new ArrayList<String>();
+    ArrayList<String> instrument_count_Join = new ArrayList<>();
     Timer timer;
     MediaPlayer mp;
     ShareDialog shareDialog;
@@ -263,6 +268,8 @@ public class StudioActivity extends AppCompatActivity {
     public static MediaPlayer mpall;
     public static ArrayList<MediaPlayer> mediaPlayersAll = new ArrayList<MediaPlayer>();
     int TWEETER_REQ_CODE = 0;
+    private String RECORDING_ID = "rid";
+    private String USERID = "userid";
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -380,11 +387,47 @@ public class StudioActivity extends AppCompatActivity {
 
         final Intent intent = getIntent();
         if (intent == null) {
-        } else if (intent.getExtras().getString("clickPosition").equals("fromHomeActivity")) {
+        } /*else if (intent.getExtras().getString("clickPosition").equals("fromHomeActivity")) {
             //do nothing
         } else if (intent.getExtras().getString("clickPosition").equals("fromSocialActivity")) {
             //do nothing
-        } else {
+        }*/ else {
+            joinRecordingId = intent.getExtras().getString("clickPositionJoin");
+            if (joinRecordingId != null) {
+                fetchJoinInstruments(joinRecordingId);
+                noMelodyNote.setVisibility(View.GONE);
+                recyclerViewInstruments.setVisibility(View.VISIBLE);
+                recyclerViewInstruments.setHasFixedSize(true);
+                layoutManager = new LinearLayoutManager(getApplicationContext());
+                recyclerViewInstruments.setLayoutManager(layoutManager);
+                recyclerViewInstruments.setItemAnimator(new DefaultItemAnimator());
+                adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+                recyclerViewInstruments.setAdapter(adapter);
+                frameTrans.setVisibility(View.VISIBLE);
+                frameSync.setVisibility(View.VISIBLE);
+                if (instrumentList.size() > 0) {
+                    frameSync.setVisibility(View.VISIBLE);
+                }
+
+                ArrayList<JoinedArtists> JoinArtist = new ArrayList<>();
+                JoinArtist = JoinInstrumentListAdp.returnJoinList();
+
+                try {
+                    joinRecordingName = JoinArtist.get(Integer.parseInt(joinRecordingId)).getRecording_name();
+                } catch (IndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                }
+
+                for (int i = 0; i < instrumentList.size(); i++) {
+                    MelodyInstruments instrumentsJoin = instrumentList.get(i);
+                    joinInstrumentName = instrumentsJoin.getInstrumentName();
+                }
+
+                LocalBroadcastManager.getInstance(this).registerReceiver(mInstrumentJoin, new IntentFilter("fetchingInstrumentsJoin"));
+
+            }
+
+        } /*else {
             melodyPackId = intent.getExtras().getString("clickPosition");
 
             if (melodyPackId != null) {
@@ -423,7 +466,7 @@ public class StudioActivity extends AppCompatActivity {
                 LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
 
             }
-        }
+        }*/
 
 
         grey_circle.setOnClickListener(new View.OnClickListener() {
@@ -711,7 +754,7 @@ public class StudioActivity extends AppCompatActivity {
                 if (userId != null) {
                     final AlertDialog.Builder alertDialog = new AlertDialog.Builder(StudioActivity.this);
                     alertDialog.setTitle("Make Public?");
-                    alertDialog.setMessage("As a moderator feel free to make public or private anytime");
+                    alertDialog.setMessage("As a moderator, feel free to make public or private anytime.");
                     alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             if (switchFlag == "1") {
@@ -735,7 +778,7 @@ public class StudioActivity extends AppCompatActivity {
                 } else {
                     final AlertDialog.Builder alertDialog = new AlertDialog.Builder(StudioActivity.this);
                     alertDialog.setTitle("Make Public?");
-                    alertDialog.setMessage("As a moderator feel free to make public or private anytime");
+                    alertDialog.setMessage("As a moderator, feel free to make public or private anytime.");
                     alertDialog.setPositiveButton("Sign In", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             Intent i = new Intent(getApplicationContext(), SignInActivity.class);
@@ -1029,6 +1072,47 @@ public class StudioActivity extends AppCompatActivity {
 
     }
 
+    public void fetchJoinInstruments(String joinRecordingId) {
+        final String JoinRecordingId = joinRecordingId;
+        SharedPreferences filterPref = getApplicationContext().getSharedPreferences("RecordingData", MODE_PRIVATE);
+        final String userIdJoin = filterPref.getString("AddedBy", null);
+        final String RecId = filterPref.getString("Recording_id", null);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, JOINED_USERS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("Instrument list Response", response);
+                        instrumentList.clear();
+                        new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, JoinRecordingId);
+                        InstrumentCountSize = MelodyInstruments.getInstrumentCount();
+                        adapter.notifyDataSetChanged();
+
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
+                        String errorMsg = error.toString();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(USERID, userId);
+                params.put(RECORDING_ID, RecId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                 return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+
+    }
+
 
     // DownloadFileFromURL Modified by Abhishek
 
@@ -1270,7 +1354,11 @@ public class StudioActivity extends AppCompatActivity {
                 params.put(Mixbpms, "128");
                 params.put(Mixdurations, recordingDuration);
                 params.put(MixCommand, "");
-                params.put(MixparentRecordingID, "");
+//Saurabh
+                Intent intent = getIntent();
+                String pos = intent.getExtras().getString("Position");
+                String melodyID = JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getRecording_id();
+                params.put(MixparentRecordingID, melodyID);
                 //params.put(Mixrecording, list.toString());
 
                 JSONArray myarray = new JSONArray();
@@ -1516,8 +1604,6 @@ public class StudioActivity extends AppCompatActivity {
                                 params.put(ID_MELODY_REC, id);
                                 params.put(USER_ID1, userId);
                                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-
-
                                 return params;
                             }
 
@@ -1782,6 +1868,13 @@ public class StudioActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             instruments_count = intent.getStringArrayListExtra("instruments");
+        }
+    };
+
+    public BroadcastReceiver mInstrumentJoin = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            instrument_count_Join = intent.getStringArrayListExtra("instrumentsJoin");
         }
     };
 

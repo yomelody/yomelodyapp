@@ -193,6 +193,9 @@ public class Update extends AppCompatActivity {
             etuEmailUpdate.setText(emailFinalFb);
             etuUsername.setText(userNameFb);
             etuPhone.setText(mobile);
+            etuFirstName.setClickable(false);
+            etuLastName.setClickable(false);
+            etuUsername.setClickable(false);
             SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
             String fbId = fbPref.getString("fbId", null);
             Picasso.with(Update.this).load("https://graph.facebook.com/" + fbId + "/picture").into(userProfileImageUpdate);
