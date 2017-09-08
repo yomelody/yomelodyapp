@@ -111,7 +111,7 @@ public class ChatActivity extends AppCompatActivity {
     public static FrameLayout flPlayPausePlayer;
     ImageView ivClose, ivJoin;
     EditText etMessage, etGroupName;
-    ImageView ivBackButton, ivHomeButton, ivAdjust, ivCamera, ivNewChat, ivRecieverProfilePic, ivSelectedImage, ivGroupImage;
+    ImageView ivBackButton, ivHomeButton, ivCamera, ivNewChat, ivRecieverProfilePic, ivSelectedImage, ivGroupImage;
     TextView tvSend, tvRecieverName, tvDone, tvEdit, tvUpdate;
     RecyclerView recycleImage, recyclerViewChat;
     RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton, rlMessage, rlSelectedImage, rlUserName, rlPrevPlayer, rlNextPlayer, rlUpdateGroup;
@@ -281,7 +281,6 @@ public class ChatActivity extends AppCompatActivity {
         etMessage.setHintTextColor(Color.parseColor("#7B888F"));
         inflater = LayoutInflater.from(ChatActivity.this);
         tvSend = (TextView) findViewById(R.id.tvSend);
-        ivAdjust = (ImageView) findViewById(R.id.ivAdjust);
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
         ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
         ivCamera = (ImageView) findViewById(R.id.ivCamera);
@@ -312,14 +311,14 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ivAdjust.setVisibility(View.GONE);
+                ivJoin.setVisibility(View.GONE);
                 tvSend.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void afterTextChanged(Editable s) {
                 if (etMessage.getText().toString().length() == 0) {
-                    ivAdjust.setVisibility(View.VISIBLE);
+                    ivJoin.setVisibility(View.VISIBLE);
                     tvSend.setVisibility(View.GONE);
                 }
             }
@@ -394,7 +393,7 @@ public class ChatActivity extends AppCompatActivity {
                 if (userId != null) {
                     String message = etMessage.getText().toString().trim();
                     etMessage.getText().clear();
-                    ivAdjust.setVisibility(View.VISIBLE);
+                    ivJoin.setVisibility(View.VISIBLE);
                     tvSend.setVisibility(View.GONE);
                     sendMessage(message, userId);
                     InputMethodManager inputManager = (InputMethodManager)
@@ -484,12 +483,6 @@ public class ChatActivity extends AppCompatActivity {
                     alertDialog.cancel();
                     setPermissions();
                 }
-            }
-        });
-
-        ivAdjust.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
             }
         });
 
