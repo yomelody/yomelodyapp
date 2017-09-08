@@ -27,6 +27,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.instamelody.instamelody.JoinActivity;
+import com.instamelody.instamelody.Models.JoinedArtists;
+import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.MixingData;
 import com.instamelody.instamelody.R;
@@ -49,6 +52,7 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentListAdp.MyViewHolder> {
 
     static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
+    static ArrayList<JoinedArtists> joinArtistList = new ArrayList<>();
     String audioValue;
     private static String instrumentFile;
     int length;
@@ -161,7 +165,6 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
                 }
             });
 
-
         }
 
 
@@ -234,6 +237,17 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
         instrument_url_count.add(instrumentFile);
 //        Toast.makeText(context, "" + instrumentFile, Toast.LENGTH_SHORT).show();
         Log.d("Instruments size", "" + instrumentFile);
+
+        JoinActivity.rlJoinButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String position = Integer.toString(listPosition);
+                Intent intent = new Intent(v.getContext(), StudioActivity.class);
+                intent.putExtra("clickPositionJoin", position);
+                v.getContext().startActivity(intent);
+                StudioActivity.list.clear();
+            }
+        });
 
         //StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL,PositionId));
 
@@ -330,8 +344,8 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
 
 
 
-        Intent i = new Intent("fetchingInstruments");
-        i.putStringArrayListExtra("instruments", instrument_url_count);
+        Intent i = new Intent("fetchingInstrumentsJoin");
+        i.putStringArrayListExtra("instrumentsJoin", instrument_url_count);
         LocalBroadcastManager.getInstance(context).sendBroadcast(i);
 
 
@@ -374,6 +388,10 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
         }
 
 
+    }
+
+    public static ArrayList<JoinedArtists> returnJoinList() {
+        return joinArtistList;
     }
 
     private class UserProfileCover extends AsyncTask<String, Void, Bitmap> {

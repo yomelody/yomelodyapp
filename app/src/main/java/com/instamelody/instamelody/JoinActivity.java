@@ -62,6 +62,7 @@ public class JoinActivity extends AppCompatActivity {
     public static RecyclerView recyclerView;
     public static RecyclerView recyclerViewInstruments;
     RelativeLayout rlIncluded;
+    public static RelativeLayout rlJoinButton;
     private String USER_ID = "userid";
     private String RECORDING_ID = "rid";
     public static String addedBy, RecId;
@@ -85,6 +86,7 @@ public class JoinActivity extends AppCompatActivity {
         ivDislikeButton = (ImageView) findViewById(R.id.ivDislikeButton);
         rlComment = (RelativeLayout) findViewById(R.id.rlComment);
         rlIncluded = (RelativeLayout) findViewById(R.id.rlIncluded);
+        rlJoinButton = (RelativeLayout) findViewById(R.id.rlJoinButton);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewArtists);
         joinFooter = (RelativeLayout) findViewById(R.id.joinFooter);
         recyclerViewInstruments = (RecyclerView) findViewById(R.id.recyclerViewInstruments);
@@ -109,6 +111,13 @@ public class JoinActivity extends AppCompatActivity {
                 } else {
                     recyclerView.setVisibility(View.VISIBLE);
                 }
+            }
+        });
+
+        rlJoinButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
 

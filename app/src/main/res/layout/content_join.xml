@@ -407,7 +407,7 @@
                                     </RelativeLayout>
 
                                     <RelativeLayout
-                                        android:id="@+id/rlMelodyButton"
+                                        android:id="@+id/rlJoinButton"
                                         android:layout_width="100dp"
                                         android:layout_height="match_parent"
                                         android:layout_alignParentEnd="true"

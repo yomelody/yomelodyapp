@@ -193,6 +193,19 @@ public class Update extends AppCompatActivity {
             etuEmailUpdate.setText(emailFinalFb);
             etuUsername.setText(userNameFb);
             etuPhone.setText(mobile);
+            etuFirstName.setClickable(false);
+            etuFirstName.setCursorVisible(false);
+            etuFirstName.setFocusableInTouchMode(false);
+            etuLastName.setClickable(false);
+            etuLastName.setCursorVisible(false);
+            etuLastName.setFocusableInTouchMode(false);
+            etuUsername.setClickable(false);
+            etuUsername.setCursorVisible(false);
+            etuUsername.setFocusableInTouchMode(false);
+            etuEmailUpdate.setClickable(true);
+            etuEmailUpdate.setClickable(true);
+            etuEmailUpdate.setCursorVisible(true);
+            etuEmailUpdate.setFocusableInTouchMode(true);
             SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
             String fbId = fbPref.getString("fbId", null);
             Picasso.with(Update.this).load("https://graph.facebook.com/" + fbId + "/picture").into(userProfileImageUpdate);
@@ -201,6 +214,22 @@ public class Update extends AppCompatActivity {
             etuLastName.setText(lastNameTwitter);
             etuEmailUpdate.setText(emailFinalTwitter);
             etuUsername.setText(userNameTwitter);
+            etuEmailUpdate.setClickable(true);
+            etuEmailUpdate.setCursorVisible(true);
+            etuEmailUpdate.setFocusableInTouchMode(true);
+            etuFirstName.setClickable(false);
+            etuFirstName.setCursorVisible(false);
+            etuFirstName.setFocusableInTouchMode(false);
+            etuLastName.setClickable(false);
+            etuLastName.setCursorVisible(false);
+            etuLastName.setFocusableInTouchMode(false);
+            etuUsername.setClickable(false);
+            etuUsername.setCursorVisible(false);
+            etuUsername.setFocusableInTouchMode(false);
+            etuEmailUpdate.setClickable(true);
+            etuEmailUpdate.setClickable(true);
+            etuEmailUpdate.setCursorVisible(true);
+            etuEmailUpdate.setFocusableInTouchMode(true);
             SharedPreferences twitterPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
             String profilePic1 = twitterPref.getString("profilePic", null);
             Picasso.with(Update.this).load(profilePic1).into(userProfileImageUpdate);
@@ -364,7 +393,7 @@ public class Update extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (etuFirstName.getText().toString().trim().equals("") || etuLastName.getText().toString().trim().equals("")
-                        || etuUsername.getText().toString().trim().equals("") || etuPhone.getText().toString().trim().equals("")) {
+                        || etuUsername.getText().toString().trim().equals("")) {
                     Toast.makeText(Update.this, "please fill remaining fields which are empty", Toast.LENGTH_SHORT).show();
                 } else if (!etuConfirmPassWord.getText().toString().equals(etuPassWord.getText().toString())) {
                     // Toast.makeText(SignUpActivity.this, "please check your confirm password .", Toast.LENGTH_SHORT).show();
