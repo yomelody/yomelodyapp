@@ -4,17 +4,20 @@ package com.instamelody.instamelody.Models;
  * Created by Shubhansh Jaiswal on 17/01/17.
  */
 
+import org.json.JSONArray;
+
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
 public class Message implements Serializable {
 
-    String id, message, createdAt, senderId, file, fileType;
-    String profilePic;
+    String id, message, createdAt, senderId, file, fileType, profilePic, isRead;
+    JSONArray audioDetails;
 
     public String getFile() {
         return file;
@@ -146,5 +149,21 @@ public class Message implements Serializable {
             e.printStackTrace();
         }
         return val;
+    }
+
+    public String getIsRead() {
+        return isRead;
+    }
+
+    public void setIsRead(String isRead) {
+        this.isRead = isRead;
+    }
+
+    public JSONArray getAudioDetails() {
+        return audioDetails;
+    }
+
+    public void setAudioDetails(JSONArray audioDetails) {
+        this.audioDetails = audioDetails;
     }
 }

@@ -12,6 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.instamelody.instamelody.ChatActivity;
+import com.instamelody.instamelody.MessengerActivity;
 import com.instamelody.instamelody.Models.Chat;
 import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
@@ -30,6 +31,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
     ArrayList<Chat> chatList = new ArrayList<>();
     Context context;
     String receiverId = "", chatID = "", receiverName = "", groupName = "", receiverImage = "", senderId = "", userId, groupImage = "";
+    public static int totalMsgCount = 0;
 
     public MessengerAdapter(ArrayList<Chat> chatList, Context context) {
         this.chatList = chatList;
@@ -38,7 +40,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tvMsg, tvTime, tvUserName;
+        TextView tvMsg, tvTime, tvUserName, message_count;
         ImageView userProfileImage;
         RelativeLayout rlComplete;
 
@@ -60,6 +62,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
             tvMsg = (TextView) itemView.findViewById(R.id.tvMsg);
             tvTime = (TextView) itemView.findViewById(R.id.tvTime);
+            message_count = (TextView) itemView.findViewById(R.id.message_count);
             userProfileImage = (ImageView) itemView.findViewById(R.id.userProfileImage);
             rlComplete = (RelativeLayout) itemView.findViewById(R.id.rlComplete);
 
@@ -134,19 +137,24 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
         Chat chat = chatList.get(listPosition);
         if (chat.getChatType().equals("group")) {
             holder.tvUserName.setText(chat.getGroupName());
-            Picasso.with(holder.userProfileImage.getContext()).load(chat.getGroupPic()).into(holder.userProfileImage);
+            Picasso.with(holder.userProfileImage.getContext()).load(chat.getGroupPic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
             holder.tvMsg.setText(chat.getSenderName() + " : " + chat.getMessage());
         } else {
             holder.tvUserName.setText(chat.getReceiverName());
-            Picasso.with(holder.userProfileImage.getContext()).load(chat.getProfilePic()).into(holder.userProfileImage);
+            Picasso.with(holder.userProfileImage.getContext()).load(chat.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
+
 //            if (userId.equals(chat.getSenderID())){
 //                holder.tvMsg.setText("You" + " : " + chat.getMessage());
 //            }else{
 //                holder.tvMsg.setText(chat.getSenderName() + " : " + chat.getMessage());
 //            }
+
             holder.tvMsg.setText(chat.getMessage());
         }
         holder.tvTime.setText(chat.getSendAt());
+        totalMsgCount = totalMsgCount + Integer.parseInt(chat.getNewMessages());
+        holder.message_count.setText(chat.getNewMessages());
+        MessengerActivity.message_count.setText(String.valueOf(totalMsgCount));
     }
 
     @Override

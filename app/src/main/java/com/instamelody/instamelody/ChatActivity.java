@@ -14,7 +14,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -110,7 +109,7 @@ public class ChatActivity extends AppCompatActivity {
     public static ImageView ivPausePlayer, ivPlayPlayer, userProfileImagePlayer;
     public static RelativeLayout rlChatPlayer;
     public static FrameLayout flPlayPausePlayer;
-    ImageView ivClose;
+    ImageView ivClose, ivJoin;
     EditText etMessage, etGroupName;
     ImageView ivBackButton, ivHomeButton, ivAdjust, ivCamera, ivNewChat, ivRecieverProfilePic, ivSelectedImage, ivGroupImage;
     TextView tvSend, tvRecieverName, tvDone, tvEdit, tvUpdate;
@@ -123,6 +122,10 @@ public class ChatActivity extends AppCompatActivity {
     Bitmap sendImageBitmap, groupImageBitmap;
     private Uri imageToUploadUri;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
+
+    public static int oldCount = 0;
+    public static int newCount = 0;
+    int flagSend = 0;
 
     private static final int TAKE_CAMERA_PHOTO = 101;
     private static final int PICK_GALLERY_IMAGE = 102;
@@ -218,6 +221,7 @@ public class ChatActivity extends AppCompatActivity {
         tvUpdate = (TextView) findViewById(R.id.tvUpdate);
         ivGroupImage = (ImageView) findViewById(R.id.ivGroupImage);
         etGroupName = (EditText) findViewById(R.id.etGroupName);
+        ivJoin = (ImageView) findViewById(R.id.ivJoin);
 
         SharedPreferences selectedImagePos = getApplicationContext().getSharedPreferences("selectedImagePos", MODE_PRIVATE);
         if (selectedImagePos.getString("pos", null) != null) {
@@ -243,7 +247,7 @@ public class ChatActivity extends AppCompatActivity {
         SharedPreferences audioShareData = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE);
         if (audioShareData.getString("recID", null) != null) {
             flagFileType = "2";
-            sendMessage("", userId);
+            sendMessage("Audio", userId);
         }
 
         SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
@@ -296,7 +300,7 @@ public class ChatActivity extends AppCompatActivity {
         recyclerViewChat.setItemViewCacheSize(10);
         recyclerViewChat.setDrawingCacheEnabled(true);
         recyclerViewChat.setItemAnimator(new DefaultItemAnimator());
-        cAdapter = new ChatAdapter(getApplicationContext(), chatList, audioDetailsList, sharedAudioList);
+        cAdapter = new ChatAdapter(getApplicationContext(), chatList/*, audioDetailsList, sharedAudioList*/);
         recyclerViewChat.setAdapter(cAdapter);
 
         SharedPreferences token = this.getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
@@ -497,62 +501,62 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        flPlayPausePlayer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
-                if (ivPlayPlayer.getVisibility() == View.VISIBLE) {
-                    ivPlayPlayer.setVisibility(View.GONE);
-                    ivPausePlayer.setVisibility(View.VISIBLE);
-                } else {
-                    ivPausePlayer.setVisibility(View.GONE);
-                    ivPlayPlayer.setVisibility(View.VISIBLE);
-                }
-                SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
-                String audioUrl = sharedAudios.getRecordingUrl();
-                Picasso.with(userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).into(userProfileImagePlayer);
-                ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
-                ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
-                ChatActivity.tvNumPlayer.setText(tvNum.getText().toString().trim());
-                AudioOperator(audioUrl);
-            }
-        });
-
-        rlPrevPlayer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ivPlayPlayer.setVisibility(View.GONE);
-                ivPausePlayer.setVisibility(View.VISIBLE);
-                playingAudio = playingAudio - 1;
-                String str = "(" + (playingAudio + 1) + " of " + String.valueOf(sharedAudioList.size()) + ")";
-                tvNum.setText(str);
-                SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
-                String audioUrl = sharedAudios.getRecordingUrl();
-                Picasso.with(userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).into(userProfileImagePlayer);
-                ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
-                ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
-                ChatActivity.tvNumPlayer.setText(str);
-                AudioOperator(audioUrl);
-            }
-        });
-
-        rlNextPlayer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ivPlayPlayer.setVisibility(View.GONE);
-                ivPausePlayer.setVisibility(View.VISIBLE);
-                playingAudio = playingAudio + 1;
-                String str = "(" + (playingAudio + 1) + " of " + String.valueOf(sharedAudioList.size()) + ")";
-                tvNum.setText(str);
-                SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
-                String audioUrl = sharedAudios.getRecordingUrl();
-                Picasso.with(userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).into(userProfileImagePlayer);
-                ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
-                ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
-                ChatActivity.tvNumPlayer.setText(str);
-                AudioOperator(audioUrl);
-            }
-        });
+//        flPlayPausePlayer.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
+//                if (ivPlayPlayer.getVisibility() == View.VISIBLE) {
+//                    ivPlayPlayer.setVisibility(View.GONE);
+//                    ivPausePlayer.setVisibility(View.VISIBLE);
+//                } else {
+//                    ivPausePlayer.setVisibility(View.GONE);
+//                    ivPlayPlayer.setVisibility(View.VISIBLE);
+//                }
+//                SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
+//                String audioUrl = sharedAudios.getRecordingUrl();
+//                Picasso.with(userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).into(userProfileImagePlayer);
+//                ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
+//                ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
+//                ChatActivity.tvNumPlayer.setText(tvNum.getText().toString().trim());
+//                AudioOperator(audioUrl);
+//            }
+//        });
+//
+//        rlPrevPlayer.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                ivPlayPlayer.setVisibility(View.GONE);
+//                ivPausePlayer.setVisibility(View.VISIBLE);
+//                playingAudio = playingAudio - 1;
+//                String str = "(" + (playingAudio + 1) + " of " + String.valueOf(sharedAudioList.size()) + ")";
+//                tvNum.setText(str);
+//                SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
+//                String audioUrl = sharedAudios.getRecordingUrl();
+//                Picasso.with(userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).into(userProfileImagePlayer);
+//                ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
+//                ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
+//                ChatActivity.tvNumPlayer.setText(str);
+//                AudioOperator(audioUrl);
+//            }
+//        });
+//
+//        rlNextPlayer.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                ivPlayPlayer.setVisibility(View.GONE);
+//                ivPausePlayer.setVisibility(View.VISIBLE);
+//                playingAudio = playingAudio + 1;
+//                String str = "(" + (playingAudio + 1) + " of " + String.valueOf(sharedAudioList.size()) + ")";
+//                tvNum.setText(str);
+//                SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
+//                String audioUrl = sharedAudios.getRecordingUrl();
+//                Picasso.with(userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).into(userProfileImagePlayer);
+//                ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
+//                ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
+//                ChatActivity.tvNumPlayer.setText(str);
+//                AudioOperator(audioUrl);
+//            }
+//        });
 
         rlUserName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -626,6 +630,14 @@ public class ChatActivity extends AppCompatActivity {
                 tvUpdate.setVisibility(View.GONE);
                 tvEdit.setVisibility(View.VISIBLE);
                 updateGroup(chatId, groupName);
+            }
+        });
+
+        ivJoin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), JoinActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -827,8 +839,8 @@ public class ChatActivity extends AppCompatActivity {
                     public void onResponse(String response) {
 
                         chatList.clear();
-                        audioDetailsList.clear();
-                        sharedAudioList.clear();
+//                        audioDetailsList.clear();
+//                        sharedAudioList.clear();
                         cAdapter.notifyDataSetChanged();
                         JSONObject jsonObject;
                         JSONArray resultArray, audiosDetailsArray, sharedAudiosArray;
@@ -847,41 +859,45 @@ public class ChatActivity extends AppCompatActivity {
                                         message.setMessage(chatJson.getString("message"));
                                         message.setFileType(chatJson.getString("file_type"));
                                         message.setFile(chatJson.getString("file_url"));
+                                        message.setIsRead(chatJson.getString("isread"));
                                         message.setCreatedAt(chatJson.getString("sendat"));
-
                                         if (!chatJson.get("Audioshared").equals(null) && !chatJson.get("Audioshared").equals("")) {
-                                            audiosDetailsArray = chatJson.getJSONArray("Audioshared");
-                                            if (audiosDetailsArray.length() > 0) {
-                                                for (int j = 0; j < audiosDetailsArray.length(); j++) {
-                                                    AudioDetails audioDetails = new AudioDetails();
-                                                    JSONObject detailsJson = audiosDetailsArray.getJSONObject(j);
-                                                    audioDetails.setRecordingId(detailsJson.getString("recording_id"));
-                                                    audioDetails.setAddedBy(detailsJson.getString("added_by"));
-                                                    audioDetails.setRecordingTopic(detailsJson.getString("recording_topic"));
-                                                    audioDetails.setName(detailsJson.getString("name"));
-                                                    audioDetails.setUserName(detailsJson.getString("user_name"));
-
-                                                    if (!detailsJson.get("recordings").equals(null)) {
-                                                        sharedAudiosArray = detailsJson.getJSONArray("recordings");
-                                                        if (audiosDetailsArray.length() > 0) {
-                                                            for (int k = 0; k < sharedAudiosArray.length(); k++) {
-                                                                SharedAudios sharedAudios = new SharedAudios();
-                                                                JSONObject audioJson = sharedAudiosArray.getJSONObject(k);
-                                                                sharedAudios.setAddedById(audioJson.getString("added_by_id"));
-                                                                sharedAudios.setUserName(audioJson.getString("user_name"));
-                                                                sharedAudios.setName(audioJson.getString("name"));
-                                                                sharedAudios.setProfileUrl(audioJson.getString("profile_url"));
-                                                                sharedAudios.setDateAdded(audioJson.getString("date_added"));
-                                                                sharedAudios.setDuration(audioJson.getString("duration"));
-                                                                sharedAudios.setRecordingUrl(audioJson.getString("recording_url"));
-                                                                sharedAudioList.add(sharedAudios);
-                                                            }
-                                                        }
-                                                    }
-                                                    audioDetailsList.add(audioDetails);
-                                                }
-                                            }
+                                            message.setAudioDetails(chatJson.getJSONArray("Audioshared"));
                                         }
+
+//                                        if (!chatJson.get("Audioshared").equals(null) && !chatJson.get("Audioshared").equals("")) {
+//                                            audiosDetailsArray = chatJson.getJSONArray("Audioshared");
+//                                            if (audiosDetailsArray.length() > 0) {
+//                                                for (int j = 0; j < audiosDetailsArray.length(); j++) {
+//                                                    AudioDetails audioDetails = new AudioDetails();
+//                                                    JSONObject detailsJson = audiosDetailsArray.getJSONObject(j);
+//                                                    audioDetails.setRecordingId(detailsJson.getString("recording_id"));
+//                                                    audioDetails.setAddedBy(detailsJson.getString("added_by"));
+//                                                    audioDetails.setRecordingTopic(detailsJson.getString("recording_topic"));
+//                                                    audioDetails.setName(detailsJson.getString("name"));
+//                                                    audioDetails.setUserName(detailsJson.getString("user_name"));
+//
+//                                                    if (!detailsJson.get("recordings").equals(null)) {
+//                                                        sharedAudiosArray = detailsJson.getJSONArray("recordings");
+//                                                        if (audiosDetailsArray.length() > 0) {
+//                                                            for (int k = 0; k < sharedAudiosArray.length(); k++) {
+//                                                                SharedAudios sharedAudios = new SharedAudios();
+//                                                                JSONObject audioJson = sharedAudiosArray.getJSONObject(k);
+//                                                                sharedAudios.setAddedById(audioJson.getString("added_by_id"));
+//                                                                sharedAudios.setUserName(audioJson.getString("user_name"));
+//                                                                sharedAudios.setName(audioJson.getString("name"));
+//                                                                sharedAudios.setProfileUrl(audioJson.getString("profile_url"));
+//                                                                sharedAudios.setDateAdded(audioJson.getString("date_added"));
+//                                                                sharedAudios.setDuration(audioJson.getString("duration"));
+//                                                                sharedAudios.setRecordingUrl(audioJson.getString("recording_url"));
+//                                                                sharedAudioList.add(sharedAudios);
+//                                                            }
+//                                                        }
+//                                                    }
+//                                                    audioDetailsList.add(audioDetails);
+//                                                }
+//                                            }
+//                                        }
                                         chatList.add(message);
                                     }
                                 } else {
@@ -924,6 +940,10 @@ public class ChatActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(CHAT_ID_, chat_Id);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                if (flagSend == 1) {
+                    params.put("isread", "1");
+                    flagSend = 0;
+                }
                 return params;
             }
         };
@@ -940,6 +960,7 @@ public class ChatActivity extends AppCompatActivity {
                         public void onResponse(NetworkResponse response) {
                             String str = new String(response.data);
 //                            Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
+                            flagSend = 1;
                             getChatMsgs(chatId);
                         }
                     }, new Response.ErrorListener() {
@@ -1015,10 +1036,6 @@ public class ChatActivity extends AppCompatActivity {
                     String str = response;
 //                    Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
                     getChatMsgs(chatId);
-                    SharedPreferences.Editor editor = getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
-                    editor.clear();
-                    editor.apply();
-
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -1071,6 +1088,9 @@ public class ChatActivity extends AppCompatActivity {
                         String recID;
                         SharedPreferences audioShareData = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE);
                         recID = audioShareData.getString("recID", null);
+                        SharedPreferences.Editor editor = getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
+                        editor.putString("recID", null);
+                        editor.apply();
                         params.put(FILE, recID);
                         params.put(FILE_TYPE, "station");
 
@@ -1129,8 +1149,6 @@ public class ChatActivity extends AppCompatActivity {
                             fileInfo.add(rim);
                         }
                     }
-                } else {
-//                    Toast.makeText(getApplicationContext(), "Failed to read External storage", Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -1170,11 +1188,7 @@ public class ChatActivity extends AppCompatActivity {
                             fileInfo.add(rim);
                         }
                     }
-                } else {
-//                    Toast.makeText(getApplicationContext(), "Failed to read Internal storage", Toast.LENGTH_LONG).show();
                 }
-            } else {
-//                Toast.makeText(getApplicationContext(), "Failed to read device storage", Toast.LENGTH_LONG).show();
             }
         }
     }

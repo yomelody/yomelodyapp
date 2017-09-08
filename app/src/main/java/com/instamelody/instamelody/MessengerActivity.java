@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.instamelody.instamelody.Adapters.MessengerAdapter.totalMsgCount;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.USER_CONVERSATION;
@@ -47,6 +49,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.USER_CONVERSAT
 public class MessengerActivity extends AppCompatActivity {
 
     ImageView discover, message, profile, audio_feed, ivBackButton, ivHomeButton, ivNewMessage;
+    public static TextView message_count;
     MessengerAdapter adapter;
     RecyclerView recyclerView;
     RelativeLayout rlNoMsg;
@@ -69,6 +72,7 @@ public class MessengerActivity extends AppCompatActivity {
         profile = (ImageView) findViewById(R.id.profile);
         audio_feed = (ImageView) findViewById(R.id.audio_feed);
         rlNoMsg = (RelativeLayout) findViewById(R.id.rlNoMsg);
+        message_count = (TextView) findViewById(R.id.message_count);
 
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
@@ -199,6 +203,7 @@ public class MessengerActivity extends AppCompatActivity {
                                     chat.setGroupPic(commentJson.getString("group_pick"));
                                     chat.setIsRead(commentJson.getString("isread"));
                                     chat.setSendAt(commentJson.getString("sendat"));
+                                    chat.setNewMessages(commentJson.getString("New_message"));
                                     chatList.add(chat);
                                 }
                             } else {

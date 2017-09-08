@@ -24,8 +24,7 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:src="@drawable/profile1" />
+                android:layout_alignParentStart="true" />
 
         </RelativeLayout>
 
@@ -46,46 +45,54 @@
                     android:layout_height="55dp"
                     android:background="@drawable/chat_rec_white_op">
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:gravity="center">
-
-                        <ImageView
-                            android:id="@+id/ivPrev"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center"
-                            android:layout_marginEnd="20dp"
-                            android:layout_marginStart="5dp"
-                            app:srcCompat="@drawable/prev_dark" />
-
-                        <TextView
-                            android:id="@+id/tvNum"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginEnd="20dp"
-                            android:text="(1 of 2)"
-                            android:textColor="#425661" />
-
-                        <ImageView
-                            android:id="@+id/ivNext"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center"
-                            android:layout_marginEnd="95dp"
-                            app:srcCompat="@drawable/next_dark" />
+                        android:layout_marginStart="8dp">
 
                         <ImageView
                             android:id="@+id/ivSettings"
                             android:layout_width="25dp"
                             android:layout_height="25dp"
                             android:layout_gravity="center"
+                            android:layout_marginEnd="15dp"
+                            android:layout_alignParentEnd="true"
                             app:srcCompat="@drawable/setting" />
 
-                    </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:gravity="center"
+                            android:layout_marginStart="20dp">
+
+                            <ImageView
+                                android:id="@+id/ivPrev"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_gravity="center"
+                                android:layout_marginEnd="15dp"
+                                app:srcCompat="@drawable/prev_dark" />
+
+                            <TextView
+                                android:id="@+id/tvNum"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginEnd="15dp"
+                                android:textColor="#425661" />
+
+                            <ImageView
+                                android:id="@+id/ivNext"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_gravity="center"
+                                app:srcCompat="@drawable/next_dark" />
+
+                        </LinearLayout>
+
+                    </RelativeLayout>
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -153,7 +160,6 @@
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
                                 android:maxLength="25"
-                                android:text="Sing to Me"
                                 android:textColor="#FFFFFF"
                                 android:textSize="16sp"
                                 android:textStyle="normal|bold" />
@@ -165,7 +171,6 @@
                                 android:layout_alignParentEnd="true"
                                 android:layout_below="@+id/tvMelodyName"
                                 android:layout_marginTop="2dp"
-                                android:text="sillypoet"
                                 android:textColor="#FFFFFF"
                                 android:textSize="13sp" />
 
