@@ -107,7 +107,6 @@ public class ActivityFragment extends Fragment {
         return view;
     }
 
-
     private class FetchActivityDetails extends AsyncTask<String, Void, String> {
         protected void onPreExecute() {
             super.onPreExecute();

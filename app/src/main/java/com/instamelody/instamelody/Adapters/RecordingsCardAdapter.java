@@ -27,7 +27,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.CommentsActivity;
-import com.instamelody.instamelody.ContactsActivity;
 import com.instamelody.instamelody.JoinActivity;
 import com.instamelody.instamelody.MessengerActivity;
 import com.instamelody.instamelody.Models.RecordingsModel;
@@ -35,7 +34,6 @@ import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
-import com.instamelody.instamelody.StudioActivity;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
@@ -149,6 +147,8 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             } else if (twitterPref.getString("userId", null) != null) {
                 userId = twitterPref.getString("userId", null);
             }
+
+
 
             ivJoin.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -543,10 +543,10 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         holder.tvLikeCount.setText(String.valueOf(recordingList.get(listPosition).getLikeCount()));
         holder.tvCommentCount.setText(String.valueOf(recordingList.get(listPosition).getCommentCount()));
         holder.tvShareCount.setText(String.valueOf(recordingList.get(listPosition).getShareCount()));
+
         holder.ivStationPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                holder.seekBarRecordings.setVisibility(View.VISIBLE);
                 holder.progressDialog = new ProgressDialog(v.getContext());
                 holder.progressDialog.setMessage("Loading...");
                 holder.progressDialog.show();
@@ -569,8 +569,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                     int lastPosition = lastModifiedHoled.getAdapterPosition();
                                     lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
                                     lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
-                           /* lastModifiedHoled.itemView.setBackgroundColor(Color.TRANSPARENT);
-                            lastModifiedHoled.txtIndustry.setTextColor(context.getResources().getColor(R.color.text_color_blue));*/
                                     notifyItemChanged(lastPosition);
                                 }
 
@@ -631,36 +629,14 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mp) {
-                            //   duration1 = mp.getDuration();
-                            //   currentPosition = mp.getCurrentPosition();
                             holder.progressDialog.dismiss();
                             holder.primarySeekBarProgressUpdater();
-//                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
-//                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
 
                         }
                     });
                     lastModifiedHoled = holder;
 
-                    //   }
-
-
-                    //   playAudio();
-                    //   holder.primarySeekBarProgressUpdater();
                 }
-                //     }
-
-                //     mp.seekTo(length);
-                //     mp.start();
-
-//                if (mp.equals(duration1)) {
-//                    try {
-//                        playAudio();
-//                        holder.primarySeekBarProgressUpdater();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
             }
         });
 
@@ -675,8 +651,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             }
         });
 
-
-//        holder.tvIncludedCount.setText(String.valueOf(recordingList.get(listPosition).getTvIncludedCount()));
     }
 
     @Override

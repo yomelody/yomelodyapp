@@ -1,44 +1,43 @@
 package com.instamelody.instamelody;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TabHost;
-import android.support.v7.widget.SearchView;
+import android.widget.TextView;
+
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
+import com.instamelody.instamelody.Fragments.ActivityFragment;
 import com.instamelody.instamelody.Fragments.AudioFragment;
 import com.instamelody.instamelody.Models.RecordingsModel;
-import android.graphics.Color;
-import android.view.View;
-import android.widget.Button;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import com.instamelody.instamelody.Fragments.ActivityFragment;
 import com.instamelody.instamelody.Models.RecordingsPool;
+
 import java.util.ArrayList;
 
 /**
@@ -369,7 +368,10 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
             }
         });
+
     }
+
+
 
     @Override
     public void onBackPressed() {
@@ -440,6 +442,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
         return false;
     }
+
 
     @Override
     public boolean onQueryTextChange(String newText) {
@@ -575,6 +578,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         builder3.show();
     }
 
+
     private void openDialogBPM() {
         LayoutInflater inflater = LayoutInflater.from(StationActivity.this);
         View subView = inflater.inflate(R.layout.dialog_layout, null);
@@ -683,4 +687,6 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
         }
     }
+
+
 }
