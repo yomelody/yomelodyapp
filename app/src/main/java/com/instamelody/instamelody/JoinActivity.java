@@ -127,8 +127,8 @@ public class JoinActivity extends AppCompatActivity {
         if (addedBy != null && RecId != null) {
             try {
 
-               // getJoined_Local();
-                getJoined_users(addedBy, RecId);
+//                getJoined_Local();
+                  getJoined_users(addedBy, RecId);
             } catch (Throwable e) {
                 e.printStackTrace();
             }

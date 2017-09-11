@@ -1333,7 +1333,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     InstrumentCountSize = MelodyInstruments.getInstrumentCount();
 
                     for (int i = 0; i < InstrumentCountSize; i++) {
-                        Log.d("Instrument url :", "" + instrumentList.get(i).getInstrumentFile());
+                        Log.d("Instrument url----------------:", "" + instrumentList.get(i).getInstrumentFile());
                         StudioActivity.mpall = new MediaPlayer();
                         StudioActivity.mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
                         StudioActivity.mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
