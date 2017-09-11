@@ -109,6 +109,7 @@ public class ChatActivity extends AppCompatActivity {
     public static ImageView ivPausePlayer, ivPlayPlayer, userProfileImagePlayer;
     public static RelativeLayout rlChatPlayer;
     public static FrameLayout flPlayPausePlayer;
+    FrameLayout flCover;
     ImageView ivClose, ivJoin;
     EditText etMessage, etGroupName;
     ImageView ivBackButton, ivHomeButton, ivCamera, ivNewChat, ivRecieverProfilePic, ivSelectedImage, ivGroupImage;
@@ -222,6 +223,7 @@ public class ChatActivity extends AppCompatActivity {
         ivGroupImage = (ImageView) findViewById(R.id.ivGroupImage);
         etGroupName = (EditText) findViewById(R.id.etGroupName);
         ivJoin = (ImageView) findViewById(R.id.ivJoin);
+        flCover = (FrameLayout) findViewById(R.id.flCover);
 
         SharedPreferences selectedImagePos = getApplicationContext().getSharedPreferences("selectedImagePos", MODE_PRIVATE);
         if (selectedImagePos.getString("pos", null) != null) {
@@ -556,7 +558,9 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 if (chatType.equals("group")) {
+                    flCover.setVisibility(View.VISIBLE);
                     rlUpdateGroup.setVisibility(View.VISIBLE);
+                    ivGroupImage.setClickable(false);
                     Picasso.with(ivGroupImage.getContext()).load(groupImage).into(ivGroupImage);
                     etGroupName.setText(receiverName);
                 }
@@ -566,6 +570,8 @@ public class ChatActivity extends AppCompatActivity {
         tvDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ivGroupImage.setClickable(false);
+                flCover.setVisibility(View.GONE);
                 rlUpdateGroup.setVisibility(View.GONE);
             }
         });
@@ -573,6 +579,8 @@ public class ChatActivity extends AppCompatActivity {
         tvEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                flCover.setVisibility(View.GONE);
+                ivGroupImage.setClickable(true);
                 ivGroupImage.setEnabled(true);
                 etGroupName.setEnabled(true);
                 tvEdit.setVisibility(View.GONE);
@@ -619,10 +627,12 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String groupName = etGroupName.getText().toString().trim();
                 ivGroupImage.setEnabled(false);
+                ivGroupImage.setClickable(false);
                 etGroupName.setEnabled(false);
                 tvUpdate.setVisibility(View.GONE);
                 tvEdit.setVisibility(View.VISIBLE);
                 updateGroup(chatId, groupName);
+                flCover.setVisibility(View.VISIBLE);
             }
         });
 

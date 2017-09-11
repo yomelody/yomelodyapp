@@ -550,7 +550,16 @@
                     android:textStyle="normal" />
 
             </RelativeLayout>
-
         </RelativeLayout>
+        <FrameLayout
+            android:id="@+id/flCover"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="80dp"
+            android:alpha="0.25"
+            android:background="#FFFFFF"
+            android:visibility="gone">
+        </FrameLayout>
+
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>
