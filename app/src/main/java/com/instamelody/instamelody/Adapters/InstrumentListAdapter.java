@@ -95,7 +95,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     String InstaURL = null, PositionId;
     List aa;
     int InstrumentListPosition;
-    public static List<MediaPlayer> mp_start = new ArrayList<MediaPlayer>();
+
     int InstrumentListCount=0;
 
     final int MY_PERMISSIONS_REQUEST_MICROPHONE = 200;
@@ -775,14 +775,14 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     holder.progressDialog.show();
                     holder.mp.prepareAsync();
 
-                    mp_start.add(holder.mp);
+                    StudioActivity.mp_start.add(holder.mp);
 
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
-                for (MediaPlayer instrument_media : mp_start) {
+                for (MediaPlayer instrument_media : StudioActivity.mp_start) {
                     instrument_media.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
                         public void onPrepared(MediaPlayer mps) {
