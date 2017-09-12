@@ -100,11 +100,17 @@ public class JoinCommentActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String pos = intent.getExtras().getString("Position");
         Toast.makeText(getApplicationContext(), pos, Toast.LENGTH_SHORT).show();
-        tvPlayCount.setText(JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getPlay_counts());
-        tvLikeCount.setText(JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getLike_counts());
-        tvCommentCount.setText(JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getComment_counts());
-        tvShareCount.setText(JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getShare_counts());
-        melodyID = JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getRecording_id();
+        try {
+            tvPlayCount.setText(JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getPlay_counts());
+            tvLikeCount.setText(JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getLike_counts());
+            tvCommentCount.setText(JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getComment_counts());
+            tvShareCount.setText(JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getShare_counts());
+            melodyID = JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getRecording_id();
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
+
+
         fileType = "user_recording";
         getComments();
         RecyclerView.LayoutManager lm1 = new LinearLayoutManager(getApplicationContext());
