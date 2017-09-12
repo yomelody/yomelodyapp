@@ -127,8 +127,8 @@ public class JoinActivity extends AppCompatActivity {
         if (addedBy != null && RecId != null) {
             try {
 
-//                getJoined_Local();
-                  getJoined_users(addedBy, RecId);
+                // getJoined_Local();
+                getJoined_users(addedBy, RecId);
             } catch (Throwable e) {
                 e.printStackTrace();
             }
@@ -318,15 +318,15 @@ public class JoinActivity extends AppCompatActivity {
                         new ParseContents(getApplicationContext()).parseJoin(response, Joined_artist);
                         adapter = new JoinListAdapter(Joined_artist, getApplicationContext());
                         recyclerView.setAdapter(adapter);
-
-                        if (pos.equals("0")) {
+                        Toast.makeText(JoinActivity.this, ""+position, Toast.LENGTH_SHORT).show();
+                        if (position == 0) {
                             new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, pos);
                             adapter1 = new JoinInstrumentListAdp(instrumentList, getApplicationContext());
                             recyclerViewInstruments.setAdapter(adapter1);
                         } else {
-                            Intent intent1 = getIntent();
-                            pos = intent1.getExtras().getString("Value");
-                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, pos);
+                       //     Intent intent1 = getIntent();
+                       //     pos = intent1.getExtras().getString("Value");
+                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, String.valueOf(position));
                             adapter1 = new JoinInstrumentListAdp(instrumentList, getApplicationContext());
                             recyclerViewInstruments.setAdapter(adapter1);
                         }

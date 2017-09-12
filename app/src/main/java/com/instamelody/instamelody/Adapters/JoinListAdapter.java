@@ -128,15 +128,15 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
             @Override
             public void onClick(View v) {
 
-              //  JoinActivity.position = position;
-                try{
-                    Intent intent=new Intent(context,JoinActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra("Value",String.valueOf(position));
-                    context.startActivity(intent);
-                }catch (Throwable e){
-                    e.printStackTrace();
-                }
+                JoinActivity.position = position;
+//                try{
+//                    Intent intent=new Intent(context,JoinActivity.class);
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                    intent.putExtra("Value",String.valueOf(position));
+//                    context.startActivity(intent);
+//                }catch (Throwable e){
+//                    e.printStackTrace();
+//                }
 
             }
         });

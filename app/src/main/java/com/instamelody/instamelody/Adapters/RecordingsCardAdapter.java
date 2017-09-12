@@ -153,24 +153,24 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             ivJoin.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if (!userId.equals("") && userId != null) {
+                        String instruments, bpm, genre, recordName, userName, duration, date, plays, likes, comments, shares, melodyID;
+                        RecordingsModel rm = recordingList.get(getAdapterPosition());
 
-                    String instruments, bpm, genre, recordName, userName, duration, date, plays, likes, comments, shares, melodyID;
-                    RecordingsModel rm = recordingList.get(getAdapterPosition());
+                        addedBy = rm.getAddedBy();
+                        Rec_id = rm.getRecordingId();
 
-                    addedBy = rm.getAddedBy();
-                    Rec_id = rm.getRecordingId();
-
-                    genre = tvRecordingGenres.getText().toString().trim();
-                    recordName = tvRecordingName.getText().toString().trim();
-                    duration = tvContributeLength.getText().toString().trim();
-                    date = tvRecordingDate.getText().toString().trim();
-                    plays = tvViewCount.getText().toString().trim();
+                        genre = tvRecordingGenres.getText().toString().trim();
+                        recordName = tvRecordingName.getText().toString().trim();
+                        duration = tvContributeLength.getText().toString().trim();
+                        date = tvRecordingDate.getText().toString().trim();
+                        plays = tvViewCount.getText().toString().trim();
 //                    tvIncludedCount.getText().toString().trim();
 //                    tvContributeDate.getText().toString().trim();
-                    userName = tvUserName.getText().toString().trim();
-                    likes = tvLikeCount.getText().toString().trim();
-                    comments = tvCommentCount.getText().toString().trim();
-                    shares = tvShareCount.getText().toString().trim();
+                        userName = tvUserName.getText().toString().trim();
+                        likes = tvLikeCount.getText().toString().trim();
+                        comments = tvCommentCount.getText().toString().trim();
+                        shares = tvShareCount.getText().toString().trim();
 
 //                    duration = tvMelodyLength.getText().toString().trim();
 //                    date = tvMelodyDate.getText().toString().trim();
@@ -180,39 +180,46 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 //                    genre = tvMelodyGenre.getText().toString().trim();
 //                    melodyName = tvMelodyName.getText().toString().trim();
 
-                    int pos = getAdapterPosition();
+                        int pos = getAdapterPosition();
 //                    melodyID = mpids.get(pos);
 
-                    SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
+                        SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
 
 
-                    editor.putString("genre", genre);
-                    editor.putString("melodyName", recordName);
-                    editor.putString("userName", userName);
-                    editor.putString("duration", duration);
-                    editor.putString("date", date);
-                    editor.putString("plays", plays);
-                    editor.putString("likes", likes);
-                    editor.putString("comments", comments);
-                    editor.putString("shares", shares);
+                        editor.putString("genre", genre);
+                        editor.putString("melodyName", recordName);
+                        editor.putString("userName", userName);
+                        editor.putString("duration", duration);
+                        editor.putString("date", date);
+                        editor.putString("plays", plays);
+                        editor.putString("likes", likes);
+                        editor.putString("comments", comments);
+                        editor.putString("shares", shares);
 //                    editor.putString("bitmapProfile", profile);
 //                    editor.putString("bitmapCover", cover);
 //                    editor.putString("melodyID", );
-                    editor.putString("fileType", "admin_melody");
-                    editor.commit();
+                        editor.putString("fileType", "admin_melody");
+                        editor.commit();
 
 
-                    try {
-                        SharedPreferences.Editor record = context.getSharedPreferences("RecordingData", MODE_PRIVATE).edit();
-                        record.putString("AddedBy", addedBy);
-                        record.putString("Recording_id", Rec_id);
-                        record.commit();
+                        try {
+                            SharedPreferences.Editor record = context.getSharedPreferences("RecordingData", MODE_PRIVATE).edit();
+                            record.putString("AddedBy", addedBy);
+                            record.putString("Recording_id", Rec_id);
+                            record.commit();
 
-                        Intent intent = new Intent(context, JoinActivity.class);
+                            Intent intent = new Intent(context, JoinActivity.class);
+                            context.startActivity(intent);
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                        }
+
+                    } else {
+                        Toast.makeText(context, "Log in to join this Recording", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(context, SignInActivity.class);
                         context.startActivity(intent);
-                    } catch (Throwable e) {
-                        e.printStackTrace();
                     }
+
 
                 }
             });
