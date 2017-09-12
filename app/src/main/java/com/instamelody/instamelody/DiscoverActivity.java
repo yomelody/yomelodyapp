@@ -39,11 +39,13 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.instamelody.instamelody.Adapters.PageAdapter;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
+import com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -103,13 +105,13 @@ public class DiscoverActivity extends AppCompatActivity {
     String strName, strSearch, strArtist, strInstruments, strBPM;
     String titleString;
     String userIdNormal, userIdFb, userIdTwitter, artistName, Instruments, BPM;
-    ;
     int statusNormal, statusFb, statusTwitter;
     ProgressDialog progressDialog;
     LongOperation myTask = null;
-    RelativeLayout rlDiscoverSearch;
+    RelativeLayout rlDiscoverSearch,rlViewPagerMain;
     android.support.v7.widget.SearchView search2;
     Button btnCancel;
+    RecyclerViewPager recyclerViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +123,11 @@ public class DiscoverActivity extends AppCompatActivity {
         message = (ImageView) findViewById(R.id.message);
         audio_feed = (ImageView) findViewById(R.id.audio_feed);
         ivProfile = (ImageView) findViewById(R.id.ivProfileD);
+        rlViewPagerMain = (RelativeLayout) findViewById(R.id.rlViewPagerMain);
+        recyclerViewPager = (RecyclerViewPager) findViewById(R.id.recyclerViewPager);
+        recyclerViewPager.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
+        adapter = new PageAdapter(recyclerViewPager,getLayoutInflater());
+        recyclerViewPager.setAdapter(adapter);
 
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userId = loginSharedPref.getString("userId", null);
