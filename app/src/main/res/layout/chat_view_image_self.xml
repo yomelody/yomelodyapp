@@ -47,10 +47,10 @@
                         android:id="@+id/chatMessage"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="3dp"
                         android:textColor="#FFFFFF"
                         android:textSize="16sp"
-                        android:visibility="gone"
-                        android:layout_marginBottom="3dp"/>
+                        android:visibility="gone" />
 
                     <RelativeLayout
                         android:id="@+id/rlChatImage"
@@ -67,7 +67,10 @@
                             <ImageView
                                 android:id="@+id/chatImage"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
+                                android:adjustViewBounds="true"
+                                android:maxHeight="300dp"
+                                android:minHeight="200dp"
                                 android:padding="3dp"
                                 android:scaleType="fitXY"/>
 
@@ -135,6 +138,7 @@
                                         android:layout_alignParentRight="true"
                                         android:layout_marginEnd="2dp"
                                         android:layout_marginRight="2dp"
+                                        android:gravity="center"
                                         android:text="Photo.jpg"
                                         android:textColor="#FFFFFF"
                                         android:textSize="14sp" />

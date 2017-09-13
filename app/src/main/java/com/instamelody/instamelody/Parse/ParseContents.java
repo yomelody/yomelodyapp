@@ -382,33 +382,39 @@ public class ParseContents {
                     card.setCommentCount(cardJson.getInt("comment_count"));
                     card.setLikeCount(cardJson.getInt("like_count"));
                     card.setLikeStatus(cardJson.getInt("like_status"));
-                    card.setrecordingurl(cardJson.getString("recording_url"));
+                    if (cardJson.isNull("recording_url")) {
+                        card.setrecordingurl("");
+                    } else {
+                        card.setrecordingurl(cardJson.getString("recording_url"));
+                    }
+
                     card.setShareCount(cardJson.getInt("share_count"));
                     card.setRecordingCover(cardJson.getString("cover_url"));
                     card.setUserProfilePic(cardJson.getString("profile_url"));
                     card.setGenreName(cardJson.getString("genre_name"));
+                    if (cardJson.isNull("recordings")) {
+                        Log.d("Error", "pls check");
+                    } else {
+                        instrumentArray = cardJson.getJSONArray("recordings");
 
-                    instrumentArray = cardJson.getJSONArray("recordings");
-                    for (int j = 0; j < instrumentArray.length(); j++) {
-                        RecordingsPool rp = new RecordingsPool();
-                        JSONObject instrumentJson = instrumentArray.getJSONObject(j);
-                        rp.setAddedById(instrumentJson.getString("added_by_id"));
-                        rp.setUserName(instrumentJson.getString("user_name"));
-                        rp.setName(instrumentJson.getString("name"));
-                        rp.setCoverUrl(instrumentJson.getString("cover_url"));
-                        rp.setProfileUrl(instrumentJson.getString("profile_url"));
-                        rp.setDateAdded(instrumentJson.getString("date_added"));
-                        rp.setDuration(instrumentJson.getString("duration"));
-                        rp.setRecordingUrl(instrumentJson.getString("recording_url"));
-                        rp.setInstruments(instrumentJson.getString("instruments"));
-                        recordingsPools.add(rp);
+                        for (int j = 0; j < instrumentArray.length(); j++) {
+                            RecordingsPool rp = new RecordingsPool();
+                            JSONObject instrumentJson = instrumentArray.getJSONObject(j);
+                            rp.setAddedById(instrumentJson.getString("added_by_id"));
+                            rp.setUserName(instrumentJson.getString("user_name"));
+                            rp.setName(instrumentJson.getString("name"));
+                            rp.setCoverUrl(instrumentJson.getString("cover_url"));
+                            rp.setProfileUrl(instrumentJson.getString("profile_url"));
+                            rp.setDateAdded(instrumentJson.getString("date_added"));
+                            rp.setDuration(instrumentJson.getString("duration"));
+                            rp.setRecordingUrl(instrumentJson.getString("recording_url"));
+                            rp.setInstruments(instrumentJson.getString("instruments"));
+                            recordingsPools.add(rp);
+                        }
                     }
                     recordingList.add(card);
-
-
 //                    card.setTvContributeDate(cardJson.getString("30/02/17"));
 //                    card.setTvContributeLength(cardJson.getString("recordings"));
-
                 }
             }
         } catch (JSONException e) {
@@ -483,7 +489,7 @@ public class ParseContents {
                     melodyInstruments.setInstrumentCreated(instrumentsJson.getString("uploadeddate"));
                     melodyInstruments.setUserProfilePic(instrumentsJson.getString("profilepic"));
                     melodyInstruments.setInstrumentCover(instrumentsJson.getString("coverpic"));
-                   // melodyInstruments.setUserName(instrumentsJson.getString("username"));
+                    // melodyInstruments.setUserName(instrumentsJson.getString("username"));
                     instrumentList.add(melodyInstruments);
                     //    StudioActivity.list.add(j, new MixingData(String.valueOf(instrumentsJson.getInt(KEY_INSTRUMENT_ID)), "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0","0", "0", "0", "0", instrumentsJson.getString(KEY_INSTRUMENT_URL).replace("http://52.89.220.199/api/",""), String.valueOf(j)));
                 }

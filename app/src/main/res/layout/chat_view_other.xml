@@ -70,7 +70,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:background="@drawable/tick_grey"
-                        android:visibility="gone" />
+                        android:visibility="visible" />
 
                     <ImageView
                         android:id="@+id/doubleTick"
@@ -80,7 +80,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:background="@drawable/dubble_tick_grey"
-                        android:visibility="visible" />
+                        android:visibility="gone" />
 
                 </RelativeLayout>
             </RelativeLayout>
