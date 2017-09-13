@@ -57,7 +57,7 @@ public class JoinCommentActivity extends AppCompatActivity {
     static ArrayList<Comments> commentList = new ArrayList<>();
     String COMMENT = "comment";
     String FILE_TYPE = "file_type";
-    String USER_ID = "userid";
+    String USER_ID = "user_id";
     String FILE_ID = "file_id";
     String TOPIC = "topic";
     String KEY_FLAG = "flag";
@@ -227,7 +227,7 @@ public class JoinCommentActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(USER_ID, addedBy);
+                params.put("userid", addedBy);
                 params.put(RECORDING_ID, RecId);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
@@ -295,7 +295,7 @@ public class JoinCommentActivity extends AppCompatActivity {
                         adapter.notifyDataSetChanged();
                         getComments();
                         recyclerView.smoothScrollToPosition(adapter.getItemCount());
-//                        new ParseContents(getApplicationContext()).parseComments(response, commentList);
+                        new ParseContents(getApplicationContext()).parseComments(response, commentList);
                     }
                 },
                 new Response.ErrorListener() {

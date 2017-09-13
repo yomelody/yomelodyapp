@@ -17,12 +17,14 @@ import android.view.ViewGroup;
 import android.widget.TabHost;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
@@ -35,6 +37,7 @@ import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.StudioActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -108,7 +111,8 @@ public class AudioFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fetchGenreNames();
+        // fetchGenreNames();
+        progressDialog = new ProgressDialog(getActivity());
         SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
         SharedPreferences searchPref = getActivity().getSharedPreferences("SearchPref", MODE_PRIVATE);
@@ -131,10 +135,34 @@ public class AudioFragment extends Fragment {
         } else if (twitterPref.getString("userId", null) != null) {
             userId = twitterPref.getString("userId", null);
         }
-        new LongOperation().execute();
+
+        fetchGenreNames();
+        if (strName == null && strSearch == null) {
+            fetchRecordings();
+        } else if (strSearch != null) {
+            fetchSearchData();
+        } else if (strArtist != null) {
+            fetchRecordingsFilterArtist();
+        } else if (strInstruments != null && strName.equals("# of Instruments")) {
+            fetchRecordingsFilterInstruments();
+        } else if (strBPM != null && strName.equals("BPM")) {
+            fetchRecordingsFilterBPM();
+        } else {
+            fetchRecordingsFilter();
+        }
+        adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
+
+
+        // fetchGenreNames();
+     //   new LongOperation().execute();
     }
 
     public void fetchGenreNames() {
+
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
                 new Response.Listener<String>() {
                     @Override
@@ -188,31 +216,40 @@ public class AudioFragment extends Fragment {
                             e.printStackTrace();
                         }
                         try {
-                            if (host.getCurrentTab() == 0) {
-//                            Toast.makeText(getActivity(), "All " + host.getCurrentTab(), Toast.LENGTH_SHORT).show();
-                                if (strName == null && strSearch == null) {
-                                    fetchRecordings();
-                                } else if (strSearch != null) {
-                                    fetchSearchData();
-                                } else if (strArtist != null) {
-                                    fetchRecordingsFilterArtist();
-                                } else if (strInstruments != null && strName.equals("# of Instruments")) {
-                                    fetchRecordingsFilterInstruments();
-                                } else if (strBPM != null && strName.equals("BPM")) {
-                                    fetchRecordingsFilterBPM();
-                                } else {
-                                    fetchRecordingsFilter();
-                                }
-
-                            }
+                            host.setCurrentTab(0);
                         } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
+
+//                        try {
+//                            if (host.getCurrentTab() == 0) {
+////                            Toast.makeText(getActivity(), "All " + host.getCurrentTab(), Toast.LENGTH_SHORT).show();
+//                                if (strName == null && strSearch == null) {
+//                                    fetchRecordings();
+//                                } else if (strSearch != null) {
+//                                    fetchSearchData();
+//                                } else if (strArtist != null) {
+//                                    fetchRecordingsFilterArtist();
+//                                } else if (strInstruments != null && strName.equals("# of Instruments")) {
+//                                    fetchRecordingsFilterInstruments();
+//                                } else if (strBPM != null && strName.equals("BPM")) {
+//                                    fetchRecordingsFilterBPM();
+//                                } else {
+//                                    fetchRecordingsFilter();
+//                                }
+//                            }
+//                        } catch (NullPointerException e) {
+//                            e.printStackTrace();
+//                        }
 
                         try {
                             host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
                                 @Override
                                 public void onTabChanged(String arg0) {
+                                    progressDialog.setTitle("Processing...");
+                                    progressDialog.setMessage("Please wait...");
+                                    progressDialog.setCancelable(false);
+                                    progressDialog.show();
                                     genreString = arg0;
                                     int currentTab = host.getCurrentTab();
                                     if (currentTab == 0) {
@@ -234,8 +271,10 @@ public class AudioFragment extends Fragment {
                                     } else {
                                         fetchRecordingsFilter();
                                     }
+
 //                                Toast.makeText(getActivity(), "beta: " + genreString, Toast.LENGTH_SHORT).show();
                                 }
+
                             });
                         } catch (NullPointerException e) {
                             e.printStackTrace();
@@ -291,13 +330,18 @@ public class AudioFragment extends Fragment {
                         recordingList.clear();
                         recordingsPools.clear();
                         new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
+
                         try {
                             adapter.notifyDataSetChanged();
                             ClearSharedPref();
                         } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
-
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -342,6 +386,13 @@ public class AudioFragment extends Fragment {
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
         requestQueue.add(stringRequest);
     }
 
@@ -361,6 +412,11 @@ public class AudioFragment extends Fragment {
                         new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                         ClearSharedPref();
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -399,6 +455,13 @@ public class AudioFragment extends Fragment {
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
         requestQueue.add(stringRequest);
     }
 
@@ -430,6 +493,11 @@ public class AudioFragment extends Fragment {
                         new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                         Log.d("ReturnDataS", response);
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -465,6 +533,13 @@ public class AudioFragment extends Fragment {
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
         requestQueue.add(stringRequest);
     }
 
@@ -492,6 +567,11 @@ public class AudioFragment extends Fragment {
                         recordingsPools.clear();
                         new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
 
                     }
                 },
@@ -532,6 +612,13 @@ public class AudioFragment extends Fragment {
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
         requestQueue.add(stringRequest);
     }
 
@@ -559,6 +646,11 @@ public class AudioFragment extends Fragment {
                         recordingsPools.clear();
                         new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -598,6 +690,13 @@ public class AudioFragment extends Fragment {
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
         requestQueue.add(stringRequest);
     }
 
@@ -625,6 +724,11 @@ public class AudioFragment extends Fragment {
                         recordingsPools.clear();
                         new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -664,6 +768,13 @@ public class AudioFragment extends Fragment {
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
         requestQueue.add(stringRequest);
     }
 
@@ -686,43 +797,6 @@ public class AudioFragment extends Fragment {
                 return rv;
             }
         };
-    }
-
-    private class LongOperation extends AsyncTask<String, Void, String> {
-        protected void onPreExecute() {
-            fetchGenreNames();
-            progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setTitle("Processing...");
-            progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-
-        }
-
-        protected String doInBackground(String... params) {
-
-            if (strName == null && strSearch == null) {
-                fetchRecordings();
-            } else if (strSearch != null) {
-                fetchSearchData();
-            } else if (strArtist != null) {
-                fetchRecordingsFilterArtist();
-            } else if (strInstruments != null && strName.equals("# of Instruments")) {
-                fetchRecordingsFilterInstruments();
-            } else if (strBPM != null && strName.equals("BPM")) {
-                fetchRecordingsFilterBPM();
-            } else {
-                fetchRecordingsFilter();
-            }
-            adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-
-            progressDialog.dismiss();
-        }
-
     }
 
     void ClearSharedPref() {
