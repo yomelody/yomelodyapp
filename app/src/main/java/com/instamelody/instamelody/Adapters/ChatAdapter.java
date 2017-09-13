@@ -175,7 +175,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             Message message = chatList.get(position);
             Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
             holder.timeStamp.setText(message.getCreatedAt());
-            if(message.getIsRead().equals("1")){
+            if (message.getIsRead().equals("1")) {
                 holder.ivTick.setVisibility(View.GONE);
                 holder.ivDoubleTick.setVisibility(View.VISIBLE);
             }
@@ -308,7 +308,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             Message message = chatList.get(position);
             Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
             holder.timeStamp.setText(message.getCreatedAt());
-            if(message.getIsRead().equals("1")){
+            if (message.getIsRead().equals("1")) {
                 holder.ivTick.setVisibility(View.GONE);
                 holder.ivDoubleTick.setVisibility(View.VISIBLE);
             }
@@ -328,7 +328,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
             holder.chatMessage.setText(message.getMessage());
             holder.timeStamp.setText(message.getCreatedAt());
-            if(message.getIsRead().equals("1")){
+            if (message.getIsRead().equals("1")) {
                 holder.ivTick.setVisibility(View.GONE);
                 holder.ivDoubleTick.setVisibility(View.VISIBLE);
             }

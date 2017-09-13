@@ -1,8 +1,12 @@
 package com.instamelody.instamelody;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,6 +42,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.instamelody.instamelody.Adapters.MessengerAdapter.totalMsgCount;
+import static com.instamelody.instamelody.utils.Const.PUSH_NOTIFICATION;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.USER_CONVERSATION;
@@ -58,11 +63,21 @@ public class MessengerActivity extends AppCompatActivity {
     String KEY_RESPONSE = "response";//JSONArray
     String USER_ID = "userid";
     String userId;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messenger);
+
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(PUSH_NOTIFICATION)) {
+                    getChats(userId);
+                }
+            }
+        };
 
         ivNewMessage = (ImageView) findViewById(R.id.ivNewMessage);
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
@@ -88,7 +103,6 @@ public class MessengerActivity extends AppCompatActivity {
 
         if (userId != null) {
             getChats(userId);
-
         } else {
             Toast.makeText(getApplicationContext(), "Log in to Chat", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
@@ -219,19 +233,27 @@ public class MessengerActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
 
                         String errorMsg = "";
-                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-                            errorMsg = "There is either no connection or it timed out.";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
                         } else if (error instanceof AuthFailureError) {
                             errorMsg = "AuthFailureError";
                         } else if (error instanceof ServerError) {
-                            errorMsg = "ServerError";
+                            errorMsg = "We are facing problem in connecting to server";
                         } else if (error instanceof NetworkError) {
-                            errorMsg = "Network Error";
+                            errorMsg = "We are facing problem in connecting to network";
                         } else if (error instanceof ParseError) {
-                            errorMsg = "ParseError";
+                            errorMsg = "Parse error";
+                        } else if (error == null) {
+
                         }
-                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
+
+                        if (!errorMsg.equals("")) {
+                            Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                            Log.d("Error", errorMsg);
+                            error.printStackTrace();
+                        }
                     }
                 }) {
             @Override
@@ -249,15 +271,23 @@ public class MessengerActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if(userId != null)
-        getChats(userId);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(PUSH_NOTIFICATION));
+        if (userId != null)
+            getChats(userId);
     }
 
     @Override
     public void onRestart() {
         super.onRestart();
-        if(userId != null)
+        if (userId != null)
             getChats(userId);
     }
 
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+    }
 }
