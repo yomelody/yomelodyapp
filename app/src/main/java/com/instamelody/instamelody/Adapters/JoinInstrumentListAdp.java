@@ -77,7 +77,6 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
     }
 
 
-
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         ImageView userProfileImage, ivInstrumentCover, ivPlay, ivPause;
@@ -255,18 +254,6 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
         audioValue = instruments.getAudioType();
 
 
-
-
-
-
-
-
-
-
-
-
-
-
         holder.ivPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -337,11 +324,6 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
                 holder.melodySlider.setProgress(0);
             }
         });
-
-
-
-
-
 
 
         Intent i = new Intent("fetchingInstrumentsJoin");
@@ -416,7 +398,6 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
 
 
     }
-
 
 
 }
