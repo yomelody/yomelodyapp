@@ -397,6 +397,7 @@ public class ParseContents {
                     } else {
                         instrumentArray = cardJson.getJSONArray("recordings");
 
+
                         for (int j = 0; j < instrumentArray.length(); j++) {
                             RecordingsPool rp = new RecordingsPool();
                             JSONObject instrumentJson = instrumentArray.getJSONObject(j);
@@ -412,6 +413,8 @@ public class ParseContents {
                             recordingsPools.add(rp);
                         }
                     }
+
+
                     recordingList.add(card);
 //                    card.setTvContributeDate(cardJson.getString("30/02/17"));
 //                    card.setTvContributeLength(cardJson.getString("recordings"));

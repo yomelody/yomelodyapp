@@ -18,9 +18,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -29,6 +35,7 @@ import com.instamelody.instamelody.JoinActivity;
 import com.instamelody.instamelody.JoinCommentActivity;
 import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Models.RecordingsModel;
+import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
 import com.squareup.picasso.Picasso;
@@ -47,6 +54,7 @@ import static android.view.View.VISIBLE;
 import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
+import static com.instamelody.instamelody.utils.Const.ServiceType.JOINED_USERS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LIKESAPI;
 import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
 
@@ -70,8 +78,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     MediaPlayer mp;
     String userId = "";
     RelativeLayout rlLike;
+    public static int click_pos = 0;
     private ArrayList<JoinedArtists> Joined_artist = new ArrayList<>();
-
 
     public JoinListAdapter(ArrayList<JoinedArtists> Joined_artist, Context context) {
         this.Joined_artist = Joined_artist;
@@ -124,11 +132,18 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
+        getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, String.valueOf(click_pos));
         holder.join_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                JoinActivity.position = position;
+                click_pos = position;
+
+
+                getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, String.valueOf(position));
+
+                //   Toast.makeText(context, ""+position, Toast.LENGTH_SHORT).show();
+
 //                try{
 //                    Intent intent=new Intent(context,JoinActivity.class);
 //                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -344,5 +359,63 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
         }
 
+    }
+
+    public void getJoined_users(final String addedBy, final String RecId, final String position) {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, JOINED_USERS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+//                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
+
+                        Log.d("ReturnData", response);
+                        JoinActivity.instrumentList.clear();
+                        if (click_pos == 0) {
+                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, JoinActivity.instrumentList, String.valueOf(click_pos));
+                            JoinActivity.adapter1 = new JoinInstrumentListAdp(JoinActivity.instrumentList, getApplicationContext());
+                            JoinActivity.recyclerViewInstruments.setAdapter(JoinActivity.adapter1);
+                        } else {
+                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, JoinActivity.instrumentList, position);
+                            JoinActivity.adapter1 = new JoinInstrumentListAdp(JoinActivity.instrumentList, getApplicationContext());
+                            JoinActivity.recyclerViewInstruments.setAdapter(JoinActivity.adapter1);
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+//                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("userid", addedBy);
+                params.put("rid", RecId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
     }
 }

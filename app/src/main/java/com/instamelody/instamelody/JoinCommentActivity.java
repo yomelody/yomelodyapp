@@ -1,6 +1,7 @@
 package com.instamelody.instamelody;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -45,6 +46,7 @@ import java.util.Map;
 
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
+import static com.instamelody.instamelody.utils.Const.ServiceType.COMMENTS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.COMMENT_LIST;
 import static com.instamelody.instamelody.utils.Const.ServiceType.JOINED_USERS;
 
@@ -65,7 +67,7 @@ public class JoinCommentActivity extends AppCompatActivity {
     RelativeLayout rlCommentSend;
     TextView tvCancel, tvSend;
     EditText etComment;
-    String melodyID, fileType;
+    String melodyID, fileType,melodyName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +78,7 @@ public class JoinCommentActivity extends AppCompatActivity {
         tvCommentCount = (TextView) findViewById(R.id.tvCommentCount);
         tvShareCount = (TextView) findViewById(R.id.tvShareCount);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewArtists);
+
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager lm = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(lm);
@@ -84,6 +87,7 @@ public class JoinCommentActivity extends AppCompatActivity {
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerViewComment = (RecyclerView) findViewById(R.id.recyclerViewComment);
+
         rlCommentSend = (RelativeLayout) findViewById(R.id.rlComment);
         etComment = (EditText) findViewById(R.id.etComment);
         etComment.setHintTextColor(Color.parseColor("#7B888F"));
@@ -106,6 +110,7 @@ public class JoinCommentActivity extends AppCompatActivity {
             tvCommentCount.setText(JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getComment_counts());
             tvShareCount.setText(JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getShare_counts());
             melodyID = JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getRecording_id();
+            melodyName=JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getRecording_name();
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
         }
@@ -113,6 +118,18 @@ public class JoinCommentActivity extends AppCompatActivity {
 
         fileType = "user_recording";
         getComments();
+        SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+        SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
+        }
+
         RecyclerView.LayoutManager lm1 = new LinearLayoutManager(getApplicationContext());
         recyclerViewComment.setLayoutManager(lm1);
         recyclerViewComment.setHasFixedSize(true);
@@ -141,6 +158,31 @@ public class JoinCommentActivity extends AppCompatActivity {
                 }
             }
         });
+
+        tvSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (!userId.equals("") && userId != null) {
+
+                    tvCancel.setVisibility(View.VISIBLE);
+                    tvSend.setVisibility(View.GONE);
+                    String comment = etComment.getText().toString().trim();
+                    etComment.getText().clear();
+                    sendComment(comment, userId);
+                    int commentCount = Integer.parseInt(tvCommentCount.getText().toString().trim()) + 1;
+
+                    tvCommentCount.setText(String.valueOf(commentCount));
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "Log in to comment", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    getApplicationContext().startActivity(intent);
+                }
+
+            }
+        });
     }
 
     public void getJoined_users(final String addedBy, final String RecId) {
@@ -155,7 +197,7 @@ public class JoinCommentActivity extends AppCompatActivity {
                         Log.d("ReturnData", response);
                         JoinActivity.Joined_artist.clear();
                         JoinActivity.instrumentList.clear();
-                        //new ParseContents(getApplicationContext()).parseJoin(response, JoinActivity.Joined_artist, JoinActivity.instrumentList);
+                        new ParseContents(getApplicationContext()).parseJoin(response, JoinActivity.Joined_artist);
                         JoinActivity.adapter = new JoinListAdapter(JoinActivity.Joined_artist, getApplicationContext());
                         recyclerView.setAdapter(JoinActivity.adapter);
                     }
@@ -185,7 +227,7 @@ public class JoinCommentActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(USER_ID, addedBy);
+                params.put("userid", addedBy);
                 params.put(RECORDING_ID, RecId);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
@@ -234,6 +276,59 @@ public class JoinCommentActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(FILE_ID, melodyID);
                 params.put(FILE_TYPE, fileType);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+    }
+
+    public void sendComment(final String cmnt, final String userId) {
+
+
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, COMMENTS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        adapter.notifyDataSetChanged();
+                        getComments();
+                        recyclerView.smoothScrollToPosition(adapter.getItemCount());
+                        new ParseContents(getApplicationContext()).parseComments(response, commentList);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+//                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+//                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+
+                params.put(FILE_ID, melodyID);
+                params.put(COMMENT, cmnt);
+                params.put(FILE_TYPE, fileType);
+                params.put(USER_ID, userId);
+                params.put(TOPIC, melodyName);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }

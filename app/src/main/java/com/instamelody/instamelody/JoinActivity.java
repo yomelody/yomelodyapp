@@ -1,5 +1,6 @@
 package com.instamelody.instamelody;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.Image;
@@ -70,11 +71,13 @@ public class JoinActivity extends AppCompatActivity {
     public static ImageView ivJoinPlay, ivJoinPause, ivLikeButton, ivDislikeButton;
     public static RelativeLayout rlLike, rlComment, joinFooter;
     public static int position;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join);
+        progressDialog = new ProgressDialog(this);
         play_count = (TextView) findViewById(R.id.tvPlayCount);
         tvLikeCount = (TextView) findViewById(R.id.tvLikeCount);
         tvCommentCount = (TextView) findViewById(R.id.tvCommentCount);
@@ -304,7 +307,10 @@ public class JoinActivity extends AppCompatActivity {
 
 
     public void getJoined_users(final String addedBy, final String RecId) {
-
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, JOINED_USERS,
                 new Response.Listener<String>() {
                     @Override
@@ -318,18 +324,24 @@ public class JoinActivity extends AppCompatActivity {
                         new ParseContents(getApplicationContext()).parseJoin(response, Joined_artist);
                         adapter = new JoinListAdapter(Joined_artist, getApplicationContext());
                         recyclerView.setAdapter(adapter);
-                        Toast.makeText(JoinActivity.this, ""+position, Toast.LENGTH_SHORT).show();
-                        if (position == 0) {
-                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, pos);
-                            adapter1 = new JoinInstrumentListAdp(instrumentList, getApplicationContext());
-                            recyclerViewInstruments.setAdapter(adapter1);
-                        } else {
-                       //     Intent intent1 = getIntent();
-                       //     pos = intent1.getExtras().getString("Value");
-                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, String.valueOf(position));
-                            adapter1 = new JoinInstrumentListAdp(instrumentList, getApplicationContext());
-                            recyclerViewInstruments.setAdapter(adapter1);
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
                         }
+
+//                        if (position == 0) {
+//                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, pos);
+//                            adapter1 = new JoinInstrumentListAdp(instrumentList, getApplicationContext());
+//                            recyclerViewInstruments.setAdapter(adapter1);
+//                        } else {
+//
+//                            //     Intent intent1 = getIntent();
+//                            //     pos = intent1.getExtras().getString("Value");
+//                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, String.valueOf(position));
+//                            adapter1 = new JoinInstrumentListAdp(instrumentList, getApplicationContext());
+//                            recyclerViewInstruments.setAdapter(adapter1);
+//                        }
                     }
                 },
                 new Response.ErrorListener() {
