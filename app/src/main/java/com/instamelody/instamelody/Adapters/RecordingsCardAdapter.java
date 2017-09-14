@@ -149,7 +149,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             }
 
 
-
             ivJoin.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -207,7 +206,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             record.putString("AddedBy", addedBy);
                             record.putString("Recording_id", Rec_id);
                             record.commit();
-
                             Intent intent = new Intent(context, JoinActivity.class);
                             context.startActivity(intent);
                         } catch (Throwable e) {
@@ -562,7 +560,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 //  try {
 //                RecordingsPool recordingsPool = recordingsPools.get(listPosition);
 //                instrumentFile = recordingsPool.getRecordingUrl();
-                instrumentFile=recordingList.get(listPosition).getrecordingurl();
+                instrumentFile = recordingList.get(listPosition).getrecordingurl();
                 Integer s = listPosition + 1;
 
                 if (instrumentFile != "") {
@@ -644,12 +642,11 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     });
 
 
-                }
-                else{
+                } else {
                     holder.progressDialog.dismiss();
                     Toast.makeText(context, "Recording URL not found", Toast.LENGTH_SHORT).show();
 
-                   // lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
+                    // lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
                     //lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
                 }
                 lastModifiedHoled = holder;

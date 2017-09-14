@@ -3,21 +3,13 @@ package com.instamelody.instamelody;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -35,10 +27,10 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.instamelody.instamelody.Adapters.InstrumentListAdapter;
 import com.instamelody.instamelody.Adapters.JoinInstrumentListAdp;
 import com.instamelody.instamelody.Adapters.JoinListAdapter;
 import com.instamelody.instamelody.Models.JoinedArtists;
+import com.instamelody.instamelody.Models.JoinedUserProfile;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Parse.ParseContents;
 
@@ -72,6 +64,7 @@ public class JoinActivity extends AppCompatActivity {
     public static RelativeLayout rlLike, rlComment, joinFooter;
     public static int position;
     ProgressDialog progressDialog;
+    public static ArrayList<JoinedUserProfile> listProfile = new ArrayList<JoinedUserProfile>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,13 +91,14 @@ public class JoinActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerViewInstruments.setLayoutManager(layoutManager);
         recyclerViewInstruments.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setHasFixedSize(true);
+
         RecyclerView.LayoutManager lm = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(lm);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(10);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+
 
         rlIncluded.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,6 +126,7 @@ public class JoinActivity extends AppCompatActivity {
 
                 // getJoined_Local();
                 getJoined_users(addedBy, RecId);
+
             } catch (Throwable e) {
                 e.printStackTrace();
             }
@@ -379,5 +374,15 @@ public class JoinActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
 }

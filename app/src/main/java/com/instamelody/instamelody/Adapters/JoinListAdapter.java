@@ -34,10 +34,13 @@ import com.instamelody.instamelody.CommentsActivity;
 import com.instamelody.instamelody.JoinActivity;
 import com.instamelody.instamelody.JoinCommentActivity;
 import com.instamelody.instamelody.Models.JoinedArtists;
+import com.instamelody.instamelody.Models.JoinedUserProfile;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Parse.ParseContents;
+import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
+import com.instamelody.instamelody.StudioActivity;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -79,6 +82,9 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     String userId = "";
     RelativeLayout rlLike;
     public static int click_pos = 0;
+    int posForStudio = 0;
+    int counter = 0;
+    String tempUserID;
     private ArrayList<JoinedArtists> Joined_artist = new ArrayList<>();
 
     public JoinListAdapter(ArrayList<JoinedArtists> Joined_artist, Context context) {
@@ -90,13 +96,13 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     public class MyViewHolder extends RecyclerView.ViewHolder {
         ImageView join_image;
         TextView Join_usr_name;
+        ImageView redCross;
 
-
-        public MyViewHolder(View view) {
-            super(view);
-            join_image = (ImageView) view.findViewById(R.id.ivImageName);
-            Join_usr_name = (TextView) view.findViewById(R.id.tvUserName);
-
+        public MyViewHolder(View itemView) {
+            super(itemView);
+            join_image = (ImageView) itemView.findViewById(R.id.ivImageName);
+            Join_usr_name = (TextView) itemView.findViewById(R.id.tvUserName);
+            redCross = (ImageView) itemView.findViewById(R.id.redCross);
             SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
             SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
             SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
@@ -120,7 +126,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, final int position) {
+    public void onBindViewHolder(final MyViewHolder holder, final int position) {
         final JoinedArtists joinArt = Joined_artist.get(position);
         holder.Join_usr_name.setText(joinArt.getJoined_usr_name());
         Picasso.with(holder.join_image.getContext()).load(joinArt.getJoined_image()).into(holder.join_image);
@@ -132,27 +138,39 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
+        //  tempUserID = joinArt.getUser_id();
         getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, String.valueOf(click_pos));
+        if (position == 0) {
+            holder.redCross.setVisibility(VISIBLE);
+        }
         holder.join_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //   holder.redCross.setVisibility(VISIBLE);
+                String user_id = JoinActivity.listProfile.get(position).getUserId();
+                String status = JoinActivity.listProfile.get(position).getStatus();
+                if (user_id.equals(joinArt.getUser_id()) && status.equals("0")) {
+                    posForStudio = position;
+                    getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, String.valueOf(position));
+                    JoinActivity.listProfile.set(position, new JoinedUserProfile(user_id, "1"));
+                } else {
+                    String showProfileUserId = JoinActivity.addedBy;
+                    Intent intent = new Intent(v.getContext(), ProfileActivity.class);
+                    intent.putExtra("showProfileUserId", user_id);
+                    v.getContext().startActivity(intent);
+                    JoinActivity.listProfile.set(position, new JoinedUserProfile(user_id, "0"));
+                }
 
-                click_pos = position;
-
-
-                getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, String.valueOf(position));
-
-                //   Toast.makeText(context, ""+position, Toast.LENGTH_SHORT).show();
-
-//                try{
-//                    Intent intent=new Intent(context,JoinActivity.class);
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                    intent.putExtra("Value",String.valueOf(position));
-//                    context.startActivity(intent);
-//                }catch (Throwable e){
-//                    e.printStackTrace();
-//                }
-
+            }
+        });
+        JoinActivity.rlJoinButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //    String position = Integer.toString();
+                Intent intent = new Intent(v.getContext(), StudioActivity.class);
+                intent.putExtra("clickPositionJoin", String.valueOf(posForStudio));
+                v.getContext().startActivity(intent);
+                StudioActivity.list.clear();
             }
         });
 
@@ -372,15 +390,15 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
                         Log.d("ReturnData", response);
                         JoinActivity.instrumentList.clear();
-                        if (click_pos == 0) {
-                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, JoinActivity.instrumentList, String.valueOf(click_pos));
-                            JoinActivity.adapter1 = new JoinInstrumentListAdp(JoinActivity.instrumentList, getApplicationContext());
-                            JoinActivity.recyclerViewInstruments.setAdapter(JoinActivity.adapter1);
-                        } else {
-                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, JoinActivity.instrumentList, position);
-                            JoinActivity.adapter1 = new JoinInstrumentListAdp(JoinActivity.instrumentList, getApplicationContext());
-                            JoinActivity.recyclerViewInstruments.setAdapter(JoinActivity.adapter1);
-                        }
+//                        if (click_pos == 0) {
+//                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, JoinActivity.instrumentList, String.valueOf(click_pos));
+//                            JoinActivity.adapter1 = new JoinInstrumentListAdp(JoinActivity.instrumentList, getApplicationContext());
+//                            JoinActivity.recyclerViewInstruments.setAdapter(JoinActivity.adapter1);
+//                        } else {
+                        new ParseContents(getApplicationContext()).parseJoinInstrument(response, JoinActivity.instrumentList, position);
+                        JoinActivity.adapter1 = new JoinInstrumentListAdp(JoinActivity.instrumentList, getApplicationContext());
+                        JoinActivity.recyclerViewInstruments.setAdapter(JoinActivity.adapter1);
+                        //   }
 
                     }
                 },

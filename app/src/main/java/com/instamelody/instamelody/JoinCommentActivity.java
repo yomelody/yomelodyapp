@@ -103,7 +103,7 @@ public class JoinCommentActivity extends AppCompatActivity {
         }
         Intent intent = getIntent();
         String pos = intent.getExtras().getString("Position");
-        Toast.makeText(getApplicationContext(), pos, Toast.LENGTH_SHORT).show();
+       // Toast.makeText(getApplicationContext(), pos, Toast.LENGTH_SHORT).show();
         try {
             tvPlayCount.setText(JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getPlay_counts());
             tvLikeCount.setText(JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getLike_counts());

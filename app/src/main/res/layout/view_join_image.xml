@@ -26,6 +26,7 @@
             android:src="@drawable/profile1" />
 
         <ImageView
+            android:id="@+id/redCross"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:background="@drawable/red_close"
@@ -34,7 +35,9 @@
             android:layout_alignEnd="@+id/ivImageName"
             android:layout_marginRight="4dp"
             android:layout_marginEnd="4dp"
-            android:layout_marginTop="4dp" />
+            android:layout_marginTop="4dp"
+            android:visibility="gone"
+            />
 
         <TextView
             android:id="@+id/tvUserName"
