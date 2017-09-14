@@ -280,6 +280,7 @@ public class StudioActivity extends AppCompatActivity {
     public static MediaPlayer mpall;
     public static ArrayList<MediaPlayer> mediaPlayersAll = new ArrayList<MediaPlayer>();
     public static List<MediaPlayer> mp_start = new ArrayList<MediaPlayer>();
+    int TWEETER_REQ_CODE = 0;
     private String RECORDING_ID = "rid";
     private String USERID = "userid";
     String pos = "0";
@@ -537,13 +538,6 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if (StudioActivity.mp_start.size()>0) {
-
-                    for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
-                        StudioActivity.mp_start.get(i).stop();
-
-                    }
-                }
 
                 if (StudioActivity.mpall != null) {
                     StudioActivity.mpall.stop();
@@ -596,13 +590,11 @@ public class StudioActivity extends AppCompatActivity {
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (StudioActivity.mp_start != null) {
-                    for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
-                        StudioActivity.mp_start.get(i).stop();
-                    }
+
+
                 if (mpall != null) {
                     mpall.stop();
-                    if(mediaPlayersAll.size()>0) {
+                    if (mediaPlayersAll.size() > 0) {
                         for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                             mediaPlayersAll.get(i).stop();
                         }
@@ -611,18 +603,13 @@ public class StudioActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
 
-                //finish();;
             }
         });
 
         ivHomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mpall != null) {
-                    mpall.stop();
-                    if(mediaPlayersAll.size()>0) {
-                        for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                            mediaPlayersAll.get(i).stop();
+
                 if (mpall != null) {
                     mpall.stop();
                     if (mediaPlayersAll.size() > 0) {
@@ -630,19 +617,17 @@ public class StudioActivity extends AppCompatActivity {
                             mediaPlayersAll.get(i).stop();
                         }
                     }
+                }
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
+
             }
         });
 
         discover.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mpall != null) {
-                    mpall.stop();
-                    if(mediaPlayersAll.size()>0) {
-                        for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                            mediaPlayersAll.get(i).stop();
+
                 if (mpall != null) {
                     mpall.stop();
                     if (mediaPlayersAll.size() > 0) {
@@ -659,17 +644,14 @@ public class StudioActivity extends AppCompatActivity {
         message.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mpall != null) {
-                    mpall.stop();
-                    if(mediaPlayersAll.size()>0) {
-                        for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                            mediaPlayersAll.get(i).stop();
+
                 if (mpall != null) {
                     mpall.stop();
                     if (mediaPlayersAll.size() > 0) {
                         for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                             mediaPlayersAll.get(i).stop();
                         }
+                    }
                 }
                 Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
                 startActivity(intent);
@@ -679,11 +661,7 @@ public class StudioActivity extends AppCompatActivity {
         ivProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mpall != null) {
-                    mpall.stop();
-                    if(mediaPlayersAll.size()>0) {
-                        for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                            mediaPlayersAll.get(i).stop();
+
                 if (mpall != null) {
                     mpall.stop();
                     if (mediaPlayersAll.size() > 0) {
@@ -700,11 +678,9 @@ public class StudioActivity extends AppCompatActivity {
         audio_feed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (mpall != null) {
                     mpall.stop();
-                    if(mediaPlayersAll.size()>0) {
-                        for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                            mediaPlayersAll.get(i).stop();
                     if (mediaPlayersAll.size() > 0) {
                         for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                             mediaPlayersAll.get(i).stop();
@@ -732,6 +708,8 @@ public class StudioActivity extends AppCompatActivity {
                 }
             }
         });
+
+
         rlRedoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -739,7 +717,6 @@ public class StudioActivity extends AppCompatActivity {
                 rlRedoButton.setVisibility(View.INVISIBLE);
                 ivRecord.setVisibility(View.VISIBLE);
                 rlMelodyButton.setVisibility(View.VISIBLE);
-                //StudioActivity.this.finish();
                 StudioActivity.this.recreate();
 
             }
