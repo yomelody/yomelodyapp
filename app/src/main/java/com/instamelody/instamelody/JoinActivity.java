@@ -1,22 +1,15 @@
 package com.instamelody.instamelody;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -34,10 +27,10 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.instamelody.instamelody.Adapters.InstrumentListAdapter;
 import com.instamelody.instamelody.Adapters.JoinInstrumentListAdp;
 import com.instamelody.instamelody.Adapters.JoinListAdapter;
 import com.instamelody.instamelody.Models.JoinedArtists;
+import com.instamelody.instamelody.Models.JoinedUserProfile;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Parse.ParseContents;
 
@@ -70,11 +63,14 @@ public class JoinActivity extends AppCompatActivity {
     public static ImageView ivJoinPlay, ivJoinPause, ivLikeButton, ivDislikeButton;
     public static RelativeLayout rlLike, rlComment, joinFooter;
     public static int position;
+    ProgressDialog progressDialog;
+    public static ArrayList<JoinedUserProfile> listProfile = new ArrayList<JoinedUserProfile>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join);
+        progressDialog = new ProgressDialog(this);
         play_count = (TextView) findViewById(R.id.tvPlayCount);
         tvLikeCount = (TextView) findViewById(R.id.tvLikeCount);
         tvCommentCount = (TextView) findViewById(R.id.tvCommentCount);
@@ -95,13 +91,14 @@ public class JoinActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerViewInstruments.setLayoutManager(layoutManager);
         recyclerViewInstruments.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setHasFixedSize(true);
+
         RecyclerView.LayoutManager lm = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(lm);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(10);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+
 
         rlIncluded.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,6 +126,7 @@ public class JoinActivity extends AppCompatActivity {
 
                 // getJoined_Local();
                 getJoined_users(addedBy, RecId);
+
             } catch (Throwable e) {
                 e.printStackTrace();
             }
@@ -304,7 +302,10 @@ public class JoinActivity extends AppCompatActivity {
 
 
     public void getJoined_users(final String addedBy, final String RecId) {
-
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, JOINED_USERS,
                 new Response.Listener<String>() {
                     @Override
@@ -318,18 +319,24 @@ public class JoinActivity extends AppCompatActivity {
                         new ParseContents(getApplicationContext()).parseJoin(response, Joined_artist);
                         adapter = new JoinListAdapter(Joined_artist, getApplicationContext());
                         recyclerView.setAdapter(adapter);
-                        Toast.makeText(JoinActivity.this, ""+position, Toast.LENGTH_SHORT).show();
-                        if (position == 0) {
-                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, pos);
-                            adapter1 = new JoinInstrumentListAdp(instrumentList, getApplicationContext());
-                            recyclerViewInstruments.setAdapter(adapter1);
-                        } else {
-                       //     Intent intent1 = getIntent();
-                       //     pos = intent1.getExtras().getString("Value");
-                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, String.valueOf(position));
-                            adapter1 = new JoinInstrumentListAdp(instrumentList, getApplicationContext());
-                            recyclerViewInstruments.setAdapter(adapter1);
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
                         }
+
+//                        if (position == 0) {
+//                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, pos);
+//                            adapter1 = new JoinInstrumentListAdp(instrumentList, getApplicationContext());
+//                            recyclerViewInstruments.setAdapter(adapter1);
+//                        } else {
+//
+//                            //     Intent intent1 = getIntent();
+//                            //     pos = intent1.getExtras().getString("Value");
+//                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, String.valueOf(position));
+//                            adapter1 = new JoinInstrumentListAdp(instrumentList, getApplicationContext());
+//                            recyclerViewInstruments.setAdapter(adapter1);
+//                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -367,5 +374,15 @@ public class JoinActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
 }

@@ -149,7 +149,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             }
 
 
-
             ivJoin.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -207,7 +206,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             record.putString("AddedBy", addedBy);
                             record.putString("Recording_id", Rec_id);
                             record.commit();
-
                             Intent intent = new Intent(context, JoinActivity.class);
                             context.startActivity(intent);
                         } catch (Throwable e) {
@@ -522,7 +520,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 //        }
 
 
-        Picasso.with(holder.ivRecordingCover.getContext()).load(recordingsPools.get(listPosition).getCoverUrl()).into(holder.ivRecordingCover);
+        Picasso.with(holder.ivRecordingCover.getContext()).load(recordingList.get(listPosition).getRecordingCover()).into(holder.ivRecordingCover);
 //        Picasso.with(holder.userProfileImage.getContext()).load(recordingsPools.get(listPosition).getProfileUrl()).into(holder.userProfileImage);
         Picasso.with(holder.userProfileImage.getContext()).load(recordingList.get(listPosition).getUserProfilePic()).into(holder.userProfileImage);
 //        tvRecordingGenres.setText(recordingList.get(listPosition).getGenreName());
@@ -560,11 +558,12 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                 holder.ivStationPause.setVisibility(View.VISIBLE);
                 //  try {
-                RecordingsPool recordingsPool = recordingsPools.get(listPosition);
-                instrumentFile = recordingsPool.getRecordingUrl();
+//                RecordingsPool recordingsPool = recordingsPools.get(listPosition);
+//                instrumentFile = recordingsPool.getRecordingUrl();
+                instrumentFile = recordingList.get(listPosition).getrecordingurl();
                 Integer s = listPosition + 1;
 
-                if (getItemCount() >= listPosition + 1 && instrumentFile != null) {
+                if (instrumentFile != "") {
                     if (mp != null) {
                         try {
                             if (mp.isPlaying()) {
@@ -641,9 +640,16 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                         }
                     });
-                    lastModifiedHoled = holder;
 
+
+                } else {
+                    holder.progressDialog.dismiss();
+                    Toast.makeText(context, "Recording URL not found", Toast.LENGTH_SHORT).show();
+
+                    // lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
+                    //lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
                 }
+                lastModifiedHoled = holder;
             }
         });
 
