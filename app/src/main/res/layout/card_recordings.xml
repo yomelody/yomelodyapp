@@ -170,7 +170,7 @@
                         android:layout_marginBottom="5dp"
                         app:srcCompat="@drawable/previous"
                         android:layout_gravity="start|bottom"
-                        android:id="@+id/ivStation6" />
+                        android:id="@+id/ivStationPre" />
 
                     <ImageView
                         android:layout_width="30dp"
@@ -179,7 +179,7 @@
                         android:layout_marginBottom="5dp"
                         android:layout_gravity="start|bottom"
                         android:layout_marginLeft="130dp"
-                        android:id="@+id/ivStation8" />
+                        android:id="@+id/ivStationNext" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -188,7 +188,18 @@
                         android:layout_gravity="start|bottom"
                         android:layout_marginLeft="70dp"
                         android:layout_marginBottom="5dp"
-                        android:id="@+id/textView9"
+                        android:id="@+id/txtJoinCount"
+                        android:textSize="8sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:layout_gravity="start|bottom"
+                        android:layout_marginLeft="70dp"
+                        android:layout_marginBottom="5dp"
+                        android:id="@+id/TemptxtJoinCount"
+                        android:visibility="gone"
                         android:textSize="8sp" />
 
                     <LinearLayout
