@@ -1,22 +1,21 @@
 package com.instamelody.instamelody;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.Image;
+import android.media.AudioFormat;
+import android.media.AudioRecord;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.FrameLayout;
+import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -34,17 +33,21 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.instamelody.instamelody.Adapters.InstrumentListAdapter;
 import com.instamelody.instamelody.Adapters.JoinInstrumentListAdp;
 import com.instamelody.instamelody.Adapters.JoinListAdapter;
 import com.instamelody.instamelody.Models.JoinedArtists;
+import com.instamelody.instamelody.Models.JoinedUserProfile;
 import com.instamelody.instamelody.Models.MelodyInstruments;
+import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Parse.ParseContents;
+import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.JOINED_USERS;
@@ -59,31 +62,55 @@ public class JoinActivity extends AppCompatActivity {
     public static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     RecyclerView.LayoutManager layoutManager;
     String pos = "0";
+    public static Chronometer chrono;
+    private static final int SAMPLING_RATE = 44100;
     public static RecyclerView recyclerView;
     public static RecyclerView recyclerViewInstruments;
     RelativeLayout rlIncluded;
+    public static TextView recording_date, melody_date;
     public static RelativeLayout rlJoinButton;
     private String USER_ID = "userid";
     private String RECORDING_ID = "rid";
-    public static String addedBy, RecId;
+    public static String addedBy, RecId, UserName, ProfileImageRec, RecordingName;
     public static TextView play_count, tvLikeCount, tvCommentCount, tvShareCount;
     public static ImageView ivJoinPlay, ivJoinPause, ivLikeButton, ivDislikeButton;
     public static RelativeLayout rlLike, rlComment, joinFooter;
     public static int position;
+    ProgressDialog progressDialog;
+    public static ArrayList<JoinedUserProfile> listProfile = new ArrayList<JoinedUserProfile>();
+    public static com.instamelody.instamelody.utils.WaveformView waveform_view;
+    private boolean mShouldContinue = true;
+    public static TextView mDecibelView, recording_name, artist_name;
+    public static ImageView profile_image, ivShareButton;
+    public static ImageView ivBackButton, ivHomeButton;
+    public static TextView melody_detail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join);
+        progressDialog = new ProgressDialog(this);
+        profile_image = (ImageView) findViewById(R.id.profile_image);
+        artist_name = (TextView) findViewById(R.id.artist_name);
+        melody_detail=(TextView)findViewById(R.id.melody_detail);
+        recording_name = (TextView) findViewById(R.id.recording_name);
+        ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
+        ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
+        ivShareButton = (ImageView) findViewById(R.id.ivShareButton);
+        waveform_view = (com.instamelody.instamelody.utils.WaveformView) findViewById(R.id.waveform_view);
+        mDecibelView = (TextView) findViewById(R.id.decibel_view);
         play_count = (TextView) findViewById(R.id.tvPlayCount);
         tvLikeCount = (TextView) findViewById(R.id.tvLikeCount);
         tvCommentCount = (TextView) findViewById(R.id.tvCommentCount);
+        recording_date = (TextView) findViewById(R.id.recording_date);
+        melody_date = (TextView) findViewById(R.id.melody_date);
         tvShareCount = (TextView) findViewById(R.id.tvShareCount);
         ivJoinPlay = (ImageView) findViewById(R.id.ivJoinPlay);
         ivJoinPause = (ImageView) findViewById(R.id.ivJoinPause);
         rlLike = (RelativeLayout) findViewById(R.id.rlLikeContainer);
         ivLikeButton = (ImageView) findViewById(R.id.ivLikeButton);
         ivDislikeButton = (ImageView) findViewById(R.id.ivDislikeButton);
+        chrono = (Chronometer) findViewById(R.id.chrono);
         rlComment = (RelativeLayout) findViewById(R.id.rlComment);
         rlIncluded = (RelativeLayout) findViewById(R.id.rlIncluded);
         rlJoinButton = (RelativeLayout) findViewById(R.id.rlJoinButton);
@@ -95,13 +122,14 @@ public class JoinActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerViewInstruments.setLayoutManager(layoutManager);
         recyclerViewInstruments.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setHasFixedSize(true);
+
         RecyclerView.LayoutManager lm = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(lm);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(10);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+
 
         rlIncluded.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,18 +149,76 @@ public class JoinActivity extends AppCompatActivity {
             }
         });
 
+        ivBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (JoinListAdapter.mp != null) {
+                    JoinListAdapter.mp.stop();
+                }
+                if (JoinListAdapter.mRecordingThread != null) {
+                    JoinListAdapter.mRecordingThread.stopRunning();
+                    JoinListAdapter.mRecordingThread = null;
+                    //    mShouldContinue=true;
+                }
+                if (JoinInstrumentListAdp.mp_start != null) {
+                    for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
+                        JoinInstrumentListAdp.mp_start.get(i).stop();
+
+                    }
+                }
+
+
+                finish();
+
+            }
+        });
+
+        ivHomeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (JoinListAdapter.mp != null) {
+                    JoinListAdapter.mp.stop();
+                }
+                if (JoinListAdapter.mRecordingThread != null) {
+                    JoinListAdapter.mRecordingThread.stopRunning();
+                    JoinListAdapter.mRecordingThread = null;
+                    //    mShouldContinue=true;
+                }
+                if (JoinInstrumentListAdp.mp_start != null) {
+                    for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
+                        JoinInstrumentListAdp.mp_start.get(i).stop();
+
+                    }
+                }
+                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
         SharedPreferences filterPref = getApplicationContext().getSharedPreferences("RecordingData", MODE_PRIVATE);
         addedBy = filterPref.getString("AddedBy", null);
         RecId = filterPref.getString("Recording_id", null);
+        UserName = filterPref.getString("UserNameRec", null);
+        ProfileImageRec = filterPref.getString("UserProfile", null);
+        RecordingName = filterPref.getString("RecordingName", null);
+        Picasso.with(getApplicationContext()).load(ProfileImageRec).into(profile_image);
+        recording_name.setText(RecordingName);
+        artist_name.setText(UserName);
         if (addedBy != null && RecId != null) {
             try {
+                // getJoined_Local();
+                getJoined_users(addedBy, RecId);
 
-//                getJoined_Local();
-                  getJoined_users(addedBy, RecId);
             } catch (Throwable e) {
                 e.printStackTrace();
             }
         }
+        long date = System.currentTimeMillis();
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy");
+        String dateString = sdf.format(date);
+        recording_date.setText(dateString);
+        melody_date.setText(dateString);
 
     }
 
@@ -304,7 +390,10 @@ public class JoinActivity extends AppCompatActivity {
 
 
     public void getJoined_users(final String addedBy, final String RecId) {
-
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, JOINED_USERS,
                 new Response.Listener<String>() {
                     @Override
@@ -318,18 +407,24 @@ public class JoinActivity extends AppCompatActivity {
                         new ParseContents(getApplicationContext()).parseJoin(response, Joined_artist);
                         adapter = new JoinListAdapter(Joined_artist, getApplicationContext());
                         recyclerView.setAdapter(adapter);
-
-                        if (pos.equals("0")) {
-                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, pos);
-                            adapter1 = new JoinInstrumentListAdp(instrumentList, getApplicationContext());
-                            recyclerViewInstruments.setAdapter(adapter1);
-                        } else {
-                            Intent intent1 = getIntent();
-                            pos = intent1.getExtras().getString("Value");
-                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, pos);
-                            adapter1 = new JoinInstrumentListAdp(instrumentList, getApplicationContext());
-                            recyclerViewInstruments.setAdapter(adapter1);
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
                         }
+
+//                        if (position == 0) {
+//                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, pos);
+//                            adapter1 = new JoinInstrumentListAdp(instrumentList, getApplicationContext());
+//                            recyclerViewInstruments.setAdapter(adapter1);
+//                        } else {
+//
+//                            //     Intent intent1 = getIntent();
+//                            //     pos = intent1.getExtras().getString("Value");
+//                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, String.valueOf(position));
+//                            adapter1 = new JoinInstrumentListAdp(instrumentList, getApplicationContext());
+//                            recyclerViewInstruments.setAdapter(adapter1);
+//                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -365,6 +460,49 @@ public class JoinActivity extends AppCompatActivity {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        if (JoinListAdapter.mp != null) {
+            JoinListAdapter.mp.stop();
+        }
+        if (JoinListAdapter.mRecordingThread != null) {
+            JoinListAdapter.mRecordingThread.stopRunning();
+            JoinListAdapter.mRecordingThread = null;
+            //    mShouldContinue=true;
+        }
+
+        if (JoinInstrumentListAdp.mp_start != null) {
+            for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
+                JoinInstrumentListAdp.mp_start.get(i).stop();
+
+            }
+        }
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (JoinListAdapter.mp != null) {
+            JoinListAdapter.mp.stop();
+        }
+        if (JoinListAdapter.mRecordingThread != null) {
+            JoinListAdapter.mRecordingThread.stopRunning();
+            JoinListAdapter.mRecordingThread = null;
+            //    mShouldContinue=true;
+        }
+
+        if (JoinInstrumentListAdp.mp_start != null) {
+            for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
+                JoinInstrumentListAdp.mp_start.get(i).stop();
+
+            }
+        }
+
     }
 
 

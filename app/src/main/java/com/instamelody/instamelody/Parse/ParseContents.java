@@ -7,10 +7,12 @@ import android.view.View;
 
 import com.instamelody.instamelody.ChatActivity;
 import com.instamelody.instamelody.ContactsActivity;
+import com.instamelody.instamelody.JoinActivity;
 import com.instamelody.instamelody.Models.Comments;
 import com.instamelody.instamelody.Models.Contacts;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.JoinedArtists;
+import com.instamelody.instamelody.Models.JoinedUserProfile;
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.Message;
@@ -363,7 +365,7 @@ public class ParseContents {
 
     public ArrayList<RecordingsModel> parseAudio(String response, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools) {
         JSONObject jsonObject;
-        JSONArray jsonArray, instrumentArray,JoinedArray;
+        JSONArray jsonArray, instrumentArray;
 
         try {
             jsonObject = new JSONObject(response);
@@ -371,7 +373,6 @@ public class ParseContents {
                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                 for (int i = 0; i < jsonArray.length(); i++) {
                     RecordingsModel card = new RecordingsModel();
-
                     JSONObject cardJson = jsonArray.getJSONObject(i);
                     card.setAddedBy(cardJson.getString("added_by"));
                     card.setRecordingCreated(cardJson.getString("date_added"));
@@ -383,7 +384,6 @@ public class ParseContents {
                     card.setCommentCount(cardJson.getInt("comment_count"));
                     card.setLikeCount(cardJson.getInt("like_count"));
                     card.setLikeStatus(cardJson.getInt("like_status"));
-                    card.setJoinCount(cardJson.getString("join_count"));
                     if (cardJson.isNull("recording_url")) {
                         card.setrecordingurl("");
                     } else {
@@ -416,8 +416,12 @@ public class ParseContents {
                         }
                     }
 
+
                     recordingList.add(card);
 
+
+//                    card.setTvContributeDate(cardJson.getString("30/02/17"));
+//                    card.setTvContributeLength(cardJson.getString("recordings"));
 
                 }
             }
@@ -454,6 +458,7 @@ public class ParseContents {
                     join.setComment_counts(cardJoin.getString("comment_counts"));
                     //    instrumentsList = instrumentList;
                     JoinArtist.add(join);
+                    JoinActivity.listProfile.add(i,new JoinedUserProfile(String.valueOf(cardJoin.getString("user_id")),"0"));
                 }
 
             }
@@ -482,10 +487,8 @@ public class ParseContents {
                     MelodyInstruments melodyInstruments = new MelodyInstruments();
                     JSONObject instrumentsJson = jsonArray.getJSONObject(j);
                     MelodyInstruments.setInstrumentId(instrumentsJson.getInt("instrument_id"));
-                    int a = instrumentsJson.getInt("instrument_id");
                     melodyInstruments.setInstrumentName(instrumentsJson.getString("instruments_name"));
                     melodyInstruments.setInstrumentType(instrumentsJson.getString("instruments_type"));
-                    //  melodyInstruments.setMelodyPacksId(instrumentsJson.getInt("melodypackid"));
                     melodyInstruments.setInstrumentBpm(instrumentsJson.getString("bpm"));
                     melodyInstruments.setInstrumentFileSize(instrumentsJson.getString("file_size"));
                     melodyInstruments.setInstrumentFile(instrumentsJson.getString("instrument_url"));
@@ -493,9 +496,8 @@ public class ParseContents {
                     melodyInstruments.setInstrumentCreated(instrumentsJson.getString("uploadeddate"));
                     melodyInstruments.setUserProfilePic(instrumentsJson.getString("profilepic"));
                     melodyInstruments.setInstrumentCover(instrumentsJson.getString("coverpic"));
-                   // melodyInstruments.setUserName(instrumentsJson.getString("username"));
                     instrumentList.add(melodyInstruments);
-                    //    StudioActivity.list.add(j, new MixingData(String.valueOf(instrumentsJson.getInt(KEY_INSTRUMENT_ID)), "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0","0", "0", "0", "0", instrumentsJson.getString(KEY_INSTRUMENT_URL).replace("http://52.89.220.199/api/",""), String.valueOf(j)));
+                    StudioActivity.list.add(j, new MixingData(String.valueOf(instrumentsJson.getInt("instrument_id")), "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", instrumentsJson.getString(KEY_INSTRUMENT_URL).replace("http://52.89.220.199/api/", ""), String.valueOf(j)));
                 }
             }
         } catch (JSONException e) {

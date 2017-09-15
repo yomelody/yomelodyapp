@@ -69,13 +69,13 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
     ArrayList<String> fetch_url_arrayList = new ArrayList<>();
     static int duration1, currentPosition;
     public static List<MediaPlayer> mp_start = new ArrayList<MediaPlayer>();
+    public static int count = 0;
 
     public JoinInstrumentListAdp(ArrayList<MelodyInstruments> instrumentList, Context context) {
         this.instrumentList = instrumentList;
         this.context = context;
 
     }
-
 
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -105,6 +105,10 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
             tvInstrumentLength = (TextView) itemView.findViewById(R.id.tvInstrumentLength);
             tvInstrumentName = (TextView) itemView.findViewById(R.id.tvInstrumentName);
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
+            count = getItemCount();
+//            if(count>0){
+//                JoinActivity.melody_detail.setText(count + " " + "Instrumentals");
+//            }
 
             audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
             ivPause.setOnClickListener(new View.OnClickListener() {
@@ -207,7 +211,7 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
 
         final MelodyInstruments instruments = instrumentList.get(listPosition);
         String abc = instrumentList.get(listPosition).getInstrumentFile();
-        Toast.makeText(context, "" + abc, Toast.LENGTH_SHORT).show();
+        // Toast.makeText(context, "" + abc, Toast.LENGTH_SHORT).show();
 
         if (coverPicStudio != null) {
             Picasso.with(holder.ivInstrumentCover.getContext()).load(coverPicStudio).into(holder.ivInstrumentCover);
@@ -238,33 +242,11 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
 //        Toast.makeText(context, "" + instrumentFile, Toast.LENGTH_SHORT).show();
         Log.d("Instruments size", "" + instrumentFile);
 
-        JoinActivity.rlJoinButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String position = Integer.toString(listPosition);
-                Intent intent = new Intent(v.getContext(), StudioActivity.class);
-                intent.putExtra("clickPositionJoin", position);
-                v.getContext().startActivity(intent);
-                StudioActivity.list.clear();
-            }
-        });
 
         //StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL,PositionId));
 
 
         audioValue = instruments.getAudioType();
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         holder.ivPlay.setOnClickListener(new View.OnClickListener() {
@@ -339,11 +321,6 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
         });
 
 
-
-
-
-
-
         Intent i = new Intent("fetchingInstrumentsJoin");
         i.putStringArrayListExtra("instrumentsJoin", instrument_url_count);
         LocalBroadcastManager.getInstance(context).sendBroadcast(i);
@@ -416,7 +393,6 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
 
 
     }
-
 
 
 }
