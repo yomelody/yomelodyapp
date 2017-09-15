@@ -41,7 +41,8 @@ public class Const {
         public static final String AuthenticationKeyValue = "@_$%yomelody%audio#@mixing(app*";
         public static final String MixingAudio_InstrumentsAudio = BASE_URL + "audiomixing.php";
         public static final String AuthenticationKeyName = "ApiAuthenticationKey";
-        public static final String LOGOUT = BASE_URL + "logout.php.php";
+        public static final String LOGOUT = BASE_URL + "logout.php";
+        public static final String JoinRecording = BASE_URL + "join_recording.php";
 
 //        public static final String USERS_BIO = BASE_URL + "uploads/melody/instruments/";
     }

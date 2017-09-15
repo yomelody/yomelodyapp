@@ -30,6 +30,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
+import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
@@ -129,12 +130,11 @@ public class MelodyPacksFragment extends Fragment {
             //MelodyUser=userId;
         }
         new LongOperation().execute();
-        //     new Loader().execute();
+
+        adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
 
 
 
-      /*  if (strName == null) {
-        }*/
         RecordingsFragment rf = new RecordingsFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.melodyPackFragment, rf);
