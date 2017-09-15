@@ -418,8 +418,11 @@ public class ParseContents {
 
 
                     recordingList.add(card);
+
+
 //                    card.setTvContributeDate(cardJson.getString("30/02/17"));
 //                    card.setTvContributeLength(cardJson.getString("recordings"));
+
                 }
             }
         } catch (JSONException e) {
