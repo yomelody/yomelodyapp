@@ -79,7 +79,7 @@
                         android:textSize="10sp"
                         android:textStyle="normal|bold"
                         android:textColor="#FFFFFF"
-                        android:visibility="visible" />
+                        android:visibility="gone" />
 
                 </FrameLayout>
 

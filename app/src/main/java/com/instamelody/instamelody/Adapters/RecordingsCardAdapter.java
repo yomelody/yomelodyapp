@@ -633,9 +633,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 try {
 
                     int NxtCount = Integer.parseInt(holder.TemptxtJoinCount.getText().toString());
-                    if(MinJoinCount==NxtCount){
-                        MinJoinCount=MinJoinCount-1;
-                    }
+
                     if (MinJoinCount < NxtCount) {
                         fetchPlayJoinAudio(recordingList.get(listPosition).getRecordingId());
                         if (JoinMp != null) {

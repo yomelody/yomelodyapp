@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
-import static com.instamelody.instamelody.utils.Const.ServiceType.BASE_URL;
 
 /**
  * Created by Shubhansh Jaiswal on 04/05/17.

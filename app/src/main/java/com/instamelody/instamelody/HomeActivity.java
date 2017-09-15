@@ -89,7 +89,7 @@ public class HomeActivity extends AppCompatActivity {
     public static HomeActivity fa;
     TextView tvFirstName, tvUserName, message_count;
     String Name, userName, profilePic, fbEmail, profilepic2, fbFirstName, fbUserName, fbLastName, fbProfilePic, name2, userName2, galleryPrfPic, fbId;
-    String firstName, lastName, userNameLogin, profilePicLogin,userIdNormal;
+    String firstName, lastName, userNameLogin, profilePicLogin, userIdNormal;
     int statusNormal, statusFb, statusTwitter;
     CircleImageView userProfileImage;
     int count = 0;
@@ -108,7 +108,11 @@ public class HomeActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_home);
 //        HandelLogin obj = new HandelLogin();
+        if (checkPermissions()) {
 
+        } else {
+            setPermissions();
+        }
         rlMessenger = (RelativeLayout) findViewById(R.id.rlMessenger);
         Settings = (Button) findViewById(R.id.btn_settings);
         SignIn = (Button) findViewById(R.id.btn_sign_in);
@@ -308,22 +312,19 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
 
-                        if (checkPermissions()) {
-                            Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
-                            intent.putExtra("clickPosition", "fromHomeActivity");
-                            startActivity(intent);
-                        } else {
-                            setPermissions();
-                        }
+                    if (checkPermissions()) {
+                        Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
+                        intent.putExtra("clickPosition", "fromHomeActivity");
+                        startActivity(intent);
+                    } else {
+                        setPermissions();
+                    }
 
-                }
-                else
-                {
+                } else {
                     Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
                     intent.putExtra("clickPosition", "fromHomeActivity");
                     startActivity(intent);
                 }
-
 
 
             }
@@ -334,15 +335,14 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
 
-                        if (checkPermissions()) {
-                            Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
-                            startActivity(intent);
-                        } else {
-                            setPermissions();
-                        }
+                    if (checkPermissions()) {
+                        Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
+                        startActivity(intent);
+                    } else {
+                        setPermissions();
+                    }
 
-                }
-                else{
+                } else {
                     Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
                     startActivity(intent);
                 }
@@ -368,6 +368,8 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+
     }
 
     public void displayExceptionMessage(String msg) {
