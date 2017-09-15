@@ -152,13 +152,9 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
             holder.tvMsg.setText(chat.getMessage());
         }
         holder.tvTime.setText(chat.getSendAt());
-        int msgCount = Integer.parseInt(chat.getNewMessages());
-        totalMsgCount = totalMsgCount + msgCount;
-        if (msgCount > 0){
-            holder.message_count.setVisibility(View.VISIBLE);
-            holder.message_count.setText(chat.getNewMessages());
-            MessengerActivity.message_count.setText(String.valueOf(totalMsgCount));
-        }
+        totalMsgCount = totalMsgCount + Integer.parseInt(chat.getNewMessages());
+        holder.message_count.setText(chat.getNewMessages());
+        MessengerActivity.message_count.setText(String.valueOf(totalMsgCount));
     }
 
     @Override

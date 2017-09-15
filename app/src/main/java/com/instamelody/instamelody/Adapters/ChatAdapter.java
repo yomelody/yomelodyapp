@@ -1,13 +1,11 @@
 package com.instamelody.instamelody.Adapters;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,28 +13,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkError;
-import com.android.volley.NoConnectionError;
-import com.android.volley.ParseError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.ServerError;
-import com.android.volley.TimeoutError;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.ChatActivity;
 import com.instamelody.instamelody.Models.AudioDetails;
-import com.instamelody.instamelody.Models.ChatPlayerModel;
-import com.instamelody.instamelody.Models.JoinRecordingModel;
 import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.SharedAudios;
 import com.instamelody.instamelody.R;
-import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -45,16 +27,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.instamelody.instamelody.ChatActivity.ivPausePlayer;
 import static com.instamelody.instamelody.ChatActivity.ivPlayPlayer;
-import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
-import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
-import static com.instamelody.instamelody.utils.Const.ServiceType.JoinRecording;
-import static com.instamelody.instamelody.utils.Const.ServiceType.READ_STATUS;
 
 /**
  * Created by Shubhansh Jaiswal on 17/01/17.
@@ -65,12 +41,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
     Context context;
     private ArrayList<Message> chatList = new ArrayList<>();
-    //    private ArrayList<AudioDetails> audioDetailsList = new ArrayList<>();
+    private ArrayList<AudioDetails> audioDetailsList = new ArrayList<>();
     //    private ArrayList<SharedAudios> sharedAudioList = new ArrayList<>();
-    ArrayList<SharedAudios> sharedAudioList = new ArrayList<>();
-    public static ArrayList<JoinRecordingModel> JoinList = new ArrayList<JoinRecordingModel>();
-    public ArrayList<MediaPlayer> JoinMp = new ArrayList<MediaPlayer>();
-
+    public static MediaPlayer mediaPlayer;
     private String userId;
     private int SELF = 100;
     private int SELF_IMAGE = 101;
@@ -82,8 +55,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     public static String str;
     public static ImageView ivPrev, ivNext;
     public static TextView tvNum;
-    String parentRec;
-    MediaPlayer mp;
 
     public ChatAdapter(Context context, ArrayList<Message> chatList) {
         this.chatList = chatList;
@@ -95,7 +66,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         ImageView userProfileImage, chatImage, ivPlay, ivSettings, ivTick, ivDoubleTick;
         RelativeLayout rlChatImage, rlBelowImage;
         SeekBar seekBarChat;
-        ProgressDialog progressDialog;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -118,20 +88,14 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         private void primarySeekBarProgressUpdater() {
             Handler mHandler1 = new Handler();
             try {
-                seekBarChat.setProgress((int) (((float) mp.getCurrentPosition() / mp.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
-                if (mp.isPlaying()) {
+                seekBarChat.setProgress((int) (((float) mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
+                if (mediaPlayer.isPlaying()) {
                     Runnable notification = new Runnable() {
                         public void run() {
                             primarySeekBarProgressUpdater();
                         }
                     };
                     mHandler1.postDelayed(notification, 100);
-                } else {
-                    try {
-                        seekBarChat.setProgress(0);
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                    }
                 }
             } catch (Throwable e) {
                 e.printStackTrace();
@@ -208,10 +172,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
         final int itemType = getItemViewType(position);
         if (itemType == SELF_AUDIO || itemType == OTHER_AUDIO) {
-            final Message message = chatList.get(position);
+            Message message = chatList.get(position);
             Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
             holder.timeStamp.setText(message.getCreatedAt());
-            if (message.getIsRead().equals("1")) {
+            if(message.getIsRead().equals("1")){
                 holder.ivTick.setVisibility(View.GONE);
                 holder.ivDoubleTick.setVisibility(View.VISIBLE);
             }
@@ -219,7 +183,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             if (audiosDetailsArray.length() > 0) {
                 for (int j = 0; j < audiosDetailsArray.length(); j++) {
                     try {
+                        ArrayList<SharedAudios> sharedAudioList = new ArrayList<>();
                         JSONObject detailsJson = audiosDetailsArray.getJSONObject(j);
+//                        detailsJson.getString("recording_id");
+//                        detailsJson.getString("added_by");
+//                        detailsJson.getString("name");
                         holder.tvMelodyName.setText(detailsJson.getString("recording_topic"));
                         String s = "@" + detailsJson.getString("user_name");
                         holder.tvUserName.setText(s);
@@ -250,302 +218,97 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                 }
             }
 
-            holder.seekBarChat.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//            holder.seekBarChat.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//
+//                @Override
+//                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//
+//                    if (mediaPlayer != null && fromUser) {
+//                        try {
+//                            int playPositionInMilliseconds = mediaPlayer.getDuration() / 100 * holder.seekBarChat.getProgress();
+//                            mediaPlayer.seekTo(playPositionInMilliseconds);
+//                        } catch (IllegalStateException e) {
+//                            e.printStackTrace();
+//                        }
+////                        seekBar.setProgress(duration);
+//                    } else {
+//                        // the event was fired from code and you shouldn't call player.seekTo()
+//                    }
+//                }
+//
+//                @Override
+//                public void onStartTrackingTouch(SeekBar seekBar) {
+//                }
+//
+//                @Override
+//                public void onStopTrackingTouch(SeekBar seekBar) {
+//                }
+//            });
 
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-                    int mCurrentPosition = mp.getCurrentPosition() / 1000;
-                    int mDuration = mp.getDuration() / 1000;
-                    UtilsRecording utilRecording = new UtilsRecording();
-                    int progress1 = utilRecording.getProgressPercentage(mCurrentPosition, mDuration);
-
-                    if (mp != null && fromUser) {
-                        try {
-                            int playPositionInMilliseconds = mp.getDuration() / 100 * holder.seekBarChat.getProgress();
-                            mp.seekTo(playPositionInMilliseconds);
-                        } catch (IllegalStateException e) {
-                            e.printStackTrace();
-                        }
-//                        seekBar.setProgress(progress);
-                    } else {
-                        // the event was fired from code and you shouldn't call player.seekTo()
-                    }
-                }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                }
-            });
-
-            holder.ivPlay.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String rid = message.getFileId();
-                    fetchPlayJoinAudio(rid);
-
-//                    ChatPlayerModel cpm = audioList.get(playingAudio);
-//                    String urlAudio = cpm.getRec_url();
-//                    AudioOperator(urlAudio);
+//            holder.ivPlay.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
+//                    ivPlayPlayer.setVisibility(View.GONE);
+//                    ivPausePlayer.setVisibility(View.VISIBLE);
+//                    SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
+//                    String audioUrl = sharedAudios.getRecordingUrl();
 //                    Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(ChatActivity.userProfileImagePlayer);
 //                    ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
 //                    ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
-
-                    try {
-                        if (parentRec != null) {
-                            ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
-                            ivPlayPlayer.setVisibility(View.GONE);
-                            ivPausePlayer.setVisibility(View.VISIBLE);
-                            ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
-                            ChatActivity.tvNumPlayer.setText(tvNum.getText().toString().trim());
-                            str = "(1" + " of " + String.valueOf(JoinMp.size()) + ")";
-                            tvNum.setText(str);
-                            if (mp != null) {
-                                mp.stop();
-                            }
-                            holder.progressDialog = new ProgressDialog(view.getContext());
-                            holder.progressDialog.setMessage("Loading...");
-                            holder.progressDialog.show();
-                            mp = new MediaPlayer();
-                            try {
-                                mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                            } catch (NullPointerException e) {
-                                e.printStackTrace();
-                            }
-                            mp.setDataSource(parentRec);
-                            mp.prepareAsync();
-
-                            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                @Override
-                                public void onPrepared(MediaPlayer mp) {
-                                    mp.start();
-                                    holder.progressDialog.dismiss();
-                                    holder.primarySeekBarProgressUpdater();
-                                }
-                            });
-                            mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                                @Override
-                                public boolean onError(MediaPlayer mp, int what, int extra) {
-                                    if (mp != null) {
-                                        mp.stop();
-                                    }
-                                    holder.progressDialog.dismiss();
-                                    return false;
-                                }
-                            });
-                            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                @Override
-                                public void onCompletion(MediaPlayer mp) {
-                                    if (mp != null) {
-                                        mp.stop();
-                                    }
-                                    holder.progressDialog.dismiss();
-                                    holder.seekBarChat.setProgress(0);
-//                                    ChatActivity.rlChatPlayer.setVisibility(View.GONE);
-                                }
-                            });
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            });
-
-            ivPrev.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    String rid = message.getFileId();
-                    fetchPlayJoinAudio(rid);
-
-                    /*ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
-                    ivPlayPlayer.setVisibility(View.GONE);
-                    ivPausePlayer.setVisibility(View.VISIBLE);
-                    playingAudio = playingAudio - 1;
+//                    ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
+//                    ChatActivity.tvNumPlayer.setText(tvNum.getText().toString().trim());
+//                    AudioOperator(audioUrl);
+//                }
+//            });
+//
+//            ivPrev.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//
+//                    ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
+//                    ivPlayPlayer.setVisibility(View.GONE);
+//                    ivPausePlayer.setVisibility(View.VISIBLE);
+//                    playingAudio = playingAudio - 1;
 //                    str = "(" + (playingAudio + 1) + " of " + String.valueOf(sharedAudioList.size()) + ")";
 //                    tvNum.setText(str);
 //                    SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
+//                    String audioUrl = sharedAudios.getRecordingUrl();
 //                    Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(ChatActivity.userProfileImagePlayer);
 //                    ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
 //                    ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
-
-                    ChatPlayerModel cpm = audioList.get(playingAudio);
-                    String urlAudio = cpm.getRec_url();
-                    AudioOperator(urlAudio);*/
-
-                    try {
-                        if (JoinMp != null) {
-                            if (JoinMp.size() > 0) {
-                                ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
-                                ivPlayPlayer.setVisibility(View.GONE);
-                                ivPausePlayer.setVisibility(View.VISIBLE);
-                                ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
-                                ChatActivity.tvNumPlayer.setText(tvNum.getText().toString().trim());
-                                if (mp != null) {
-                                    mp.stop();
-                                }
-                                holder.progressDialog = new ProgressDialog(view.getContext());
-                                holder.progressDialog.setMessage("Loading...");
-                                holder.progressDialog.show();
-                                mp = new MediaPlayer();
-                                try {
-                                    mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                                } catch (NullPointerException e) {
-                                    e.printStackTrace();
-                                }
-                                playingAudio = playingAudio - 1;
-                                if (playingAudio < 0) {
-                                    playingAudio = 0;
-                                }
-                                str = "(" + (playingAudio) + " of " + String.valueOf(JoinMp.size()) + ")";
-                                tvNum.setText(str);
-                                SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
-                                Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(ChatActivity.userProfileImagePlayer);
-                                ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
-                                ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
-
-                                for (int i = 0; i <= JoinMp.size() - 1; i++) {
-                                    if (playingAudio == i) {
-                                        mp = JoinMp.get(i);
-                                        mp.prepareAsync();
-                                    }
-                                }
-                                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                    @Override
-                                    public void onPrepared(MediaPlayer mp) {
-                                        mp.start();
-                                        holder.progressDialog.dismiss();
-                                        holder.primarySeekBarProgressUpdater();
-                                    }
-                                });
-                                mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                                    @Override
-                                    public boolean onError(MediaPlayer mp, int what, int extra) {
-                                        if (mp != null) {
-                                            mp.stop();
-                                        }
-                                        holder.progressDialog.dismiss();
-                                        return false;
-                                    }
-                                });
-                                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                    @Override
-                                    public void onCompletion(MediaPlayer mp) {
-                                        if (mp != null) {
-                                            mp.stop();
-                                        }
-                                        holder.progressDialog.dismiss();
-                                        holder.seekBarChat.setProgress(0);
-//                                        ChatActivity.rlChatPlayer.setVisibility(View.GONE);
-                                    }
-                                });
-                            }
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            });
-
-            ivNext.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    String rid = message.getFileId();
-                    fetchPlayJoinAudio(rid);
-
+//                    ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
+//                    ChatActivity.tvNumPlayer.setText(tvNum.getText().toString().trim());
+//                    AudioOperator(audioUrl);
+//                }
+//            });
+//
+//            ivNext.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//
+//                    ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
+//                    ivPlayPlayer.setVisibility(View.GONE);
+//                    ivPausePlayer.setVisibility(View.VISIBLE);
 //                    playingAudio = playingAudio + 1;
 //                    str = "(" + (playingAudio + 1) + " of " + String.valueOf(sharedAudioList.size()) + ")";
 //                    tvNum.setText(str);
 //                    SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
+//                    String audioUrl = sharedAudios.getRecordingUrl();
 //                    Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(ChatActivity.userProfileImagePlayer);
 //                    ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
 //                    ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
-
-                    try {
-                        if (JoinMp != null) {
-                            if (JoinMp.size() > 0) {
-                                ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
-                                ivPlayPlayer.setVisibility(View.GONE);
-                                ivPausePlayer.setVisibility(View.VISIBLE);
-                                ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
-                                ChatActivity.tvNumPlayer.setText(tvNum.getText().toString().trim());
-                                if (mp != null) {
-                                    mp.stop();
-                                }
-                                holder.progressDialog = new ProgressDialog(view.getContext());
-                                holder.progressDialog.setMessage("Loading...");
-                                holder.progressDialog.show();
-                                mp = new MediaPlayer();
-                                try {
-                                    mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                                } catch (NullPointerException e) {
-                                    e.printStackTrace();
-                                }
-                                playingAudio = playingAudio + 1;
-                                if (playingAudio > JoinMp.size()) {
-                                    playingAudio = JoinMp.size();
-                                }
-                                str = "(" + (playingAudio) + " of " + String.valueOf(JoinMp.size()) + ")";
-                                tvNum.setText(str);
-                                SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
-                                Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(ChatActivity.userProfileImagePlayer);
-                                ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
-                                ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
-
-                                for (int i = 0; i <= JoinMp.size() - 1; i++) {
-                                    if (playingAudio == i) {
-                                        mp = JoinMp.get(i);
-                                        mp.prepareAsync();
-                                    }
-                                }
-                                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                    @Override
-                                    public void onPrepared(MediaPlayer mp) {
-                                        mp.start();
-                                        holder.progressDialog.dismiss();
-                                        holder.primarySeekBarProgressUpdater();
-                                    }
-                                });
-                                mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                                    @Override
-                                    public boolean onError(MediaPlayer mp, int what, int extra) {
-
-                                        if (mp != null) {
-                                            mp.stop();
-                                        }
-                                        holder.progressDialog.dismiss();
-                                        return false;
-                                    }
-                                });
-                                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                    @Override
-                                    public void onCompletion(MediaPlayer mp) {
-                                        if (mp != null) {
-                                            mp.stop();
-                                        }
-                                        holder.progressDialog.dismiss();
-                                        holder.seekBarChat.setProgress(0);
-//                                        ChatActivity.rlChatPlayer.setVisibility(View.GONE);
-                                    }
-                                });
-                            }
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            });
+//                    ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
+//                    ChatActivity.tvNumPlayer.setText(tvNum.getText().toString().trim());
+//                    AudioOperator(audioUrl);
+//                }
+//            });
 
         } else if (itemType == SELF_IMAGE || itemType == OTHER_IMAGE) {
             Message message = chatList.get(position);
             Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
             holder.timeStamp.setText(message.getCreatedAt());
-            if (message.getIsRead().equals("1")) {
+            if(message.getIsRead().equals("1")){
                 holder.ivTick.setVisibility(View.GONE);
                 holder.ivDoubleTick.setVisibility(View.VISIBLE);
             }
@@ -565,7 +328,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
             holder.chatMessage.setText(message.getMessage());
             holder.timeStamp.setText(message.getCreatedAt());
-            if (message.getIsRead().equals("1")) {
+            if(message.getIsRead().equals("1")){
                 holder.ivTick.setVisibility(View.GONE);
                 holder.ivDoubleTick.setVisibility(View.VISIBLE);
             }
@@ -577,58 +340,49 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         return chatList.size();
     }
 
-    public void fetchPlayJoinAudio(final String RecId) {
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, JoinRecording,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        //       Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
-                        JSONObject jsonObject, respObject;
-                        JSONArray jsonArray;
-
-                        try {
-                            JoinList.clear();
-                            playingAudio = 0;
-                            JoinMp.clear();
-                            jsonObject = new JSONObject(response);
-                            if (jsonObject.getString("flag").equals("success")) {
-                                parentRec = jsonObject.getString("parentrec");
-                                jsonArray = jsonObject.getJSONArray("response");
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    respObject = jsonArray.getJSONObject(i);
-                                    try {
-                                        MediaPlayer mediaPlayera = new MediaPlayer();
-                                        mediaPlayera.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                                        mediaPlayera.setDataSource(respObject.getString("recording_url"));
-                                        JoinMp.add(mediaPlayera);
-                                    } catch (Exception ex) {
-                                        ex.printStackTrace();
-                                    }
-                                }
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        //       Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
-                        String errorMsg = error.toString();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("rid", RecId);
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                return params;
+    public static void AudioOperator(String audioLink) {
+        if (mediaPlayer != null) {
+            try {
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.stop();
+                    mediaPlayer.reset();
+                    mediaPlayer.release();
+                    mediaPlayer = null;
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
             }
-        };
-        RequestQueue requestQueue1 = Volley.newRequestQueue(context);
-        requestQueue1.add(stringRequest);
+        }
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        try {
+            mediaPlayer.setDataSource(audioLink);
+            mediaPlayer.prepareAsync();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                mediaPlayer.start();
+//                primarySeekBarProgressUpdater();
+            }
+        });
+        mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer MediaPlayer, int what, int extra) {
+                return false;
+            }
+        });
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+//                duration = mediaPlayer.getDuration();
+            }
+        });
     }
 }
+
+
+
+

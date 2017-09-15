@@ -16,16 +16,8 @@ import java.util.TimeZone;
 
 public class Message implements Serializable {
 
-    String id, message, createdAt, senderId, file, fileId, fileType, profilePic, isRead;
+    String id, message, createdAt, senderId, file, fileType, profilePic, isRead;
     JSONArray audioDetails;
-
-    public String getFileId() {
-        return fileId;
-    }
-
-    public void setFileId(String fileId) {
-        this.fileId = fileId;
-    }
 
     public String getFile() {
         return file;
@@ -122,7 +114,8 @@ public class Message implements Serializable {
                 } else if (a == 0) {
                     s2 = "12";
                     time = s2 + s3 + " AM";
-                } else {
+                }
+                else {
                     time = s2 + s3 + " AM";
                 }
                 val = month + " " + dates + ", " + time;
@@ -146,7 +139,8 @@ public class Message implements Serializable {
                 } else if (a == 0) {
                     s2 = "12";
                     s1 = s2 + s3 + " AM";
-                } else {
+                }
+                else {
                     s1 = s2 + s3 + " AM";
                 }
                 val = day + ", " + s1;

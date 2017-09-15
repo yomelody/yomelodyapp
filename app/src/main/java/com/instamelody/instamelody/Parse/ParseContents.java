@@ -365,7 +365,7 @@ public class ParseContents {
 
     public ArrayList<RecordingsModel> parseAudio(String response, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools) {
         JSONObject jsonObject;
-        JSONArray jsonArray, instrumentArray;
+        JSONArray jsonArray, instrumentArray,JoinedArray;
 
         try {
             jsonObject = new JSONObject(response);
@@ -373,6 +373,7 @@ public class ParseContents {
                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                 for (int i = 0; i < jsonArray.length(); i++) {
                     RecordingsModel card = new RecordingsModel();
+
                     JSONObject cardJson = jsonArray.getJSONObject(i);
                     card.setAddedBy(cardJson.getString("added_by"));
                     card.setRecordingCreated(cardJson.getString("date_added"));
@@ -384,6 +385,7 @@ public class ParseContents {
                     card.setCommentCount(cardJson.getInt("comment_count"));
                     card.setLikeCount(cardJson.getInt("like_count"));
                     card.setLikeStatus(cardJson.getInt("like_status"));
+                    card.setJoinCount(cardJson.getString("join_count"));
                     if (cardJson.isNull("recording_url")) {
                         card.setrecordingurl("");
                     } else {
@@ -417,11 +419,9 @@ public class ParseContents {
                     }
 
 
+
                     recordingList.add(card);
 
-
-//                    card.setTvContributeDate(cardJson.getString("30/02/17"));
-//                    card.setTvContributeLength(cardJson.getString("recordings"));
 
                 }
             }
