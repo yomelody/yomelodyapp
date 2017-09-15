@@ -2,16 +2,17 @@ package com.instamelody.instamelody.Parse;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.os.Parcel;
 import android.util.Log;
 import android.view.View;
 
 import com.instamelody.instamelody.ChatActivity;
 import com.instamelody.instamelody.ContactsActivity;
-<<<<<<< HEAD
+
 import com.instamelody.instamelody.Models.AdvertisePagingData;
-=======
+
 import com.instamelody.instamelody.JoinActivity;
->>>>>>> 1ba1be4b34d31ec381e2554e50e87af09eac0397
 import com.instamelody.instamelody.Models.Comments;
 import com.instamelody.instamelody.Models.Contacts;
 import com.instamelody.instamelody.Models.Genres;
@@ -23,6 +24,7 @@ import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.MixingData;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
+import com.instamelody.instamelody.Models.SubscriptionPackage;
 import com.instamelody.instamelody.StudioActivity;
 
 import org.json.JSONArray;
@@ -95,6 +97,13 @@ public class ParseContents {
     String ADV_URL = "adv_url";
     String ADV_START_DATE = "start_date";
     String ADV_END_DATE = "end_date";
+
+
+    String SUBSCRIPTION_PACKAGE_ID = "package_id";
+    String SUBSCRIPTION_PACKAGE_NAME = "package_name";
+    String SUBSCRIPTION_TOTAL_MELODY = "total_melody";
+    String SUBSCRIPTION_RECORDING_TIME = "recording_time";
+    String SUBSCRIPTION_COST = "cost";
 
     public ArrayList<MelodyCard> parseMelodyPacks(String response, ArrayList<MelodyCard> melodyList, ArrayList<MelodyInstruments> instrumentList) {
 
@@ -466,7 +475,7 @@ public class ParseContents {
                     join.setComment_counts(cardJoin.getString("comment_counts"));
                     //    instrumentsList = instrumentList;
                     JoinArtist.add(join);
-                    JoinActivity.listProfile.add(i,new JoinedUserProfile(String.valueOf(cardJoin.getString("user_id")),"0"));
+                    JoinActivity.listProfile.add(i, new JoinedUserProfile(String.valueOf(cardJoin.getString("user_id")), "0"));
                 }
 
             }
@@ -514,8 +523,8 @@ public class ParseContents {
         return instrumentList;
     }
 
-    public ArrayList<AdvertisePagingData> parseAdvertisePaging(String response,ArrayList<AdvertisePagingData> pagingDataArrayList){
-        JSONObject jsonObject,advertiseJson;
+    public ArrayList<AdvertisePagingData> parseAdvertisePaging(String response, ArrayList<AdvertisePagingData> pagingDataArrayList) {
+        JSONObject jsonObject, advertiseJson;
         JSONArray jsonArray;
 
         try {
@@ -539,6 +548,33 @@ public class ParseContents {
             e.printStackTrace();
         }
         return pagingDataArrayList;
+    }
+
+    public ArrayList<SubscriptionPackage> parsePackageSubscription(String response, ArrayList<SubscriptionPackage> subscriptionPackageArrayList) {
+        JSONObject jsonObject, subscriptionJson;
+        JSONArray jsonArray;
+
+        try {
+            jsonObject = new JSONObject(response);
+            String flag = jsonObject.getString(KEY_FLAG);
+            if (flag.equals("success")) {
+                jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    SubscriptionPackage subscriptionPackage = new SubscriptionPackage();
+                    subscriptionJson = jsonArray.getJSONObject(i);
+                    subscriptionPackage.setPackage_id(subscriptionJson.getString(SUBSCRIPTION_PACKAGE_ID));
+                    subscriptionPackage.setPackage_name(subscriptionJson.getString(SUBSCRIPTION_PACKAGE_NAME));
+                    subscriptionPackage.setTotal_melody(subscriptionJson.getString(SUBSCRIPTION_TOTAL_MELODY));
+                    subscriptionPackage.setRecording_time(subscriptionJson.getString(SUBSCRIPTION_RECORDING_TIME));
+                    subscriptionPackage.setCost(subscriptionJson.getString(SUBSCRIPTION_COST));
+                    subscriptionPackageArrayList.add(subscriptionPackage);
+
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return subscriptionPackageArrayList;
     }
 
 }
