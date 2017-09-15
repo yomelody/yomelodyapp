@@ -9,10 +9,8 @@ public class MelodyInstruments {
     //Used for storing instruments details
 
 
-
     static int instrumentId;
     int melodyPacksId;
-
 
     public static int InstrumentCount; // added by Abhishek
     String userName, userProfilePic, instrumentCover, instrumentType, instrumentFileSize, instrumentBpm;
@@ -138,6 +136,7 @@ public class MelodyInstruments {
     public void setInstrumentLength(String instrumentLength) {
         this.instrumentLength = instrumentLength;
     }
+
     public static int getInstrumentId() {
         return instrumentId;
     }

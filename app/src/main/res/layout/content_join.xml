@@ -13,12 +13,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
         android:orientation="vertical"
         tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp">
+        tools:layout_editor_absoluteY="8dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
 
         <android.support.v7.widget.CardView
             android:id="@+id/card_recording"
@@ -296,8 +295,19 @@
                                                 android:layout_centerHorizontal="true"
                                                 android:layout_centerVertical="true">
 
-                                                <TextView
-                                                    android:id="@+id/recording_time"
+                                                <!--<TextView-->
+                                                    <!--android:id="@+id/recording_time"-->
+                                                    <!--android:layout_width="match_parent"-->
+                                                    <!--android:layout_height="wrap_content"-->
+                                                    <!--android:layout_alignParentEnd="true"-->
+                                                    <!--android:layout_alignParentRight="true"-->
+                                                    <!--android:gravity="right"-->
+                                                    <!--android:text="00:00:00"-->
+                                                    <!--android:textColor="#FFFFFF"-->
+                                                    <!--android:textSize="12sp" />-->
+
+                                                <Chronometer
+                                                    android:id="@+id/chrono"
                                                     android:layout_width="match_parent"
                                                     android:layout_height="wrap_content"
                                                     android:layout_alignParentEnd="true"
@@ -307,19 +317,13 @@
                                                     android:textColor="#FFFFFF"
                                                     android:textSize="12sp" />
 
-                                                <Chronometer
-                                                    android:id="@+id/chrono"
-                                                    android:layout_width="wrap_content"
-                                                    android:layout_height="wrap_content"
-                                                    android:visibility="gone" />
-
                                                 <TextView
                                                     android:id="@+id/recording_date"
                                                     android:layout_width="match_parent"
                                                     android:layout_height="wrap_content"
                                                     android:layout_alignParentEnd="true"
                                                     android:layout_alignParentRight="true"
-                                                    android:layout_below="@+id/recording_time"
+                                                    android:layout_below="@+id/chrono"
                                                     android:layout_marginTop="5dp"
                                                     android:gravity="right"
                                                     android:text="6/16/16"

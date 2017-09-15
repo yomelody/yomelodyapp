@@ -3,16 +3,23 @@ package com.instamelody.instamelody.Adapters;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AudioFormat;
 import android.media.AudioManager;
+import android.media.AudioRecord;
 import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -30,11 +37,14 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.facebook.common.references.SharedReference;
 import com.instamelody.instamelody.CommentsActivity;
 import com.instamelody.instamelody.JoinActivity;
 import com.instamelody.instamelody.JoinCommentActivity;
+import com.instamelody.instamelody.MessengerActivity;
 import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Models.JoinedUserProfile;
+import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.ProfileActivity;
@@ -78,7 +88,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     String KEY_RESPONSE = "response";
     String Topic = "topic";
     ProgressDialog progressDialog;
-    MediaPlayer mp;
+    public static MediaPlayer mp;
     String userId = "";
     RelativeLayout rlLike;
     public static int click_pos = 0;
@@ -86,6 +96,11 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     int counter = 0;
     String tempUserID;
     private ArrayList<JoinedArtists> Joined_artist = new ArrayList<>();
+    final int SAMPLING_RATE = 44100;
+    private int mBufferSize;
+    private short[] mAudioBuffer;
+    public static RecordingThread mRecordingThread;
+    public static boolean mShouldContinue = true;
 
     public JoinListAdapter(ArrayList<JoinedArtists> Joined_artist, Context context) {
         this.Joined_artist = Joined_artist;
@@ -106,7 +121,11 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
             SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
             SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
             SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+            mRecordingThread = new RecordingThread();
+            mBufferSize = AudioRecord.getMinBufferSize(SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO,
+                    AudioFormat.ENCODING_PCM_16BIT);
 
+            mAudioBuffer = new short[mBufferSize / 2];
             if (loginSharedPref.getString("userId", null) != null) {
                 userId = loginSharedPref.getString("userId", null);
             } else if (fbPref.getString("userId", null) != null) {
@@ -114,7 +133,34 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
             } else if (twitterPref.getString("userId", null) != null) {
                 userId = twitterPref.getString("userId", null);
             }
+
+            JoinActivity.ivShareButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!userId.equals("") && userId != null) {
+
+                        JoinedArtists joinArt = Joined_artist.get(getAdapterPosition());
+                        String RecordingURL = joinArt.getRecording_url();
+                        Intent shareIntent = new Intent();
+                        shareIntent.setAction(Intent.ACTION_SEND);
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, RecordingURL);
+                        shareIntent.setType("image/jpeg");
+                        shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        v.getContext().startActivity(Intent.createChooser(shareIntent, "Choose Sharing option!"));
+
+                    } else {
+                        Toast.makeText(context, "Log in to Share this melody pack", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(context, SignInActivity.class);
+                        context.startActivity(intent);
+                    }
+
+                }
+            });
         }
+
+
     }
 
 
@@ -139,7 +185,9 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
             e.printStackTrace();
         }
         //  tempUserID = joinArt.getUser_id();
+
         getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, String.valueOf(click_pos));
+        JoinInstrumentListAdp.count= MelodyInstruments.getInstrumentCount();
         if (position == 0) {
             holder.redCross.setVisibility(VISIBLE);
         }
@@ -152,7 +200,9 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                 if (user_id.equals(joinArt.getUser_id()) && status.equals("0")) {
                     posForStudio = position;
                     getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, String.valueOf(position));
+                    JoinInstrumentListAdp.count= MelodyInstruments.getInstrumentCount();
                     JoinActivity.listProfile.set(position, new JoinedUserProfile(user_id, "1"));
+
                 } else {
                     String showProfileUserId = JoinActivity.addedBy;
                     Intent intent = new Intent(v.getContext(), ProfileActivity.class);
@@ -167,6 +217,21 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
             @Override
             public void onClick(View v) {
                 //    String position = Integer.toString();
+                if (mp != null) {
+                    mp.stop();
+                }
+                if (mRecordingThread != null) {
+                    mRecordingThread.stopRunning();
+                    mRecordingThread = null;
+                    //    mShouldContinue=true;
+                }
+                if (JoinInstrumentListAdp.mp_start != null) {
+                    for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
+                        JoinInstrumentListAdp.mp_start.get(i).stop();
+
+                    }
+                }
+
                 Intent intent = new Intent(v.getContext(), StudioActivity.class);
                 intent.putExtra("clickPositionJoin", String.valueOf(posForStudio));
                 v.getContext().startActivity(intent);
@@ -177,6 +242,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
         JoinActivity.ivJoinPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                JoinActivity.waveform_view.setVisibility(VISIBLE);
                 JoinActivity.ivJoinPlay.setVisibility(v.GONE);
                 JoinActivity.ivJoinPause.setVisibility(v.VISIBLE);
                 progressDialog = new ProgressDialog(v.getContext());
@@ -204,6 +270,28 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     public void onPrepared(MediaPlayer mp) {
                         progressDialog.dismiss();
                         mp.start();
+                        JoinActivity.chrono.setBase(SystemClock.elapsedRealtime());
+                        JoinActivity.chrono.start();
+                        try {
+                            if (mRecordingThread == null) {
+                                mShouldContinue = true;
+                                mRecordingThread = new RecordingThread();
+                                mRecordingThread.start();
+                            } else if (!mRecordingThread.isAlive()) {
+                                try {
+                                    mRecordingThread.start();
+                                } catch (Throwable e) {
+                                    e.printStackTrace();
+                                }
+
+                            } else {
+                                mRecordingThread.stopRunning();
+                            }
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
+
+
                     }
                 });
                 mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
@@ -216,6 +304,14 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                 mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
+                        JoinActivity.chrono.stop();
+                        if (mRecordingThread != null) {
+                            mRecordingThread.stopRunning();
+                            mRecordingThread = null;
+                            //    mShouldContinue=true;
+                        }
+                        JoinActivity.ivJoinPlay.setVisibility(VISIBLE);
+                        JoinActivity.ivJoinPause.setVisibility(GONE);
                         progressDialog.dismiss();
                     }
                 });
@@ -227,7 +323,13 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
             public void onClick(View v) {
                 JoinActivity.ivJoinPlay.setVisibility(v.VISIBLE);
                 JoinActivity.ivJoinPause.setVisibility(v.GONE);
+                if (mRecordingThread != null) {
+                    mRecordingThread.stopRunning();
+                    mRecordingThread = null;
+                    //    mShouldContinue=true;
+                }
                 mp.pause();
+                JoinActivity.chrono.stop();
             }
         });
 
@@ -398,6 +500,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         new ParseContents(getApplicationContext()).parseJoinInstrument(response, JoinActivity.instrumentList, position);
                         JoinActivity.adapter1 = new JoinInstrumentListAdp(JoinActivity.instrumentList, getApplicationContext());
                         JoinActivity.recyclerViewInstruments.setAdapter(JoinActivity.adapter1);
+                        JoinActivity.adapter1.notifyDataSetChanged();
                         //   }
 
                     }
@@ -435,5 +538,67 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
+    }
+
+    public class RecordingThread extends Thread {
+
+
+        @Override
+        public void run() {
+
+            //  android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
+            AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLING_RATE,
+                    AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, mBufferSize);
+            try {
+
+                recorder.startRecording();
+                Log.d("Recording issue", "SampleRate" + SAMPLING_RATE + "BufferSize" + mBufferSize + "AudioBuffer" + mAudioBuffer);
+            } catch (IllegalStateException e) {
+                Log.d("Recording issue", e.toString());
+            }
+
+            while (shouldContinue()) {
+                recorder.read(mAudioBuffer, 0, mBufferSize / 2);
+                JoinActivity.waveform_view.updateAudioData(mAudioBuffer);
+                updateDecibelLevel();
+            }
+
+            try {
+                recorder.stop();
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
+            recorder.release();
+
+        }
+
+        public synchronized boolean shouldContinue() {
+            return mShouldContinue;
+        }
+
+        public synchronized void stopRunning() {
+            mShouldContinue = false;
+        }
+    }
+
+    private void updateDecibelLevel() {
+
+        double sum = 0;
+
+        for (short rawSample : mAudioBuffer) {
+            double sample = rawSample / 32768.0;
+            sum += sample * sample;
+        }
+
+        double rms = Math.sqrt(sum / mAudioBuffer.length);
+        final double db = 20 * Math.log10(rms);
+
+        // Update the text view on the main thread.
+        JoinActivity.mDecibelView.post(new Runnable() {
+            @Override
+            public void run() {
+                // mDecibelView.setText(String.format(mDecibelFormat, db));
+            }
+        });
     }
 }

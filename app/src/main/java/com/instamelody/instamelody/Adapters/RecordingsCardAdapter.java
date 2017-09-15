@@ -86,7 +86,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     String Key_file_type = "file_type";
     Context context;
     String userId = "";
-    String addedBy, Rec_id;
+    String addedBy, Rec_id,profile_image,RecordingName,userNameRec;
     private RecyclerView.ViewHolder lastModifiedHoled = null;
 
     public RecordingsCardAdapter(Context context, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools) {
@@ -158,6 +158,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                         addedBy = rm.getAddedBy();
                         Rec_id = rm.getRecordingId();
+                        userNameRec=rm.getUserName();
+                        profile_image=rm.getUserProfilePic();
+                        RecordingName=rm.getRecordingName();
 
                         genre = tvRecordingGenres.getText().toString().trim();
                         recordName = tvRecordingName.getText().toString().trim();
@@ -205,6 +208,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             SharedPreferences.Editor record = context.getSharedPreferences("RecordingData", MODE_PRIVATE).edit();
                             record.putString("AddedBy", addedBy);
                             record.putString("Recording_id", Rec_id);
+                            record.putString("UserNameRec",userNameRec);
+                            record.putString("UserProfile",profile_image);
+                            record.putString("RecordingName",RecordingName);
                             record.commit();
                             Intent intent = new Intent(context, JoinActivity.class);
                             context.startActivity(intent);

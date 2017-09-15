@@ -16,6 +16,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +40,7 @@ import com.instamelody.instamelody.Models.Comments;
 import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Parse.ParseContents;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,18 +69,25 @@ public class JoinCommentActivity extends AppCompatActivity {
     RelativeLayout rlCommentSend;
     TextView tvCancel, tvSend;
     EditText etComment;
-    String melodyID, fileType,melodyName;
+    String melodyID, fileType, melodyName;
+    ImageView profile_image;
+    TextView artist_name, recording_name;
+    public static ImageView ivBackButton, ivHomeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_comment);
+        ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
+        ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
         tvPlayCount = (TextView) findViewById(R.id.tvPlayCount);
         tvLikeCount = (TextView) findViewById(R.id.tvLikeCount);
         tvCommentCount = (TextView) findViewById(R.id.tvCommentCount);
         tvShareCount = (TextView) findViewById(R.id.tvShareCount);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewArtists);
-
+        profile_image = (ImageView) findViewById(R.id.profile_image);
+        artist_name = (TextView) findViewById(R.id.artist_name);
+        recording_name = (TextView) findViewById(R.id.recording_name);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager lm = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(lm);
@@ -103,14 +112,17 @@ public class JoinCommentActivity extends AppCompatActivity {
         }
         Intent intent = getIntent();
         String pos = intent.getExtras().getString("Position");
-       // Toast.makeText(getApplicationContext(), pos, Toast.LENGTH_SHORT).show();
+        // Toast.makeText(getApplicationContext(), pos, Toast.LENGTH_SHORT).show();
         try {
             tvPlayCount.setText(JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getPlay_counts());
             tvLikeCount.setText(JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getLike_counts());
             tvCommentCount.setText(JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getComment_counts());
             tvShareCount.setText(JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getShare_counts());
             melodyID = JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getRecording_id();
-            melodyName=JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getRecording_name();
+            melodyName = JoinActivity.Joined_artist.get(Integer.parseInt(pos)).getRecording_name();
+            Picasso.with(getApplicationContext()).load(JoinActivity.ProfileImageRec).into(profile_image);
+            artist_name.setText(JoinActivity.UserName);
+            recording_name.setText(JoinActivity.RecordingName);
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
         }
@@ -181,6 +193,21 @@ public class JoinCommentActivity extends AppCompatActivity {
                     getApplicationContext().startActivity(intent);
                 }
 
+            }
+        });
+
+        ivBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        ivHomeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                startActivity(intent);
             }
         });
     }
