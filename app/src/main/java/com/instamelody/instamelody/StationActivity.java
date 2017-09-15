@@ -85,7 +85,13 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     String searchGet, search5;
     String artistName, Instruments, BPM;
     ProgressDialog progressDialog;
-  //  LongOperation myTask = null;
+    //  LongOperation myTask = null;
+    private OnLoadMoreListener mOnLoadMoreListener;
+    private final int VIEW_TYPE_ITEM = 0;
+    private final int VIEW_TYPE_LOADING = 1;
+    private boolean isLoading;
+    private int visibleThreshold = 5;
+    private int lastVisibleItem, totalItemCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,8 +144,16 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
 
+
+
+
         AudioFragment af = new AudioFragment();
         getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
+
+
+
+
+
 
         btnAudio.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -687,6 +701,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
         }
     }
+
+
 
 
 }

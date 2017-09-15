@@ -27,6 +27,7 @@ public class Chat {
     String groupPic;
     String isRead;
     String sendAt;
+    String newMessages;
 
     public String getId() {
         return id;
@@ -189,5 +190,13 @@ public class Chat {
             e.printStackTrace();
         }
         return val;
+    }
+
+    public String getNewMessages() {
+        return newMessages;
+    }
+
+    public void setNewMessages(String newMessages) {
+        this.newMessages = newMessages;
     }
 }

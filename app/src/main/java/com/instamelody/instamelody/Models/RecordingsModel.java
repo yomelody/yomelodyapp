@@ -15,8 +15,15 @@ public class RecordingsModel {
     String userProfilePic;
     String recordingCover;
     String genreId;
-    String genreName,recordingurl;
+    String genreName,recordingurl,joinCount;
 
+    public String getJoinCount() {
+        return joinCount;
+    }
+
+    public void setJoinCount(String joinCount) {
+        this.joinCount = joinCount;
+    }
 
     public String getGenreName() {
         return genreName;

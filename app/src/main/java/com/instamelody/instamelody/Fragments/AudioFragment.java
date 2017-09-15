@@ -17,12 +17,14 @@ import android.view.ViewGroup;
 import android.widget.TabHost;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
@@ -49,7 +51,6 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.Authentication
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
-
 /**
  * Created by Saurabh Singh on 4/18/2017.
  */
@@ -80,6 +81,7 @@ public class AudioFragment extends Fragment {
     String KEY_RESPONSE = "response";//JSONArray
     String genreString = "1";
 
+
     RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private static RecyclerView recyclerView;
@@ -93,15 +95,61 @@ public class AudioFragment extends Fragment {
     String strName, strSearch, strArtist, strInstruments, strBPM;
     TabHost host = null;
 
+    private boolean loading = true;
+    int pastVisiblesItems, visibleItemCount, totalItemCount;
+    LinearLayoutManager mLayoutManager;
     public AudioFragment() {
 
     }
+
+
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_audio, container, false);
         setRetainInstance(true);
+
+        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewAudio);
+       /* recyclerView.setHasFixedSize(true);
+
+        mLayoutManager = new GridLayoutManager(getActivity(), 2);
+        recyclerView.setLayoutManager(mLayoutManager);*/
+
+        final LinearLayoutManager mLayoutManager;
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(mLayoutManager);
+        /*recyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                int a=5;
+            }
+        });
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
+        {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy)
+            {
+                if(dy > 0) //check for scroll down
+                {
+                    visibleItemCount = mLayoutManager.getChildCount();
+                    totalItemCount = mLayoutManager.getItemCount();
+                    pastVisiblesItems = mLayoutManager.findFirstVisibleItemPosition();
+
+                    if (loading)
+                    {
+                        if ( (visibleItemCount + pastVisiblesItems) >= totalItemCount)
+                        {
+                            loading = false;
+                            Log.v("...", "Last Item Wow !");
+                            //Do pagination.. i.e. fetch new data
+                        }
+                    }
+                }
+            }
+        });*/
+
+
         return view;
     }
 
@@ -132,7 +180,11 @@ public class AudioFragment extends Fragment {
             userId = twitterPref.getString("userId", null);
         }
         new LongOperation().execute();
+
+
+
     }
+
 
     public void fetchGenreNames() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
@@ -187,7 +239,9 @@ public class AudioFragment extends Fragment {
                             ClearSharedPref();
                             e.printStackTrace();
                         }
+
                         try {
+                            host.setCurrentTab(0);
                             if (host.getCurrentTab() == 0) {
 //                            Toast.makeText(getActivity(), "All " + host.getCurrentTab(), Toast.LENGTH_SHORT).show();
                                 if (strName == null && strSearch == null) {
@@ -342,8 +396,18 @@ public class AudioFragment extends Fragment {
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
         requestQueue.add(stringRequest);
+
+
     }
+
 
 
     public void fetchRecordingsFilter() {
@@ -715,7 +779,10 @@ public class AudioFragment extends Fragment {
                 fetchRecordingsFilter();
             }
             adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
+
+
             return null;
+
         }
 
         protected void onPostExecute(String result) {
