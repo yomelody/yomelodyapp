@@ -16,8 +16,16 @@ import java.util.TimeZone;
 
 public class Message implements Serializable {
 
-    String id, message, createdAt, senderId, file, fileId, fileType, profilePic, isRead;
+    String id, message, createdAt, senderId, file, fileId, fileType, profilePic, isRead, recCount;
     JSONArray audioDetails;
+
+    public String getRecCount() {
+        return recCount;
+    }
+
+    public void setRecCount(String recCount) {
+        this.recCount = recCount;
+    }
 
     public String getFileId() {
         return fileId;

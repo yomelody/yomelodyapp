@@ -15,23 +15,16 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkError;
-import com.android.volley.NoConnectionError;
-import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.ServerError;
-import com.android.volley.TimeoutError;
+
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.ChatActivity;
 import com.instamelody.instamelody.Models.AudioDetails;
-import com.instamelody.instamelody.Models.ChatPlayerModel;
 import com.instamelody.instamelody.Models.JoinRecordingModel;
 import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.SharedAudios;
@@ -43,7 +36,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -78,12 +70,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     private int OTHER = 103;
     private int OTHER_IMAGE = 104;
     private int OTHER_AUDIO = 105;
-    public static int playingAudio = 0;
+
     public static String str;
     public static ImageView ivPrev, ivNext;
-    public static TextView tvNum;
-    String parentRec;
+//    public TextView tvNum;
     MediaPlayer mp;
+    String parentRec;
+    public static int origCount = 0;
 
     public ChatAdapter(Context context, ArrayList<Message> chatList) {
         this.chatList = chatList;
@@ -91,7 +84,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView chatMessage, chatImageName, timeStamp, tvUserName, tvMelodyName;
+        TextView chatMessage, chatImageName, timeStamp, tvUserName, tvMelodyName, tvNum;
         ImageView userProfileImage, chatImage, ivPlay, ivSettings, ivTick, ivDoubleTick;
         RelativeLayout rlChatImage, rlBelowImage;
         SeekBar seekBarChat;
@@ -113,6 +106,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             seekBarChat = (SeekBar) itemView.findViewById(R.id.seekBarChat);
             ivTick = (ImageView) itemView.findViewById(R.id.tick);
             ivDoubleTick = (ImageView) itemView.findViewById(R.id.doubleTick);
+            tvNum = (TextView) itemView.findViewById(R.id.tvNum);
         }
 
         private void primarySeekBarProgressUpdater() {
@@ -151,7 +145,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         } else if (viewType == SELF_AUDIO) {
             itemView = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.chat_view_recording_self, parent, false);
-            tvNum = (TextView) itemView.findViewById(R.id.tvNum);
             ivPrev = (ImageView) itemView.findViewById(R.id.ivPrev);
             ivNext = (ImageView) itemView.findViewById(R.id.ivNext);
         } else if (viewType == OTHER_IMAGE) {
@@ -160,7 +153,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         } else if (viewType == OTHER_AUDIO) {
             itemView = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.chat_view_recording_other, parent, false);
-            tvNum = (TextView) itemView.findViewById(R.id.tvNum);
             ivPrev = (ImageView) itemView.findViewById(R.id.ivPrev);
             ivNext = (ImageView) itemView.findViewById(R.id.ivNext);
         } else {
@@ -211,10 +203,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             final Message message = chatList.get(position);
             Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
             holder.timeStamp.setText(message.getCreatedAt());
+            String stroke = "(1"+ " of "+ message.getRecCount() +")";
+            holder.tvNum.setText(stroke);
             if (message.getIsRead().equals("1")) {
                 holder.ivTick.setVisibility(View.GONE);
                 holder.ivDoubleTick.setVisibility(View.VISIBLE);
             }
+
             JSONArray audiosDetailsArray = message.getAudioDetails();
             if (audiosDetailsArray.length() > 0) {
                 for (int j = 0; j < audiosDetailsArray.length(); j++) {
@@ -241,9 +236,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                 }
                             }
                         }
-                        str = "(" + (playingAudio + 1) + " of " + String.valueOf(sharedAudioList.size()) + ")";
-                        tvNum.setText(str);
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -288,8 +280,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                     String rid = message.getFileId();
                     fetchPlayJoinAudio(rid);
 
-//                    ChatPlayerModel cpm = audioList.get(playingAudio);
-//                    String urlAudio = cpm.getRec_url();
+
 //                    AudioOperator(urlAudio);
 //                    Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(ChatActivity.userProfileImagePlayer);
 //                    ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
@@ -301,9 +292,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                             ivPlayPlayer.setVisibility(View.GONE);
                             ivPausePlayer.setVisibility(View.VISIBLE);
                             ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
-                            ChatActivity.tvNumPlayer.setText(tvNum.getText().toString().trim());
+                            ChatActivity.tvNumPlayer.setText(holder.tvNum.getText().toString().trim());
                             str = "(1" + " of " + String.valueOf(JoinMp.size()) + ")";
-                            tvNum.setText(str);
+                            holder.tvNum.setText(str);
                             if (mp != null) {
                                 mp.stop();
                             }
@@ -373,8 +364,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 //                    ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
 //                    ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
 
-                    ChatPlayerModel cpm = audioList.get(playingAudio);
-                    String urlAudio = cpm.getRec_url();
                     AudioOperator(urlAudio);*/
 
                     try {
@@ -384,7 +373,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                 ivPlayPlayer.setVisibility(View.GONE);
                                 ivPausePlayer.setVisibility(View.VISIBLE);
                                 ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
-                                ChatActivity.tvNumPlayer.setText(tvNum.getText().toString().trim());
+                                ChatActivity.tvNumPlayer.setText(holder.tvNum.getText().toString().trim());
                                 if (mp != null) {
                                     mp.stop();
                                 }
@@ -397,19 +386,19 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                 } catch (NullPointerException e) {
                                     e.printStackTrace();
                                 }
-                                playingAudio = playingAudio - 1;
-                                if (playingAudio < 0) {
-                                    playingAudio = 0;
+                                origCount = origCount - 1;
+                                if (origCount < 0) {
+                                    origCount = 0;
                                 }
-                                str = "(" + (playingAudio) + " of " + String.valueOf(JoinMp.size()) + ")";
-                                tvNum.setText(str);
-                                SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
+                                str = "(" + (origCount + 1) + " of " + String.valueOf(JoinMp.size()) + ")";
+                                holder.tvNum.setText(str);
+                                SharedAudios sharedAudios = sharedAudioList.get(origCount);
                                 Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(ChatActivity.userProfileImagePlayer);
                                 ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
                                 ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
 
                                 for (int i = 0; i <= JoinMp.size() - 1; i++) {
-                                    if (playingAudio == i) {
+                                    if (origCount == i) {
                                         mp = JoinMp.get(i);
                                         mp.prepareAsync();
                                     }
@@ -473,7 +462,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                 ivPlayPlayer.setVisibility(View.GONE);
                                 ivPausePlayer.setVisibility(View.VISIBLE);
                                 ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
-                                ChatActivity.tvNumPlayer.setText(tvNum.getText().toString().trim());
+                                ChatActivity.tvNumPlayer.setText(holder.tvNum.getText().toString().trim());
                                 if (mp != null) {
                                     mp.stop();
                                 }
@@ -486,19 +475,19 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                 } catch (NullPointerException e) {
                                     e.printStackTrace();
                                 }
-                                playingAudio = playingAudio + 1;
-                                if (playingAudio > JoinMp.size()) {
-                                    playingAudio = JoinMp.size();
+                                origCount = origCount + 1;
+                                if (origCount > JoinMp.size()) {
+                                    origCount = JoinMp.size();
                                 }
-                                str = "(" + (playingAudio) + " of " + String.valueOf(JoinMp.size()) + ")";
-                                tvNum.setText(str);
-                                SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
+                                str = "(" + (origCount) + " of " + String.valueOf(JoinMp.size()) + ")";
+                                holder.tvNum.setText(str);
+                                SharedAudios sharedAudios = sharedAudioList.get(origCount);
                                 Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(ChatActivity.userProfileImagePlayer);
                                 ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
                                 ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
 
                                 for (int i = 0; i <= JoinMp.size() - 1; i++) {
-                                    if (playingAudio == i) {
+                                    if (origCount == i) {
                                         mp = JoinMp.get(i);
                                         mp.prepareAsync();
                                     }
@@ -589,7 +578,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
                         try {
                             JoinList.clear();
-                            playingAudio = 0;
                             JoinMp.clear();
                             jsonObject = new JSONObject(response);
                             if (jsonObject.getString("flag").equals("success")) {
@@ -598,10 +586,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     respObject = jsonArray.getJSONObject(i);
                                     try {
-                                        MediaPlayer mediaPlayera = new MediaPlayer();
-                                        mediaPlayera.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                                        mediaPlayera.setDataSource(respObject.getString("recording_url"));
-                                        JoinMp.add(mediaPlayera);
+                                        MediaPlayer mediaPlayer = new MediaPlayer();
+                                        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                                        mediaPlayer.setDataSource(respObject.getString("recording_url"));
+                                        JoinMp.add(mediaPlayer);
                                     } catch (Exception ex) {
                                         ex.printStackTrace();
                                     }
