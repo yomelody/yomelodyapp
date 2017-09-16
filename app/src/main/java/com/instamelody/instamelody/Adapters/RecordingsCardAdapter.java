@@ -29,6 +29,7 @@ import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.CommentsActivity;
 import com.instamelody.instamelody.JoinActivity;
 import com.instamelody.instamelody.MessengerActivity;
+import com.instamelody.instamelody.Models.JoinRecordingModel;
 import com.instamelody.instamelody.Models.RecJoinRecordingModel;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;

@@ -20,7 +20,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
@@ -373,7 +372,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void displayExceptionMessage(String msg) {
-        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
     }
 
     public void logOut() {
@@ -382,13 +381,13 @@ public class HomeActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         String successmsg = response.toString();
-                        Toast.makeText(HomeActivity.this, "" + successmsg, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(HomeActivity.this, "" + successmsg, Toast.LENGTH_SHORT).show();
 
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
                             String flag = jsonObject.getString("flag");
                             String msg = jsonObject.getString("msg");
-                            Toast.makeText(HomeActivity.this, "" + flag, Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(HomeActivity.this, "" + flag, Toast.LENGTH_SHORT).show();
 
                         } catch (JSONException e) {
                             e.printStackTrace();

@@ -548,7 +548,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
                 Volume = CalcuateEQProgressValue(progress);
-                Toast.makeText(getApplicationContext(), String.valueOf(Volume), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), String.valueOf(Volume), Toast.LENGTH_SHORT).show();
                 //Volume = progress;
 
                 if (StudioActivity.list.size() == 0) {
@@ -581,7 +581,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
                 Base = CalcuateEQProgressValue(progress);
-                Toast.makeText(getApplicationContext(), String.valueOf(Base), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), String.valueOf(Base), Toast.LENGTH_SHORT).show();
                 //Base = progress;
                 if (StudioActivity.list.size() == 0) {
                     StudioActivity.list.add(InstrumentListPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
@@ -618,7 +618,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 Treble = CalcuateEQProgressValue(progress);
-                Toast.makeText(getApplicationContext(), String.valueOf(Treble), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), String.valueOf(Treble), Toast.LENGTH_SHORT).show();
                 //Treble = progress;
                 if (StudioActivity.list.size() == 0) {
                     StudioActivity.list.add(InstrumentListPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
