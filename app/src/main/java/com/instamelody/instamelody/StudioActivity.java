@@ -74,10 +74,8 @@ import com.android.volley.toolbox.Volley;
 import com.facebook.FacebookSdk;
 import com.facebook.share.widget.ShareDialog;
 import com.instamelody.instamelody.Adapters.InstrumentListAdapter;
-import com.instamelody.instamelody.Adapters.JoinInstrumentListAdp;
 import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
 import com.instamelody.instamelody.Models.Genres;
-import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.MelodyMixing;
@@ -113,10 +111,6 @@ import java.util.TimerTask;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
-import static com.instamelody.instamelody.JoinActivity.Joined_artist;
-import static com.instamelody.instamelody.JoinActivity.RecId;
-import static com.instamelody.instamelody.JoinActivity.addedBy;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ADD_RECORDINGS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
@@ -401,7 +395,7 @@ public class StudioActivity extends AppCompatActivity {
             recyclerViewInstruments.setItemAnimator(new DefaultItemAnimator());
             adapter = new InstrumentListAdapter(JoinActivity.instrumentList, getApplicationContext());
             recyclerViewInstruments.setAdapter(adapter);
-            frameTrans.setVisibility(View.VISIBLE);
+            //frameTrans.setVisibility(View.VISIBLE);
             frameSync.setVisibility(View.VISIBLE);
             if (instrumentList.size() > 0) {
                 frameSync.setVisibility(View.VISIBLE);
@@ -445,7 +439,7 @@ public class StudioActivity extends AppCompatActivity {
                     recyclerViewInstruments.setItemAnimator(new DefaultItemAnimator());
                     adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
                     recyclerViewInstruments.setAdapter(adapter);
-                    frameTrans.setVisibility(View.VISIBLE);
+                    //frameTrans.setVisibility(View.VISIBLE);
                     frameSync.setVisibility(View.VISIBLE);
                     if (instrumentList.size() > 0) {
                         frameSync.setVisibility(View.VISIBLE);
@@ -1513,7 +1507,7 @@ public class StudioActivity extends AppCompatActivity {
         protected void onPostExecute(String file_url) {
             System.out.println("Downloaded");
             pDialog.dismiss();
-            frameTrans.setVisibility(View.GONE);
+            //frameTrans.setVisibility(View.GONE);
 //            frameSync.setVisibility(View.GONE);
             // tvDone.setEnabled(true);
         }

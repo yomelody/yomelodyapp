@@ -252,13 +252,38 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                if (RecordingsCardAdapter.mp != null) {
+                    try {
+
+                        RecordingsCardAdapter.mp.stop();
+                        RecordingsCardAdapter.mp.release();
+
+
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                }
+                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                startActivity(intent);
             }
         });
 
         ivHomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (RecordingsCardAdapter.mp != null) {
+                    try {
+
+                        RecordingsCardAdapter.mp.stop();
+                        RecordingsCardAdapter.mp.release();
+
+
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                }
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
             }
@@ -267,6 +292,18 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         discover.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (RecordingsCardAdapter.mp != null) {
+                    try {
+
+                        RecordingsCardAdapter.mp.stop();
+                        RecordingsCardAdapter.mp.release();
+
+
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                }
                 Intent intent = new Intent(getApplicationContext(), DiscoverActivity.class);
                 startActivity(intent);
             }
@@ -275,6 +312,18 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         message.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (RecordingsCardAdapter.mp != null) {
+                    try {
+
+                        RecordingsCardAdapter.mp.stop();
+                        RecordingsCardAdapter.mp.release();
+
+
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                }
                 Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
                 startActivity(intent);
             }
@@ -291,6 +340,16 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         audio_feed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (RecordingsCardAdapter.mp != null) {
+                    try {
+
+                        RecordingsCardAdapter.mp.stop();
+                        RecordingsCardAdapter.mp.release();
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                }
                 Intent i = new Intent(StationActivity.this, StationActivity.class);
                 startActivity(i);
             }
@@ -685,12 +744,12 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         super.onPause();
         if (RecordingsCardAdapter.mp != null) {
             try {
+
                 RecordingsCardAdapter.mp.stop();
-                RecordingsCardAdapter.mp.reset();
                 RecordingsCardAdapter.mp.release();
                 try {
-                    AudioFragment af = new AudioFragment();
-                    getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
+                    //AudioFragment af = new AudioFragment();
+                    //getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
@@ -700,6 +759,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
             }
 
         }
+
     }
 
 

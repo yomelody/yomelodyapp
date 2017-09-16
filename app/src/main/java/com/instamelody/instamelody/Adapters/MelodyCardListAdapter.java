@@ -259,6 +259,21 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 @Override
                 public void onClick(View view) {
                     if (!userId.equals("") && userId != null) {
+                        if (mediaPlayer != null) {
+                            try {
+                                ivPlay.setVisibility(VISIBLE);
+                                ivPause.setVisibility(GONE);
+                                try {
+                                    mediaPlayer.pause();
+                                } catch (Throwable e) {
+                                    e.printStackTrace();
+                                }
+
+                                melodySlider.setProgress(0);
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
                         String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID, RecordingURL, CoverUrl, LikeStatus,ProfilePick;
                         MelodyCard melody = melodyList.get(getAdapterPosition());
 
@@ -267,6 +282,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         } else {
                             LikeStatus = "0";
                         }
+
                         instruments = tvInstrumentsUsed.getText().toString().trim();
                         bpm = tvBpmRate.getText().toString().trim();
                         genre = tvMelodyGenre.getText().toString().trim();
@@ -530,7 +546,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
-                length = mediaPlayer.getCurrentPosition();
+
                 holder.melodySlider.setProgress(0);
             }
         });
