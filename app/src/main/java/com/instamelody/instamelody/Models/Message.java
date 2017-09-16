@@ -9,15 +9,22 @@ import org.json.JSONArray;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
 public class Message implements Serializable {
 
-    String id, message, createdAt, senderId, file, fileId, fileType, profilePic, isRead;
+    String id, message, createdAt, senderId, file, fileId, fileType, profilePic, isRead, recCount;
     JSONArray audioDetails;
+
+    public String getRecCount() {
+        return recCount;
+    }
+
+    public void setRecCount(String recCount) {
+        this.recCount = recCount;
+    }
 
     public String getFileId() {
         return fileId;

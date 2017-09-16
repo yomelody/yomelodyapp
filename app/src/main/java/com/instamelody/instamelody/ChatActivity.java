@@ -88,12 +88,14 @@ import java.util.Map;
 
 import static android.os.Environment.isExternalStorageEmulated;
 import static android.os.Environment.isExternalStorageRemovable;
+//import static com.instamelody.instamelody.Adapters.ChatAdapter.tvNum;
 import static com.instamelody.instamelody.utils.Const.PUSH_NOTIFICATION;
 import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.CHAT;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MESSAGE_LIST;
+import static com.instamelody.instamelody.utils.Const.ServiceType.READ_STATUS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.UPDATE_GROUP;
 
 /**
@@ -172,7 +174,7 @@ public class ChatActivity extends AppCompatActivity {
 //                    String imageUrl = intent.getStringExtra("fileUrl");
                     String chatId = intent.getStringExtra("chatId");
                     getChatMsgs(chatId);
-//                    readStatus(); holdem
+                    readStatus();
 
 //                    if (imageUrl != null && imageUrl.length() > 4 && Patterns.WEB_URL.matcher(imageUrl).matches()) {
 //                        Bitmap bitmap = getBitmapFromURL(imageUrl);
@@ -278,7 +280,7 @@ public class ChatActivity extends AppCompatActivity {
         packType = packPref.getString("PackType", null);
 
         getChatMsgs(chatId);
-//        readStatus(); holdem
+        readStatus();
 
 //        groupImageBitmap = ((BitmapDrawable) ivGroupImage.getDrawable()).getBitmap();
         etMessage = (EditText) findViewById(R.id.etMessage);
@@ -757,6 +759,7 @@ public class ChatActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         getChatMsgs(chatId);
+        readStatus();
 
         imageFileList.clear();
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
@@ -770,12 +773,12 @@ public class ChatActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
     }
 
-    @Override
-    public void onRestart() {
-        super.onRestart();
-        getChatMsgs(chatId);
-//        readStatus(); holdem
-    }
+//    @Override
+//    public void onRestart() {
+//        super.onRestart();
+//        getChatMsgs(chatId);
+//        readStatus();
+//    }
 
    /* public void checkFile(final String pack_id, final String pack_type) {
         final StringRequest stringRequest = new StringRequest(Request.Method.POST, CHECK_FILE_URL,
@@ -866,6 +869,7 @@ public class ChatActivity extends AppCompatActivity {
                                         message.setFileId(chatJson.getString("file_ID"));
                                         message.setIsRead(chatJson.getString("isread"));
                                         message.setCreatedAt(chatJson.getString("sendat"));
+                                        message.setRecCount((chatJson.getString("Rec_count")));
                                         if (!chatJson.get("Audioshared").equals(null) && !chatJson.get("Audioshared").equals("")) {
                                             message.setAudioDetails(chatJson.getJSONArray("Audioshared"));
                                         }
@@ -1358,64 +1362,62 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-//    public void readStatus() {
-//        StringRequest stringRequest = new StringRequest(Request.Method.POST, READ_STATUS, new Response.Listener<String>() {
-//            @Override
-//            public void onResponse(String response) {
-//                String str = response;
-////                Toast.makeText(ChatActivity.this, str + "readStatus", Toast.LENGTH_SHORT).show();
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//
-//                String errorMsg = "";
-//                if (error instanceof TimeoutError) {
-//                    errorMsg = "Internet connection timed out";
-//                } else if (error instanceof NoConnectionError) {
-//                    errorMsg = "There is no connection";
-//                } else if (error instanceof AuthFailureError) {
-//                    errorMsg = "AuthFailureError";
-//                } else if (error instanceof ServerError) {
-//                    errorMsg = "We are facing problem in connecting to server";
-//                } else if (error instanceof NetworkError) {
-//                    errorMsg = "We are facing problem in connecting to network";
-//                } else if (error instanceof ParseError) {
-//                    errorMsg = "Parse error";
-//                } else if (error == null) {
-//
-//                }
-//
-//                if (!errorMsg.equals("")) {
-//                    Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
-//                    Log.d("Error", errorMsg);
-//                    error.printStackTrace();
-//                }
-//            }
-//        }) {
-//            @Override
-//            protected Map<String, String> getParams() {
-//                Map<String, String> params = new HashMap<>();
-//
-//                try {
-//                    params.put("messageID", msgId);
-//                    params.put("chatID", chatId);
-//                    if (chatType.equals("group")) {
-//                        params.put("chat_type", "group");
-//                        params.put("userId", userId);
-//                    } else {
-//                        params.put("chat_type", "single");
-//                        params.put("userId", userId);
-//
-//                    }
-//                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//                return params;
-//            }
-//        };
-//        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-//        requestQueue.add(stringRequest);
-//    }
+    public void readStatus() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, READ_STATUS, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                String str = response;
+//                Toast.makeText(ChatActivity.this, str + "readStatus", Toast.LENGTH_SHORT).show();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                String errorMsg = "";
+                if (error instanceof TimeoutError) {
+                    errorMsg = "Internet connection timed out";
+                } else if (error instanceof NoConnectionError) {
+                    errorMsg = "There is no connection";
+                } else if (error instanceof AuthFailureError) {
+                    errorMsg = "AuthFailureError";
+                } else if (error instanceof ServerError) {
+                    errorMsg = "We are facing problem in connecting to server";
+                } else if (error instanceof NetworkError) {
+                    errorMsg = "We are facing problem in connecting to network";
+                } else if (error instanceof ParseError) {
+                    errorMsg = "Parse error";
+                } else if (error == null) {
+
+                }
+
+                if (!errorMsg.equals("")) {
+                    Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                    Log.d("Error", errorMsg);
+                    error.printStackTrace();
+                }
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+
+                try {
+                    params.put("messageID", msgId);
+                    params.put("chatID", chatId);
+                    params.put("user_id", userId);
+                    if (chatType.equals("group")) {
+                        params.put("chat_type", "group");
+                    } else {
+                        params.put("chat_type", "single");
+                    }
+                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+    }
 }
