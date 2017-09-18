@@ -130,7 +130,7 @@
                                 android:layout_marginTop="6dp">
 
                                 <TextView
-                                    android:id="@+id/descFree1"
+                                    android:id="@+id/descFreeRecordingTime"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="30 Sec Record Time"
@@ -141,7 +141,7 @@
                                     android:id="@+id/descFreeLayers"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@+id/descFree1"
+                                    android:layout_below="@+id/descFreeRecordingTime"
                                     android:text="2 Layers Melody"
                                     android:textColor="#869399"
                                     android:textSize="12sp" />
@@ -236,7 +236,7 @@
                                 android:layout_marginTop="6dp">
 
                                 <TextView
-                                    android:id="@+id/tvStandardDesc1"
+                                    android:id="@+id/tvStandardDescRecordingTime"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="30 Sec Record Time"
@@ -247,7 +247,7 @@
                                     android:id="@+id/tvStandardLayers"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@+id/tvStandardDesc1"
+                                    android:layout_below="@+id/tvStandardDescRecordingTime"
                                     android:text="2 Layers Melody"
                                     android:textColor="#869399"
                                     android:textSize="12sp" />
@@ -357,7 +357,7 @@
                                 android:layout_marginTop="6dp">
 
                                 <TextView
-                                    android:id="@+id/tvPremiumDesc1"
+                                    android:id="@+id/tvPremiumDescRecordingTime"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="30 Sec Record Time"
@@ -368,7 +368,7 @@
                                     android:id="@+id/tvPremiumLayers"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@+id/tvPremiumDesc1"
+                                    android:layout_below="@+id/tvPremiumDescRecordingTime"
                                     android:text="2 Layers Melody"
                                     android:textColor="#869399"
                                     android:textSize="12sp" />
@@ -479,7 +479,7 @@
                                 android:layout_weight="0.65">
 
                                 <TextView
-                                    android:id="@+id/tvProducerDesc1"
+                                    android:id="@+id/tvProducerDescRecordingTime"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="30 Sec Record Time"
@@ -490,7 +490,7 @@
                                     android:id="@+id/tvProducerLayers"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@+id/tvProducerDesc1"
+                                    android:layout_below="@+id/tvProducerDescRecordingTime"
                                     android:text="2 Layers Melody"
                                     android:textColor="#869399"
                                     android:textSize="12sp" />

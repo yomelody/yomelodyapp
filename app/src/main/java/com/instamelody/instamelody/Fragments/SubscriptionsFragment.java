@@ -1,8 +1,11 @@
 package com.instamelody.instamelody.Fragments;
 
 import android.app.Fragment;
+import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,14 +24,24 @@ import com.instamelody.instamelody.Models.SubscriptionPackage;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ADVERTISEMENT;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.PACKAGES;
+import static com.instamelody.instamelody.utils.Const.ServiceType.SUBSCRIPTION;
+import static com.instamelody.instamelody.utils.Const.ServiceType.SUBSCRIPTION_DETAIL;
 
 /**
  * Created by Shubhansh Jaiswal on 11/29/2016.
@@ -36,12 +49,23 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.PACKAGES;
 
 public class SubscriptionsFragment extends Fragment {
     String KEY_SUBSCRIPTION = "key";
-    ArrayList<SubscriptionPackage> subscriptionPackageArrayList = new ArrayList<>();
+    String USER_ID = "user_id";
+    String STATUS = "status";
+    String PACKAGE_ID = "package_id";
 
-    TextView tvFreemium, descFreeLayers, tvPriceFree, tvStandard, tvStandardLayers, priceStandard, tvPremium,
-            tvPremiumLayers, pricePremium, tvProducer, tvProducerLayers, priceProducer;
+    ProgressDialog progressDialog;
+    ArrayList<SubscriptionPackage> subscriptionPackageArrayList = new ArrayList<>();
+    View rootView;
+    public static TextView tvFreemium, descFreeLayers, tvPriceFree, tvStandard, tvStandardLayers, priceStandard, tvPremium,
+            tvPremiumLayers, pricePremium, tvProducer, tvProducerLayers, priceProducer,
+            descFreeRecordingTime, tvStandardDescRecordingTime, tvPremiumDescRecordingTime, tvProducerDescRecordingTime;
 
     Switch switchFree, switchStandard, switchPremium, switchProducer;
+    String userId, firstName, lastName, userNameLogin, profilePicLogin, dob, mobile, email, date, userIdNormal, emailNormal;
+    String userIdTwitter, firstNameTwitter, lastNameTwitter, emailFinalTwitter, profilePicTwitter, userNameTwitter;
+    String userIdFb, firstNameFb, lastNameFb, emailFinalFb, profilePicFb, userNameFb;
+    String switchFlag = "0";
+    String packageId = "";
 
     public SubscriptionsFragment() {
     }
@@ -49,15 +73,53 @@ public class SubscriptionsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        subscriptionPackage();
+        progressDialog = new ProgressDialog(getActivity());
+
+        SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+        userIdNormal = loginSharedPref.getString("userId", null);
+        firstName = loginSharedPref.getString("firstName", null);
+        lastName = loginSharedPref.getString("lastName", null);
+        emailNormal = loginSharedPref.getString("emailFinal", null);
+        userNameLogin = loginSharedPref.getString("userName", null);
+        profilePicLogin = loginSharedPref.getString("profilePic", null);
+        dob = loginSharedPref.getString("dob", null);
+        mobile = loginSharedPref.getString("mobile", null);
+
+        SharedPreferences twitterEditor = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        userIdTwitter = twitterEditor.getString("userId", null);
+        firstNameTwitter = twitterEditor.getString("firstName", null);
+        lastNameTwitter = twitterEditor.getString("lastName", null);
+        userNameTwitter = twitterEditor.getString("userName", null);
+        emailFinalTwitter = twitterEditor.getString("emailFinal", null);
+        profilePicTwitter = twitterEditor.getString("profilePic", null);
+
+
+        SharedPreferences fbEditor = getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+        userIdFb = fbEditor.getString("userId", null);
+        firstNameFb = fbEditor.getString("firstName", null);
+        lastNameFb = fbEditor.getString("lastName", null);
+        emailFinalFb = fbEditor.getString("emailFinal", null);
+        profilePicFb = fbEditor.getString("profilePic", null);
+        userNameFb = fbEditor.getString("userName", null);
+
+
+        if (userIdNormal != null) {
+            userId = userIdNormal;
+        } else if (userIdFb != null) {
+            userId = userIdFb;
+        } else {
+            userId = userIdTwitter;
+        }
 
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_subscriptions, container, false);
 
+        View view = inflater.inflate(R.layout.fragment_subscriptions, container, false);
+        rootView = view;
+        subscriptionPackage();
         tvFreemium = (TextView) view.findViewById(R.id.tvFreemium);
         descFreeLayers = (TextView) view.findViewById(R.id.descFreeLayers);
         tvPriceFree = (TextView) view.findViewById(R.id.tvPriceFree);
@@ -70,56 +132,140 @@ public class SubscriptionsFragment extends Fragment {
         tvProducer = (TextView) view.findViewById(R.id.tvProducer);
         tvProducerLayers = (TextView) view.findViewById(R.id.tvProducerLayers);
         priceProducer = (TextView) view.findViewById(R.id.priceProducer);
-
-
-        TextView[] tv = new TextView[4];
-        tv[0] = (TextView) view.findViewById(R.id.tvFreemium);
-        tv[1] = (TextView) view.findViewById(R.id.tvStandard);
-        tv[2] = (TextView) view.findViewById(R.id.tvPremium);
-        tv[3] = (TextView) view.findViewById(R.id.tvProducer);
-
-
-        for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
-            tv[i].setText(subscriptionPackageArrayList.get(i).getPackage_name());
-        }
-
-        TextView[] tv1 = new TextView[4];
-        tv1[0] = (TextView) view.findViewById(R.id.descFreeLayers);
-        tv1[1] = (TextView) view.findViewById(R.id.tvStandardLayers);
-        tv1[2] = (TextView) view.findViewById(R.id.tvPremiumLayers);
-        tv1[3] = (TextView) view.findViewById(R.id.tvProducerLayers);
-
-        for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
-            tv1[i].setText(subscriptionPackageArrayList.get(i).getTotal_melody());
-        }
-
-        TextView[] tv2 = new TextView[4];
-        tv2[0] = (TextView) view.findViewById(R.id.tvPriceFree);
-        tv2[1] = (TextView) view.findViewById(R.id.priceStandard);
-        tv2[2] = (TextView) view.findViewById(R.id.pricePremium);
-        tv2[3] = (TextView) view.findViewById(R.id.priceProducer);
-
-        for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
-            tv2[0].setText(subscriptionPackageArrayList.get(i).getCost());
-        }
-
-        switchFree = (Switch) view.findViewById(R.id.switchFree);
-        switchStandard = (Switch) view.findViewById(R.id.switchStandard);
-        switchPremium = (Switch) view.findViewById(R.id.switchPremium);
-        switchProducer = (Switch) view.findViewById(R.id.switchProducer);
+        descFreeRecordingTime = (TextView) view.findViewById(R.id.descFreeRecordingTime);
+        tvStandardDescRecordingTime = (TextView) view.findViewById(R.id.tvStandardDescRecordingTime);
+        tvPremiumDescRecordingTime = (TextView) view.findViewById(R.id.tvPremiumDescRecordingTime);
+        tvProducerDescRecordingTime = (TextView) view.findViewById(R.id.tvProducerDescRecordingTime);
         return view;
 
 
     }
 
     public void subscriptionPackage() {
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, PACKAGES,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.d("AdvertisementData", response);
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                         subscriptionPackageArrayList.clear();
                         new ParseContents(getActivity()).parsePackageSubscription(response, subscriptionPackageArrayList);
+
+
+                        TextView[] tv = new TextView[4];
+                        tv[0] = (TextView) rootView.findViewById(R.id.tvFreemium);
+                        tv[1] = (TextView) rootView.findViewById(R.id.tvStandard);
+                        tv[2] = (TextView) rootView.findViewById(R.id.tvPremium);
+                        tv[3] = (TextView) rootView.findViewById(R.id.tvProducer);
+
+
+                        for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
+                            tv[i].setText(subscriptionPackageArrayList.get(i).getPackage_name());
+
+                        }
+
+                        TextView[] tv1 = new TextView[4];
+                        tv1[0] = (TextView) rootView.findViewById(R.id.descFreeLayers);
+                        tv1[1] = (TextView) rootView.findViewById(R.id.tvStandardLayers);
+                        tv1[2] = (TextView) rootView.findViewById(R.id.tvPremiumLayers);
+                        tv1[3] = (TextView) rootView.findViewById(R.id.tvProducerLayers);
+
+                        for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
+                            tv1[i].setText(subscriptionPackageArrayList.get(i).getTotal_melody());
+                        }
+
+                        TextView[] tv2 = new TextView[4];
+                        tv2[0] = (TextView) rootView.findViewById(R.id.tvPriceFree);
+                        tv2[1] = (TextView) rootView.findViewById(R.id.priceStandard);
+                        tv2[2] = (TextView) rootView.findViewById(R.id.pricePremium);
+                        tv2[3] = (TextView) rootView.findViewById(R.id.priceProducer);
+
+                        for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
+                            tv2[i].setText(subscriptionPackageArrayList.get(i).getCost());
+                        }
+
+                        TextView[] tv3 = new TextView[4];
+                        tv3[0] = (TextView) rootView.findViewById(R.id.descFreeRecordingTime);
+                        tv3[1] = (TextView) rootView.findViewById(R.id.tvStandardDescRecordingTime);
+                        tv3[2] = (TextView) rootView.findViewById(R.id.tvPremiumDescRecordingTime);
+                        tv3[3] = (TextView) rootView.findViewById(R.id.tvProducerDescRecordingTime);
+
+                        for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
+                            tv3[i].setText(subscriptionPackageArrayList.get(i).getRecording_time());
+                        }
+
+                        switchFree = (Switch) rootView.findViewById(R.id.switchFree);
+                        switchStandard = (Switch) rootView.findViewById(R.id.switchStandard);
+                        switchPremium = (Switch) rootView.findViewById(R.id.switchPremium);
+                        switchProducer = (Switch) rootView.findViewById(R.id.switchProducer);
+                        switchFree.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (switchFlag == "1") {
+                                    switchFree.setChecked(false);
+                                    switchFlag = "0";
+                                } else {
+                                    switchFree.setChecked(true);
+                                    switchFlag = "1";
+                                    packageId = "1";
+                                    subscription();
+
+                                }
+                            }
+                        });
+
+                        switchStandard.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (switchFlag == "1") {
+                                    switchStandard.setChecked(false);
+                                    switchFlag = "0";
+                                } else {
+                                    switchStandard.setChecked(true);
+                                    switchFlag = "1";
+                                    packageId = "2";
+                                    subscription();
+                                }
+                            }
+                        });
+
+                        switchPremium.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (switchFlag == "1") {
+                                    switchPremium.setChecked(false);
+                                    switchFlag = "0";
+                                } else {
+                                    switchPremium.setChecked(true);
+                                    switchFlag = "1";
+                                    packageId = "3";
+                                    subscription();
+                                }
+                            }
+                        });
+
+                        switchProducer.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (switchFlag == "1") {
+                                    switchProducer.setChecked(false);
+                                    switchFlag = "0";
+                                } else {
+                                    switchProducer.setChecked(true);
+                                    switchFlag = "1";
+                                    packageId = "4";
+                                    subscription();
+                                }
+                            }
+                        });
 
                     }
                 },
@@ -135,6 +281,104 @@ public class SubscriptionsFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(KEY_SUBSCRIPTION, "admin@123");
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(stringRequest);
+    }
+
+    public void subscription() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, SUBSCRIPTION,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String result = response;
+                        try {
+                            JSONObject jsonObject = new JSONObject(result);
+                            String flag = jsonObject.getString("flag");
+                            String response1 = jsonObject.getString("response");
+                            JSONObject jsonObject1 = jsonObject.getJSONObject("response");
+                            String msg = jsonObject1.getString("msg");
+                            Toast.makeText(getActivity(), "" + msg, Toast.LENGTH_SHORT).show();
+                            subscription_detail();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+                        String errorMsg = error.toString();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(USER_ID, userId);
+                params.put(STATUS, switchFlag);
+                params.put(PACKAGE_ID, packageId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(stringRequest);
+    }
+
+    public void subscription_detail() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, SUBSCRIPTION_DETAIL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String result = response;
+                        try {
+                            JSONObject jsonObject = new JSONObject(result);
+                            String flag = jsonObject.getString("flag");
+                            String response1 = jsonObject.getString("res");
+                            JSONArray jsonArray = jsonObject.getJSONArray("res");
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                                String time = jsonObject1.getString("time");
+                                String dt = time;  // Start date
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                Calendar c = Calendar.getInstance();
+                                c.setTime(sdf.parse(dt));
+                                c.add(Calendar.DATE, 30);
+                                dt = sdf.format(c.getTime());
+
+                                if (dt.equals(true)) {
+                                    Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+                        String errorMsg = error.toString();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(USER_ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
