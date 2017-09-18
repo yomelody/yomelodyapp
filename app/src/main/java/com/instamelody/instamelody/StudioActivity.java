@@ -590,7 +590,12 @@ public class StudioActivity extends AppCompatActivity {
                 if (StudioActivity.mp_start.size() > 0) {
 
                     for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
-                        StudioActivity.mp_start.get(i).stop();
+                        try {
+                            StudioActivity.mp_start.get(i).stop();
+                        } catch (IllegalStateException e) {
+                            e.printStackTrace();
+                        }
+
 
                     }
                 }
@@ -623,11 +628,16 @@ public class StudioActivity extends AppCompatActivity {
                             //Ignore
                         }
                     }
-                    recorder.release();
-                    recorder = null;
-                    isRecording = false;
-                    StudioActivity.tvDone.setEnabled(true);
-                    StudioActivity.chrono.stop();
+                    try {
+                        recorder.release();
+                        recorder = null;
+                        isRecording = false;
+                        StudioActivity.tvDone.setEnabled(true);
+                        StudioActivity.chrono.stop();
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
+
                 } else {
                     try {
 
@@ -2216,7 +2226,7 @@ public class StudioActivity extends AppCompatActivity {
         }
         if (mpall != null) {
             mpall.stop();
-            if(mediaPlayersAll.size()>0) {
+            if (mediaPlayersAll.size() > 0) {
                 for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                     mediaPlayersAll.get(i).stop();
                 }
@@ -2394,7 +2404,7 @@ public class StudioActivity extends AppCompatActivity {
             }
             if (mpall != null) {
                 mpall.stop();
-                if(mediaPlayersAll.size()>0) {
+                if (mediaPlayersAll.size() > 0) {
                     for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                         mediaPlayersAll.get(i).stop();
                     }
@@ -2408,7 +2418,6 @@ public class StudioActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
 
 
 }

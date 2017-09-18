@@ -30,7 +30,7 @@ import com.instamelody.instamelody.CommentsActivity;
 import com.instamelody.instamelody.JoinActivity;
 import com.instamelody.instamelody.MessengerActivity;
 import com.instamelody.instamelody.Models.JoinRecordingModel;
-import com.instamelody.instamelody.Models.RecJoinRecordingModel;
+//import com.instamelody.instamelody.Models.RecJoinRecordingModel;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.ProfileActivity;
@@ -75,7 +75,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     private ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     private ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
     public static ArrayList<JoinRecordingModel> JoinList = new ArrayList<JoinRecordingModel>();
-    public static ArrayList<RecJoinRecordingModel> RecJoinList = new ArrayList<RecJoinRecordingModel>();
+   // public static ArrayList<RecJoinRecordingModel> RecJoinList = new ArrayList<RecJoinRecordingModel>();
     public ArrayList<MediaPlayer> JoinMp = new ArrayList<MediaPlayer>();
     String USER_TYPE = "user_type";
     String USER_ID = "user_id";

@@ -654,8 +654,8 @@ public class ProfileActivity extends AppCompatActivity {
                         try {
                             jsonObject = new JSONObject(response);
                             if (jsonObject.getString(KEY_FLAG).equals(SUCCESS)) {
-                                myTask = new LongOperation();
-                                myTask.execute();
+//                                myTask = new LongOperation();
+//                                myTask.execute();
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     Genres genres = new Genres();

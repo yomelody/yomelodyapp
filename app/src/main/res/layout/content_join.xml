@@ -229,7 +229,7 @@
                                     android:layout_height="wrap_content">
 
                                     <ImageView
-                                        android:id="@+id/ivStation6"
+                                        android:id="@+id/ivPlayPre"
                                         android:layout_width="30dp"
                                         android:layout_height="30dp"
                                         android:layout_gravity="start|bottom"
@@ -238,7 +238,7 @@
                                         app:srcCompat="@drawable/previous" />
 
                                     <ImageView
-                                        android:id="@+id/ivStation8"
+                                        android:id="@+id/ivPlayNext"
                                         android:layout_width="30dp"
                                         android:layout_height="30dp"
                                         android:layout_gravity="start|bottom"

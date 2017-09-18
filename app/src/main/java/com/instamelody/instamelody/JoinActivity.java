@@ -65,7 +65,7 @@ public class JoinActivity extends AppCompatActivity {
     private String RECORDING_ID = "rid";
     public static String addedBy, RecId, UserName, ProfileImageRec, RecordingName;
     public static TextView play_count, tvLikeCount, tvCommentCount, tvShareCount;
-    public static ImageView ivJoinPlay, ivJoinPause, ivLikeButton, ivDislikeButton;
+    public static ImageView ivJoinPlay, ivJoinPause, ivLikeButton, ivDislikeButton,ivPlayNext,ivPlayPre;
     public static RelativeLayout rlLike, rlComment, joinFooter;
     public static int position;
     ProgressDialog progressDialog;
@@ -89,6 +89,8 @@ public class JoinActivity extends AppCompatActivity {
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
         ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
         ivShareButton = (ImageView) findViewById(R.id.ivShareButton);
+        ivPlayNext=(ImageView)findViewById(R.id.ivPlayNext);
+        ivPlayPre=(ImageView)findViewById(R.id.ivPlayPre);
         waveform_view = (com.instamelody.instamelody.utils.WaveformView) findViewById(R.id.waveform_view);
         mDecibelView = (TextView) findViewById(R.id.decibel_view);
         play_count = (TextView) findViewById(R.id.tvPlayCount);
