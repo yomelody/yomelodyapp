@@ -398,6 +398,7 @@ public class JoinActivity extends AppCompatActivity {
                         Log.d("ReturnData", response);
                         Joined_artist.clear();
                         instrumentList.clear();
+                        listProfile.clear();
                         new ParseContents(getApplicationContext()).parseJoin(response, Joined_artist);
                         adapter = new JoinListAdapter(Joined_artist, getApplicationContext());
                         recyclerView.setAdapter(adapter);

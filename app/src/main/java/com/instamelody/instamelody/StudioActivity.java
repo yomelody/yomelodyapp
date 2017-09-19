@@ -384,8 +384,16 @@ public class StudioActivity extends AppCompatActivity {
         final Intent intent = getIntent();
         if (intent == null) {
         }
-        joinRecordingId = intent.getExtras().getString("clickPositionJoin");
-        if (joinRecordingId != null) {
+        try {
+            melodyPackId = intent.getExtras().getString("clickPosition");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
+//        joinRecordingId = intent.getExtras().getString("clickPositionJoin");
+        SharedPreferences filterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE);
+        joinRecordingId = filterPref.getString("instrumentsPos", null);
+        if (joinRecordingId != null && melodyPackId == null) {
             fetchInstrumentsForJoin(JoinActivity.addedBy, JoinActivity.RecId, joinRecordingId);
             noMelodyNote.setVisibility(View.GONE);
             recyclerViewInstruments.setVisibility(View.VISIBLE);
