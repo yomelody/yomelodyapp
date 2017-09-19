@@ -30,7 +30,7 @@ android {
 
     }
     dexOptions {
-//        javaMaxHeapSize "4g"
+        javaMaxHeapSize "4g"
     }
     buildTypes {
         release {
@@ -80,6 +80,7 @@ dependencies {
     compile 'com.github.asne:asne-twitter:0.3.3'
     compile 'com.github.asne:asne-googleplus:0.3.3'
     compile 'com.jlubecki.soundcloud:soundcloud-api:1.2.1'
+    compile 'com.paypal.sdk:paypal-android-sdk:2.15.3'
     testCompile 'junit:junit:4.12'
     //    compile files('libs/facebook.jar')
 }

@@ -1,8 +1,13 @@
 package com.instamelody.instamelody.Fragments;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.icu.math.BigDecimal;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.format.DateUtils;
@@ -23,6 +28,11 @@ import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Models.SubscriptionPackage;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
+import com.paypal.android.sdk.payments.PayPalConfiguration;
+import com.paypal.android.sdk.payments.PayPalPayment;
+import com.paypal.android.sdk.payments.PayPalService;
+import com.paypal.android.sdk.payments.PaymentActivity;
+import com.paypal.android.sdk.payments.PaymentConfirmation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,6 +52,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.Authentication
 import static com.instamelody.instamelody.utils.Const.ServiceType.PACKAGES;
 import static com.instamelody.instamelody.utils.Const.ServiceType.SUBSCRIPTION;
 import static com.instamelody.instamelody.utils.Const.ServiceType.SUBSCRIPTION_DETAIL;
+import static com.paypal.android.sdk.payments.PayPalPayment.*;
 
 /**
  * Created by Shubhansh Jaiswal on 11/29/2016.
@@ -66,6 +77,10 @@ public class SubscriptionsFragment extends Fragment {
     String userIdFb, firstNameFb, lastNameFb, emailFinalFb, profilePicFb, userNameFb;
     String switchFlag = "0";
     String packageId = "";
+    private static PayPalConfiguration config = new PayPalConfiguration()
+            .environment(PayPalConfiguration.ENVIRONMENT_NO_NETWORK)
+            .clientId("AeE8pO8NpWo4hbsM8Ha5sjRXXvFVjUNO4R6VKF7Oic0UeLcbgrAXdtXsjtvLtkDaGfB9RSAKC3qfDDq6");
+
 
     public SubscriptionsFragment() {
     }
@@ -110,6 +125,10 @@ public class SubscriptionsFragment extends Fragment {
         } else {
             userId = userIdTwitter;
         }
+//For PayPal Integration
+        Intent intent = new Intent(getActivity(), PayPalService.class);
+        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
+        getActivity().startService(intent);
 
     }
 
@@ -139,6 +158,38 @@ public class SubscriptionsFragment extends Fragment {
         return view;
 
 
+    }
+
+    @Override
+    public void onDestroyView() {
+        getActivity().stopService(new Intent(getActivity(), PayPalService.class));
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        getActivity().stopService(new Intent(getActivity(), PayPalService.class));
+        super.onDestroy();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            PaymentConfirmation confirm = data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
+            if (confirm != null) {
+                try {
+                    Log.i("paymentExample", confirm.toJSONObject().toString(4));
+
+                } catch (JSONException e) {
+                    Log.e("paymentExample", "an extremely unlikely failure occurred: ", e);
+                }
+            }
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            Log.i("paymentExample", "The user canceled.");
+        } else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
+            Log.i("paymentExample", "An invalid Payment or PayPalConfiguration was submitted. Please see the docs.");
+        }
     }
 
     public void subscriptionPackage() {
@@ -218,6 +269,9 @@ public class SubscriptionsFragment extends Fragment {
                                     packageId = "1";
                                     subscription();
 
+                                    onBuyPressed(v);
+
+
                                 }
                             }
                         });
@@ -233,6 +287,7 @@ public class SubscriptionsFragment extends Fragment {
                                     switchFlag = "1";
                                     packageId = "2";
                                     subscription();
+                                    onBuyPressed(v);
                                 }
                             }
                         });
@@ -248,6 +303,7 @@ public class SubscriptionsFragment extends Fragment {
                                     switchFlag = "1";
                                     packageId = "3";
                                     subscription();
+                                    onBuyPressed(v);
                                 }
                             }
                         });
@@ -263,6 +319,7 @@ public class SubscriptionsFragment extends Fragment {
                                     switchFlag = "1";
                                     packageId = "4";
                                     subscription();
+                                    onBuyPressed(v);
                                 }
                             }
                         });
@@ -386,5 +443,64 @@ public class SubscriptionsFragment extends Fragment {
         requestQueue.add(stringRequest);
     }
 
+    public void onBuyPressed(View pressed) {
 
+        if (packageId.equals("1")) {
+            for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
+                PayPalPayment payment = new PayPalPayment(new java.math.BigDecimal("1.75"), "USD", subscriptionPackageArrayList.get(0).getPackage_name(), PayPalPayment.PAYMENT_INTENT_SALE);
+
+                Intent intent = new Intent(getActivity(), PaymentActivity.class);
+
+                // send the same configuration for restart resiliency
+                intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
+
+                intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payment);
+
+                startActivityForResult(intent, 0);
+            }
+
+        } else if (packageId.equals("2")) {
+            for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
+                PayPalPayment payment = new PayPalPayment(new java.math.BigDecimal("1.75"), "USD", subscriptionPackageArrayList.get(1).getPackage_name(), PayPalPayment.PAYMENT_INTENT_SALE);
+
+                Intent intent = new Intent(getActivity(), PaymentActivity.class);
+
+                // send the same configuration for restart resiliency
+                intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
+
+                intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payment);
+
+                startActivityForResult(intent, 0);
+            }
+
+        } else if (packageId.equals("3")) {
+            for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
+                PayPalPayment payment = new PayPalPayment(new java.math.BigDecimal("1.75"), "USD", subscriptionPackageArrayList.get(2).getPackage_name(), PayPalPayment.PAYMENT_INTENT_SALE);
+
+                Intent intent = new Intent(getActivity(), PaymentActivity.class);
+
+                // send the same configuration for restart resiliency
+                intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
+
+                intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payment);
+
+                startActivityForResult(intent, 0);
+            }
+
+        } else if (packageId.equals("4")) {
+            for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
+                PayPalPayment payment = new PayPalPayment(new java.math.BigDecimal("1.75"), "USD", subscriptionPackageArrayList.get(2).getPackage_name(), PayPalPayment.PAYMENT_INTENT_SALE);
+
+                Intent intent = new Intent(getActivity(), PaymentActivity.class);
+
+                // send the same configuration for restart resiliency
+                intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
+
+                intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payment);
+
+                startActivityForResult(intent, 0);
+            }
+
+        }
+    }
 }
