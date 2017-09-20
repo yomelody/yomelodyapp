@@ -81,6 +81,8 @@ public class SubscriptionsFragment extends Fragment {
             .environment(PayPalConfiguration.ENVIRONMENT_NO_NETWORK)
             .clientId("AeE8pO8NpWo4hbsM8Ha5sjRXXvFVjUNO4R6VKF7Oic0UeLcbgrAXdtXsjtvLtkDaGfB9RSAKC3qfDDq6");
 
+    PayPalPayment payment;
+
 
     public SubscriptionsFragment() {
     }
@@ -155,9 +157,50 @@ public class SubscriptionsFragment extends Fragment {
         tvStandardDescRecordingTime = (TextView) view.findViewById(R.id.tvStandardDescRecordingTime);
         tvPremiumDescRecordingTime = (TextView) view.findViewById(R.id.tvPremiumDescRecordingTime);
         tvProducerDescRecordingTime = (TextView) view.findViewById(R.id.tvProducerDescRecordingTime);
+
+//        /For PayPal Integration
+        Intent intent = new Intent(getActivity(), PayPalService.class);
+        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
+        getActivity().startService(intent);
+
         return view;
 
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            PaymentConfirmation confirm = data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
+            if (confirm != null) {
+                try {
+                    Log.d("payment", confirm.toJSONObject().toString(4));
+                    Toast.makeText(getActivity(), "" + confirm.toJSONObject().toString(4), Toast.LENGTH_SHORT).show();
+                    JSONObject jsonObj = new JSONObject(confirm.toJSONObject().toString());
+                    String client = jsonObj.getString("client");
+                    String response = jsonObj.getString("response");
+                    String response_type = jsonObj.getString("response_type");
+                    JSONObject client_details = jsonObj.getJSONObject("client");
+                    String environment = client_details.getString("environment");
+                    String paypal_sdk_version = client_details.getString("paypal_sdk_version");
+                    String plateform = client_details.getString("platform");
+                    String product_name = client_details.getString("product_name");
+                    JSONObject response_details = jsonObj.getJSONObject("response");
+                    String create_time = response_details.getString("create_time");
+                    String payment_id = response_details.getString("id");
+                    String intent = response_details.getString("intent");
+                    String state = response_details.getString("state");
+
+                } catch (JSONException e) {
+                    Log.e("payment", "an extremely unlikely failure occurred: ", e);
+                }
+            }
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            Log.i("payment", "The user canceled.");
+        } else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
+            Log.i("payment", "An invalid Payment or PayPalConfiguration was submitted. Please see the docs.");
+        }
     }
 
     @Override
@@ -170,26 +213,6 @@ public class SubscriptionsFragment extends Fragment {
     public void onDestroy() {
         getActivity().stopService(new Intent(getActivity(), PayPalService.class));
         super.onDestroy();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK) {
-            PaymentConfirmation confirm = data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
-            if (confirm != null) {
-                try {
-                    Log.i("paymentExample", confirm.toJSONObject().toString(4));
-
-                } catch (JSONException e) {
-                    Log.e("paymentExample", "an extremely unlikely failure occurred: ", e);
-                }
-            }
-        } else if (resultCode == Activity.RESULT_CANCELED) {
-            Log.i("paymentExample", "The user canceled.");
-        } else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
-            Log.i("paymentExample", "An invalid Payment or PayPalConfiguration was submitted. Please see the docs.");
-        }
     }
 
     public void subscriptionPackage() {
@@ -269,7 +292,7 @@ public class SubscriptionsFragment extends Fragment {
                                     packageId = "1";
                                     subscription();
 
-                                    onBuyPressed(v);
+//                                    onBuyPressed(v);
 
 
                                 }
@@ -445,62 +468,26 @@ public class SubscriptionsFragment extends Fragment {
 
     public void onBuyPressed(View pressed) {
 
-        if (packageId.equals("1")) {
-            for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
-                PayPalPayment payment = new PayPalPayment(new java.math.BigDecimal("1.75"), "USD", subscriptionPackageArrayList.get(0).getPackage_name(), PayPalPayment.PAYMENT_INTENT_SALE);
+        for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
+            subscriptionPackageArrayList.get(i).getPackage_id();
+            subscriptionPackageArrayList.get(i).getCost();
+            if (packageId.equals("2")) {
+                payment = new PayPalPayment(new java.math.BigDecimal(subscriptionPackageArrayList.get(1).getCost()), "USD", subscriptionPackageArrayList.get(1).getPackage_name(), PayPalPayment.PAYMENT_INTENT_SALE);
+            } else if (packageId.equals("3")) {
+                payment = new PayPalPayment(new java.math.BigDecimal(subscriptionPackageArrayList.get(2).getCost()), "USD", subscriptionPackageArrayList.get(2).getPackage_name(), PayPalPayment.PAYMENT_INTENT_SALE);
 
-                Intent intent = new Intent(getActivity(), PaymentActivity.class);
-
-                // send the same configuration for restart resiliency
-                intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
-
-                intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payment);
-
-                startActivityForResult(intent, 0);
+            } else if (packageId.equals("4")) {
+                payment = new PayPalPayment(new java.math.BigDecimal(subscriptionPackageArrayList.get(3).getCost()), "USD", subscriptionPackageArrayList.get(3).getPackage_name(), PayPalPayment.PAYMENT_INTENT_SALE);
             }
-
-        } else if (packageId.equals("2")) {
-            for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
-                PayPalPayment payment = new PayPalPayment(new java.math.BigDecimal("1.75"), "USD", subscriptionPackageArrayList.get(1).getPackage_name(), PayPalPayment.PAYMENT_INTENT_SALE);
-
-                Intent intent = new Intent(getActivity(), PaymentActivity.class);
-
-                // send the same configuration for restart resiliency
-                intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
-
-                intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payment);
-
-                startActivityForResult(intent, 0);
-            }
-
-        } else if (packageId.equals("3")) {
-            for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
-                PayPalPayment payment = new PayPalPayment(new java.math.BigDecimal("1.75"), "USD", subscriptionPackageArrayList.get(2).getPackage_name(), PayPalPayment.PAYMENT_INTENT_SALE);
-
-                Intent intent = new Intent(getActivity(), PaymentActivity.class);
-
-                // send the same configuration for restart resiliency
-                intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
-
-                intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payment);
-
-                startActivityForResult(intent, 0);
-            }
-
-        } else if (packageId.equals("4")) {
-            for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
-                PayPalPayment payment = new PayPalPayment(new java.math.BigDecimal("1.75"), "USD", subscriptionPackageArrayList.get(2).getPackage_name(), PayPalPayment.PAYMENT_INTENT_SALE);
-
-                Intent intent = new Intent(getActivity(), PaymentActivity.class);
-
-                // send the same configuration for restart resiliency
-                intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
-
-                intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payment);
-
-                startActivityForResult(intent, 0);
-            }
-
         }
+        Intent intent = new Intent(getActivity(), PaymentActivity.class);
+
+        // send the same configuration for restart resiliency
+        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
+
+        intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payment);
+
+        startActivityForResult(intent, 0);
+
     }
 }
