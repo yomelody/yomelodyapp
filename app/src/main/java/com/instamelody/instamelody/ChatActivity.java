@@ -97,6 +97,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.CHAT;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MESSAGE_LIST;
 import static com.instamelody.instamelody.utils.Const.ServiceType.READ_STATUS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.UPDATE_GROUP;
+import static com.instamelody.instamelody.utils.Const.ServiceType.USER_CHAT_ID;
 
 /**
  * Created by Shubhansh Jaiswal on 17/01/17.
@@ -126,7 +127,6 @@ public class ChatActivity extends AppCompatActivity {
 
     public static int oldCount = 0;
     public static int newCount = 0;
-    int flagSend = 0;
 
     private static final int TAKE_CAMERA_PHOTO = 101;
     private static final int PICK_GALLERY_IMAGE = 102;
@@ -148,7 +148,7 @@ public class ChatActivity extends AppCompatActivity {
     String TITLE = "title";
     String MESSAGE = "message";
     String KEY_FLAG = "flag";
-    String userId, chatId, receiverId, receiverName, packId, packType, receiverImage, groupImage, deviceToken, msgId;
+    String userId, chatId, receiverId, receiverName, packId, packType, receiverImage, groupImage, deviceToken, chatIds;
     String username = "";
     String senderId = "";
     String chatType = "";
@@ -164,30 +164,6 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-
-                if (intent.getAction().equals(PUSH_NOTIFICATION)) {
-                    // new push notification is received
-//                    String message = intent.getStringExtra("message");
-//                    String imageUrl = intent.getStringExtra("fileUrl");
-                    String chatId = intent.getStringExtra("chatId");
-                    getChatMsgs(chatId);
-                    readStatus();
-
-//                    if (imageUrl != null && imageUrl.length() > 4 && Patterns.WEB_URL.matcher(imageUrl).matches()) {
-//                        Bitmap bitmap = getBitmapFromURL(imageUrl);
-//                        if (bitmap != null) {
-//                            tvImgChat.setImageBitmap(bitmap);
-//                        } else {
-//                            Toast.makeText(getApplicationContext(), "No Image!!", Toast.LENGTH_LONG).show();
-//                        }
-//                    }
-                }
-            }
-        };
-
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
         SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
@@ -202,6 +178,29 @@ public class ChatActivity extends AppCompatActivity {
             userId = twitterPref.getString("userId", null);
             username = twitterPref.getString("userName", null);
         }
+
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                if (intent.getAction().equals(PUSH_NOTIFICATION)) {
+                    // new push notification is received
+//                    String message = intent.getStringExtra("message");
+//                    String imageUrl = intent.getStringExtra("fileUrl");
+                    String chatId = intent.getStringExtra("chatId");
+                    getChatMsgs(chatId);
+
+//                    if (imageUrl != null && imageUrl.length() > 4 && Patterns.WEB_URL.matcher(imageUrl).matches()) {
+//                        Bitmap bitmap = getBitmapFromURL(imageUrl);
+//                        if (bitmap != null) {
+//                            tvImgChat.setImageBitmap(bitmap);
+//                        } else {
+//                            Toast.makeText(getApplicationContext(), "No Image!!", Toast.LENGTH_LONG).show();
+//                        }
+//                    }
+                }
+            }
+        };
 
         rlUserName = (RelativeLayout) findViewById(R.id.rlUserName);
         rlSelectedImage = (RelativeLayout) findViewById(R.id.rlSelectedImage);
@@ -248,12 +247,6 @@ public class ChatActivity extends AppCompatActivity {
         fileInfo.clear();
         getGalleryImages();
 
-        SharedPreferences audioShareData = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE);
-        if (audioShareData.getString("recID", null) != null) {
-            flagFileType = "2";
-            sendMessage("Audio", userId);
-        }
-
         SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
         senderId = prefs.getString("senderId", null);
         receiverId = prefs.getString("receiverId", null);
@@ -265,6 +258,15 @@ public class ChatActivity extends AppCompatActivity {
         groupImage = prefs.getString("groupImage", null);
         tvUserName = (TextView) findViewById(R.id.tvUserName);
         tvUserName.setText(receiverName);
+
+        SharedPreferences audioShareData = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE);
+        if (audioShareData.getString("recID", null) != null) {
+            flagFileType = "2";
+            sendMessage("Audio", userId);
+            if(chatId.equals("")){
+                getChatId(senderId, receiverId);
+            }
+        }
 
         Bundle bundle = getIntent().getExtras();
 
@@ -280,7 +282,6 @@ public class ChatActivity extends AppCompatActivity {
         packType = packPref.getString("PackType", null);
 
         getChatMsgs(chatId);
-        readStatus();
 
 //        groupImageBitmap = ((BitmapDrawable) ivGroupImage.getDrawable()).getBitmap();
         etMessage = (EditText) findViewById(R.id.etMessage);
@@ -402,6 +403,12 @@ public class ChatActivity extends AppCompatActivity {
                     ivJoin.setVisibility(View.VISIBLE);
                     tvSend.setVisibility(View.GONE);
                     sendMessage(message, userId);
+                    if(chatId.equals("")){
+                        getChatId(senderId, receiverId);
+                    }
+                    else{
+                        getChatMsgs(chatId);
+                    }
                     InputMethodManager inputManager = (InputMethodManager)
                             getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
@@ -759,7 +766,6 @@ public class ChatActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         getChatMsgs(chatId);
-        readStatus();
 
         imageFileList.clear();
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
@@ -848,6 +854,9 @@ public class ChatActivity extends AppCompatActivity {
                         chatList.clear();
 //                        audioDetailsList.clear();
 //                        sharedAudioList.clear();
+
+                        String usrId = userId;
+
                         cAdapter.notifyDataSetChanged();
                         JSONObject jsonObject;
                         JSONArray resultArray, audiosDetailsArray, sharedAudiosArray;
@@ -907,7 +916,10 @@ public class ChatActivity extends AppCompatActivity {
 //                                                }
 //                                            }
 //                                        }
-                                        chatList.add(message);
+                                        if (chatJson.getString("isread").equals("0") && (!chatJson.getString("senderID").equals(usrId))) {
+                                            readStatus(chatJson.getString("id"), chatJson.getString("chatID"));
+                                        }
+                                        chatList.add(i, message);
                                     }
                                 } else {
                                     tvRecieverName.setText(" " + receiverName);
@@ -954,13 +966,6 @@ public class ChatActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(CHAT_ID_, chat_Id);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                params.put("user_id", chatId);
-
-//                if (flagSend == 1) {
-//                    params.put("isread", "1");
-//                    flagSend = 0;
-//                }
-
                 return params;
             }
         };
@@ -977,9 +982,7 @@ public class ChatActivity extends AppCompatActivity {
                         public void onResponse(NetworkResponse response) {
                             String str = new String(response.data);
 //                            Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
-                            flagSend = 1;
-                            getChatMsgs(chatId);
-
+                            flagFileType = "0";
                         }
                     }, new Response.ErrorListener() {
                 @Override
@@ -1057,8 +1060,7 @@ public class ChatActivity extends AppCompatActivity {
                 public void onResponse(String response) {
                     String str = response;
 //                    Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
-                    getChatMsgs(chatId);
-
+                    flagFileType = "0";
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -1120,7 +1122,6 @@ public class ChatActivity extends AppCompatActivity {
                         editor.apply();
                         params.put(FILE, recID);
                         params.put(FILE_TYPE, "station");
-
                     } else if (flagFileType.equals("3")) {
                         params.put(FILE_TYPE, "admin_melody");
                     }
@@ -1362,7 +1363,7 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-    public void readStatus() {
+    public void readStatus(final String msgIds, final String chatIds) {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, READ_STATUS, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -1402,8 +1403,8 @@ public class ChatActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<>();
 
                 try {
-                    params.put("messageID", msgId);
-                    params.put("chatID", chatId);
+                    params.put("messageID", msgIds);
+                    params.put("chatID", chatIds);
                     params.put("user_id", userId);
                     if (chatType.equals("group")) {
                         params.put("chat_type", "group");
@@ -1414,6 +1415,60 @@ public class ChatActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+    }
+
+    private void getChatId(final String user_id, final String reciever_id) {
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, USER_CHAT_ID,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+//                        Toast.makeText(context, " Shubz" + response, Toast.LENGTH_LONG).show();
+
+                        JSONObject jsonObject;
+                        try {
+                            jsonObject = new JSONObject(response);
+                            chatIds = jsonObject.getString("chatID");
+                            if (chatIds.equals("0")) {
+                                chatIds = "";
+                            }
+                            getChatMsgs(chatIds);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            errorMsg = "There is either no connection or it timed out.";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "ServerError";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "Network Error";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("senderID", user_id);
+                params.put("receiverID", reciever_id);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };

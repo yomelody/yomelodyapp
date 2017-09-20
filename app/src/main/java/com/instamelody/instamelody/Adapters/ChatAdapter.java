@@ -73,7 +73,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
     public static String str;
     public static ImageView ivPrev, ivNext;
-//    public TextView tvNum;
+    //    public TextView tvNum;
     MediaPlayer mp;
     String parentRec;
     public static int origCount = 0;
@@ -197,21 +197,29 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int position) {
-
         final int itemType = getItemViewType(position);
+
+        holder.setIsRecyclable(false);
+
         if (itemType == SELF_AUDIO || itemType == OTHER_AUDIO) {
             final Message message = chatList.get(position);
-            Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
+            if (!message.getProfilePic().equals("")) {
+                Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
+            }
             holder.timeStamp.setText(message.getCreatedAt());
-            String stroke = "(1"+ " of "+ message.getRecCount() +")";
+            String stroke = "(1" + " of " + message.getRecCount() + ")";
             holder.tvNum.setText(stroke);
             if (message.getIsRead().equals("1")) {
                 holder.ivTick.setVisibility(View.GONE);
                 holder.ivDoubleTick.setVisibility(View.VISIBLE);
             }
+            else{
+                holder.ivDoubleTick.setVisibility(View.GONE);
+                holder.ivTick.setVisibility(View.VISIBLE);
+            }
 
             JSONArray audiosDetailsArray = message.getAudioDetails();
-            if (audiosDetailsArray.length() > 0) {
+            if (audiosDetailsArray != null && audiosDetailsArray.length() > 0) {
                 for (int j = 0; j < audiosDetailsArray.length(); j++) {
                     try {
                         JSONObject detailsJson = audiosDetailsArray.getJSONObject(j);
@@ -393,7 +401,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                 str = "(" + (origCount + 1) + " of " + String.valueOf(JoinMp.size()) + ")";
                                 holder.tvNum.setText(str);
                                 SharedAudios sharedAudios = sharedAudioList.get(origCount);
-                                Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(ChatActivity.userProfileImagePlayer);
+                                if (!sharedAudios.getProfileUrl().equals("")) {
+                                    Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(ChatActivity.userProfileImagePlayer);
+                                }
                                 ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
                                 ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
 
@@ -482,7 +492,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                 str = "(" + (origCount) + " of " + String.valueOf(JoinMp.size()) + ")";
                                 holder.tvNum.setText(str);
                                 SharedAudios sharedAudios = sharedAudioList.get(origCount);
-                                Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(ChatActivity.userProfileImagePlayer);
+                                if (!sharedAudios.getProfileUrl().equals("")) {
+                                    Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(ChatActivity.userProfileImagePlayer);
+                                }
                                 ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
                                 ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
 
@@ -532,17 +544,25 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
         } else if (itemType == SELF_IMAGE || itemType == OTHER_IMAGE) {
             Message message = chatList.get(position);
-            Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
+            if (!message.getProfilePic().equals("")) {
+                Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
+            }
             holder.timeStamp.setText(message.getCreatedAt());
             if (message.getIsRead().equals("1")) {
                 holder.ivTick.setVisibility(View.GONE);
                 holder.ivDoubleTick.setVisibility(View.VISIBLE);
             }
+            else{
+                holder.ivDoubleTick.setVisibility(View.GONE);
+                holder.ivTick.setVisibility(View.VISIBLE);
+            }
             if (!message.getFile().equals("")) {
                 holder.rlChatImage.setVisibility(View.VISIBLE);
                 String picUrl = message.getFile();
                 String picName = picUrl.substring(picUrl.lastIndexOf("/") + 1);
-                Picasso.with(holder.chatImage.getContext()).load(picUrl).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(holder.chatImage);
+                if (!picUrl.equals("")) {
+                    Picasso.with(holder.chatImage.getContext()).load(picUrl).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(holder.chatImage);
+                }
                 holder.chatImageName.setText(picName);
             }
             if (!message.getMessage().equals("")) {
@@ -551,12 +571,18 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             }
         } else {
             Message message = chatList.get(position);
-            Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
+            if (!message.getProfilePic().equals("")) {
+                Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
+            }
             holder.chatMessage.setText(message.getMessage());
             holder.timeStamp.setText(message.getCreatedAt());
             if (message.getIsRead().equals("1")) {
                 holder.ivTick.setVisibility(View.GONE);
                 holder.ivDoubleTick.setVisibility(View.VISIBLE);
+            }
+            else{
+                holder.ivDoubleTick.setVisibility(View.GONE);
+                holder.ivTick.setVisibility(View.VISIBLE);
             }
         }
     }
