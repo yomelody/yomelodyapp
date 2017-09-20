@@ -189,7 +189,7 @@ public class StudioActivity extends AppCompatActivity {
     public static RecordingThread mRecordingThread;
     public static MediaRecorder recorder;
     private final int requestCode = 20;
-    static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
+    public static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     public static boolean isRecording = false;
     public static MediaPlayer mediaPlayer;
     public static String audioFilePath;
@@ -394,7 +394,7 @@ public class StudioActivity extends AppCompatActivity {
         SharedPreferences filterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE);
         joinRecordingId = filterPref.getString("instrumentsPos", null);
         if (joinRecordingId != null && melodyPackId == null) {
-            fetchInstrumentsForJoin(JoinActivity.addedBy, JoinActivity.RecId, joinRecordingId);
+            fetchInstrumentsForJoin(JoinActivity.addedBy, JoinActivity.RecId, Integer.parseInt(joinRecordingId));
             noMelodyNote.setVisibility(View.GONE);
             recyclerViewInstruments.setVisibility(View.VISIBLE);
             recyclerViewInstruments.setHasFixedSize(true);
@@ -439,6 +439,7 @@ public class StudioActivity extends AppCompatActivity {
             if (!melodyPackId.equals("fromHomeActivity")) {
                 if (melodyPackId != null) {
                     fetchInstruments(melodyPackId);
+                    JoinActivity.instrumentList.clear();
                     noMelodyNote.setVisibility(View.GONE);
                     recyclerViewInstruments.setVisibility(View.VISIBLE);
                     recyclerViewInstruments.setHasFixedSize(true);
@@ -1380,7 +1381,7 @@ public class StudioActivity extends AppCompatActivity {
 
     }
 
-    public void fetchInstrumentsForJoin(final String addedBy, final String RecId, final String position) {
+    public void fetchInstrumentsForJoin(final String addedBy, final String RecId, final int position) {
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, JOINED_USERS,
                 new Response.Listener<String>() {
@@ -1575,9 +1576,7 @@ public class StudioActivity extends AppCompatActivity {
                             melodyRecDuration = melodyData.getString("duration");
                             Public = melodyData.getString("public");
                             if (flag.equals("success")) {
-
                                 uploadRecordings(melodyData.getString("id"));
-
                             } else {
                                 Toast.makeText(StudioActivity.this, response, Toast.LENGTH_SHORT).show();
                             }
@@ -1651,28 +1650,6 @@ public class StudioActivity extends AppCompatActivity {
 
                     if (flag.equals("success")) {
                         if (msgflag.equals("Melody created")) {
-                            if (joinRecordingId != null) {
-                                tvDone.setEnabled(false);
-                                MelodyInstruments melodyInstruments = new MelodyInstruments();
-                                melodyInstruments.setInstrumentName(packName);
-                                melodyInstruments.setInstrumentBpm(bpm);
-                                melodyInstruments.setInstrumentFile("Blank");
-                                melodyInstruments.setInstrumentLength(melodyRecDuration);
-                                melodyInstruments.setUserProfilePic(recPic);
-                                melodyInstruments.setInstrumentCover("#00FDFE");
-                                melodyInstruments.setInstrumentCreated(addDate);
-                                melodyInstruments.setUserName(userName);
-                                melodyInstruments.setInstrumentFile(melodyurl);
-                                JoinActivity.instrumentList.add(melodyInstruments);
-                                adapter = new InstrumentListAdapter(JoinActivity.instrumentList, getApplicationContext());
-                                recyclerViewInstruments.setAdapter(adapter);
-                                adapter.notifyDataSetChanged();
-                                ivRecord_play.setVisibility(View.INVISIBLE);
-                                rlRedoButton.setVisibility(View.INVISIBLE);
-                                rlMelodyButton.setVisibility(View.VISIBLE);
-                                switchPublic.setChecked(false);
-                                switchFlag = "0";
-                            } else {
                                 tvDone.setEnabled(false);
                                 MelodyInstruments melodyInstruments = new MelodyInstruments();
                                 melodyInstruments.setInstrumentName(packName);
@@ -1685,7 +1662,7 @@ public class StudioActivity extends AppCompatActivity {
                                 melodyInstruments.setUserName(userName);
                                 melodyInstruments.setInstrumentFile(melodyurl);
                                 instrumentList.add(melodyInstruments);
-                                adapter = new InstrumentListAdapter(JoinActivity.instrumentList, getApplicationContext());
+                                adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
                                 recyclerViewInstruments.setAdapter(adapter);
                                 adapter.notifyDataSetChanged();
                                 ivRecord_play.setVisibility(View.INVISIBLE);
@@ -1693,32 +1670,8 @@ public class StudioActivity extends AppCompatActivity {
                                 rlMelodyButton.setVisibility(View.VISIBLE);
                                 switchPublic.setChecked(false);
                                 switchFlag = "0";
-                            }
+
                         } else {
-
-                            if (joinRecordingId != null) {
-                                tvDone.setEnabled(false);
-                                MelodyInstruments melodyInstruments = new MelodyInstruments();
-                                melodyInstruments.setInstrumentName(packName);
-                                melodyInstruments.setInstrumentBpm(bpm);
-                                melodyInstruments.setInstrumentFile("Blank");
-                                melodyInstruments.setInstrumentLength(melodyRecDuration);
-                                melodyInstruments.setUserProfilePic(recPic);
-                                melodyInstruments.setInstrumentCover("#00FDFE");
-                                melodyInstruments.setInstrumentCreated(addDate);
-                                melodyInstruments.setUserName(userName);
-                                melodyInstruments.setInstrumentFile(melodyurl);
-                                JoinActivity.instrumentList.add(melodyInstruments);
-                                adapter = new InstrumentListAdapter(JoinActivity.instrumentList, getApplicationContext());
-                                recyclerViewInstruments.setAdapter(adapter);
-                                adapter.notifyDataSetChanged();
-                                ivRecord_play.setVisibility(View.INVISIBLE);
-                                rlRedoButton.setVisibility(View.INVISIBLE);
-                                rlMelodyButton.setVisibility(View.VISIBLE);
-                                switchPublic.setChecked(false);
-                                switchFlag = "0";
-                                Toast.makeText(StudioActivity.this, "Saved as Recording", Toast.LENGTH_SHORT).show();
-                            } else {
                                 tvDone.setEnabled(false);
                                 MelodyInstruments melodyInstruments = new MelodyInstruments();
                                 melodyInstruments.setInstrumentName(packName);
@@ -1731,7 +1684,7 @@ public class StudioActivity extends AppCompatActivity {
                                 melodyInstruments.setUserName(userName);
                                 melodyInstruments.setInstrumentFile(melodyurl);
                                 instrumentList.add(melodyInstruments);
-                                adapter = new InstrumentListAdapter(JoinActivity.instrumentList, getApplicationContext());
+                                adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
                                 recyclerViewInstruments.setAdapter(adapter);
                                 adapter.notifyDataSetChanged();
                                 ivRecord_play.setVisibility(View.INVISIBLE);
@@ -1740,9 +1693,6 @@ public class StudioActivity extends AppCompatActivity {
                                 switchPublic.setChecked(false);
                                 switchFlag = "0";
                                 Toast.makeText(StudioActivity.this, "Saved as Recording", Toast.LENGTH_SHORT).show();
-                            }
-
-
                         }
 
                         if (progressDialog != null) {

@@ -35,6 +35,7 @@ import com.instamelody.instamelody.Fragments.RecordingsFragment;
 import com.instamelody.instamelody.Fragments.SubscriptionsFragment;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
+import com.instamelody.instamelody.utils.AppHelper;
 
 import java.util.ArrayList;
 
@@ -355,6 +356,7 @@ public class MelodyActivity extends AppCompatActivity {
         try{
             super.onBackPressed();
             clearSharePrefMelody();
+            AppHelper.sop("onBackpress==");
         }catch (IllegalArgumentException e){
             e.printStackTrace();
         }

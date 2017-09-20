@@ -339,6 +339,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 @Override
                 public void onClick(View v) {
                     String position = Integer.toString(getAdapterPosition());
+                    StudioActivity.instrumentList.clear();
                     Intent intent = new Intent(v.getContext(), StudioActivity.class);
                     intent.putExtra("clickPosition", position);
                     v.getContext().startActivity(intent);

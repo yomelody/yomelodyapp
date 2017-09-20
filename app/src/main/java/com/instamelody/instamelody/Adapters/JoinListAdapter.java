@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -105,6 +106,9 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     public static View rootview;
     int lastPosition;
     int realPosition = 0;
+    ArrayList<ViewHolder> lstViewHolder = new ArrayList<ViewHolder>();
+    ViewHolder viewHolder;
+    ImageView redCross;
 
     public JoinListAdapter(ArrayList<JoinedArtists> Joined_artist, Context context) {
         this.Joined_artist = Joined_artist;
@@ -164,6 +168,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                 }
             });
 
+
         }
 
     }
@@ -175,9 +180,16 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
         return myViewHolder;
     }
 
+    static class ViewHolder {
+        ImageView redCross;
+    }
+
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         final JoinedArtists joinArt = Joined_artist.get(position);
+        viewHolder = new ViewHolder();
+        viewHolder.redCross = (ImageView) holder.redCross.findViewById(R.id.redCross);
+        lstViewHolder.add(viewHolder);
         holder.Join_usr_name.setText(joinArt.getJoined_usr_name());
         Picasso.with(holder.join_image.getContext()).load(joinArt.getJoined_image()).into(holder.join_image);
         try {
@@ -192,13 +204,20 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
         if (getItemCount() == 1) {
             holder.redCross.setVisibility(VISIBLE);
         }
-        getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, String.valueOf(click_pos));
+
         JoinInstrumentListAdp.count = MelodyInstruments.getInstrumentCount();
+        if (position == 0) {
+            lstViewHolder.get(position).redCross.setVisibility(VISIBLE);
+            getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, click_pos);
+        }
+
 
         holder.join_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                JoinActivity.instrumentList.clear();
+                if (position != 0) {
+                    lstViewHolder.get(0).redCross.setVisibility(GONE);
+                }
                 String user_id = JoinActivity.listProfile.get(position).getUserId();
                 String status = JoinActivity.listProfile.get(position).getStatus();
                 if (getItemCount() == 1) {
@@ -214,29 +233,28 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         lastPosition = lastModifiedHoled.getAdapterPosition();
                         lastModifiedHoled.itemView.findViewById(R.id.redCross).setVisibility(GONE);
                         notifyItemChanged(lastPosition);
+
                         holder.redCross.setVisibility(VISIBLE);
                     } else {
                         holder.redCross.setVisibility(VISIBLE);
                     }
 
-                    getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, String.valueOf(position));
+                    getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, position);
                     JoinInstrumentListAdp.count = MelodyInstruments.getInstrumentCount();
                     JoinActivity.listProfile.set(position, new JoinedUserProfile(user_id, "1"));
                     try {
-                        if (position == 0) {
-                            JoinActivity.listProfile.set(position, new JoinedUserProfile(user_id, "0"));
-                            //  JoinActivity.listProfile.set(lastPosition, new JoinedUserProfile(user_id, "0"));
-                            lastPosition = 0;
+                        if (position >= 0) {
+                            JoinActivity.listProfile.set(lastPosition, new JoinedUserProfile(JoinActivity.listProfile.get(lastPosition).getUserId(), "0"));
                         }
-                        if (lastPosition != 0) {
-                            JoinActivity.listProfile.set(lastPosition, new JoinedUserProfile(user_id, "0"));
-                            JoinActivity.listProfile.set(position, new JoinedUserProfile(user_id, "0"));
-                        }
-
-
                     } catch (IndexOutOfBoundsException e) {
                         e.printStackTrace();
                     }
+
+//                    try {
+//                        JoinActivity.listProfile.set(lastPosition, new JoinedUserProfile(user_id, "0"));
+//                    } catch (IndexOutOfBoundsException e) {
+//                        e.printStackTrace();
+//                    }
 
 
                 } else {
@@ -248,7 +266,10 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                 }
 
                 lastModifiedHoled = holder;
+
             }
+
+
 
         });
         JoinActivity.rlJoinButton.setOnClickListener(new View.OnClickListener() {
@@ -371,6 +392,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     JoinActivity.ivPlayPre.setEnabled(true);
 
                 } else {
+
                     JoinedArtists join = Joined_artist.get(realPosition);
                     JoinActivity.waveform_view.setVisibility(VISIBLE);
                     if (JoinActivity.ivJoinPlay.getVisibility() == VISIBLE) {
@@ -745,12 +767,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
     }
 
-    public void getJoined_users(final String addedBy, final String RecId, final String position) {
-        progressDialog=new ProgressDialog(rootview.getContext());
-        progressDialog.setTitle("Processing...");
-        progressDialog.setMessage("Please wait...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+    public void getJoined_users(final String addedBy, final String RecId, final int pos) {
+
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, JOINED_USERS,
                 new Response.Listener<String>() {
@@ -767,15 +785,11 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 //                            JoinActivity.adapter1 = new JoinInstrumentListAdp(JoinActivity.instrumentList, getApplicationContext());
 //                            JoinActivity.recyclerViewInstruments.setAdapter(JoinActivity.adapter1);
 //                        } else {
-                        new ParseContents(getApplicationContext()).parseJoinInstrument(response, JoinActivity.instrumentList, position);
+                        new ParseContents(getApplicationContext()).parseJoinInstrument(response, JoinActivity.instrumentList, pos);
                         JoinActivity.adapter1 = new JoinInstrumentListAdp(JoinActivity.instrumentList, getApplicationContext());
                         JoinActivity.recyclerViewInstruments.setAdapter(JoinActivity.adapter1);
                         //   }
-                        if (progressDialog != null) {
-                            if (progressDialog.isShowing()) {
-                                progressDialog.dismiss();
-                            }
-                        }
+
                     }
                 },
                 new Response.ErrorListener() {

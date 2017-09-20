@@ -118,6 +118,7 @@ public class DiscoverActivity extends AppCompatActivity {
 
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
         discover = (ImageView) findViewById(R.id.discover);
+        discover.setEnabled(false);
         message = (ImageView) findViewById(R.id.message);
         audio_feed = (ImageView) findViewById(R.id.audio_feed);
         ivProfile = (ImageView) findViewById(R.id.ivProfileD);

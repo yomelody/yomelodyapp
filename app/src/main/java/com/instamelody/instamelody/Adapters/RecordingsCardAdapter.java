@@ -36,6 +36,7 @@ import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
+import com.instamelody.instamelody.utils.AppHelper;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
@@ -75,7 +76,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     private ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     private ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
     public static ArrayList<JoinRecordingModel> JoinList = new ArrayList<JoinRecordingModel>();
-   // public static ArrayList<RecJoinRecordingModel> RecJoinList = new ArrayList<RecJoinRecordingModel>();
+    // public static ArrayList<RecJoinRecordingModel> RecJoinList = new ArrayList<RecJoinRecordingModel>();
     public ArrayList<MediaPlayer> JoinMp = new ArrayList<MediaPlayer>();
     String USER_TYPE = "user_type";
     String USER_ID = "user_id";
@@ -472,7 +473,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
         RecordingsModel recording = recordingList.get(listPosition);
         lazycount = lazycount + 1;
-
+        lastModifiedHoled = holder;
 
         mpid = recording.getRecordingId();
         mpids.add(mpid);
@@ -516,8 +517,10 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 //                instrumentFile = recordingsPool.getRecordingUrl();
                 instrumentFile = recordingList.get(listPosition).getrecordingurl();
                 Integer s = listPosition + 1;
+                AppHelper.sop("onClick----1");
 
                 if (instrumentFile != "") {
+                    AppHelper.sop("onClick----2");
                     if (mp != null) {
                         try {
                             if (mp.isPlaying()) {
@@ -535,7 +538,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         } catch (Throwable e) {
                             e.printStackTrace();
                         }
-
+                        AppHelper.sop("onClick----3");
                     }
                     if (holder.ivStationPause.getVisibility() == VISIBLE) {
                         try {
@@ -606,7 +609,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     // lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
                     //lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
                 }
-                lastModifiedHoled = holder;
+
             }
         });
 
@@ -616,8 +619,12 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 holder.ivStationPlay.setVisibility(v.VISIBLE);
                 holder.ivStationPause.setVisibility(v.GONE);
                 if (mp != null) {
-                    mp.stop();
-                    mp.pause();
+                    try {
+                        mp.pause();
+                    } catch (IllegalStateException e) {
+                        e.printStackTrace();
+                    }
+
                 }
                 holder.seekBarRecordings.setProgress(0);
             }
@@ -645,7 +652,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                             mp.stop();
                                         }
                                     }
-
 
 
                                 } catch (Throwable e) {
@@ -728,7 +734,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     }
 
 
-                }catch (Exception ex){
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
 
@@ -836,7 +842,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             }
                         }
                     }
-                }catch (Exception ex){
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
 
@@ -844,8 +850,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         });
 
     }
-
-
 
 
     @Override

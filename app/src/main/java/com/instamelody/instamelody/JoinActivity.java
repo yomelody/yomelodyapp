@@ -369,16 +369,16 @@ public class JoinActivity extends AppCompatActivity {
         adapter = new JoinListAdapter(Joined_artist, getApplicationContext());
         recyclerView.setAdapter(adapter);
         Intent intent = getIntent();
-        if (pos.equals("0")) {
-            new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, pos);
-            adapter1 = new JoinInstrumentListAdp(instrumentList, getApplicationContext());
-            recyclerViewInstruments.setAdapter(adapter1);
-        } else {
-            pos = intent.getExtras().getString("Value");
-            new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, pos);
-            adapter1 = new JoinInstrumentListAdp(instrumentList, getApplicationContext());
-            recyclerViewInstruments.setAdapter(adapter1);
-        }
+//        if (pos.equals("0")) {
+//            new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, pos);
+//            adapter1 = new JoinInstrumentListAdp(instrumentList, getApplicationContext());
+//            recyclerViewInstruments.setAdapter(adapter1);
+//        } else {
+//            pos = intent.getExtras().getString("Value");
+//            new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, pos);
+//            adapter1 = new JoinInstrumentListAdp(instrumentList, getApplicationContext());
+//            recyclerViewInstruments.setAdapter(adapter1);
+//        }
 
     }
 

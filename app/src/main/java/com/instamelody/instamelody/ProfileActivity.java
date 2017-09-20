@@ -172,6 +172,7 @@ public class ProfileActivity extends AppCompatActivity {
         ivDiscover = (ImageView) findViewById(R.id.discover);
         ivMessage = (ImageView) findViewById(R.id.message);
         ivProfile = (ImageView) findViewById(R.id.profile);
+        ivProfile.setEnabled(false);
         userProfileImageInProf = (CircleImageView) findViewById(R.id.userProfileImageInProf);
         userCover = (ImageView) findViewById(R.id.userCover);
         tvNameInProf = (TextView) findViewById(R.id.tvNameInProf);
