@@ -2382,7 +2382,15 @@ public class StudioActivity extends AppCompatActivity {
         }
     }
 
-
+    public static void setInsCount(int instCount) {
+        if (instCount == 0) {
+            melody_detail.setText("No Instrumental");
+        } else if (instCount == 1) {
+            melody_detail.setText("" + instCount + " Instrumental");
+        } else {
+            melody_detail.setText("" + instCount + " Instrumentals");
+        }
+    }
 }
 
 

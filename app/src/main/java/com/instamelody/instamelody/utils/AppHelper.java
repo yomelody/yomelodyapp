@@ -40,7 +40,7 @@ public class AppHelper {
         return byteArrayOutputStream.toByteArray();
     }
 
-    public static void sop(String msg){
-        System.out.println(""+msg);
+	public static void sop(String msg){
+        System.out.println(""+ msg);
     }
 }

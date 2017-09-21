@@ -425,60 +425,10 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
-        btnsignup.setOnClickListener(new View.OnClickListener()
-
-                                     {
+        btnsignup.setOnClickListener(new View.OnClickListener() {
                                          @Override
                                          public void onClick(View view) {
-                                             if (etfirstname.getText().toString().trim().equals("")) {
-                                                 errorFname.setVisibility(View.VISIBLE);
-                                                 errorFname.setText("required");
-                                             }
-
-                                             if (etemail.getText().toString().trim().equals("")) {
-                                                 errorEmail.setVisibility(View.VISIBLE);
-                                                 errorEmail.setText("required");
-                                             }
-                                             if (etusername.getText().toString().trim().equals("")) {
-                                                 errorUserName.setVisibility(View.VISIBLE);
-                                                 errorUserName.setText("required");
-                                             }
-                                             if (etpassword.getText().toString().trim().equals("")) {
-                                                 errorPassword.setVisibility(View.VISIBLE);
-                                                 errorPassword.setText("required");
-                                             }
-                                             if (etConfirmPassWord.getText().toString().trim().equals("")) {
-                                                 errorConfirmPass.setVisibility(View.VISIBLE);
-                                                 errorConfirmPass.setText("required");
-                                             }
-                                             if (tvDob.getText().toString().trim().equals("")) {
-                                                 errorDOB.setVisibility(View.VISIBLE);
-                                                 errorDOB.setText("required");
-
-                                             }
-                                             if (String.valueOf(day) == ("") && String.valueOf(month) == ("") && String.valueOf(year) == ("")) {
-                                                 errorDOB.setVisibility(View.VISIBLE);
-                                                 errorDOB.setText("required");
-                                             }
-                                             if (etphone.getText().toString().trim().equals("")) {
-                                                 errorPhone.setVisibility(View.VISIBLE);
-                                                 errorPhone.setText("required");
-                                             } else if (etpassword.getText().toString().trim().length() < 8) {
-                                                 errorPassword.setVisibility(View.VISIBLE);
-                                                 errorPassword.setText("At least 8 characters");
-                                             } else if (!isValidMobile(etphone.getText().toString().trim())) {
-                                                 Toast.makeText(SignUpActivity.this, "Invalid phone number.", Toast.LENGTH_SHORT).show();
-                                                 errorPhone.setVisibility(View.VISIBLE);
-                                                 errorPhone.setText("Atleast 10 digits");
-
-                                             } else if (!isValidMail(etemail.getText().toString().trim())) {
-                                                 errorEmail.setVisibility(View.VISIBLE);
-                                                 errorEmail.setText(" Valid email id. required.");
-                                             } else if (!etConfirmPassWord.getText().toString().equals(etpassword.getText().toString())) {
-                                                 // Toast.makeText(SignUpActivity.this, "please check your confirm password .", Toast.LENGTH_SHORT).show();
-                                                 errorConfirmPass.setVisibility(View.VISIBLE);
-                                                 errorConfirmPass.setText("Password didn't match!");
-                                             } else {
+                                             if (validateForm()) {
                                                  signUp();
                                              }
                                          }
@@ -491,10 +441,8 @@ public class SignUpActivity extends AppCompatActivity {
                                   {
                                       @Override
                                       public void onClick(View view) {
-
                                           Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                                           startActivity(intent);
-
                                       }
                                   }
 
@@ -530,10 +478,8 @@ public class SignUpActivity extends AppCompatActivity {
                                           @Override
                                           public void onClick(View view) {
                                               etlastname.getText().clear();
-
                                           }
                                       }
-
         );
 
         btnClearEmail.setOnClickListener(new View.OnClickListener()
@@ -545,7 +491,6 @@ public class SignUpActivity extends AppCompatActivity {
                                                  errorEmail.setVisibility(View.GONE);
                                              }
                                          }
-
         );
 
         btnClearUserName.setOnClickListener(new View.OnClickListener()
@@ -557,7 +502,6 @@ public class SignUpActivity extends AppCompatActivity {
                                                     errorUserName.setVisibility(View.GONE);
                                                 }
                                             }
-
         );
 
         btnClearPass.setOnClickListener(new View.OnClickListener()
@@ -569,7 +513,6 @@ public class SignUpActivity extends AppCompatActivity {
                                                 errorPassword.setVisibility(View.GONE);
                                             }
                                         }
-
         );
 
         btnClearConfirmPass.setOnClickListener(new View.OnClickListener()
@@ -581,7 +524,6 @@ public class SignUpActivity extends AppCompatActivity {
                                                        errorConfirmPass.setVisibility(View.GONE);
                                                    }
                                                }
-
         );
 
         btnClearDOB.setOnClickListener(new View.OnClickListener()
@@ -593,7 +535,6 @@ public class SignUpActivity extends AppCompatActivity {
                                                errorDOB.setVisibility(View.GONE);
                                            }
                                        }
-
         );
 
         btnClearPhone.setOnClickListener(new View.OnClickListener()
@@ -605,7 +546,6 @@ public class SignUpActivity extends AppCompatActivity {
                                                  errorPhone.setVisibility(View.GONE);
                                              }
                                          }
-
         );
 
         userProfileImage.buildDrawingCache();
@@ -681,6 +621,71 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
+    private boolean validateForm() {
+        boolean chk = true;
+        if (etfirstname.getText().toString().trim().equals("")) {
+            errorFname.setVisibility(View.VISIBLE);
+            errorFname.setText("required");
+            chk = false;
+        }
+
+        if (etemail.getText().toString().trim().equals("")) {
+            errorEmail.setVisibility(View.VISIBLE);
+            errorEmail.setText("required");
+            chk = false;
+        }
+        if (etusername.getText().toString().trim().equals("")) {
+            errorUserName.setVisibility(View.VISIBLE);
+            errorUserName.setText("required");
+            chk = false;
+        }
+        if (etpassword.getText().toString().trim().equals("")) {
+            errorPassword.setVisibility(View.VISIBLE);
+            errorPassword.setText("required");
+            chk = false;
+        }
+        if (etConfirmPassWord.getText().toString().trim().equals("")) {
+            errorConfirmPass.setVisibility(View.VISIBLE);
+            errorConfirmPass.setText("required");
+            chk = false;
+        }
+        if (tvDob.getText().toString().trim().equals("")) {
+            errorDOB.setVisibility(View.VISIBLE);
+            errorDOB.setText("required");
+            chk = false;
+
+        }
+        if (String.valueOf(day) == ("") && String.valueOf(month) == ("") && String.valueOf(year) == ("")) {
+            errorDOB.setVisibility(View.VISIBLE);
+            errorDOB.setText("required");
+            chk = false;
+        }
+        if (etphone.getText().toString().trim().equals("")) {
+            errorPhone.setVisibility(View.VISIBLE);
+            errorPhone.setText("required");
+            chk = false;
+        } else if (etpassword.getText().toString().trim().length() < 8) {
+            errorPassword.setVisibility(View.VISIBLE);
+            errorPassword.setText("At least 8 characters");
+            chk = false;
+        } else if (!isValidMobile(etphone.getText().toString().trim())) {
+            Toast.makeText(SignUpActivity.this, "Invalid phone number.", Toast.LENGTH_SHORT).show();
+            errorPhone.setVisibility(View.VISIBLE);
+            errorPhone.setText("Atleast 10 digits");
+            chk = false;
+
+        } else if (!isValidMail(etemail.getText().toString().trim())) {
+            errorEmail.setVisibility(View.VISIBLE);
+            errorEmail.setText(" Valid email id. required.");
+            chk = false;
+        } else if (!etConfirmPassWord.getText().toString().equals(etpassword.getText().toString())) {
+            // Toast.makeText(SignUpActivity.this, "please check your confirm password .", Toast.LENGTH_SHORT).show();
+            errorConfirmPass.setVisibility(View.VISIBLE);
+            errorConfirmPass.setText("Password didn't match!");
+            chk = false;
+        }
+        return chk;
+    }
 
     private void uploadImage(final String n) {
         VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPLOAD_FILE, new Response.Listener<NetworkResponse>() {
@@ -696,15 +701,6 @@ public class SignUpActivity extends AppCompatActivity {
                     String picObject = responseObject.getString("profilepic");
                     profilepic2 = picObject;
 
-                    // JSONObject uploadImgRspns = new JSONObject(resultResponse);
-                    //  String flag = uploadImgRspns.getString("flag");
-                    //   JSONObject imgrespons = uploadImgRspns.getJSONObject("response");
-                    // profilepic2 = "http://" + imgrespons.getString("profilepic");
-                    //profilepic2 = imgrespons.getString("profilepic");
-                    //   profilepic2 = imgrespons.getJSONObject("").getString("profilepic");
-//                    profilepic2 = alpha.getJSONObject("profilepic").get("profilepic");
-
-                    /*profilepic2 = profilePic.getString("profilepic");*/
                     Log.d("gamma", profilepic2);
                     SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("uploading image response", MODE_PRIVATE).edit();
                     editor.putString("picGallery", profilepic2);
@@ -773,7 +769,7 @@ public class SignUpActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
+                        AppHelper.sop("response======" + response);
                         String successmsg = response;
 //                        Toast.makeText(SignUpActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
 
@@ -837,6 +833,7 @@ public class SignUpActivity extends AppCompatActivity {
                 params.put(KEY_DEVICE_TYPE, "android");
                 params.put(KEY_USER_TYPE, "1");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params==" + params + "\n URL==" + REGISTER);
                 return params;
             }
 

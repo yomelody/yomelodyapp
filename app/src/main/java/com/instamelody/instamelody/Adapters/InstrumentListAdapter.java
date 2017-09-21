@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -164,6 +165,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         SeekBar melodySlider;
         ProgressDialog progressDialog;
         public MediaPlayer mp;
+        LinearLayout deleteLl;
+        TextView cancelTv, deleteTv;
 
         CardView card_melody;
         AudioManager audioManager;
@@ -203,6 +206,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             tvMButton = (TextView) itemView.findViewById(R.id.tvMButton);
             tvSButton = (TextView) itemView.findViewById(R.id.tvSButton);
             rlivDeleteMelody = (RelativeLayout) itemView.findViewById(R.id.rlivDeleteMelody);
+            deleteLl = (LinearLayout) itemView.findViewById(R.id.deleteLl);
+            cancelTv = (TextView) itemView.findViewById(R.id.cancelTv);
+            deleteTv = (TextView) itemView.findViewById(R.id.deleteTv);
 
             audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
             audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
@@ -389,7 +395,17 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         holder.rlivDeleteMelody.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (holder.mp != null) {
+
+                holder.deleteLl.setVisibility(View.VISIBLE);
+            }
+        });
+
+        holder.deleteTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(holder.mp!=null)
+                {
                     holder.mp.stop();
                 }
                 if (StudioActivity.mpInst != null) {
@@ -398,6 +414,14 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 int newPosition = holder.getAdapterPosition();
                 instrumentList.remove(newPosition);
                 notifyItemRemoved(newPosition);
+                StudioActivity.setInsCount(instrumentList.size());
+            }
+        });
+
+        holder.cancelTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                holder.deleteLl.setVisibility(View.GONE);
             }
         });
 
