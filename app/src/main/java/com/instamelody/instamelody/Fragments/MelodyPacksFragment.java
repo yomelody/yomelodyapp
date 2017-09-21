@@ -24,6 +24,7 @@ import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
@@ -101,6 +102,8 @@ public class MelodyPacksFragment extends Fragment {
     ArrayList<UserMelodyPlay> melodyPools = new ArrayList<>();
     TabHost host = null;
     ProgressDialog progressDialog;
+    LinearLayoutManager linearLayoutManager;
+    int post = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -654,14 +657,207 @@ public class MelodyPacksFragment extends Fragment {
             public View createTabContent(String tag) {
                 RecyclerView rv = new RecyclerView(getActivity());
                 rv.setHasFixedSize(true);
-                RecyclerView.LayoutManager lm = new LinearLayoutManager(getActivity());
-                rv.setLayoutManager(lm);
+                linearLayoutManager = new LinearLayoutManager(getActivity());
+//                RecyclerView.LayoutManager lm = new LinearLayoutManager(getActivity());
+//                rv.setLayoutManager(lm);
+                rv.setLayoutManager(linearLayoutManager);
                 rv.setItemAnimator(new DefaultItemAnimator());
+                rv.addOnScrollListener(recyclerViewOnScrollListener);
                 rv.setAdapter(adapter);
+                linearLayoutManager = (LinearLayoutManager) rv.getLayoutManager();
                 return rv;
             }
         };
     }
+
+    private RecyclerView.OnScrollListener recyclerViewOnScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+        }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            int visibleItemCount = linearLayoutManager.getChildCount();
+            int totalItemCount = linearLayoutManager.getItemCount();
+            post = linearLayoutManager.findLastVisibleItemPosition();
+            //Toast.makeText(getActivity(), "111111   >>>" + String.valueOf(post), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getActivity(), String.valueOf(recordingList.size()), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getActivity(), "post "+String.valueOf(post+1), Toast.LENGTH_SHORT).show();
+            if (post + 1 == melodyList.size()) {
+
+                new FetchActivityDetails().execute(String.valueOf(melodyList.size() + 10),String.valueOf(instrumentList.size() + 10));
+
+                //adapter.notifyDataSetChanged();
+                //linearLayoutManager.scrollToPosition(post+1);
+
+                //rv.setAdapter(adapter);
+                //adapter.notifyItemInserted(recordingList.size()-1);
+                //Toast.makeText(getActivity(), "list "+String.valueOf(recordingList.size()), Toast.LENGTH_SHORT).show();
+            }
+
+
+        }
+    };
+
+    private class FetchActivityDetails extends AsyncTask<String, String, String> {
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            running = true;
+
+            progressDialog = ProgressDialog.show(getActivity(), "Processing...", "Please Wait...");
+            progressDialog.setCancelable(false);
+
+        }
+
+        boolean running;
+        ProgressDialog progressDialog;
+
+        protected String doInBackground(String... params) {
+
+            try {
+
+                final int Pos = Integer.parseInt(params[0]);
+                fetchMelodyPacksMore(Pos);
+                /*int i = 3;
+                while(running){*/
+                try {
+                    Thread.sleep(7000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                    /*if(i-- == 0){
+                        running = false;
+                    }*/
+
+                //}
+                return null;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+            //progressDialog.setMessage(String.valueOf(values[0]));
+        }
+
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+
+            //Toast.makeText(getActivity(), "1111", Toast.LENGTH_SHORT).show();
+            progressDialog.dismiss();
+
+            //Toast.makeText(getActivity(), "2222", Toast.LENGTH_SHORT).show();
+
+
+        }
+    }
+
+
+    public void fetchMelodyPacksMore(final int position) {
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        melodyList.clear();
+                        instrumentList.clear();
+                        JSONObject jsonObject;
+                        try {
+                            jsonObject = new JSONObject(response);
+                            if (jsonObject.getString(KEY_FLAG).equals("unsuccess")) {
+                                String str = jsonObject.getString(KEY_MSG);
+                                if (str.equals("No pack found")) {
+                                    str = "Sorry, no " + packName + " melody available.";
+                                    Toast.makeText(getActivity(), str, Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        new ParseContents(getActivity()).parseMelodyPacks(response, melodyList, instrumentList);
+                        adapter.notifyDataSetChanged();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        try {
+                            Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+                            Log.d("Error", errorMsg);
+                        } catch (Throwable throwable) {
+                            Log.d("Fetch Melody Packs Error", throwable.toString());
+                        }
+
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                if (packId.equals("7") && userId != null) {
+                    params.put(USER_ID, userId);
+                    params.put(FILE_TYPE, "user_melody");
+                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
+
+                } else if (userId != null) {
+                    params.put(users_id, userId);
+                    params.put(GENRE, packId);
+                    params.put(FILE_TYPE, "admin_melody");
+                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
+
+                } else {
+                    params.put(GENRE, packId);
+                    params.put(FILE_TYPE, "admin_melody");
+                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
+
+                }
+                try {
+                    SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+                    String userId = loginSharedPref.getString("userId", null);
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
+//                if (userId != null) {
+////                    params.put(USER_ID, userId);
+//                }
+                return params;
+            }
+
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
+        requestQueue.add(stringRequest);
+        requestQueue.add(stringRequest);
+    }
+
 
     private class LongOperation extends AsyncTask<String, Void, String> {
         protected void onPreExecute() {
