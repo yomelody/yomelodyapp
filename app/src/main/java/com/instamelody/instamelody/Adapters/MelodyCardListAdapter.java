@@ -274,7 +274,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                                 ex.printStackTrace();
                             }
                         }
-                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID, RecordingURL, CoverUrl, LikeStatus,ProfilePick;
+                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID, RecordingURL, CoverUrl, LikeStatus, ProfilePick;
                         MelodyCard melody = melodyList.get(getAdapterPosition());
 
                         if (ivDislikeButton.getVisibility() == VISIBLE) {
@@ -298,7 +298,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         melodyID = mpids.get(pos);
                         RecordingURL = melody.getMelodyURL();
                         CoverUrl = melody.getMelodyCover();
-                        ProfilePick=melody.getUserProfilePic();
+                        ProfilePick = melody.getUserProfilePic();
                         SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
                         editor.putString("instruments", instruments);
                         editor.putString("bpm", bpm);
@@ -339,6 +339,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 @Override
                 public void onClick(View v) {
                     String position = Integer.toString(getAdapterPosition());
+                    StudioActivity.instrumentList.clear();
                     Intent intent = new Intent(v.getContext(), StudioActivity.class);
                     intent.putExtra("clickPosition", position);
                     v.getContext().startActivity(intent);

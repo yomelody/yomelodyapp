@@ -480,7 +480,7 @@ public class ParseContents {
         return JoinArtist;
     }
 
-    public ArrayList<MelodyInstruments> parseJoinInstrument(String response, ArrayList<MelodyInstruments> instrumentList, String mpid) {
+    public ArrayList<MelodyInstruments> parseJoinInstrument(String response, ArrayList<MelodyInstruments> instrumentList, int mpid) {
 
         JSONObject jsonObject;
         JSONArray jsonArray;
@@ -488,7 +488,7 @@ public class ParseContents {
             jsonObject = new JSONObject(response);
             if (jsonObject.getString(KEY_FLAG).equals("success")) {
                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
-                JSONObject selectedObj = jsonArray.getJSONObject(Integer.parseInt(mpid));
+                JSONObject selectedObj = jsonArray.getJSONObject(mpid);
 
                 jsonArray = selectedObj.getJSONArray(KEY_INSTRUMENTS);
 

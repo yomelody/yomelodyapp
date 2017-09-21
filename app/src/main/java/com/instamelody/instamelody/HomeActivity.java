@@ -332,7 +332,8 @@ public class HomeActivity extends AppCompatActivity {
         ivMelody.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ||
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
 
                     if (checkPermissions()) {
                         Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
@@ -340,13 +341,11 @@ public class HomeActivity extends AppCompatActivity {
                     } else {
                         setPermissions();
                     }
-
-                } else {
+                }
+                else {
                     Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
                     startActivity(intent);
                 }
-
-
             }
         });
 
@@ -483,7 +482,8 @@ public class HomeActivity extends AppCompatActivity {
 
     @TargetApi(17)
     public boolean checkPermissions() {
-        if ((ContextCompat.checkSelfPermission(HomeActivity.this, android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(HomeActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+        if ((ContextCompat.checkSelfPermission(HomeActivity.this, android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) &&
+                (ContextCompat.checkSelfPermission(HomeActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
 
             return true;
         } else {

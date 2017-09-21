@@ -86,7 +86,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     String artistName, Instruments, BPM;
     ProgressDialog progressDialog;
     //  LongOperation myTask = null;
-    private OnLoadMoreListener mOnLoadMoreListener;
+   // private OnLoadMoreListener mOnLoadMoreListener;
     private final int VIEW_TYPE_ITEM = 0;
     private final int VIEW_TYPE_LOADING = 1;
     private boolean isLoading;
@@ -350,8 +350,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                     }
 
                 }
-                Intent i = new Intent(StationActivity.this, StationActivity.class);
-                startActivity(i);
+//                Intent i = new Intent(StationActivity.this, StationActivity.class);
+//                startActivity(i);
             }
         });
 
