@@ -80,7 +80,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     String fbName, fbUserName, fbId;
     String instrumentName, melodyName;
     int rvLength;
-    boolean IsRepeat = false;
+    boolean IsRepeat = false, IsMute = false, IsSolo = false;
 
     SoundPool mSoundPool;
     public static ArrayList<String> instruments_url = new ArrayList<String>();
@@ -153,10 +153,10 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         ImageView userProfileImage, ivInstrumentCover, ivPlay, ivPause, ivRepeatMelody;
-        TextView tvInstrumentName, tvUserName, tvInstrumentLength, tvBpmRate, tvSync, tvDoneFxEq, tvFxButton, tvEqButton;
+        TextView tvInstrumentName, tvUserName, tvInstrumentLength, tvBpmRate, tvSync, tvDoneFxEq, tvFxButton, tvEqButton, tvMButton, tvSButton;
 
         FrameLayout frameInstrument;
-        RelativeLayout rlSeekbarTracer, rlSync, rlrepeat, rlivDeleteMelody;
+        RelativeLayout rlSeekbarTracer, rlSync, rlrepeat, rlivDeleteMelody, rlMute, rlSolo;
         ImageView grey_circle, blue_circle;
         RelativeLayout rlFX, rlEQ;
         private int maxVolume = 0;
@@ -198,10 +198,14 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             ivRepeatMelody = (ImageView) itemView.findViewById(R.id.ivRepeatMelody);
 
             rlrepeat = (RelativeLayout) itemView.findViewById(R.id.rlrepeat);
+            rlMute = (RelativeLayout) itemView.findViewById(R.id.rlMute);
+            rlSolo = (RelativeLayout) itemView.findViewById(R.id.rlSolo);
+            tvMButton = (TextView) itemView.findViewById(R.id.tvMButton);
+            tvSButton = (TextView) itemView.findViewById(R.id.tvSButton);
             rlivDeleteMelody = (RelativeLayout) itemView.findViewById(R.id.rlivDeleteMelody);
 
             audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-
+            audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
             ivPause.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -394,6 +398,87 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 int newPosition = holder.getAdapterPosition();
                 instrumentList.remove(newPosition);
                 notifyItemRemoved(newPosition);
+            }
+        });
+
+        holder.rlMute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //holder.tvMButton.setBackgroundColor(Color.GRAY);
+                //holder.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
+                if (IsMute == false) {
+
+                    //holder.tvMButton.setBackgroundColor(Color.GRAY);
+                    //holder.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
+
+                    IsMute = true;
+
+                    if (holder.mp != null && IsSolo==false) {
+                        holder.tvMButton.setBackgroundColor(Color.GRAY);
+                        for(int i=0;i<=StudioActivity.mp_start.size()-1;i++){
+                            //Toast.makeText(getApplicationContext(), "Mute holder sid "+String.valueOf(holder.mp.getAudioSessionId()), Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getApplicationContext(), "Mute array session id "+String.valueOf(StudioActivity.mp_start.get(i).getAudioSessionId()), Toast.LENGTH_SHORT).show();
+                            if(holder.mp.getAudioSessionId()==StudioActivity.mp_start.get(i).getAudioSessionId()) {
+                                StudioActivity.mp_start.get(i).setVolume(0,0);
+                            }
+                        }
+                        //holder.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
+                    }
+                } else if (IsMute == true) {
+                    IsMute = false;
+                    holder.tvMButton.setBackgroundColor(Color.WHITE);
+                    /*if (holder.mp != null) {
+                        if (holder.mp.isLooping() == false) {
+                            holder.mp.setLooping(true);
+                        } else if (holder.mp.isLooping() == true) {
+                            holder.mp.setLooping(false);
+                        }
+                    }*/
+                }
+
+            }
+        });
+
+
+        holder.rlSolo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //holder.tvSButton.setBackgroundColor(Color.GRAY);
+                //holder.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+
+                if (IsSolo == false) {
+                    IsSolo = true;
+                    if (holder.mp != null) {
+                        holder.tvSButton.setBackgroundColor(Color.GRAY);
+                        for(int i=0;i<=StudioActivity.mp_start.size()-1;i++){
+
+                            if(holder.mp.getAudioSessionId()==StudioActivity.mp_start.get(i).getAudioSessionId()) {
+                                StudioActivity.mp_start.get(i).setVolume(1,1);
+
+                            }
+                        }
+                    }
+                } else if (IsSolo == true) {
+                    //IsSolo = false;
+                    //holder.tvSButton.setBackgroundColor(Color.WHITE);
+
+                    if (holder.mp != null) {
+
+                        for(int i=0;i<=StudioActivity.mp_start.size()-1;i++){
+
+                            if(holder.mp.getAudioSessionId()==StudioActivity.mp_start.get(i).getAudioSessionId()) {
+                                StudioActivity.mp_start.get(i).setVolume(1,1);
+                                holder.tvSButton.setBackgroundColor(Color.GRAY);
+
+                            }
+                            else{
+                                holder.tvSButton.setBackgroundColor(Color.WHITE);
+                            }
+                        }
+                    }
+
+                }
+
             }
         });
 
@@ -1350,6 +1435,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                         StudioActivity.mpall.prepare();
                         StudioActivity.mediaPlayersAll.add(StudioActivity.mpall);
 
+                        //am.setStreamMute(AudioManager.STREAM_MUSIC, false);
                     }
                 }
             } catch (Throwable e) {
