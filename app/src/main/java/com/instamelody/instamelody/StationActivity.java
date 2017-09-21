@@ -26,10 +26,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -87,14 +85,11 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     String searchGet, search5;
     String artistName, Instruments, BPM;
     ProgressDialog progressDialog;
-    //  LongOperation myTask = null;
-   // private OnLoadMoreListener mOnLoadMoreListener;
     private final int VIEW_TYPE_ITEM = 0;
     private final int VIEW_TYPE_LOADING = 1;
     private boolean isLoading;
     private int visibleThreshold = 5;
     private int lastVisibleItem, totalItemCount;
-    public static FrameLayout frameLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,7 +126,6 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         SharedPreferences loginTwitterSharedPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
         userIdTwitter = loginTwitterSharedPref.getString("userId", null);
         statusTwitter = loginTwitterSharedPref.getInt("status", 0);
-        frameLayout = (FrameLayout) findViewById(R.id.frmprg);
 
         if (statusNormal == 1) {
             userId = userIdNormal;
@@ -141,15 +135,22 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
             userId = userIdTwitter;
         }
 
-        // recyclerView = (RecyclerView) findViewById(R.id.recyclerViewAudio);
-        /*recyclerView.setHasFixedSize(true);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerViewAudio);
+        recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());*/
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+
+
 
 
         AudioFragment af = new AudioFragment();
         getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
+
+
+
+
 
 
         btnAudio.setOnClickListener(new View.OnClickListener() {
@@ -347,8 +348,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                     }
 
                 }
-//                Intent i = new Intent(StationActivity.this, StationActivity.class);
-//                startActivity(i);
+                Intent i = new Intent(StationActivity.this, StationActivity.class);
+                startActivity(i);
             }
         });
 
@@ -441,26 +442,6 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
     }
 
-    static class UserViewHolder extends RecyclerView.ViewHolder {
-        public TextView tvName;
-        public TextView tvEmailId;
-
-        public UserViewHolder(View itemView) {
-            super(itemView);
-            //tvName = (TextView) itemView.findViewById(R.id.tvName);
-
-            //tvEmailId = (TextView) itemView.findViewById(R.id.tvEmailId);
-        }
-    }
-
-    static class LoadingViewHolder extends RecyclerView.ViewHolder {
-        public ProgressBar progressBar;
-
-        public LoadingViewHolder(View itemView) {
-            super(itemView);
-            progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar1);
-        }
-    }
 
 
     @Override
@@ -778,6 +759,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         }
 
     }
+
+
 
 
 }

@@ -137,12 +137,15 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
         Chat chat = chatList.get(listPosition);
         if (chat.getChatType().equals("group")) {
             holder.tvUserName.setText(chat.getGroupName());
-            Picasso.with(holder.userProfileImage.getContext()).load(chat.getGroupPic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
+            if (!chat.getProfilePic().equals("")) {
+                Picasso.with(holder.userProfileImage.getContext()).load(chat.getGroupPic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
+            }
             holder.tvMsg.setText(chat.getSenderName() + " : " + chat.getMessage());
         } else {
             holder.tvUserName.setText(chat.getReceiverName());
-            Picasso.with(holder.userProfileImage.getContext()).load(chat.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
-
+            if (!chat.getProfilePic().equals("")) {
+                Picasso.with(holder.userProfileImage.getContext()).load(chat.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
+            }
 //            if (userId.equals(chat.getSenderID())){
 //                holder.tvMsg.setText("You" + " : " + chat.getMessage());
 //            }else{
@@ -152,9 +155,14 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
             holder.tvMsg.setText(chat.getMessage());
         }
         holder.tvTime.setText(chat.getSendAt());
-        int msgCount = Integer.parseInt(chat.getNewMessages());
+        int msgCount;
+        if (!chat.getNewMessages().equals("null")) {
+            msgCount = Integer.parseInt(chat.getNewMessages());
+        } else {
+            msgCount = 0;
+        }
         totalMsgCount = totalMsgCount + msgCount;
-        if (msgCount > 0){
+        if (msgCount > 0) {
             holder.message_count.setVisibility(View.VISIBLE);
             holder.message_count.setText(chat.getNewMessages());
             MessengerActivity.message_count.setText(String.valueOf(totalMsgCount));

@@ -123,7 +123,7 @@ public class ProfileActivity extends AppCompatActivity {
     EditText subEtFilterName, subEtFilterInstruments, subEtFilterBPM;
     SearchView search1;
     ProgressDialog progressDialog;
-    LongOperation myTask = null;
+//    LongOperation myTask = null;
     private static RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView recyclerView;

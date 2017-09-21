@@ -75,6 +75,7 @@ public class MessengerActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(PUSH_NOTIFICATION)) {
                     getChats(userId);
+                    rlNoMsg.setVisibility(View.GONE);
                 }
             }
         };
@@ -273,16 +274,18 @@ public class MessengerActivity extends AppCompatActivity {
         super.onResume();
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(PUSH_NOTIFICATION));
-        if (userId != null)
+        if (userId != null) {
             getChats(userId);
+            rlNoMsg.setVisibility(View.GONE);
+        }
     }
 
-    @Override
-    public void onRestart() {
-        super.onRestart();
-        if (userId != null)
-            getChats(userId);
-    }
+//    @Override
+//    public void onRestart() {
+//        super.onRestart();
+//        if (userId != null)
+//            getChats(userId);
+//    }
 
 
     @Override
