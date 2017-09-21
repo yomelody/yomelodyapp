@@ -109,6 +109,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     ArrayList<ViewHolder> lstViewHolder = new ArrayList<ViewHolder>();
     ViewHolder viewHolder;
     ImageView redCross;
+    boolean checkSt = true;
+    int count = 0;
 
     public JoinListAdapter(ArrayList<JoinedArtists> Joined_artist, Context context) {
         this.Joined_artist = Joined_artist;
@@ -206,7 +208,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
         }
 
         JoinInstrumentListAdp.count = MelodyInstruments.getInstrumentCount();
-        if (position == 0) {
+        if (position == 0 && checkSt == true) {
             lstViewHolder.get(position).redCross.setVisibility(VISIBLE);
             getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, click_pos);
         }
@@ -245,6 +247,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     try {
                         if (position >= 0) {
                             JoinActivity.listProfile.set(lastPosition, new JoinedUserProfile(JoinActivity.listProfile.get(lastPosition).getUserId(), "0"));
+                            checkSt = false;
                         }
                     } catch (IndexOutOfBoundsException e) {
                         e.printStackTrace();
@@ -270,8 +273,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
             }
 
 
-
         });
+        JoinActivity.txtCount.setText(count + 1 + " of " + getItemCount());
         JoinActivity.rlJoinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -290,6 +293,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
                     }
                 }
+               // Toast.makeText(context, ""+posForStudio, Toast.LENGTH_SHORT).show();
+                StudioActivity.instrumentList.clear();
                 SharedPreferences.Editor editor = context.getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
                 editor.putString("instrumentsPos", String.valueOf(posForStudio));
                 editor.commit();
@@ -302,7 +307,6 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
         JoinActivity.ivJoinPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                JoinActivity.waveform_view.setVisibility(VISIBLE);
                 JoinActivity.ivJoinPlay.setVisibility(v.GONE);
                 JoinActivity.ivJoinPause.setVisibility(v.VISIBLE);
                 progressDialog = new ProgressDialog(v.getContext());
@@ -340,6 +344,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                 mRecordingThread.start();
                             } else if (!mRecordingThread.isAlive()) {
                                 try {
+                                    mShouldContinue = true;
+                                    mRecordingThread = new RecordingThread();
                                     mRecordingThread.start();
                                 } catch (Throwable e) {
                                     e.printStackTrace();
@@ -383,6 +389,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
         JoinActivity.ivPlayNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 realPosition++;
 
                 if (realPosition > position) {
@@ -392,7 +399,16 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     JoinActivity.ivPlayPre.setEnabled(true);
 
                 } else {
-
+                    JoinActivity.ivPlayPre.setEnabled(true);
+                    try {
+                        if (mRecordingThread != null) {
+                            mRecordingThread.stopRunning();
+                            mRecordingThread = null;
+                        }
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
+                    JoinActivity.txtCount.setText(count + realPosition + 1 + " of " + getItemCount());
                     JoinedArtists join = Joined_artist.get(realPosition);
                     JoinActivity.waveform_view.setVisibility(VISIBLE);
                     if (JoinActivity.ivJoinPlay.getVisibility() == VISIBLE) {
@@ -448,6 +464,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                     mRecordingThread.start();
                                 } else if (!mRecordingThread.isAlive()) {
                                     try {
+                                        mShouldContinue = true;
+                                        mRecordingThread = new RecordingThread();
                                         mRecordingThread.start();
                                     } catch (Throwable e) {
                                         e.printStackTrace();
@@ -500,7 +518,19 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     JoinActivity.ivPlayNext.setEnabled(true);
                 } else {
                     try {
+
                         realPosition = realPosition - 1;
+                        count = realPosition;
+                        JoinActivity.ivPlayNext.setEnabled(true);
+                        try {
+                            if (mRecordingThread != null) {
+                                mRecordingThread.stopRunning();
+                                mRecordingThread = null;
+                            }
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
+                        JoinActivity.txtCount.setText(count + 1 + " of " + getItemCount());
                         JoinedArtists join = Joined_artist.get(realPosition);
                         JoinActivity.waveform_view.setVisibility(VISIBLE);
                         if (JoinActivity.ivJoinPlay.getVisibility() == VISIBLE) {
@@ -557,6 +587,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                         mRecordingThread.start();
                                     } else if (!mRecordingThread.isAlive()) {
                                         try {
+                                            mShouldContinue = true;
+                                            mRecordingThread = new RecordingThread();
                                             mRecordingThread.start();
                                         } catch (Throwable e) {
                                             e.printStackTrace();

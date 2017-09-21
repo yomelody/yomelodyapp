@@ -200,7 +200,7 @@ public class StudioActivity extends AppCompatActivity {
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";//JSONArray
 
-    String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, melodyPackId, joinRecordingId, instrumentCount;
+    public static String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, melodyPackId, joinRecordingId, instrumentCount;
     String selectedGenre;
     int statusNormal, statusFb, statusTwitter;
     String melodyName, instrumentName, joinRecordingName, joinInstrumentName;
@@ -401,7 +401,7 @@ public class StudioActivity extends AppCompatActivity {
             layoutManager = new LinearLayoutManager(getApplicationContext());
             recyclerViewInstruments.setLayoutManager(layoutManager);
             recyclerViewInstruments.setItemAnimator(new DefaultItemAnimator());
-            adapter = new InstrumentListAdapter(JoinActivity.instrumentList, getApplicationContext());
+            adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
             recyclerViewInstruments.setAdapter(adapter);
             //frameTrans.setVisibility(View.VISIBLE);
             frameSync.setVisibility(View.VISIBLE);
@@ -434,8 +434,9 @@ public class StudioActivity extends AppCompatActivity {
             }
 
             LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
+
         } else {
-            melodyPackId = intent.getExtras().getString("clickPosition");
+//            melodyPackId = intent.getExtras().getString("clickPosition");
             if (!melodyPackId.equals("fromHomeActivity")) {
                 if (melodyPackId != null) {
                     fetchInstruments(melodyPackId);
@@ -687,6 +688,7 @@ public class StudioActivity extends AppCompatActivity {
                 if (StudioActivity.mpInst != null) {
                     StudioActivity.mpInst.stop();
                 }
+                instrumentList.clear();
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
 
@@ -715,6 +717,7 @@ public class StudioActivity extends AppCompatActivity {
                 if (StudioActivity.mpInst != null) {
                     StudioActivity.mpInst.stop();
                 }
+                instrumentList.clear();
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
             }
@@ -1392,13 +1395,13 @@ public class StudioActivity extends AppCompatActivity {
 
 
                         Log.d("ReturnData", response);
-                        JoinActivity.instrumentList.clear();
+                        instrumentList.clear();
 //                        if (click_pos == 0) {
 //                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, JoinActivity.instrumentList, String.valueOf(click_pos));
 //                            JoinActivity.adapter1 = new JoinInstrumentListAdp(JoinActivity.instrumentList, getApplicationContext());
 //                            JoinActivity.recyclerViewInstruments.setAdapter(JoinActivity.adapter1);
 //                        } else {
-                        new ParseContents(getApplicationContext()).parseJoinInstrument(response, JoinActivity.instrumentList, position);
+                        new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, position);
                         InstrumentCountSize = MelodyInstruments.getInstrumentCount();
                         adapter.notifyDataSetChanged();
                         //   }
@@ -1650,49 +1653,55 @@ public class StudioActivity extends AppCompatActivity {
 
                     if (flag.equals("success")) {
                         if (msgflag.equals("Melody created")) {
-                                tvDone.setEnabled(false);
-                                MelodyInstruments melodyInstruments = new MelodyInstruments();
-                                melodyInstruments.setInstrumentName(packName);
-                                melodyInstruments.setInstrumentBpm(bpm);
-                                melodyInstruments.setInstrumentFile("Blank");
-                                melodyInstruments.setInstrumentLength(melodyRecDuration);
-                                melodyInstruments.setUserProfilePic(recPic);
-                                melodyInstruments.setInstrumentCover("#00FDFE");
-                                melodyInstruments.setInstrumentCreated(addDate);
-                                melodyInstruments.setUserName(userName);
-                                melodyInstruments.setInstrumentFile(melodyurl);
-                                instrumentList.add(melodyInstruments);
-                                adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
-                                recyclerViewInstruments.setAdapter(adapter);
-                                adapter.notifyDataSetChanged();
-                                ivRecord_play.setVisibility(View.INVISIBLE);
-                                rlRedoButton.setVisibility(View.INVISIBLE);
-                                rlMelodyButton.setVisibility(View.VISIBLE);
-                                switchPublic.setChecked(false);
-                                switchFlag = "0";
+                            tvDone.setEnabled(false);
+                            MelodyInstruments melodyInstruments = new MelodyInstruments();
+                            melodyInstruments.setInstrumentName(packName);
+                            melodyInstruments.setInstrumentBpm(bpm);
+                            melodyInstruments.setInstrumentFile("Blank");
+                            melodyInstruments.setInstrumentLength(melodyRecDuration);
+                            melodyInstruments.setUserProfilePic(recPic);
+                            melodyInstruments.setInstrumentCover("#00FDFE");
+                            melodyInstruments.setInstrumentCreated(addDate);
+                            melodyInstruments.setUserName(userName);
+                            melodyInstruments.setInstrumentFile(melodyurl);
+                            instrumentList.add(melodyInstruments);
+                            adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+                            recyclerViewInstruments.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                            ivRecord_play.setVisibility(View.INVISIBLE);
+                            rlRedoButton.setVisibility(View.INVISIBLE);
+                            rlMelodyButton.setVisibility(View.VISIBLE);
+                            switchPublic.setChecked(false);
+                            switchFlag = "0";
+                            SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
+                            FilterPref.remove("instrumentsPos");
+                            FilterPref.apply();
 
                         } else {
-                                tvDone.setEnabled(false);
-                                MelodyInstruments melodyInstruments = new MelodyInstruments();
-                                melodyInstruments.setInstrumentName(packName);
-                                melodyInstruments.setInstrumentBpm(bpm);
-                                melodyInstruments.setInstrumentFile("Blank");
-                                melodyInstruments.setInstrumentLength(melodyRecDuration);
-                                melodyInstruments.setUserProfilePic(recPic);
-                                melodyInstruments.setInstrumentCover("#00FDFE");
-                                melodyInstruments.setInstrumentCreated(addDate);
-                                melodyInstruments.setUserName(userName);
-                                melodyInstruments.setInstrumentFile(melodyurl);
-                                instrumentList.add(melodyInstruments);
-                                adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
-                                recyclerViewInstruments.setAdapter(adapter);
-                                adapter.notifyDataSetChanged();
-                                ivRecord_play.setVisibility(View.INVISIBLE);
-                                rlRedoButton.setVisibility(View.INVISIBLE);
-                                rlMelodyButton.setVisibility(View.VISIBLE);
-                                switchPublic.setChecked(false);
-                                switchFlag = "0";
-                                Toast.makeText(StudioActivity.this, "Saved as Recording", Toast.LENGTH_SHORT).show();
+                            tvDone.setEnabled(false);
+                            MelodyInstruments melodyInstruments = new MelodyInstruments();
+                            melodyInstruments.setInstrumentName(packName);
+                            melodyInstruments.setInstrumentBpm(bpm);
+                            melodyInstruments.setInstrumentFile("Blank");
+                            melodyInstruments.setInstrumentLength(melodyRecDuration);
+                            melodyInstruments.setUserProfilePic(recPic);
+                            melodyInstruments.setInstrumentCover("#00FDFE");
+                            melodyInstruments.setInstrumentCreated(addDate);
+                            melodyInstruments.setUserName(userName);
+                            melodyInstruments.setInstrumentFile(melodyurl);
+                            instrumentList.add(melodyInstruments);
+                            adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+                            recyclerViewInstruments.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                            ivRecord_play.setVisibility(View.INVISIBLE);
+                            rlRedoButton.setVisibility(View.INVISIBLE);
+                            rlMelodyButton.setVisibility(View.VISIBLE);
+                            switchPublic.setChecked(false);
+                            switchFlag = "0";
+                            SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
+                            FilterPref.remove("instrumentsPos");
+                            FilterPref.apply();
+                            Toast.makeText(StudioActivity.this, "Saved as Recording", Toast.LENGTH_SHORT).show();
                         }
 
                         if (progressDialog != null) {
@@ -1714,7 +1723,6 @@ public class StudioActivity extends AppCompatActivity {
                         editorT.apply();
 
                     }
-
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -1748,7 +1756,6 @@ public class StudioActivity extends AppCompatActivity {
                 } else {
                     params.put(MixparentRecordingID, "");
                 }
-
                 //params.put(Mixrecording, list.toString());
 
                 JSONArray myarray = new JSONArray();
@@ -1778,8 +1785,6 @@ public class StudioActivity extends AppCompatActivity {
                         jsonObject.put("mix", list.get(i).mix);
                         jsonObject.put("fileurl", list.get(i).fileurl);
                         jsonObject.put("PositionId", list.get(i).positionId);
-
-
                         myarray.put(i, jsonObject);
 
                     }

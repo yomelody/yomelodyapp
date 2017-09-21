@@ -96,7 +96,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     List aa;
     int InstrumentListPosition;
 
-    int InstrumentListCount=0;
+    int InstrumentListCount = 0;
 
     final int MY_PERMISSIONS_REQUEST_MICROPHONE = 200;
     final int MY_PERMISSIONS_REQUEST_STORAGE = 201;
@@ -111,7 +111,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
     public InstrumentListAdapter(ArrayList<MelodyInstruments> instrumentList, Context context) {
         this.instrumentList = instrumentList;
-        InstrumentListCount=instrumentList.size();
+        InstrumentListCount = instrumentList.size();
         this.context = context;
 
     }
@@ -147,7 +147,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         this.hasLoadButton = hasLoadButton;
         notifyDataSetChanged();
     }
-    ArrayList ArRepeate=new ArrayList();
+
+    ArrayList ArRepeate = new ArrayList();
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -155,7 +156,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         TextView tvInstrumentName, tvUserName, tvInstrumentLength, tvBpmRate, tvSync, tvDoneFxEq, tvFxButton, tvEqButton;
 
         FrameLayout frameInstrument;
-        RelativeLayout rlSeekbarTracer, rlSync, rlrepeat,rlivDeleteMelody;
+        RelativeLayout rlSeekbarTracer, rlSync, rlrepeat, rlivDeleteMelody;
         ImageView grey_circle, blue_circle;
         RelativeLayout rlFX, rlEQ;
         private int maxVolume = 0;
@@ -344,7 +345,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
         viewHolder = new ViewHolder();
         viewHolder.seekBar = (SeekBar) holder.melodySlider.findViewById(R.id.melodySlider);
-        viewHolder.TempRlRepeats=(RelativeLayout)holder.rlrepeat .findViewById(R.id.rlrepeat);
+        viewHolder.TempRlRepeats = (RelativeLayout) holder.rlrepeat.findViewById(R.id.rlrepeat);
         lstViewHolder.add(viewHolder);
         String aafs = FirebaseInstanceId.getInstance().getToken();
         final MelodyInstruments instruments = instrumentList.get(listPosition);
@@ -384,8 +385,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         holder.rlivDeleteMelody.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(holder.mp!=null)
-                {
+                if (holder.mp != null) {
                     holder.mp.stop();
                 }
                 if (StudioActivity.mpInst != null) {
@@ -881,7 +881,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             public void onClick(View v) {
                 if (IsRepeat == false) {
                     //ArrayList arrayList=new ArrayList();
-                    ArRepeate.add(holder.getAdapterPosition(),1);
+                    ArRepeate.add(holder.getAdapterPosition(), 1);
                     IsRepeat = true;
                     holder.rlrepeat.setBackgroundColor(Color.GRAY);
                     if (holder.mp != null) {
@@ -1055,8 +1055,14 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 StudioActivity.rlRecordingButton.setVisibility(View.GONE);
                 StudioActivity.ivRecord_play.setVisibility(View.VISIBLE);
                 StudioActivity.rlRedoButton.setVisibility(View.VISIBLE);
-                StudioActivity.tvPublic.setVisibility(View.VISIBLE);
-                StudioActivity.switchPublic.setVisibility(View.VISIBLE);
+                if (StudioActivity.joinRecordingId != null ) {
+                    StudioActivity.tvPublic.setVisibility(View.GONE);
+                    StudioActivity.switchPublic.setVisibility(View.GONE);
+                } else {
+                    StudioActivity.tvPublic.setVisibility(View.VISIBLE);
+                    StudioActivity.switchPublic.setVisibility(View.VISIBLE);
+                }
+
                 StudioActivity.frameProgress.setVisibility(View.GONE);
                 StudioActivity.frameprog.setVisibility(View.GONE);
                 if (StudioActivity.mRecordingThread != null) {

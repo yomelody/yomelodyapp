@@ -57,9 +57,10 @@ public class ActivityFragment extends Fragment {
     String USER_ID = "user_id";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";
-    String id = "id",userId="";
+    String id = "id", userId = "";
     ProgressDialog progressDialog;
     private static ArrayList<ActivityModel> arraylist;
+
     public ActivityFragment() {
     }
 
@@ -95,7 +96,7 @@ public class ActivityFragment extends Fragment {
         }
 
 
-        if(!userId.equals("") && userId != null) {
+        if (!userId.equals("") && userId != null) {
             new FetchActivityDetails().execute(userId);
         }
 //        else {
@@ -132,13 +133,13 @@ public class ActivityFragment extends Fragment {
 
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            if (progressDialog != null)
-            {
+            if (progressDialog != null) {
                 progressDialog.dismiss();
             }
-           // progressDialog.dismiss();
+            // progressDialog.dismiss();
         }
     }
+
     public void fetchActivityData(final String userId) {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, ACTIVITY,
                 new Response.Listener<String>() {
@@ -154,7 +155,7 @@ public class ActivityFragment extends Fragment {
                                 ArrayList<ActivityModel> list = new ArrayList<ActivityModel>();
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                                 JSONArray newJsonArray = new JSONArray();
-                                for (int i = jsonArray.length()-1; i>=0; i--) {
+                                for (int i = jsonArray.length() - 1; i >= 0; i--) {
                                     newJsonArray.put(jsonArray.get(i));
                                 }
                                 for (int i = 0; i < newJsonArray.length(); i++) {
@@ -203,8 +204,13 @@ public class ActivityFragment extends Fragment {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
+                        try {
+                            Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+                            Log.d("Error", errorMsg);
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 }) {
             @Override
@@ -218,9 +224,10 @@ public class ActivityFragment extends Fragment {
         RequestQueue requestQueue1 = Volley.newRequestQueue(getActivity());
         requestQueue1.add(stringRequest);
     }
+
     public String DateTime(String send_at) {
         String val = "";
-        val=getServerDiffrenceDate(send_at);
+        val = getServerDiffrenceDate(send_at);
         return val;
     }
 

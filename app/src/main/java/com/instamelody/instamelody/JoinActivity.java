@@ -65,7 +65,7 @@ public class JoinActivity extends AppCompatActivity {
     private String RECORDING_ID = "rid";
     public static String addedBy, RecId, UserName, ProfileImageRec, RecordingName;
     public static TextView play_count, tvLikeCount, tvCommentCount, tvShareCount;
-    public static ImageView ivJoinPlay, ivJoinPause, ivLikeButton, ivDislikeButton,ivPlayNext,ivPlayPre;
+    public static ImageView ivJoinPlay, ivJoinPause, ivLikeButton, ivDislikeButton, ivPlayNext, ivPlayPre;
     public static RelativeLayout rlLike, rlComment, joinFooter;
     public static int position;
     ProgressDialog progressDialog;
@@ -75,7 +75,7 @@ public class JoinActivity extends AppCompatActivity {
     public static TextView mDecibelView, recording_name, artist_name;
     public static ImageView profile_image, ivShareButton;
     public static ImageView ivBackButton, ivHomeButton;
-    public static TextView melody_detail;
+    public static TextView melody_detail, txtCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,13 +84,14 @@ public class JoinActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
         profile_image = (ImageView) findViewById(R.id.profile_image);
         artist_name = (TextView) findViewById(R.id.artist_name);
-        melody_detail=(TextView)findViewById(R.id.melody_detail);
+        melody_detail = (TextView) findViewById(R.id.melody_detail);
         recording_name = (TextView) findViewById(R.id.recording_name);
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
         ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
         ivShareButton = (ImageView) findViewById(R.id.ivShareButton);
-        ivPlayNext=(ImageView)findViewById(R.id.ivPlayNext);
-        ivPlayPre=(ImageView)findViewById(R.id.ivPlayPre);
+        ivPlayNext = (ImageView) findViewById(R.id.ivPlayNext);
+        txtCount = (TextView) findViewById(R.id.txtCount);
+        ivPlayPre = (ImageView) findViewById(R.id.ivPlayPre);
         waveform_view = (com.instamelody.instamelody.utils.WaveformView) findViewById(R.id.waveform_view);
         mDecibelView = (TextView) findViewById(R.id.decibel_view);
         play_count = (TextView) findViewById(R.id.tvPlayCount);

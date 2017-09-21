@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.instamelody.instamelody.JoinActivity;
 import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.R;
@@ -97,9 +98,9 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
             tvInstrumentName = (TextView) itemView.findViewById(R.id.tvInstrumentName);
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
             count = getItemCount();
-//            if(count>0){
-//                JoinActivity.melody_detail.setText(count + " " + "Instrumentals");
-//            }
+
+            JoinActivity.melody_detail.setText(count + " " + "Instrumentals");
+            
 
             audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
             ivPause.setOnClickListener(new View.OnClickListener() {

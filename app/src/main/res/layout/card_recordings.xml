@@ -139,68 +139,68 @@
 
                     <SeekBar
                         android:id="@+id/seekBarRecordings"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginRight="5dp"
-                        android:layout_marginEnd="5dp"
                         android:layout_width="match_parent"
-                        android:paddingLeft="0dp"
-                        android:paddingStart="0dp"
-                        android:paddingRight="0dp"
-                        android:paddingEnd="0dp"
                         android:layout_height="20dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="35dp"
                         android:indeterminate="false"
-                        android:thumb="@drawable/slider_thumb4"
+                        android:paddingEnd="0dp"
+                        android:paddingLeft="0dp"
+                        android:paddingRight="0dp"
+                        android:paddingStart="0dp"
                         android:progressDrawable="@drawable/new_seekbar"
-                        android:layout_marginTop="35dp" />
+                        android:thumb="@drawable/slider_thumb4" />
 
                     <ImageView
+                        android:id="@+id/ivStation11"
                         android:layout_width="130dp"
                         android:layout_height="110dp"
+                        android:layout_gravity="end|bottom"
                         android:layout_marginTop="45dp"
                         android:paddingRight="5dp"
-                        app:srcCompat="@drawable/audio_mask"
-                        android:layout_gravity="end|bottom"
-                        android:id="@+id/ivStation11" />
+                        app:srcCompat="@drawable/audio_mask" />
 
                     <ImageView
+                        android:id="@+id/ivStationPre"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
+                        android:layout_gravity="start|bottom"
+                        android:layout_marginBottom="5dp"
                         android:layout_marginLeft="10dp"
-                        android:layout_marginBottom="5dp"
-                        app:srcCompat="@drawable/previous"
-                        android:layout_gravity="start|bottom"
-                        android:id="@+id/ivStationPre" />
+                        app:srcCompat="@drawable/previous" />
 
                     <ImageView
+                        android:id="@+id/ivStationNext"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        app:srcCompat="@drawable/next"
-                        android:layout_marginBottom="5dp"
                         android:layout_gravity="start|bottom"
+                        android:layout_marginBottom="5dp"
                         android:layout_marginLeft="130dp"
-                        android:id="@+id/ivStationNext" />
+                        app:srcCompat="@drawable/next" />
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="(1 of 15)"
-                        android:layout_gravity="start|bottom"
-                        android:layout_marginLeft="70dp"
-                        android:layout_marginBottom="5dp"
                         android:id="@+id/txtJoinCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start|bottom"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginLeft="70dp"
+                        android:text="(1 of 15)"
                         android:textSize="8sp" />
 
                     <TextView
+                        android:id="@+id/TemptxtJoinCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0"
                         android:layout_gravity="start|bottom"
-                        android:layout_marginLeft="70dp"
                         android:layout_marginBottom="5dp"
-                        android:id="@+id/TemptxtJoinCount"
-                        android:visibility="gone"
-                        android:textSize="8sp" />
+                        android:layout_marginLeft="70dp"
+                        android:text="0"
+                        android:textSize="8sp"
+                        android:visibility="gone" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -211,8 +211,8 @@
                             android:id="@+id/rlDetail"
                             android:layout_width="45dp"
                             android:layout_height="match_parent"
-                            android:layout_marginLeft="200dp"
                             android:layout_marginBottom="5dp"
+                            android:layout_marginLeft="200dp"
                             android:orientation="vertical">
 
                             <RelativeLayout
@@ -224,24 +224,24 @@
                                     android:id="@+id/tvContributeLength"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="00:00"
-                                    android:textSize="12sp"
-                                    android:textColor="#FFFFFF"
-                                    android:layout_alignParentRight="true"
-                                    android:layout_alignParentEnd="true"
                                     android:layout_alignLeft="@+id/tvContributeDate"
-                                    android:layout_alignStart="@+id/tvContributeDate" />
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_alignStart="@+id/tvContributeDate"
+                                    android:text="00:00"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="12sp" />
 
                                 <TextView
                                     android:id="@+id/tvContributeDate"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="6/16/16"
-                                    android:textSize="9sp"
-                                    android:textColor="#FFFFFF"
-                                    android:layout_below="@+id/tvContributeLength"
+                                    android:layout_alignParentEnd="true"
                                     android:layout_alignParentRight="true"
-                                    android:layout_alignParentEnd="true" />
+                                    android:layout_below="@+id/tvContributeLength"
+                                    android:text="6/16/16"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="9sp" />
 
                             </RelativeLayout>
                         </RelativeLayout>
@@ -251,41 +251,41 @@
                         android:id="@+id/ivStationPlay"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        app:srcCompat="@drawable/play"
                         android:layout_gravity="start|bottom"
                         android:layout_marginBottom="25dp"
-                        android:layout_marginLeft="65dp"/>
+                        android:layout_marginLeft="65dp"
+                        app:srcCompat="@drawable/play" />
 
                     <ImageView
                         android:id="@+id/ivStationPause"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        app:srcCompat="@drawable/pause"
                         android:layout_gravity="start|bottom"
                         android:layout_marginBottom="25dp"
+                        android:layout_marginLeft="65dp"
                         android:visibility="gone"
-                        android:layout_marginLeft="65dp"/>
+                        app:srcCompat="@drawable/pause" />
 
                     <ImageView
+                        android:id="@+id/ivJoin"
                         android:layout_width="65dp"
                         android:layout_height="65dp"
-                        app:srcCompat="@drawable/red_mike"
-                        android:id="@+id/ivJoin"
+                        android:layout_gravity="end|bottom"
                         android:layout_marginBottom="30dp"
                         android:layout_marginRight="18dp"
-                        android:layout_gravity="end|bottom"/>
+                        app:srcCompat="@drawable/red_mike" />
 
                     <TextView
+                        android:id="@+id/textViewrth"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="JOIN"
-                        android:textSize="14sp"
-                        android:textColor="#FFFFFF"
-                        android:textStyle="normal|bold"
                         android:layout_gravity="end|bottom"
-                        android:layout_marginRight="35dp"
                         android:layout_marginBottom="10dp"
-                        android:id="@+id/textViewrth" />
+                        android:layout_marginRight="35dp"
+                        android:text="JOIN"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="normal|bold" />
 
                 </FrameLayout>
             </RelativeLayout>
