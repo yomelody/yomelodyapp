@@ -263,7 +263,7 @@ public class ChatActivity extends AppCompatActivity {
         if (audioShareData.getString("recID", null) != null) {
             flagFileType = "2";
             sendMessage("Audio", userId);
-            if(chatId.equals("")){
+            if (chatId.equals("")) {
                 getChatId(senderId, receiverId);
             }
         }
@@ -403,10 +403,9 @@ public class ChatActivity extends AppCompatActivity {
                     ivJoin.setVisibility(View.VISIBLE);
                     tvSend.setVisibility(View.GONE);
                     sendMessage(message, userId);
-                    if(chatId.equals("")){
+                    if (chatId.equals("")) {
                         getChatId(senderId, receiverId);
-                    }
-                    else{
+                    } else {
                         getChatMsgs(chatId);
                     }
                     InputMethodManager inputManager = (InputMethodManager)
@@ -702,22 +701,41 @@ public class ChatActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == TAKE_CAMERA_PHOTO && resultCode == Activity.RESULT_OK) {
-            if (imageToUploadUri != null) {
-                Uri selectedImage = imageToUploadUri;
-                sendImageName = imageToUploadUri.getPath();
-                getContentResolver().notifyChange(selectedImage, null);
-                ImageCompressor ic = new ImageCompressor(getApplicationContext());
-                sendImageBitmap = ic.compressImage(sendImageName);
-                if (sendImageBitmap != null) {
-                    rlSelectedImage.setVisibility(View.VISIBLE);
-                    ivSelectedImage.setVisibility(View.VISIBLE);
-                    ivSelectedImage.setImageBitmap(sendImageBitmap);
-                    flagFileType = "1";
+            if (updateGroupFlag == 1) {
+                if (imageToUploadUri != null) {
+                    Uri selectedImage = imageToUploadUri;
+                    sendGroupImageName = imageToUploadUri.getPath();
+                    getContentResolver().notifyChange(selectedImage, null);
+                    ImageCompressor ic = new ImageCompressor(getApplicationContext());
+                    groupImageBitmap = ic.compressImage(sendGroupImageName);
+                    if (groupImageBitmap != null) {
+                        rlSelectedImage.setVisibility(View.VISIBLE);
+                        ivSelectedImage.setVisibility(View.VISIBLE);
+                        ivSelectedImage.setImageBitmap(groupImageBitmap);
+                    } else {
+                        Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
+                    }
                 } else {
                     Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
                 }
             } else {
-                Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
+                if (imageToUploadUri != null) {
+                    Uri selectedImage = imageToUploadUri;
+                    sendImageName = imageToUploadUri.getPath();
+                    getContentResolver().notifyChange(selectedImage, null);
+                    ImageCompressor ic = new ImageCompressor(getApplicationContext());
+                    sendImageBitmap = ic.compressImage(sendImageName);
+                    if (sendImageBitmap != null) {
+                        rlSelectedImage.setVisibility(View.VISIBLE);
+                        ivSelectedImage.setVisibility(View.VISIBLE);
+                        ivSelectedImage.setImageBitmap(sendImageBitmap);
+                        flagFileType = "1";
+                    } else {
+                        Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
+                }
             }
         }
 
