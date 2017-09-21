@@ -34,10 +34,10 @@ import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Models.AudioModel;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsModel;
+import com.instamelody.instamelody.Models.RecordingsModelMore;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
-import com.instamelody.instamelody.StudioActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,6 +52,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.Authentication
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
+
 /**
  * Created by Saurabh Singh on 4/18/2017.
  */
@@ -59,7 +60,8 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 public class AudioFragment extends Fragment {
 
     ArrayList<AudioModel> audioList = new ArrayList<>();
-    ArrayList<RecordingsModel> recordingList = new ArrayList<>();
+    ArrayList<RecordingsModel> recordingList = new ArrayList<RecordingsModel>();
+    ArrayList<RecordingsModelMore> recordingListMore = new ArrayList<RecordingsModelMore>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
     ArrayList<Genres> genresArrayList = new ArrayList<>();
     private String ID = "id";
@@ -72,7 +74,7 @@ public class AudioFragment extends Fragment {
     private String KEY_SEARCH = "search";
     private String USER_NAME = "username";
     private String COUNT = "count";
-
+    LinearLayoutManager linearLayoutManager;
 
     String recordingId, addedBy, recordingTopic, userName, dateAdded, likeCount, playCount, commentCount, shareCount, profileUrl, coverUrl, genre, recordings;
 
@@ -99,54 +101,75 @@ public class AudioFragment extends Fragment {
     private boolean loading = true;
     int pastVisiblesItems, visibleItemCount, totalItemCount;
     LinearLayoutManager mLayoutManager;
+    public static RecyclerView rv;
+    int counter = 0;
+    RecyclerView.LayoutManager lm;
+    int post = 0;
+
     public AudioFragment() {
 
     }
 
 
-
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_audio, container, false);
-        setRetainInstance(true);
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_audio, container, false);
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewAudio);
-       /* recyclerView.setHasFixedSize(true);
+        rv = (RecyclerView) view.findViewById(R.id.recyclerViewAudio);
 
-        mLayoutManager = new GridLayoutManager(getActivity(), 2);
-        recyclerView.setLayoutManager(mLayoutManager);*/
+        /*//setRetainInstance(true);
+        //final  LinearLayoutManager linearLayoutManager = ((LinearLayoutManager)rv.getLayoutManager());
 
         final LinearLayoutManager mLayoutManager;
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(mLayoutManager);
-        /*recyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                int a=5;
-            }
-        });
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
-        {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy)
-            {
-                if(dy > 0) //check for scroll down
-                {
-                    visibleItemCount = mLayoutManager.getChildCount();
-                    totalItemCount = mLayoutManager.getItemCount();
-                    pastVisiblesItems = mLayoutManager.findFirstVisibleItemPosition();
+        mLayoutManager = new LinearLayoutManager(view.getContext());
+        rv.setLayoutManager(mLayoutManager);
 
-                    if (loading)
-                    {
-                        if ( (visibleItemCount + pastVisiblesItems) >= totalItemCount)
-                        {
-                            loading = false;
-                            Log.v("...", "Last Item Wow !");
-                            //Do pagination.. i.e. fetch new data
-                        }
+        rv.setLayoutManager(mLayoutManager);
+        //adapter = new RecordingsCardAdapter();
+        rv.setAdapter(adapter);
+*/
+
+        /*rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                //int visibleItemCount        = lm.getChildCount();
+                //int totalItemCount          = lm.getItemCount();
+                int firstVisibleItemPosition= rv.getVerticalScrollbarPosition();
+                *//*if (((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition() == LAST_POSITION) {
+                    // code here
+                }*//*
+
+
+                //int findFirstCompletelyVisibleItemPosition=rv.(((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
+                //int findLastVisibleItemPosition=mLayoutManager.findLastVisibleItemPosition();
+                //int findLastCompletelyVisibleItemPosition=mLayoutManager.findLastCompletelyVisibleItemPosition();
+
+                //Toast.makeText(getActivity(), "findFirstVisibleItemPosition position>>> " + String.valueOf(visibleItemCount), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), "findFirstCompletelyVisibleItemPosition position>>> " + String.valueOf(totalItemCount), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "findLastVisibleItemPosition position>>> " + String.valueOf(firstVisibleItemPosition), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), "findLastCompletelyVisibleItemPosition position>>> " + String.valueOf(findLastCompletelyVisibleItemPosition), Toast.LENGTH_SHORT).show();
+                counter = counter + 1;
+                if (dy > 0) {
+                    if (counter >= 20) {
+
+                        //Toast.makeText(getActivity(), "Hi comment>>> " + String.valueOf(counter), Toast.LENGTH_SHORT).show();
+
                     }
-                }
+                } //else {
+                //int pastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
+                //if (pastVisibleItems == 0) {
+                //Toast.makeText(getContext(), "Top most item", Toast.LENGTH_SHORT).show();
+                //}
+                //}
             }
         });*/
 
@@ -199,8 +222,6 @@ public class AudioFragment extends Fragment {
         adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
 
 
-        // fetchGenreNames();
-     //   new LongOperation().execute();
     }
 
 
@@ -445,7 +466,6 @@ public class AudioFragment extends Fragment {
 
 
     }
-
 
 
     public void fetchRecordingsFilter() {
@@ -839,19 +859,192 @@ public class AudioFragment extends Fragment {
         return new TabHost.TabContentFactory() {
             @Override
             public View createTabContent(String tag) {
-                RecyclerView rv = new RecyclerView(getActivity());
+                //rv = new RecyclerView(getActivity());
+
                 rv.setHasFixedSize(true);
-                RecyclerView.LayoutManager lm = new LinearLayoutManager(getActivity());
-                rv.setLayoutManager(lm);
+                linearLayoutManager = new LinearLayoutManager(getActivity());
+                //rv.setLayoutManager(layoutManager);
+                //lm = new LinearLayoutManager(getActivity());
+                //lm = (LinearLayoutManager) rv.getLayoutManager();
+                rv.setLayoutManager(linearLayoutManager);
                 rv.setItemAnimator(new DefaultItemAnimator());
+                rv.addOnScrollListener(recyclerViewOnScrollListener);
                 rv.setAdapter(adapter);
+                linearLayoutManager = (LinearLayoutManager) rv.getLayoutManager();
+
                 return rv;
             }
         };
     }
 
+    private RecyclerView.OnScrollListener recyclerViewOnScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+        }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            int visibleItemCount = linearLayoutManager.getChildCount();
+            int totalItemCount = linearLayoutManager.getItemCount();
+            post = linearLayoutManager.findLastVisibleItemPosition();
+            //Toast.makeText(getActivity(), "111111   >>>" + String.valueOf(post), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getActivity(), String.valueOf(recordingList.size()), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getActivity(), "post "+String.valueOf(post+1), Toast.LENGTH_SHORT).show();
+            if (post + 1 == recordingList.size()) {
+
+                new FetchActivityDetails().execute(String.valueOf(recordingList.size() + 10));
+
+                //adapter.notifyDataSetChanged();
+                //linearLayoutManager.scrollToPosition(post+1);
+
+                //rv.setAdapter(adapter);
+                //adapter.notifyItemInserted(recordingList.size()-1);
+                //Toast.makeText(getActivity(), "list "+String.valueOf(recordingList.size()), Toast.LENGTH_SHORT).show();
+            }
 
 
+        }
+    };
+
+    private class FetchActivityDetails extends AsyncTask<String, String, String> {
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            running = true;
+
+            progressDialog = ProgressDialog.show(getActivity(), "Processing...", "Please Wait...");
+            progressDialog.setCancelable(false);
+
+        }
+        boolean running;
+        ProgressDialog progressDialog;
+        protected String doInBackground(String... params) {
+
+            try {
+
+                final int Pos = Integer.parseInt(params[0]);
+                fetchRecordingsMore(Pos);
+                /*int i = 3;
+                while(running){*/
+                    try {
+                        Thread.sleep(7000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    /*if(i-- == 0){
+                        running = false;
+                    }*/
+
+                //}
+                return null;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+        @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+            //progressDialog.setMessage(String.valueOf(values[0]));
+        }
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+
+            //Toast.makeText(getActivity(), "1111", Toast.LENGTH_SHORT).show();
+            progressDialog.dismiss();
+
+            //Toast.makeText(getActivity(), "2222", Toast.LENGTH_SHORT).show();
+
+
+        }
+    }
+
+    public void fetchRecordingsMore(final int position) {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+//                        Toast.makeText(getActivity(), ""+response, Toast.LENGTH_SHORT).show();
+
+                        Log.d("ReturnData", response);
+
+                        recordingList.clear();
+                        //recordingsPools.clear();
+                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
+
+                        try {
+                            //recordingList.addAll(recordingListMore);
+                            //rv.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                            ClearSharedPref();
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+//                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+//                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+//                params.put(ID, userId);
+               /* params.put(KEY, STATION);
+                params.put(GENRE, genreString);*/
+                if (userId != null) {
+                    params.put(ID, userId);
+                    params.put(KEY, STATION);
+                    params.put(GENRE, genreString);
+                    params.put("limit", String.valueOf(position));
+                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                } else {
+                    params.put(KEY, STATION);
+                    params.put(GENRE, genreString);
+                    params.put("limit", String.valueOf(position));
+                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                }
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
+        requestQueue.add(stringRequest);
+
+
+    }
 
     void ClearSharedPref() {
         try {

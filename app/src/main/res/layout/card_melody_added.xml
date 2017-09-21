@@ -317,6 +317,7 @@
                             </RelativeLayout>
 
                             <RelativeLayout
+                                android:id="@+id/rlMute"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="0.33">
@@ -335,6 +336,7 @@
                             </RelativeLayout>
 
                             <RelativeLayout
+                                android:id="@+id/rlSolo"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="0.33">

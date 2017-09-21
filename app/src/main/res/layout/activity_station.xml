@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_station"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:id="@+id/activity_station"
     tools:context="com.instamelody.instamelody.StationActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -24,19 +24,19 @@
                 android:id="@+id/ivBackButton"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                android:padding="4dp"
                 android:layout_centerVertical="true"
-                android:layout_marginTop="6dp"
                 android:layout_marginBottom="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="6dp"
+                android:padding="4dp"
                 android:src="@drawable/left_arrow" />
 
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentTop="true">
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true">
 
                 <TextView
                     android:id="@+id/appBarMainText"
@@ -54,22 +54,22 @@
                 android:id="@+id/ivMelodyStation"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_marginRight="8dp"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="8dp"
                 android:src="@drawable/music_circle" />
 
             <ImageView
                 android:id="@+id/ivHomeButton"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                android:padding="4dp"
                 android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
                 android:layout_toEndOf="@+id/ivBackButton"
                 android:layout_toRightOf="@+id/ivBackButton"
+                android:padding="4dp"
                 android:src="@drawable/menu_dots" />
 
         </RelativeLayout>
@@ -88,33 +88,58 @@
             android:layout_height="match_parent"
             android:layout_marginTop="80dp">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerViewAudio"
-                android:layout_marginTop="45dp"
-                android:layout_marginBottom="45dp"
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scrollbars="vertical" />
+                android:orientation="vertical"
+                tools:context=".StationActivity">
+
+                <!-- <android.support.v7.widget.RecyclerView
+                     android:id="@+id/recyclerViewAudio"
+                     android:layout_width="match_parent"
+                     android:layout_height="match_parent"
+                     android:layout_marginBottom="45dp"
+                     android:layout_marginTop="45dp"
+                     android:scrollbars="vertical" />-->
+            </LinearLayout>
 
         </RelativeLayout>
+
+        <FrameLayout
+            android:id="@+id/frmprg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="45dp"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/progressBar1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal" />
+
+
+        </FrameLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:background="#fbf7f7"
-            android:layout_alignParentBottom="true">
+            android:layout_alignParentBottom="true"
+            android:background="#fbf7f7">
 
             <LinearLayout
                 android:id="@+id/linear1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_alignParentBottom="true">
+                android:layout_alignParentBottom="true"
+                android:orientation="horizontal">
 
                 <RelativeLayout
                     android:layout_width="0dp"
-                    android:layout_weight="0.33"
                     android:layout_height="match_parent"
+                    android:layout_weight="0.33"
                     android:background="#FFFFFF"
                     android:padding="5dp">
 
@@ -122,16 +147,16 @@
                         android:id="@+id/audio_feed"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/audio_feed"
                         android:layout_alignParentTop="true"
-                        android:layout_centerHorizontal="true" />
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/audio_feed" />
 
                 </RelativeLayout>
 
                 <RelativeLayout
                     android:layout_width="0dp"
-                    android:layout_weight="0.33"
                     android:layout_height="match_parent"
+                    android:layout_weight="0.33"
                     android:background="#FFFFFF"
                     android:padding="5dp">
 
@@ -139,26 +164,26 @@
                         android:id="@+id/discover"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/discover"
                         android:layout_alignParentTop="true"
-                        android:layout_centerHorizontal="true" />
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/discover" />
 
                 </RelativeLayout>
 
                 <RelativeLayout
                     android:layout_width="0dp"
-                    android:layout_weight="0.33"
                     android:layout_height="match_parent"
+                    android:layout_weight="0.33"
                     android:background="#FFFFFF">
 
                     <ImageView
                         android:id="@+id/message"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/messenger"
                         android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
                         android:layout_margin="5dp"
-                        android:layout_centerHorizontal="true" />
+                        android:background="@drawable/messenger" />
 
                     <FrameLayout
                         android:layout_width="match_parent"
@@ -168,15 +193,15 @@
                             android:id="@+id/message_count"
                             android:layout_width="15dp"
                             android:layout_height="15dp"
+                            android:layout_gravity="right"
+                            android:layout_marginRight="32dp"
+                            android:layout_marginTop="2dp"
                             android:background="@drawable/red_circle"
                             android:text="99"
-                            android:textSize="12sp"
                             android:textAlignment="center"
+                            android:textSize="12sp"
                             android:textStyle="normal|bold"
-                            android:layout_gravity="right"
-                            android:layout_marginTop="2dp"
-                            android:layout_marginRight="32dp"
-                            android:visibility="invisible"/>
+                            android:visibility="invisible" />
 
                     </FrameLayout>
 
@@ -184,8 +209,8 @@
 
                 <RelativeLayout
                     android:layout_width="0dp"
-                    android:layout_weight="0.33"
                     android:layout_height="match_parent"
+                    android:layout_weight="0.33"
                     android:background="#FFFFFF"
                     android:padding="5dp">
 
@@ -193,9 +218,9 @@
                         android:id="@+id/ivProfile"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/profile"
                         android:layout_alignParentTop="true"
-                        android:layout_centerHorizontal="true" />
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/profile" />
 
                 </RelativeLayout>
 
