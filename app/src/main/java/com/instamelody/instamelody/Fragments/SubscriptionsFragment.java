@@ -52,6 +52,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.Authentication
 import static com.instamelody.instamelody.utils.Const.ServiceType.PACKAGES;
 import static com.instamelody.instamelody.utils.Const.ServiceType.SUBSCRIPTION;
 import static com.instamelody.instamelody.utils.Const.ServiceType.SUBSCRIPTION_DETAIL;
+import static com.instamelody.instamelody.utils.Const.ServiceType.SUB_DETAIL;
 import static com.paypal.android.sdk.payments.PayPalPayment.*;
 
 /**
@@ -63,6 +64,13 @@ public class SubscriptionsFragment extends Fragment {
     String USER_ID = "user_id";
     String STATUS = "status";
     String PACKAGE_ID = "package_id";
+
+    String STATE = "state";
+    String CREATE_TIME = "create_time";
+    String PAYMENT = "payment";
+    String PAYPAL_ID = "id";
+
+    String cost;
 
     ProgressDialog progressDialog;
     ArrayList<SubscriptionPackage> subscriptionPackageArrayList = new ArrayList<>();
@@ -176,7 +184,7 @@ public class SubscriptionsFragment extends Fragment {
             if (confirm != null) {
                 try {
                     Log.d("payment", confirm.toJSONObject().toString(4));
-                    Toast.makeText(getActivity(), "" + confirm.toJSONObject().toString(4), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getActivity(), "" + confirm.toJSONObject().toString(4), Toast.LENGTH_SHORT).show();
                     JSONObject jsonObj = new JSONObject(confirm.toJSONObject().toString());
                     String client = jsonObj.getString("client");
                     String response = jsonObj.getString("response");
@@ -192,9 +200,16 @@ public class SubscriptionsFragment extends Fragment {
                     String intent = response_details.getString("intent");
                     String state = response_details.getString("state");
 
+                    SharedPreferences.Editor PayPal_detail = getActivity().getSharedPreferences("PayPal_detail", MODE_PRIVATE).edit();
+                    PayPal_detail.putString("Transaction_Id", payment_id);
+                    PayPal_detail.putString("state", state);
+                    PayPal_detail.putString("create_time", create_time);
+                    PayPal_detail.apply();
+
                 } catch (JSONException e) {
                     Log.e("payment", "an extremely unlikely failure occurred: ", e);
                 }
+//                sub_detail();
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {
             Log.i("payment", "The user canceled.");
@@ -290,7 +305,7 @@ public class SubscriptionsFragment extends Fragment {
                                     switchFree.setChecked(true);
                                     switchFlag = "1";
                                     packageId = "1";
-                                    subscription();
+//                                    subscription();
 
 //                                    onBuyPressed(v);
 
@@ -411,6 +426,67 @@ public class SubscriptionsFragment extends Fragment {
         requestQueue.add(stringRequest);
     }
 
+    public void sub_detail() {
+        final SharedPreferences PayPal_detail = getActivity().getSharedPreferences("PayPal_detail", MODE_PRIVATE);
+        PayPal_detail.getString("Transaction_Id", null);
+        PayPal_detail.getString("state", null);
+        PayPal_detail.getString("create_time", null);
+        for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
+            subscriptionPackageArrayList.get(i).getCost();
+            if (packageId.equals("2")) {
+                cost = subscriptionPackageArrayList.get(1).getCost();
+            } else if (packageId.equals("3")) {
+                cost = subscriptionPackageArrayList.get(2).getCost();
+            } else if (packageId.equals("4")) {
+                cost = subscriptionPackageArrayList.get(3).getCost();
+            }
+        }
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, SUB_DETAIL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String result = response;
+                        try {
+                            JSONObject jsonObject = new JSONObject(result);
+                            String flag = jsonObject.getString("flag");
+                            String response1 = jsonObject.getString("response");
+                            JSONObject jsonObject1 = jsonObject.getJSONObject("response");
+                            String msg = jsonObject1.getString("msg");
+                            Toast.makeText(getActivity(), "" + msg, Toast.LENGTH_SHORT).show();
+                            subscription_detail();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+                        String errorMsg = error.toString();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(USER_ID, userId);
+                params.put(STATUS, switchFlag);
+                params.put(PACKAGE_ID, packageId);
+                params.put(PAYPAL_ID, PayPal_detail.getString("Transaction_Id", null));
+                params.put(STATE, PayPal_detail.getString("state", null));
+                params.put(CREATE_TIME, PayPal_detail.getString("create_time", null));
+                params.put(PAYMENT, cost);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(stringRequest);
+    }
+
     public void subscription_detail() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, SUBSCRIPTION_DETAIL,
                 new Response.Listener<String>() {
@@ -436,7 +512,6 @@ public class SubscriptionsFragment extends Fragment {
                                     Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT).show();
                                 }
                             }
-
 
                         } catch (JSONException e) {
                             e.printStackTrace();
