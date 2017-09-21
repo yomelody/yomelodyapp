@@ -2,14 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-<<<<<<< HEAD
       <module fileurl="file://$PROJECT_DIR$/Ajay-Copy.iml" filepath="$PROJECT_DIR$/Ajay-Copy.iml" />
-=======
-      <module fileurl="file://$PROJECT_DIR$/InstaMelody.iml" filepath="$PROJECT_DIR$/InstaMelody.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Saurabh.iml" filepath="$PROJECT_DIR$/Saurabh.iml" />
->>>>>>> Saurabh
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/instamelody_app.iml" filepath="$PROJECT_DIR$/instamelody_app.iml" />
       <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
       <module fileurl="file://$PROJECT_DIR$/waveform/waveform.iml" filepath="$PROJECT_DIR$/waveform/waveform.iml" />
     </modules>

@@ -2,16 +2,13 @@ package com.instamelody.instamelody.Parse;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.os.Parcel;
 import android.util.Log;
 import android.view.View;
 
 import com.instamelody.instamelody.ChatActivity;
 import com.instamelody.instamelody.ContactsActivity;
-
-
 import com.instamelody.instamelody.JoinActivity;
+import com.instamelody.instamelody.Models.AdvertisePagingData;
 import com.instamelody.instamelody.Models.Comments;
 import com.instamelody.instamelody.Models.Contacts;
 import com.instamelody.instamelody.Models.Genres;
@@ -96,6 +93,15 @@ public class ParseContents {
     String SUBSCRIPTION_TOTAL_MELODY = "total_melody";
     String SUBSCRIPTION_RECORDING_TIME = "recording_time";
     String SUBSCRIPTION_COST = "cost";
+
+
+
+    String ADV_ID = "id";
+    String ADV_NAME = "adv_name";
+    String ADV_IMAGE = "adv_image";
+    String ADV_URL = "adv_url";
+    String ADV_START_DATE = "start_date";
+    String ADV_END_DATE = "end_date";
 
     public ArrayList<MelodyCard> parseMelodyPacks(String response, ArrayList<MelodyCard> melodyList, ArrayList<MelodyInstruments> instrumentList) {
 
@@ -519,6 +525,29 @@ public class ParseContents {
     }
     public ArrayList<AdvertisePagingData> parseAdvertisePaging(String response, ArrayList<AdvertisePagingData> pagingDataArrayList) {
         JSONObject jsonObject, advertiseJson;
+        JSONArray jsonArray;
+
+        try {
+            jsonObject = new JSONObject(response);
+            String flag = jsonObject.getString(KEY_FLAG);
+            if (flag.equals("success")) {
+                jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    AdvertisePagingData advertisePagingData = new AdvertisePagingData();
+                    advertiseJson = jsonArray.getJSONObject(i);
+                    advertisePagingData.setId_adv(advertiseJson.getString(ADV_ID));
+                    advertisePagingData.setAdv_name(advertiseJson.getString(ADV_NAME));
+                    advertisePagingData.setAdv_image(advertiseJson.getString(ADV_IMAGE));
+                    advertisePagingData.setAdv_url(advertiseJson.getString(ADV_URL));
+                    advertisePagingData.setStart_date(advertiseJson.getString(ADV_START_DATE));
+                    advertisePagingData.setEnd_date(advertiseJson.getString(ADV_END_DATE));
+                    pagingDataArrayList.add(advertisePagingData);
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return pagingDataArrayList;
     }
 
     public ArrayList<SubscriptionPackage> parsePackageSubscription(String response, ArrayList<SubscriptionPackage> subscriptionPackageArrayList) {
@@ -546,4 +575,5 @@ public class ParseContents {
             e.printStackTrace();
         }
         return subscriptionPackageArrayList;
+    }
 }
