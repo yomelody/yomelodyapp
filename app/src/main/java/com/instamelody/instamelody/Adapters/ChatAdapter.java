@@ -41,8 +41,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.instamelody.instamelody.ChatActivity.flSeekbar;
 import static com.instamelody.instamelody.ChatActivity.ivPausePlayer;
 import static com.instamelody.instamelody.ChatActivity.ivPlayPlayer;
+import static com.instamelody.instamelody.ChatActivity.seekBarChata;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.JoinRecording;
@@ -113,6 +115,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             Handler mHandler1 = new Handler();
             try {
                 seekBarChat.setProgress((int) (((float) mp.getCurrentPosition() / mp.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
+                seekBarChata.setProgress((int) (((float) mp.getCurrentPosition() / mp.getDuration()) * 100));
                 if (mp.isPlaying()) {
                     Runnable notification = new Runnable() {
                         public void run() {
@@ -123,6 +126,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                 } else {
                     try {
                         seekBarChat.setProgress(0);
+                        seekBarChata.setProgress(0);
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
@@ -297,6 +301,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                     try {
                         if (parentRec != null) {
                             ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
+                            flSeekbar.setVisibility(View.VISIBLE);
                             ivPlayPlayer.setVisibility(View.GONE);
                             ivPausePlayer.setVisibility(View.VISIBLE);
                             ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
@@ -344,6 +349,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                     }
                                     holder.progressDialog.dismiss();
                                     holder.seekBarChat.setProgress(0);
+                                    seekBarChata.setProgress(0);
 //                                    ChatActivity.rlChatPlayer.setVisibility(View.GONE);
                                 }
                             });
@@ -378,6 +384,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                         if (JoinMp != null) {
                             if (JoinMp.size() > 0) {
                                 ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
+                                flSeekbar.setVisibility(View.VISIBLE);
                                 ivPlayPlayer.setVisibility(View.GONE);
                                 ivPausePlayer.setVisibility(View.VISIBLE);
                                 ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
@@ -439,6 +446,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                         }
                                         holder.progressDialog.dismiss();
                                         holder.seekBarChat.setProgress(0);
+                                        seekBarChata.setProgress(0);
 //                                        ChatActivity.rlChatPlayer.setVisibility(View.GONE);
                                     }
                                 });
@@ -469,6 +477,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                         if (JoinMp != null) {
                             if (JoinMp.size() > 0) {
                                 ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
+                                flSeekbar.setVisibility(View.VISIBLE);
                                 ivPlayPlayer.setVisibility(View.GONE);
                                 ivPausePlayer.setVisibility(View.VISIBLE);
                                 ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
@@ -531,6 +540,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                         }
                                         holder.progressDialog.dismiss();
                                         holder.seekBarChat.setProgress(0);
+                                        seekBarChata.setProgress(0);
 //                                        ChatActivity.rlChatPlayer.setVisibility(View.GONE);
                                     }
                                 });

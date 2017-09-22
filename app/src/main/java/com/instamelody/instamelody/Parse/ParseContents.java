@@ -95,15 +95,11 @@ public class ParseContents {
     String ADV_START_DATE = "start_date";
     String ADV_END_DATE = "end_date";
 
-
     String SUBSCRIPTION_PACKAGE_ID = "package_id";
     String SUBSCRIPTION_PACKAGE_NAME = "package_name";
     String SUBSCRIPTION_TOTAL_MELODY = "total_melody";
     String SUBSCRIPTION_RECORDING_TIME = "recording_time";
     String SUBSCRIPTION_COST = "cost";
-
-
-
 
     public ArrayList<MelodyCard> parseMelodyPacks(String response, ArrayList<MelodyCard> melodyList, ArrayList<MelodyInstruments> instrumentList) {
 

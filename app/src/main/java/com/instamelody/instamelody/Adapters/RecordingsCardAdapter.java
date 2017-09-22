@@ -75,7 +75,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     private ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     private ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
     public static ArrayList<JoinRecordingModel> JoinList = new ArrayList<JoinRecordingModel>();
-    //    public static ArrayList<RecJoinRecordingModel> RecJoinList = new ArrayList<RecJoinRecordingModel>();
+//    public static ArrayList<RecJoinRecordingModel> RecJoinList = new ArrayList<RecJoinRecordingModel>();
     public ArrayList<MediaPlayer> JoinMp = new ArrayList<MediaPlayer>();
     String USER_TYPE = "user_type";
     String USER_ID = "user_id";
@@ -493,6 +493,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
         holder.txtJoinCount.setText(totaljoincount);
 
+        holder.txtJoinCount.setText(totaljoincount);
         Picasso.with(holder.userProfileImage.getContext()).load(recordingList.get(listPosition).getUserProfilePic()).into(holder.userProfileImage);
 
         holder.tvUserName.setText(recordingList.get(listPosition).getUserName());

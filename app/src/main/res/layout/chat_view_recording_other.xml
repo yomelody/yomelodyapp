@@ -196,7 +196,7 @@
                         android:paddingLeft="0dp"
                         android:paddingRight="0dp"
                         android:paddingStart="0dp"
-                        android:progress="50"
+                        android:progress="0"
                         android:progressDrawable="@drawable/new_seekbar" />
 
                 </FrameLayout>
