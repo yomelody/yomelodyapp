@@ -9,6 +9,7 @@ import com.instamelody.instamelody.ChatActivity;
 import com.instamelody.instamelody.ContactsActivity;
 
 import com.instamelody.instamelody.JoinActivity;
+import com.instamelody.instamelody.Models.AdvertisePagingData;
 import com.instamelody.instamelody.Models.Comments;
 import com.instamelody.instamelody.Models.Contacts;
 import com.instamelody.instamelody.Models.Genres;
@@ -99,6 +100,14 @@ public class ParseContents {
     String SUBSCRIPTION_TOTAL_MELODY = "total_melody";
     String SUBSCRIPTION_RECORDING_TIME = "recording_time";
     String SUBSCRIPTION_COST = "cost";
+    String ADV_ID = "id";
+    String ADV_NAME = "adv_name";
+    String ADV_IMAGE = "adv_image";
+    String ADV_URL = "adv_url";
+    String ADV_START_DATE = "start_date";
+    String ADV_END_DATE = "end_date";
+
+
 
     public ArrayList<MelodyCard> parseMelodyPacks(String response, ArrayList<MelodyCard> melodyList, ArrayList<MelodyInstruments> instrumentList) {
 
@@ -380,7 +389,7 @@ public class ParseContents {
 
     public ArrayList<RecordingsModel> parseAudio(String response, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools) {
         JSONObject jsonObject;
-        JSONArray jsonArray, instrumentArray;
+        JSONArray jsonArray, instrumentArray, JoinedArray;
 
         try {
             jsonObject = new JSONObject(response);
