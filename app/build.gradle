@@ -82,6 +82,7 @@ dependencies {
     compile 'com.jlubecki.soundcloud:soundcloud-api:1.2.1'
     compile 'com.paypal.sdk:paypal-android-sdk:2.15.3'
     testCompile 'junit:junit:4.12'
+    compile 'com.github.lsjwzh.RecyclerViewPager:lib:v1.1.2'
     //    compile files('libs/facebook.jar')
 }
 apply plugin: 'com.google.gms.google-services'
