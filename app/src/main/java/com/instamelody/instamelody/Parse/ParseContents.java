@@ -101,12 +101,7 @@ public class ParseContents {
     String SUBSCRIPTION_TOTAL_MELODY = "total_melody";
     String SUBSCRIPTION_RECORDING_TIME = "recording_time";
     String SUBSCRIPTION_COST = "cost";
-    String ADV_ID = "id";
-    String ADV_NAME = "adv_name";
-    String ADV_IMAGE = "adv_image";
-    String ADV_URL = "adv_url";
-    String ADV_START_DATE = "start_date";
-    String ADV_END_DATE = "end_date";
+
 
 
 
@@ -490,7 +485,7 @@ public class ParseContents {
         return JoinArtist;
     }
 
-    public ArrayList<MelodyInstruments> parseJoinInstrument(String response, ArrayList<MelodyInstruments> instrumentList, String mpid) {
+    public ArrayList<MelodyInstruments> parseJoinInstrument(String response, ArrayList<MelodyInstruments> instrumentList, int mpid) {
 
         JSONObject jsonObject;
         JSONArray jsonArray;
@@ -498,7 +493,7 @@ public class ParseContents {
             jsonObject = new JSONObject(response);
             if (jsonObject.getString(KEY_FLAG).equals("success")) {
                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
-                JSONObject selectedObj = jsonArray.getJSONObject(Integer.parseInt(mpid));
+                JSONObject selectedObj = jsonArray.getJSONObject(mpid);
 
                 jsonArray = selectedObj.getJSONArray(KEY_INSTRUMENTS);
 
