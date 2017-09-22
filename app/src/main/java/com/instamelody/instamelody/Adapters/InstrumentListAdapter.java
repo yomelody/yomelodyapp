@@ -1196,7 +1196,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         StudioActivity.ivRecord_stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                InstrumentCountSize=0;
                 StudioActivity.ivRecord_stop.setVisibility(View.GONE);
                 StudioActivity.rlRecordingButton.setVisibility(View.GONE);
                 StudioActivity.ivRecord_play.setVisibility(View.VISIBLE);
@@ -1694,7 +1694,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     public void RunSeekbar() {
         try {
             for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
-                pts=new MediaPlayer();
+
                 pts = StudioActivity.mediaPlayersAll.get(i);
 
 
