@@ -477,8 +477,21 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         mpid = recording.getRecordingId();
         mpids.add(mpid);
 
-        totaljoincount = CalJoinCount(Integer.parseInt(recordingList.get(listPosition).getJoinCount()));
-        holder.TemptxtJoinCount.setText(recordingList.get(listPosition).getJoinCount());
+        if(recordingList.get(listPosition).getJoinCount()==null){
+            totaljoincount = "("+"0"+" of " + "1" + ")";
+        }
+        else {
+            totaljoincount = CalJoinCount(Integer.parseInt(recordingList.get(listPosition).getJoinCount()));
+        }
+
+        if(recordingList.get(listPosition).getJoinCount()!=null){
+            holder.TemptxtJoinCount.setText(recordingList.get(listPosition).getJoinCount());
+        }else{
+            holder.TemptxtJoinCount.setText("0");
+        }
+
+
+        holder.txtJoinCount.setText(totaljoincount);
 
         holder.txtJoinCount.setText(totaljoincount);
         Picasso.with(holder.userProfileImage.getContext()).load(recordingList.get(listPosition).getUserProfilePic()).into(holder.userProfileImage);

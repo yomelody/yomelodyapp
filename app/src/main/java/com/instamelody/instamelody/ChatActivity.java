@@ -43,6 +43,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -110,6 +111,8 @@ public class ChatActivity extends AppCompatActivity {
     public static TextView tvUserName, tvNamePlayer, tvUserNamePlayer, tvAudioNamePlayer, tvNumPlayer;
     public static ImageView ivPausePlayer, ivPlayPlayer, userProfileImagePlayer;
     public static RelativeLayout rlChatPlayer;
+    public static FrameLayout flSeekbar;
+    public static SeekBar seekBarChata;
     public static FrameLayout flPlayPausePlayer;
 
     FrameLayout flCover;
@@ -211,6 +214,8 @@ public class ChatActivity extends AppCompatActivity {
         ivClose = (ImageView) findViewById(R.id.ivClose);
         ivSelectedImage = (ImageView) findViewById(R.id.ivSelectedImage);
         rlChatPlayer = (RelativeLayout) findViewById(R.id.rlChatPlayer);
+        flSeekbar = (FrameLayout) findViewById(R.id.flSeekbar);
+        seekBarChata = (SeekBar) findViewById(R.id.seekBarChata);
         tvNamePlayer = (TextView) findViewById(R.id.tvNamePlayer);
         tvUserNamePlayer = (TextView) findViewById(R.id.tvUserNamePlayer);
         tvAudioNamePlayer = (TextView) findViewById(R.id.tvAudioNamePlayer);

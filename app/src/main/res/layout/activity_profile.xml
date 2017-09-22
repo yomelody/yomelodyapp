@@ -169,8 +169,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.33"
-                    android:background="#FFFFFF"
-                    android:padding="5dp">
+                    android:background="#EDEDED">
 
                     <ImageView
                         android:id="@+id/profile"
@@ -178,7 +177,7 @@
                         android:layout_height="match_parent"
                         android:layout_alignParentTop="true"
                         android:layout_centerHorizontal="true"
-                        android:background="@drawable/profile" />
+                        android:background="@drawable/profile_bold" />
 
                 </RelativeLayout>
             </LinearLayout>
