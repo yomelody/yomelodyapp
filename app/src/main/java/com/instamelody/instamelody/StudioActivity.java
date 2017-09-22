@@ -242,7 +242,7 @@ public class StudioActivity extends AppCompatActivity {
     public static FrameLayout frameInstrument;
     public static RelativeLayout rlFX, rlEQ, eqContent, fxContent, RltvFxButton, RltvEqButton, rlInviteButton;
     public static TextView tvDoneFxEq, tvInstrumentLength, tvUserName, tvInstrumentName, tvBpmRate;
-    public static ImageView userProfileImage, ivInstrumentCover, FramesivPause, FramesivPlay,playAll;
+    public static ImageView userProfileImage, ivInstrumentCover, FramesivPause, FramesivPlay,playAll,pauseAll;
     public static SeekBar FramemelodySlider;
     public static SeekBar volumeSeekbar, sbTreble, sbBase, sbPan, sbPitch, sbReverb, sbCompression, sbDelay, sbTempo;
     public static MelodyMixing melodyMixing = new MelodyMixing();
@@ -327,6 +327,7 @@ public class StudioActivity extends AppCompatActivity {
         FramemelodySlider = (SeekBar) findViewById(R.id.FramemelodySlider);
         frameProgress = (FrameLayout) findViewById(R.id.frameProgress);
         playAll = (ImageView) findViewById(R.id.playAll);
+        pauseAll = (ImageView) findViewById(R.id.pauseAll);
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         firstName = loginSharedPref.getString("firstName", null);
         userNameLogin = loginSharedPref.getString("userName", null);

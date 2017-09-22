@@ -34,6 +34,7 @@ import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Models.AudioModel;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsModel;
+import com.instamelody.instamelody.Models.RecordingsModelMore;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
@@ -545,12 +546,12 @@ public class AudioFragment extends Fragment {
                         String successMsg = response.toString();
                         try {
                             JSONObject jsonObject = new JSONObject(successMsg);
-                            String flag = jsonObject.getString("flag");
+                            /*String flag = jsonObject.getString("flag");
                             String msg = jsonObject.getString("msg");
                             if (flag.equals("unsuccess")) {
                                 ClearSharedPref();
                                 //Toast.makeText(getActivity(), "" + msg, Toast.LENGTH_SHORT).show();
-                            }
+                            }*/
                             ClearSharedPref();
 
                         } catch (JSONException e) {
@@ -891,8 +892,8 @@ public class AudioFragment extends Fragment {
             //Toast.makeText(getActivity(), "111111   >>>" + String.valueOf(post), Toast.LENGTH_SHORT).show();
             //Toast.makeText(getActivity(), String.valueOf(recordingList.size()), Toast.LENGTH_SHORT).show();
             //Toast.makeText(getActivity(), "post "+String.valueOf(post+1), Toast.LENGTH_SHORT).show();
-            if (post + 1 == recordingList.size()) {
-
+            if (post + 1 == recordingList.size() && recordingList.size()>2) {
+               // Toast.makeText(getActivity(), "post ", Toast.LENGTH_SHORT).show();
                 new FetchActivityDetails().execute(String.valueOf(recordingList.size() + 10));
 
                 //adapter.notifyDataSetChanged();
