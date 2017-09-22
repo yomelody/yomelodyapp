@@ -7,6 +7,7 @@ import android.view.View;
 
 import com.instamelody.instamelody.ChatActivity;
 import com.instamelody.instamelody.ContactsActivity;
+
 import com.instamelody.instamelody.JoinActivity;
 import com.instamelody.instamelody.Models.Comments;
 import com.instamelody.instamelody.Models.Contacts;
@@ -85,21 +86,19 @@ public class ParseContents {
     String KEY_GENRENAME_ID = "id";
     String KEY_GENRE_NAME = "genre_name";
 
-
-    String SUBSCRIPTION_PACKAGE_ID = "package_id";
-    String SUBSCRIPTION_PACKAGE_NAME = "package_name";
-    String SUBSCRIPTION_TOTAL_MELODY = "total_melody";
-    String SUBSCRIPTION_RECORDING_TIME = "recording_time";
-    String SUBSCRIPTION_COST = "cost";
-
-
-
     String ADV_ID = "id";
     String ADV_NAME = "adv_name";
     String ADV_IMAGE = "adv_image";
     String ADV_URL = "adv_url";
     String ADV_START_DATE = "start_date";
     String ADV_END_DATE = "end_date";
+
+
+    String SUBSCRIPTION_PACKAGE_ID = "package_id";
+    String SUBSCRIPTION_PACKAGE_NAME = "package_name";
+    String SUBSCRIPTION_TOTAL_MELODY = "total_melody";
+    String SUBSCRIPTION_RECORDING_TIME = "recording_time";
+    String SUBSCRIPTION_COST = "cost";
 
     public ArrayList<MelodyCard> parseMelodyPacks(String response, ArrayList<MelodyCard> melodyList, ArrayList<MelodyInstruments> instrumentList) {
 
@@ -381,7 +380,7 @@ public class ParseContents {
 
     public ArrayList<RecordingsModel> parseAudio(String response, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools) {
         JSONObject jsonObject;
-        JSONArray jsonArray, instrumentArray,JoinedArray;
+        JSONArray jsonArray, instrumentArray;
 
         try {
             jsonObject = new JSONObject(response);
@@ -389,7 +388,6 @@ public class ParseContents {
                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                 for (int i = 0; i < jsonArray.length(); i++) {
                     RecordingsModel card = new RecordingsModel();
-
                     JSONObject cardJson = jsonArray.getJSONObject(i);
                     card.setAddedBy(cardJson.getString("added_by"));
                     card.setRecordingCreated(cardJson.getString("date_added"));
@@ -401,7 +399,6 @@ public class ParseContents {
                     card.setCommentCount(cardJson.getInt("comment_count"));
                     card.setLikeCount(cardJson.getInt("like_count"));
                     card.setLikeStatus(cardJson.getInt("like_status"));
-                    card.setJoinCount(cardJson.getString("join_count"));
                     if (cardJson.isNull("recording_url")) {
                         card.setrecordingurl("");
                     } else {
@@ -435,10 +432,9 @@ public class ParseContents {
                     }
 
 
-
                     recordingList.add(card);
-
-
+//                    card.setTvContributeDate(cardJson.getString("30/02/17"));
+//                    card.setTvContributeLength(cardJson.getString("recordings"));
                 }
             }
         } catch (JSONException e) {
@@ -484,7 +480,7 @@ public class ParseContents {
         return JoinArtist;
     }
 
-    public ArrayList<MelodyInstruments> parseJoinInstrument(String response, ArrayList<MelodyInstruments> instrumentList, int mpid) {
+    public ArrayList<MelodyInstruments> parseJoinInstrument(String response, ArrayList<MelodyInstruments> instrumentList, String mpid) {
 
         JSONObject jsonObject;
         JSONArray jsonArray;
@@ -492,7 +488,7 @@ public class ParseContents {
             jsonObject = new JSONObject(response);
             if (jsonObject.getString(KEY_FLAG).equals("success")) {
                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
-                JSONObject selectedObj = jsonArray.getJSONObject(mpid);
+                JSONObject selectedObj = jsonArray.getJSONObject(Integer.parseInt(mpid));
 
                 jsonArray = selectedObj.getJSONArray(KEY_INSTRUMENTS);
 
@@ -521,6 +517,7 @@ public class ParseContents {
         }
         return instrumentList;
     }
+
     public ArrayList<AdvertisePagingData> parseAdvertisePaging(String response, ArrayList<AdvertisePagingData> pagingDataArrayList) {
         JSONObject jsonObject, advertiseJson;
         JSONArray jsonArray;
@@ -574,4 +571,5 @@ public class ParseContents {
         }
         return subscriptionPackageArrayList;
     }
+
 }
