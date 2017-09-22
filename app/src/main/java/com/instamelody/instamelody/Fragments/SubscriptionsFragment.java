@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,11 +29,13 @@ import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Models.SubscriptionPackage;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.SettingsActivity;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PaymentActivity;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,6 +47,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ADVERTISEMENT;
@@ -69,6 +74,7 @@ public class SubscriptionsFragment extends Fragment {
     String CREATE_TIME = "create_time";
     String PAYMENT = "payment";
     String PAYPAL_ID = "id";
+    String SUB_ID = "sub_id";
 
     String cost;
 
@@ -77,7 +83,10 @@ public class SubscriptionsFragment extends Fragment {
     View rootView;
     public static TextView tvFreemium, descFreeLayers, tvPriceFree, tvStandard, tvStandardLayers, priceStandard, tvPremium,
             tvPremiumLayers, pricePremium, tvProducer, tvProducerLayers, priceProducer,
-            descFreeRecordingTime, tvStandardDescRecordingTime, tvPremiumDescRecordingTime, tvProducerDescRecordingTime;
+            descFreeRecordingTime, tvStandardDescRecordingTime, tvPremiumDescRecordingTime, tvProducerDescRecordingTime, tvUserUpgrade;
+
+    ImageView userImage;
+    CircleImageView userProfileImage;
 
     Switch switchFree, switchStandard, switchPremium, switchProducer;
     String userId, firstName, lastName, userNameLogin, profilePicLogin, dob, mobile, email, date, userIdNormal, emailNormal;
@@ -127,7 +136,6 @@ public class SubscriptionsFragment extends Fragment {
         profilePicFb = fbEditor.getString("profilePic", null);
         userNameFb = fbEditor.getString("userName", null);
 
-
         if (userIdNormal != null) {
             userId = userIdNormal;
         } else if (userIdFb != null) {
@@ -135,11 +143,28 @@ public class SubscriptionsFragment extends Fragment {
         } else {
             userId = userIdTwitter;
         }
+
+
 //For PayPal Integration
         Intent intent = new Intent(getActivity(), PayPalService.class);
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
         getActivity().startService(intent);
 
+    }
+
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SharedPreferences switchFreeEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE);
+        switchFreeEditor.getBoolean("switchFree", false);
+        SharedPreferences switchStandardEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE);
+        switchStandardEditor.getBoolean("switchStandard", false);
+        SharedPreferences switchPremiumEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE);
+        switchPremiumEditor.getBoolean("switchPremium", false);
+        SharedPreferences switchProducerEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE);
+        switchProducerEditor.getBoolean("switchProducer", false);
     }
 
     @Nullable
@@ -165,6 +190,10 @@ public class SubscriptionsFragment extends Fragment {
         tvStandardDescRecordingTime = (TextView) view.findViewById(R.id.tvStandardDescRecordingTime);
         tvPremiumDescRecordingTime = (TextView) view.findViewById(R.id.tvPremiumDescRecordingTime);
         tvProducerDescRecordingTime = (TextView) view.findViewById(R.id.tvProducerDescRecordingTime);
+        tvUserUpgrade = (TextView) view.findViewById(R.id.tvUserUpgrade);
+        userImage = (ImageView) view.findViewById(R.id.userImage);
+        userProfileImage = (CircleImageView) view.findViewById(R.id.userProfileImage);
+
 
 //        /For PayPal Integration
         Intent intent = new Intent(getActivity(), PayPalService.class);
@@ -209,7 +238,7 @@ public class SubscriptionsFragment extends Fragment {
                 } catch (JSONException e) {
                     Log.e("payment", "an extremely unlikely failure occurred: ", e);
                 }
-//                sub_detail();
+                sub_detail();
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {
             Log.i("payment", "The user canceled.");
@@ -298,6 +327,16 @@ public class SubscriptionsFragment extends Fragment {
                         switchFree.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                if (switchFree.isChecked()) {
+                                    SharedPreferences.Editor switchFreeEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE).edit();
+                                    switchFreeEditor.putBoolean("switchFree", true);
+                                    switchFreeEditor.apply();
+                                } else {
+                                    SharedPreferences.Editor switchFreeEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE).edit();
+                                    switchFreeEditor.putBoolean("switchFree", false);
+                                    switchFreeEditor.apply();
+                                }
+
                                 if (switchFlag == "1") {
                                     switchFree.setChecked(false);
                                     switchFlag = "0";
@@ -305,6 +344,12 @@ public class SubscriptionsFragment extends Fragment {
                                     switchFree.setChecked(true);
                                     switchFlag = "1";
                                     packageId = "1";
+                                    if (userId != null) {
+                                        tvUserUpgrade.setText("Upgrade" + " " + userNameLogin + "!");
+                                        userImage.setVisibility(View.INVISIBLE);
+                                        userProfileImage.setVisibility(View.VISIBLE);
+                                        Picasso.with(getActivity()).load(profilePicLogin).into(userProfileImage);
+                                    }
 //                                    subscription();
 
 //                                    onBuyPressed(v);
@@ -317,6 +362,16 @@ public class SubscriptionsFragment extends Fragment {
                         switchStandard.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                if (switchStandard.isChecked()) {
+                                    SharedPreferences.Editor switchStandardEditor = getActivity().getSharedPreferences("SwitchStatusStandard", MODE_PRIVATE).edit();
+                                    switchStandardEditor.putBoolean("switchStandard", true);
+                                    switchStandardEditor.apply();
+                                } else {
+                                    SharedPreferences.Editor switchStandardEditor = getActivity().getSharedPreferences("SwitchStatusStandard", MODE_PRIVATE).edit();
+                                    switchStandardEditor.putBoolean("switchStandard", false);
+                                    switchStandardEditor.apply();
+                                }
+
                                 if (switchFlag == "1") {
                                     switchStandard.setChecked(false);
                                     switchFlag = "0";
@@ -324,7 +379,7 @@ public class SubscriptionsFragment extends Fragment {
                                     switchStandard.setChecked(true);
                                     switchFlag = "1";
                                     packageId = "2";
-                                    subscription();
+//                                    subscription();
                                     onBuyPressed(v);
                                 }
                             }
@@ -333,6 +388,15 @@ public class SubscriptionsFragment extends Fragment {
                         switchPremium.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                if (switchPremium.isChecked()) {
+                                    SharedPreferences.Editor switchPremiumEditor = getActivity().getSharedPreferences("SwitchStatusPremium", MODE_PRIVATE).edit();
+                                    switchPremiumEditor.putBoolean("switchPremium", true);
+                                    switchPremiumEditor.apply();
+                                } else {
+                                    SharedPreferences.Editor switchPremiumEditor = getActivity().getSharedPreferences("SwitchStatusPremium", MODE_PRIVATE).edit();
+                                    switchPremiumEditor.putBoolean("switchPremium", false);
+                                    switchPremiumEditor.apply();
+                                }
                                 if (switchFlag == "1") {
                                     switchPremium.setChecked(false);
                                     switchFlag = "0";
@@ -340,7 +404,7 @@ public class SubscriptionsFragment extends Fragment {
                                     switchPremium.setChecked(true);
                                     switchFlag = "1";
                                     packageId = "3";
-                                    subscription();
+//                                    subscription();
                                     onBuyPressed(v);
                                 }
                             }
@@ -349,6 +413,15 @@ public class SubscriptionsFragment extends Fragment {
                         switchProducer.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                if (switchProducer.isChecked()) {
+                                    SharedPreferences.Editor switchProducerEditor = getActivity().getSharedPreferences("SwitchStatusProducer", MODE_PRIVATE).edit();
+                                    switchProducerEditor.putBoolean("switchProducer", true);
+                                    switchProducerEditor.apply();
+                                } else {
+                                    SharedPreferences.Editor switchProducerEditor = getActivity().getSharedPreferences("SwitchStatusProducer", MODE_PRIVATE).edit();
+                                    switchProducerEditor.putBoolean("switchProducer", false);
+                                    switchProducerEditor.apply();
+                                }
                                 if (switchFlag == "1") {
                                     switchProducer.setChecked(false);
                                     switchFlag = "0";
@@ -356,7 +429,7 @@ public class SubscriptionsFragment extends Fragment {
                                     switchProducer.setChecked(true);
                                     switchFlag = "1";
                                     packageId = "4";
-                                    subscription();
+//                                    subscription();
                                     onBuyPressed(v);
                                 }
                             }
@@ -452,6 +525,73 @@ public class SubscriptionsFragment extends Fragment {
                             String response1 = jsonObject.getString("response");
                             JSONObject jsonObject1 = jsonObject.getJSONObject("response");
                             String msg = jsonObject1.getString("msg");
+                            String sub_id = jsonObject1.getString("sub_id");
+                            if (flag.equals("unsuccess")) {
+                                sub_detail2(sub_id);
+                            }
+//                            subscription_detail();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+                        String errorMsg = error.toString();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(USER_ID, userId);
+                params.put(STATUS, switchFlag);
+                params.put(PACKAGE_ID, packageId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(stringRequest);
+    }
+
+
+    public void sub_detail2(final String sub_id) {
+        final SharedPreferences PayPal_detail = getActivity().getSharedPreferences("PayPal_detail", MODE_PRIVATE);
+        PayPal_detail.getString("Transaction_Id", null);
+        PayPal_detail.getString("state", null);
+        PayPal_detail.getString("create_time", null);
+        for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
+            subscriptionPackageArrayList.get(i).getCost();
+            if (packageId.equals("2")) {
+                cost = subscriptionPackageArrayList.get(1).getCost();
+            } else if (packageId.equals("3")) {
+                cost = subscriptionPackageArrayList.get(2).getCost();
+            } else if (packageId.equals("4")) {
+                cost = subscriptionPackageArrayList.get(3).getCost();
+            }
+        }
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, SUB_DETAIL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String result = response;
+                        try {
+                            JSONObject jsonObject = new JSONObject(result);
+                            String flag = jsonObject.getString("flag");
+                            String response1 = jsonObject.getString("response");
+                            JSONObject jsonObject1 = jsonObject.getJSONObject("response");
+                            String msg = jsonObject1.getString("msg");
+                            if (userId != null) {
+                                tvUserUpgrade.setText("Upgrade" + " " + userNameLogin + "!");
+                                userImage.setVisibility(View.INVISIBLE);
+                                userProfileImage.setVisibility(View.VISIBLE);
+                                Picasso.with(getActivity()).load(profilePicLogin).into(userProfileImage);
+                            }
                             Toast.makeText(getActivity(), "" + msg, Toast.LENGTH_SHORT).show();
                             subscription_detail();
 
@@ -473,6 +613,7 @@ public class SubscriptionsFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(USER_ID, userId);
+                params.put(SUB_ID, sub_id);
                 params.put(STATUS, switchFlag);
                 params.put(PACKAGE_ID, packageId);
                 params.put(PAYPAL_ID, PayPal_detail.getString("Transaction_Id", null));
@@ -563,6 +704,5 @@ public class SubscriptionsFragment extends Fragment {
         intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payment);
 
         startActivityForResult(intent, 0);
-
     }
 }
