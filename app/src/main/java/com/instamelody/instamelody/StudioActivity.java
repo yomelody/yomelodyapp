@@ -242,7 +242,7 @@ public class StudioActivity extends AppCompatActivity {
     public static FrameLayout frameInstrument;
     public static RelativeLayout rlFX, rlEQ, eqContent, fxContent, RltvFxButton, RltvEqButton, rlInviteButton;
     public static TextView tvDoneFxEq, tvInstrumentLength, tvUserName, tvInstrumentName, tvBpmRate;
-    public static ImageView userProfileImage, ivInstrumentCover, FramesivPause, FramesivPlay;
+    public static ImageView userProfileImage, ivInstrumentCover, FramesivPause, FramesivPlay,playAll;
     public static SeekBar FramemelodySlider;
     public static SeekBar volumeSeekbar, sbTreble, sbBase, sbPan, sbPitch, sbReverb, sbCompression, sbDelay, sbTempo;
     public static MelodyMixing melodyMixing = new MelodyMixing();
@@ -326,6 +326,7 @@ public class StudioActivity extends AppCompatActivity {
         FramesivPlay = (ImageView) findViewById(R.id.FramesivPlay);
         FramemelodySlider = (SeekBar) findViewById(R.id.FramemelodySlider);
         frameProgress = (FrameLayout) findViewById(R.id.frameProgress);
+        playAll = (ImageView) findViewById(R.id.playAll);
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         firstName = loginSharedPref.getString("firstName", null);
         userNameLogin = loginSharedPref.getString("userName", null);
@@ -346,7 +347,7 @@ public class StudioActivity extends AppCompatActivity {
         } else if (statusTwitter == 1) {
             userId = userIdTwitter;
         }
-
+        //playAll.setVisibility(View.VISIBLE);
         rlSetCover = (RelativeLayout) findViewById(R.id.rlSetCover);
         ivNewRecordCover = (ImageView) findViewById(R.id.ivNewRecordCover);
         chrono = (Chronometer) findViewById(R.id.chrono);

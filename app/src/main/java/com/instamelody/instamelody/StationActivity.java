@@ -135,11 +135,6 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
             userId = userIdTwitter;
         }
 
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerViewAudio);
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
 
 
 

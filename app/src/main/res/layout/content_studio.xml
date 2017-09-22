@@ -318,53 +318,67 @@
                         <RelativeLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_marginLeft="8dp">
+                            android:layout_centerVertical="true">
 
-                            <TextView
-                                android:id="@+id/melody_name"
+                            <ImageView
+                                android:id="@+id/playAll"
+                                android:layout_width="30dp"
+                                android:layout_height="match_parent"
+                                android:paddingBottom="8dp"
+                                android:paddingLeft="8dp"
+                                android:paddingTop="8dp"
+                                android:src="@drawable/play_fill"
+                                android:visibility="gone" />
+
+                            <RelativeLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_alignParentLeft="true"
-                                android:layout_alignParentStart="true"
-                                android:text="New Melody"
-                                android:textColor="@color/cardview_dark_background"
-                                android:textSize="14sp"
-                                android:textStyle="normal|bold" />
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentLeft="true"
-                                android:layout_alignParentStart="true"
-                                android:layout_below="@+id/melody_name">
+                                android:layout_centerVertical="true"
+                                android:layout_marginLeft="8dp"
+                                android:layout_toEndOf="@+id/playAll">
 
                                 <TextView
-                                    android:id="@+id/melody_date"
+                                    android:id="@+id/melody_name"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="6/16/16"
+                                    android:text="New Melody"
                                     android:textColor="@color/cardview_dark_background"
-                                    android:textSize="10sp" />
+                                    android:textSize="14sp"
+                                    android:textStyle="normal|bold" />
 
-                                <TextView
+                                <LinearLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="    |    "
-                                    android:textColor="@color/cardview_dark_background"
-                                    android:textSize="12sp" />
+                                    android:layout_below="@+id/melody_name">
 
-                                <TextView
-                                    android:id="@+id/melody_detail"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/textVi"
-                                    android:text="No Instrumental"
-                                    android:textColor="@color/cardview_dark_background"
-                                    android:textSize="10sp"
-                                    android:textStyle="normal|italic" />
+                                    <TextView
+                                        android:id="@+id/melody_date"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="6/16/16"
+                                        android:textColor="@color/cardview_dark_background"
+                                        android:textSize="10sp" />
 
-                            </LinearLayout>
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="    |    "
+                                        android:textColor="@color/cardview_dark_background"
+                                        android:textSize="12sp" />
+
+                                    <TextView
+                                        android:id="@+id/melody_detail"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/textVi"
+                                        android:text="No Instrumental"
+                                        android:textColor="@color/cardview_dark_background"
+                                        android:textSize="10sp"
+                                        android:textStyle="normal|italic" />
+
+                                </LinearLayout>
+
+                            </RelativeLayout>
                         </RelativeLayout>
 
                         <RelativeLayout
