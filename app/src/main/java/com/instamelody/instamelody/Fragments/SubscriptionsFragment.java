@@ -1,16 +1,12 @@
 package com.instamelody.instamelody.Fragments;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.icu.math.BigDecimal;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,10 +22,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.instamelody.instamelody.Models.SubscriptionPackage;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
-import com.instamelody.instamelody.SettingsActivity;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PayPalService;
@@ -51,14 +45,12 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.content.Context.MODE_PRIVATE;
-import static com.instamelody.instamelody.utils.Const.ServiceType.ADVERTISEMENT;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.PACKAGES;
 import static com.instamelody.instamelody.utils.Const.ServiceType.SUBSCRIPTION;
 import static com.instamelody.instamelody.utils.Const.ServiceType.SUBSCRIPTION_DETAIL;
 import static com.instamelody.instamelody.utils.Const.ServiceType.SUB_DETAIL;
-import static com.paypal.android.sdk.payments.PayPalPayment.*;
 
 /**
  * Created by Shubhansh Jaiswal on 11/29/2016.

@@ -45,7 +45,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.DiscoverAdapter;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
-import com.instamelody.instamelody.Models.AdvertisePagingData;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
