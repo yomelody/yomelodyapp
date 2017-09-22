@@ -93,6 +93,7 @@ public class HomeActivity extends AppCompatActivity {
     CircleImageView userProfileImage;
     int count = 0;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
+    String joinRecordingId;
 
     @TargetApi(16)
     @Override
@@ -300,6 +301,14 @@ public class HomeActivity extends AppCompatActivity {
         ivStation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                try {
+                    if (StudioActivity.melodyPackId != null) {
+                        StudioActivity.melodyPackId = null;
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+
 
                 Intent intent = new Intent(getApplicationContext(), StationActivity.class);
                 startActivity(intent);
@@ -309,11 +318,36 @@ public class HomeActivity extends AppCompatActivity {
         ivStudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                try {
+                    SharedPreferences filterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE);
+                    joinRecordingId = filterPref.getString("instrumentsPos", null);
+                    if (joinRecordingId != null) {
+                        SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
+                        FilterPref.clear();
+                        FilterPref.apply();
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                    if (StudioActivity.instrumentList != null) {
+                        StudioActivity.instrumentList.clear();
+                    }
+                    if (StudioActivity.joinRecordingId != null) {
+                        SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
+                        FilterPref.remove("instrumentsPos");
+                        FilterPref.apply();
+                    }
+                    if (StudioActivity.melodyPackId != null) {
+                        StudioActivity.melodyPackId = null;
+                    }
+                    SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("HomeStudio", MODE_PRIVATE).edit();
+                    editor.putString("clickFromSt", "from home");
+                    editor.commit();
 
                     if (checkPermissions()) {
                         Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
-                        intent.putExtra("clickPosition", "fromHomeActivity");
+                        //  intent.putExtra("clickPosition", "fromHomeActivity");
                         startActivity(intent);
                     } else {
                         setPermissions();
@@ -321,7 +355,7 @@ public class HomeActivity extends AppCompatActivity {
 
                 } else {
                     Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
-                    intent.putExtra("clickPosition", "fromHomeActivity");
+                    //   intent.putExtra("clickPosition", "fromHomeActivity");
                     startActivity(intent);
                 }
 
@@ -332,6 +366,21 @@ public class HomeActivity extends AppCompatActivity {
         ivMelody.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                try {
+                    SharedPreferences filterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE);
+                    joinRecordingId = filterPref.getString("instrumentsPos", null);
+                    if (joinRecordingId != null) {
+                        SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
+                        FilterPref.clear();
+                        FilterPref.apply();
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+
+                SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("FromHomeToMelody", MODE_PRIVATE).edit();
+                editor.putString("click", "from home");
+                editor.commit();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ||
                         Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
 
@@ -341,8 +390,7 @@ public class HomeActivity extends AppCompatActivity {
                     } else {
                         setPermissions();
                     }
-                }
-                else {
+                } else {
                     Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
                     startActivity(intent);
                 }
@@ -352,7 +400,13 @@ public class HomeActivity extends AppCompatActivity {
         rlMessenger.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                try {
+                    if (StudioActivity.melodyPackId != null) {
+                        StudioActivity.melodyPackId = null;
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
                 Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
                 startActivity(intent);
 
@@ -362,6 +416,13 @@ public class HomeActivity extends AppCompatActivity {
         userProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                try {
+                    if (StudioActivity.melodyPackId != null) {
+                        StudioActivity.melodyPackId = null;
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
                 Intent i = new Intent(HomeActivity.this, ProfileActivity.class);
                 startActivity(i);
             }

@@ -1055,7 +1055,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 StudioActivity.rlRecordingButton.setVisibility(View.GONE);
                 StudioActivity.ivRecord_play.setVisibility(View.VISIBLE);
                 StudioActivity.rlRedoButton.setVisibility(View.VISIBLE);
-                if (StudioActivity.joinRecordingId != null ) {
+                if (StudioActivity.joinRecordingId != null) {
                     StudioActivity.tvPublic.setVisibility(View.GONE);
                     StudioActivity.switchPublic.setVisibility(View.GONE);
                 } else {
