@@ -114,7 +114,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         private void primarySeekBarProgressUpdater() {
             Handler mHandler1 = new Handler();
             try {
-                seekBarChat.setProgress((int) (((float) mp.getCurrentPosition() / mp.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
+//                seekBarChat.setProgress((int) (((float) mp.getCurrentPosition() / mp.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
                 seekBarChata.setProgress((int) (((float) mp.getCurrentPosition() / mp.getDuration()) * 100));
                 if (mp.isPlaying()) {
                     Runnable notification = new Runnable() {
@@ -125,7 +125,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                     mHandler1.postDelayed(notification, 100);
                 } else {
                     try {
-                        seekBarChat.setProgress(0);
+//                        seekBarChat.setProgress(0);
                         seekBarChata.setProgress(0);
                     } catch (Throwable e) {
                         e.printStackTrace();
@@ -254,24 +254,22 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                 }
             }
 
-            holder.seekBarChat.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
+            seekBarChata.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
+                public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                     int mCurrentPosition = mp.getCurrentPosition() / 1000;
                     int mDuration = mp.getDuration() / 1000;
                     UtilsRecording utilRecording = new UtilsRecording();
                     int progress1 = utilRecording.getProgressPercentage(mCurrentPosition, mDuration);
 
-                    if (mp != null && fromUser) {
+                    if (mp != null && b) {
                         try {
                             int playPositionInMilliseconds = mp.getDuration() / 100 * holder.seekBarChat.getProgress();
                             mp.seekTo(playPositionInMilliseconds);
                         } catch (IllegalStateException e) {
                             e.printStackTrace();
                         }
-//                        seekBar.setProgress(progress);
+//                        seekBarChata.setProgress(progress);
                     } else {
                         // the event was fired from code and you shouldn't call player.seekTo()
                     }
@@ -279,10 +277,12 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
+
                 }
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
+
                 }
             });
 
@@ -291,7 +291,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                 public void onClick(View view) {
                     String rid = message.getFileId();
                     fetchPlayJoinAudio(rid);
-
 
 //                    AudioOperator(urlAudio);
 //                    Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(ChatActivity.userProfileImagePlayer);
@@ -348,7 +347,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                         mp.stop();
                                     }
                                     holder.progressDialog.dismiss();
-                                    holder.seekBarChat.setProgress(0);
+//                                    holder.seekBarChat.setProgress(0);
                                     seekBarChata.setProgress(0);
 //                                    ChatActivity.rlChatPlayer.setVisibility(View.GONE);
                                 }
@@ -445,7 +444,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                             mp.stop();
                                         }
                                         holder.progressDialog.dismiss();
-                                        holder.seekBarChat.setProgress(0);
+//                                        holder.seekBarChat.setProgress(0);
                                         seekBarChata.setProgress(0);
 //                                        ChatActivity.rlChatPlayer.setVisibility(View.GONE);
                                     }
@@ -539,7 +538,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                             mp.stop();
                                         }
                                         holder.progressDialog.dismiss();
-                                        holder.seekBarChat.setProgress(0);
+//                                        holder.seekBarChat.setProgress(0);
                                         seekBarChata.setProgress(0);
 //                                        ChatActivity.rlChatPlayer.setVisibility(View.GONE);
                                     }

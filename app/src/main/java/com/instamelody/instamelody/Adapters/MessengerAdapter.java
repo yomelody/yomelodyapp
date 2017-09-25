@@ -134,6 +134,8 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int listPosition) {
 
+        holder.setIsRecyclable(false);
+
         Chat chat = chatList.get(listPosition);
         if (chat.getChatType().equals("group")) {
             holder.tvUserName.setText(chat.getGroupName());

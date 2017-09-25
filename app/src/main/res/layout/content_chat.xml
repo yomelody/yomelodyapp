@@ -283,8 +283,9 @@
                 android:paddingLeft="0dp"
                 android:paddingRight="0dp"
                 android:paddingStart="0dp"
-                android:progress="50"
-                android:progressDrawable="@drawable/new_seekbar" />
+                android:progress="0"
+                android:progressDrawable="@drawable/new_seekbar"
+                android:thumb="@drawable/slider_thumb_chat_player" />
 
         </FrameLayout>
 

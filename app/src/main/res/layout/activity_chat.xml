@@ -223,7 +223,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="79dp"
             android:background="@drawable/background_home3"
             android:visibility="gone">
 
@@ -332,10 +332,15 @@
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
                     android:background="@android:color/transparent"
+                    android:clickable="false"
                     android:ems="10"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="center"
                     android:inputType="textCapWords|textPersonName"
+                    android:linksClickable="false"
+                    android:longClickable="false"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textColor="#FFFFFF"
                     android:textColorLink="@color/homeBlinker"
@@ -344,6 +349,7 @@
 
             </RelativeLayout>
         </RelativeLayout>
+
         <FrameLayout
             android:id="@+id/flCover"
             android:layout_width="match_parent"
@@ -352,6 +358,7 @@
             android:alpha="0.25"
             android:background="#FFFFFF"
             android:visibility="gone">
+
         </FrameLayout>
 
     </RelativeLayout>
