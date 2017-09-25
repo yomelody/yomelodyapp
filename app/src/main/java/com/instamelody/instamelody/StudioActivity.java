@@ -196,6 +196,7 @@ public class StudioActivity extends AppCompatActivity {
     public static MediaPlayer mediaPlayer;
     public static String audioFilePath;
     private static String instrumentFilePath;
+    public static ArrayList<InstrumentListAdapter.ViewHolder> lstViewHolder = new ArrayList<InstrumentListAdapter.ViewHolder>();
     Uri audioUri;
 
     String KEY_GENRE_NAME = "name";
@@ -490,7 +491,6 @@ public class StudioActivity extends AppCompatActivity {
                 LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
 
             }
-            //      }
         }
         String home, homeTostudio;
         SharedPreferences fromHome = getApplicationContext().getSharedPreferences("FromHomeToMelody", MODE_PRIVATE);
@@ -517,13 +517,6 @@ public class StudioActivity extends AppCompatActivity {
             public void onClick(View v) {
                 grey_circle.setVisibility(View.GONE);
                 blue_circle.setVisibility(View.VISIBLE);
-                /*try {
-                    playAudioRecycler();
-//                    primarySeekBarProgressUpdater();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }*/
-
 
             }
         });
@@ -533,8 +526,6 @@ public class StudioActivity extends AppCompatActivity {
             public void onClick(View v) {
                 blue_circle.setVisibility(View.GONE);
                 grey_circle.setVisibility(View.VISIBLE);
-//                mp.stop();
-//                mp.release();
 
 
             }
@@ -546,7 +537,6 @@ public class StudioActivity extends AppCompatActivity {
         }
 
         if (profilePicLogin != null) {
-            //ivProfile.setVisibility(View.GONE);
             profile_image.setVisibility(View.VISIBLE);
             Picasso.with(StudioActivity.this).load(profilePicLogin).into(profile_image);
         }
@@ -601,17 +591,6 @@ public class StudioActivity extends AppCompatActivity {
                 Environment.getExternalStorageDirectory().getAbsolutePath()
                         + "/InstaMelody.mp3";
 
-
-//        chrono.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
-//            @Override
-//            public void onChronometerTick(Chronometer chronometer) {
-//                countUp = ((SystemClock.elapsedRealtime() - chronometer.getBase()) / 1000);
-//                countUp_milli = ((SystemClock.elapsedRealtime() - chronometer.getBase()));
-//                asText = (countUp / 60) + ":" + (countUp % 60);
-//                recording_time.setText(asText);
-//            }
-//        });
-
         rlInviteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -623,6 +602,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    StudioActivity.handler.removeCallbacksAndMessages(null);
                     if (StudioActivity.mp_start.size() > 0) {
 
                         for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
@@ -702,6 +682,8 @@ public class StudioActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 try {
+
+                    StudioActivity.handler.removeCallbacksAndMessages(null);
                     if (StudioActivity.mp_start != null) {
 
                         for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
@@ -736,6 +718,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    StudioActivity.handler.removeCallbacksAndMessages(null);
                     if (StudioActivity.mp_start != null) {
 
                         for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
@@ -768,6 +751,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    StudioActivity.handler.removeCallbacksAndMessages(null);
                     if (StudioActivity.mp_start != null) {
 
                         for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
@@ -799,6 +783,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
+                    StudioActivity.handler.removeCallbacksAndMessages(null);
                     if (StudioActivity.mp_start != null) {
 
                         for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
@@ -830,6 +815,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
+                    StudioActivity.handler.removeCallbacksAndMessages(null);
                     if (StudioActivity.mp_start != null) {
 
                         for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
@@ -861,6 +847,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    StudioActivity.handler.removeCallbacksAndMessages(null);
                     if (StudioActivity.mp_start != null) {
 
                         for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
@@ -892,6 +879,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    StudioActivity.handler.removeCallbacksAndMessages(null);
                     if (userId != null && melodyPackId != null || userId != null && joinRecordingId != null) {
                         openDialog();
                         ivRecord.setVisibility(View.VISIBLE);
@@ -921,6 +909,8 @@ public class StudioActivity extends AppCompatActivity {
                     rlRedoButton.setVisibility(View.INVISIBLE);
                     ivRecord.setVisibility(View.VISIBLE);
                     rlMelodyButton.setVisibility(View.VISIBLE);
+                    StudioActivity.playAll.setVisibility(View.GONE);
+                    StudioActivity.pauseAll.setVisibility(View.GONE);
                     StudioActivity.this.recreate();
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -1801,6 +1791,8 @@ public class StudioActivity extends AppCompatActivity {
                         editorT.putString("thumbnailUrl", "http://52.89.220.199/api/thumbnail_url.php/?cp=http://52.89.220.199/api/uploads/cover.jpg&rc=http://52.89.220.199/api/uploads/recordings/rec1503669372.mp3");
                         editorT.apply();
 
+
+
                     }
 
                 } catch (JSONException e) {
@@ -2449,6 +2441,7 @@ public class StudioActivity extends AppCompatActivity {
                 }
             }
             if (mpall != null) {
+                StudioActivity.handler.removeCallbacksAndMessages(null);
                 mpall.stop();
                 if (mediaPlayersAll.size() > 0) {
                     for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
@@ -2456,6 +2449,7 @@ public class StudioActivity extends AppCompatActivity {
                     }
                 }
             }
+
             if (StudioActivity.mpInst != null) {
                 StudioActivity.mpInst.stop();
             }
