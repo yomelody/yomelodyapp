@@ -41,6 +41,7 @@ import com.instamelody.instamelody.Models.UserMelodyCard;
 import com.instamelody.instamelody.Models.UserMelodyPlay;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.StudioActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,6 +52,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
@@ -81,7 +83,7 @@ public class MelodyPacksFragment extends Fragment {
     private String USER_NAME = "username";
     private String COUNT = "count";
 
-
+    String home;
     ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     String KEY_MSG = "msg";
     String packName;
@@ -137,6 +139,33 @@ public class MelodyPacksFragment extends Fragment {
         adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
 
 
+//        SharedPreferences fromHome = getApplicationContext().getSharedPreferences("FromHomeToMelody", MODE_PRIVATE);
+//        home = fromHome.getString("click", null);
+//        try {
+//            if (home.equals("from home")) {
+//                SharedPreferences.Editor FilterPref = getActivity().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
+//                FilterPref.clear();
+//                FilterPref.apply();
+//                StudioActivity.joinRecordingId=null;
+//            }
+//        } catch (NullPointerException e) {
+//            e.printStackTrace();
+//        }
+        String joinRecordingId;
+        SharedPreferences fromJoin = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE);
+        joinRecordingId = fromJoin.getString("instrumentsPos", null);
+        if (StudioActivity.joinRecordingId != null || joinRecordingId !=null) {
+            try {
+                SharedPreferences.Editor FilterPref1 = getApplicationContext().getSharedPreferences("FromHomeToMelody", MODE_PRIVATE).edit();
+                FilterPref1.clear();
+                FilterPref1.apply();
+                StudioActivity.melodyPackId = null;
+                //  Toast.makeText(getActivity(), "" + StudioActivity.joinRecordingId, Toast.LENGTH_SHORT).show();
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+
+        }
 
         RecordingsFragment rf = new RecordingsFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -687,7 +716,7 @@ public class MelodyPacksFragment extends Fragment {
             //Toast.makeText(getActivity(), "post "+String.valueOf(post+1), Toast.LENGTH_SHORT).show();
             if (post + 1 == melodyList.size()) {
 
-                new FetchActivityDetails().execute(String.valueOf(melodyList.size() + 10),String.valueOf(instrumentList.size() + 10));
+                new FetchActivityDetails().execute(String.valueOf(melodyList.size() + 10), String.valueOf(instrumentList.size() + 10));
 
                 //adapter.notifyDataSetChanged();
                 //linearLayoutManager.scrollToPosition(post+1);

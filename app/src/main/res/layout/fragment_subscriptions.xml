@@ -38,16 +38,25 @@
                     android:layout_margin="5dp">
 
                     <ImageView
-                        android:id="@+id/userimage"
-                        android:layout_width="match_parent"
+                        android:id="@+id/userImage"
+                        android:layout_width="wrap_content"
                         android:layout_height="70dp"
-                        android:src="@drawable/usersignup" />
+                        android:src="@drawable/usersignup"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true" />
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/userProfileImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="70dp"
+                        android:layout_centerHorizontal="true"
+                        android:visibility="gone" />
 
                     <TextView
-                        android:id="@+id/textView4"
+                        android:id="@+id/tvUserUpgrade"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/userimage"
+                        android:layout_below="@+id/userImage"
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="6dp"
                         android:text="Sign Up!"
@@ -59,7 +68,7 @@
                         android:id="@+id/textView5"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/textView4"
+                        android:layout_below="@id/tvUserUpgrade"
                         android:text="Get More Instrumental Melody"
                         android:textAlignment="center"
                         android:textColor="#415560"

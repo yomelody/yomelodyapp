@@ -86,8 +86,207 @@
             android:id="@+id/recyclerViewChat"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="2dp"
+            android:layout_above="@+id/rlChatPlayer"
+            android:layout_marginTop="1dp"
             android:scrollbars="none" />
+
+        <RelativeLayout
+            android:id="@+id/rlChatPlayer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:background="#8E8E8E"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="0.5">
+
+                    <RelativeLayout
+                        android:id="@+id/rlProfilePic"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp">
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/userProfileImagePlayer"
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/profile1" />
+
+                        <FrameLayout
+                            android:id="@+id/flPlayPausePlayer"
+                            android:layout_width="38dp"
+                            android:layout_height="38dp">
+
+                            <ImageView
+                                android:id="@+id/ivPlayPlayer"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/play_white"
+                                android:visibility="visible" />
+
+                            <ImageView
+                                android:id="@+id/ivPausePlayer"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:src="@drawable/transparent_pause"
+                                android:visibility="gone" />
+
+                        </FrameLayout>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_toEndOf="@+id/rlProfilePic"
+                        android:layout_toRightOf="@+id/rlProfilePic">
+
+                        <TextView
+                            android:id="@+id/tvNamePlayer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:maxLength="25"
+                            android:text="Sing to Me"
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp"
+                            android:textStyle="normal|bold" />
+
+                        <TextView
+                            android:id="@+id/tvUserNamePlayer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tvNamePlayer"
+                            android:layout_marginTop="2dp"
+                            android:text="sillypoet"
+                            android:textColor="#FFFFFF"
+                            android:textSize="12sp" />
+
+                    </RelativeLayout>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="0.5">
+
+                    <RelativeLayout
+                        android:id="@+id/rlPrevPlayer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginStart="5dp">
+
+                        <ImageView
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/previous" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@+id/rlPrevPlayer"
+                        android:layout_toLeftOf="@+id/rlNextPlayer"
+                        android:layout_toRightOf="@+id/rlPrevPlayer"
+                        android:layout_toStartOf="@+id/rlNextPlayer">
+
+                        <TextView
+                            android:id="@+id/tvAudioNamePlayer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:maxLength="25"
+                            android:text="Sing to Me"
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp"
+                            android:textStyle="normal|bold" />
+
+                        <TextView
+                            android:id="@+id/tvNumPlayer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tvAudioNamePlayer"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="2dp"
+                            android:text="(1 of 2)"
+                            android:textColor="#FFFFFF"
+                            android:textSize="12sp" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/rlNextPlayer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginStart="5dp">
+
+                        <ImageView
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/next" />
+
+                    </RelativeLayout>
+                </RelativeLayout>
+            </LinearLayout>
+        </RelativeLayout>
+
+        <FrameLayout
+            android:id="@+id/flSeekbar"
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="42dp"
+            android:visibility="gone">
+
+            <SeekBar
+                android:id="@+id/seekBarChata"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:indeterminate="false"
+                android:paddingEnd="0dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingStart="0dp"
+                android:progress="50"
+                android:progressDrawable="@drawable/new_seekbar" />
+
+        </FrameLayout>
 
         <RelativeLayout
             android:id="@+id/rlNoMsg"

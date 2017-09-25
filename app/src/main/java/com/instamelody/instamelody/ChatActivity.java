@@ -1,5 +1,7 @@
 package com.instamelody.instamelody;
 
+import android.*;
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
@@ -41,6 +43,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -108,6 +111,8 @@ public class ChatActivity extends AppCompatActivity {
     public static TextView tvUserName, tvNamePlayer, tvUserNamePlayer, tvAudioNamePlayer, tvNumPlayer;
     public static ImageView ivPausePlayer, ivPlayPlayer, userProfileImagePlayer;
     public static RelativeLayout rlChatPlayer;
+    public static FrameLayout flSeekbar;
+    public static SeekBar seekBarChata;
     public static FrameLayout flPlayPausePlayer;
 
     FrameLayout flCover;
@@ -130,7 +135,9 @@ public class ChatActivity extends AppCompatActivity {
 
     private static final int TAKE_CAMERA_PHOTO = 101;
     private static final int PICK_GALLERY_IMAGE = 102;
-    private static final int PERMISSIONS_READ_STORAGE = 201;
+    private static final int PERMISSION_READ_STORAGE = 201;
+    private static final int PERMISSION_CAMERA = 202;
+
     ArrayList<Message> chatList = new ArrayList<>();// list of messages
     ArrayList<SharedAudios> sharedAudioList = new ArrayList<>();// list of shared audios
     ArrayList<AudioDetails> audioDetailsList = new ArrayList<>();// list of shared audio details
@@ -207,6 +214,8 @@ public class ChatActivity extends AppCompatActivity {
         ivClose = (ImageView) findViewById(R.id.ivClose);
         ivSelectedImage = (ImageView) findViewById(R.id.ivSelectedImage);
         rlChatPlayer = (RelativeLayout) findViewById(R.id.rlChatPlayer);
+        flSeekbar = (FrameLayout) findViewById(R.id.flSeekbar);
+        seekBarChata = (SeekBar) findViewById(R.id.seekBarChata);
         tvNamePlayer = (TextView) findViewById(R.id.tvNamePlayer);
         tvUserNamePlayer = (TextView) findViewById(R.id.tvUserNamePlayer);
         tvAudioNamePlayer = (TextView) findViewById(R.id.tvAudioNamePlayer);
@@ -479,7 +488,7 @@ public class ChatActivity extends AppCompatActivity {
                             chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
                             imageToUploadUri = Uri.fromFile(f);
                             startActivityForResult(chooserIntent, TAKE_CAMERA_PHOTO);
-                            alertDialog.cancel();
+//                            alertDialog.cancel();
                         }
                     });
 
@@ -1240,19 +1249,34 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public boolean checkPermissions() {
-        if ((ContextCompat.checkSelfPermission(ChatActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(ChatActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-            return true;
-        } else {
+        int flag = 1;
+        if (ContextCompat.checkSelfPermission(ChatActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            flag = 0;
+        } else if (ContextCompat.checkSelfPermission(ChatActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            flag = 0;
+        } else if (ContextCompat.checkSelfPermission(ChatActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            flag = 0;
+        }
+
+        if (flag == 0) {
             return false;
+        } else {
+            return true;
         }
     }
 
     public void setPermissions() {
         if (ContextCompat.checkSelfPermission(ChatActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(ChatActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                ActivityCompat.requestPermissions(ChatActivity.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSIONS_READ_STORAGE);
+                ActivityCompat.requestPermissions(ChatActivity.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_STORAGE);
             } else {
-                ActivityCompat.requestPermissions(ChatActivity.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSIONS_READ_STORAGE);
+                ActivityCompat.requestPermissions(ChatActivity.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_STORAGE);
+            }
+        } else if (ContextCompat.checkSelfPermission(ChatActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(ChatActivity.this, Manifest.permission.CAMERA)) {
+                ActivityCompat.requestPermissions(ChatActivity.this, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
+            } else {
+                ActivityCompat.requestPermissions(ChatActivity.this, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
             }
         }
     }
@@ -1260,7 +1284,13 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
-            case PERMISSIONS_READ_STORAGE:
+            case PERMISSION_READ_STORAGE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+                    checkPermissions();
+                }
+                break;
+            case PERMISSION_CAMERA:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 } else {
                     checkPermissions();

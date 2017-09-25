@@ -44,6 +44,7 @@ public class Const {
         public static final String AuthenticationKeyName = "ApiAuthenticationKey";
         public static final String LOGOUT = BASE_URL + "logout.php";
         public static final String JoinRecording = BASE_URL + "join_recording.php";
+        public static final String ADVERTISEMENT = BASE_URL + "advertisement.php";
         public static final String PACKAGES = BASE_URL + "pakages.php";
         public static final String SUBSCRIPTION = BASE_URL + "subscription.php";
         public static final String SUBSCRIPTION_DETAIL = BASE_URL + "subscription_detail.php";

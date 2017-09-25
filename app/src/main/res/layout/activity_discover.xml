@@ -148,8 +148,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.33"
-                    android:background="#FFFFFF"
-                    android:padding="5dp">
+                    android:background="#EDEDED">
 
                     <ImageView
                         android:id="@+id/discover"
@@ -157,7 +156,7 @@
                         android:layout_height="match_parent"
                         android:layout_alignParentTop="true"
                         android:layout_centerHorizontal="true"
-                        android:background="@drawable/discover" />
+                        android:background="@drawable/discover_bold" />
 
                 </RelativeLayout>
 

@@ -155,37 +155,7 @@ public class RecordingsFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_recordings, container, false);
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewRecordings);
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-//        adapter = new RecordingsCardAdapter(getActivity(), recordingList);
-        recyclerView.setAdapter(adapter);
 
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
-        {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy)
-            {
-                if(dy > 0) //check for scroll down
-                {
-                    /*visibleItemCount = mLayoutManager.getChildCount();
-                    totalItemCount = mLayoutManager.getItemCount();
-                    pastVisiblesItems = mLayoutManager.findFirstVisibleItemPosition();
-
-                    if (loading)
-                    {
-                        if ( (visibleItemCount + pastVisiblesItems) >= totalItemCount)
-                        {
-                            loading = false;
-                            Log.v("...", "Last Item Wow !");
-                            //Do pagination.. i.e. fetch new data
-                        }
-                    }*/
-                }
-            }
-        });
 
         return view;
     }

@@ -315,6 +315,7 @@
                         android:background="#EDEDED">
 
                         <RelativeLayout
+                            android:id="@+id/rlAll"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true">
@@ -327,14 +328,26 @@
                                 android:paddingLeft="8dp"
                                 android:paddingTop="8dp"
                                 android:src="@drawable/play_fill"
+                                android:visibility="visible" />
+
+                            <ImageView
+                                android:id="@+id/pauseAll"
+                                android:layout_width="30dp"
+                                android:layout_height="match_parent"
+                                android:paddingBottom="8dp"
+                                android:paddingLeft="8dp"
+                                android:paddingTop="8dp"
+                                android:src="@drawable/pause_all"
                                 android:visibility="gone" />
+
+                        </RelativeLayout>
 
                             <RelativeLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerVertical="true"
                                 android:layout_marginLeft="8dp"
-                                android:layout_toEndOf="@+id/playAll">
+                                android:layout_toEndOf="@+id/rlAll">
 
                                 <TextView
                                     android:id="@+id/melody_name"
@@ -376,8 +389,6 @@
                                         android:textStyle="normal|italic" />
 
                                 </LinearLayout>
-
-                            </RelativeLayout>
                         </RelativeLayout>
 
                         <RelativeLayout

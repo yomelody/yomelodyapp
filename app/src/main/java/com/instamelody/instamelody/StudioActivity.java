@@ -80,6 +80,7 @@ import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.MelodyMixing;
 import com.instamelody.instamelody.Models.MixingData;
+import com.instamelody.instamelody.Models.ModelPlayAllMediaPlayer;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.utils.AppHelper;
@@ -163,6 +164,7 @@ public class StudioActivity extends AppCompatActivity {
     private String FILE1 = "file1";
     private String USER_ID1 = "user_id";
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
+
     ArrayList<Genres> genresArrayList = new ArrayList<>();
     ArrayList<String> genresName = new ArrayList<>();
     ArrayList<String> genresId = new ArrayList<>();
@@ -200,7 +202,7 @@ public class StudioActivity extends AppCompatActivity {
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";//JSONArray
 
-    public static String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, melodyPackId, joinRecordingId, instrumentCount;
+    public static String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, melodyPackId, joinRecordingId, instrumentCount, haveJoinid;
     String selectedGenre;
     int statusNormal, statusFb, statusTwitter;
     String melodyName, instrumentName, joinRecordingName, joinInstrumentName;
@@ -242,7 +244,7 @@ public class StudioActivity extends AppCompatActivity {
     public static FrameLayout frameInstrument;
     public static RelativeLayout rlFX, rlEQ, eqContent, fxContent, RltvFxButton, RltvEqButton, rlInviteButton;
     public static TextView tvDoneFxEq, tvInstrumentLength, tvUserName, tvInstrumentName, tvBpmRate;
-    public static ImageView userProfileImage, ivInstrumentCover, FramesivPause, FramesivPlay,playAll;
+    public static ImageView userProfileImage, ivInstrumentCover, FramesivPause, FramesivPlay, playAll, pauseAll;
     public static SeekBar FramemelodySlider;
     public static SeekBar volumeSeekbar, sbTreble, sbBase, sbPan, sbPitch, sbReverb, sbCompression, sbDelay, sbTempo;
     public static MelodyMixing melodyMixing = new MelodyMixing();
@@ -263,6 +265,7 @@ public class StudioActivity extends AppCompatActivity {
     String MixparentRecordingID = "parentRecordingID";
     public static MediaPlayer mpall;
     public static ArrayList<MediaPlayer> mediaPlayersAll = new ArrayList<MediaPlayer>();
+    public static ArrayList<ModelPlayAllMediaPlayer> PlayAllModel = new ArrayList<>();
     public static List<MediaPlayer> mp_start = new ArrayList<MediaPlayer>();
     public static final Handler handler = new Handler();
     private String RECORDING_ID = "rid";
@@ -327,6 +330,7 @@ public class StudioActivity extends AppCompatActivity {
         FramemelodySlider = (SeekBar) findViewById(R.id.FramemelodySlider);
         frameProgress = (FrameLayout) findViewById(R.id.frameProgress);
         playAll = (ImageView) findViewById(R.id.playAll);
+        pauseAll = (ImageView) findViewById(R.id.pauseAll);
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         firstName = loginSharedPref.getString("firstName", null);
         userNameLogin = loginSharedPref.getString("userName", null);
@@ -387,13 +391,16 @@ public class StudioActivity extends AppCompatActivity {
         }
         try {
             melodyPackId = intent.getExtras().getString("clickPosition");
+            haveJoinid = intent.getExtras().getString("haveJoinId");
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
 
+
 //        joinRecordingId = intent.getExtras().getString("clickPositionJoin");
         SharedPreferences filterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE);
         joinRecordingId = filterPref.getString("instrumentsPos", null);
+
         if (joinRecordingId != null && melodyPackId == null) {
             fetchInstrumentsForJoin(JoinActivity.addedBy, JoinActivity.RecId, Integer.parseInt(joinRecordingId));
             noMelodyNote.setVisibility(View.GONE);
@@ -437,55 +444,73 @@ public class StudioActivity extends AppCompatActivity {
             LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
 
         } else {
-//            melodyPackId = intent.getExtras().getString("clickPosition");
-            if (!melodyPackId.equals("fromHomeActivity")) {
-                if (melodyPackId != null) {
-                    fetchInstruments(melodyPackId);
-                    JoinActivity.instrumentList.clear();
-                    noMelodyNote.setVisibility(View.GONE);
-                    recyclerViewInstruments.setVisibility(View.VISIBLE);
-                    recyclerViewInstruments.setHasFixedSize(true);
-                    layoutManager = new LinearLayoutManager(getApplicationContext());
-                    recyclerViewInstruments.setLayoutManager(layoutManager);
-                    recyclerViewInstruments.setItemAnimator(new DefaultItemAnimator());
-                    adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
-                    recyclerViewInstruments.setAdapter(adapter);
-                    //frameTrans.setVisibility(View.VISIBLE);
+
+            //      if (!melodyPackId.equals("fromHomeActivity")) {
+            if (melodyPackId != null) {
+                fetchInstruments(melodyPackId);
+                JoinActivity.instrumentList.clear();
+                noMelodyNote.setVisibility(View.GONE);
+                recyclerViewInstruments.setVisibility(View.VISIBLE);
+                recyclerViewInstruments.setHasFixedSize(true);
+                layoutManager = new LinearLayoutManager(getApplicationContext());
+                recyclerViewInstruments.setLayoutManager(layoutManager);
+                recyclerViewInstruments.setItemAnimator(new DefaultItemAnimator());
+                adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+                recyclerViewInstruments.setAdapter(adapter);
+                //frameTrans.setVisibility(View.VISIBLE);
+                frameSync.setVisibility(View.VISIBLE);
+                if (instrumentList.size() > 0) {
                     frameSync.setVisibility(View.VISIBLE);
-                    if (instrumentList.size() > 0) {
-                        frameSync.setVisibility(View.VISIBLE);
-                    }
-
-
-                    ArrayList<MelodyCard> arrayMelody = new ArrayList<>();
-
-                    arrayMelody = MelodyCardListAdapter.returnMelodyList();
-                    try {
-//                    melodyName = arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName();
-                        try {
-                            if (arrayMelody.size() > 0) {
-                                int i = Integer.parseInt(arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName());
-                            }
-                        } catch (NumberFormatException ex) { // handle your exception
-                            //melodyName = arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName();
-                        }
-
-                    } catch (IndexOutOfBoundsException e) {
-                        e.printStackTrace();
-                    }
-
-
-                    for (int i = 0; i < instrumentList.size(); i++) {
-                        MelodyInstruments instruments = instrumentList.get(i);
-                        instrumentName = instruments.getInstrumentName();
-                    }
-
-                    LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
-
                 }
-            }
-        }
 
+
+                ArrayList<MelodyCard> arrayMelody = new ArrayList<>();
+
+                arrayMelody = MelodyCardListAdapter.returnMelodyList();
+                try {
+//                    melodyName = arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName();
+                    try {
+                        if (arrayMelody.size() > 0) {
+                            int i = Integer.parseInt(arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName());
+                        }
+                    } catch (NumberFormatException ex) { // handle your exception
+                        //melodyName = arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName();
+                    }
+
+                } catch (IndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                }
+
+
+                for (int i = 0; i < instrumentList.size(); i++) {
+                    MelodyInstruments instruments = instrumentList.get(i);
+                    instrumentName = instruments.getInstrumentName();
+                }
+
+                LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
+
+            }
+            //      }
+        }
+        String home, homeTostudio;
+        SharedPreferences fromHome = getApplicationContext().getSharedPreferences("FromHomeToMelody", MODE_PRIVATE);
+        home = fromHome.getString("click", null);
+        SharedPreferences fromHometoST = getApplicationContext().getSharedPreferences("HomeStudio", MODE_PRIVATE);
+        homeTostudio = fromHometoST.getString("clickFromSt", null);
+        try {
+            if (home.equals("from home") || homeTostudio.equals("from home")) {
+                SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
+                FilterPref.clear();
+                FilterPref.apply();
+                SharedPreferences.Editor FilterPref1 = getApplicationContext().getSharedPreferences("HomeStudio", MODE_PRIVATE).edit();
+                FilterPref1.clear();
+                FilterPref1.apply();
+
+
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
 
         grey_circle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -597,101 +622,111 @@ public class StudioActivity extends AppCompatActivity {
         rlMelodyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                try {
+                    if (StudioActivity.mp_start.size() > 0) {
 
-                if (StudioActivity.mp_start.size() > 0) {
+                        for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
+                            try {
+                                StudioActivity.mp_start.get(i).stop();
+                            } catch (IllegalStateException e) {
+                                e.printStackTrace();
+                            }
 
-                    for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
+
+                        }
+                    }
+
+                    if (StudioActivity.mpall != null) {
+                        StudioActivity.handler.removeCallbacksAndMessages(null);
+                        StudioActivity.mpall.stop();
+                        for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
+                            StudioActivity.mediaPlayersAll.get(i).stop();
+
+                        }
+                    }
+                    if (StudioActivity.mpInst != null) {
+                        StudioActivity.mpInst.stop();
+                    }
+
+                    if (mRecordingThread != null) {
+                        mRecordingThread.stopRunning();
+                    }
+
+                    if (isRecording) {
+                        StudioActivity.ivRecord.setEnabled(false);
+                        StudioActivity.handler.removeCallbacksAndMessages(null);
+
+                        if (recorder != null) {
+                            try {
+                                recorder.stop();
+
+                            } catch (RuntimeException ex) {
+                                //Ignore
+                            }
+                        }
                         try {
-                            StudioActivity.mp_start.get(i).stop();
-                        } catch (IllegalStateException e) {
+                            recorder.release();
+                            recorder = null;
+                            isRecording = false;
+                            StudioActivity.tvDone.setEnabled(true);
+                            StudioActivity.chrono.stop();
+                        } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
 
-
-                    }
-                }
-
-                if (StudioActivity.mpall != null) {
-                    StudioActivity.handler.removeCallbacksAndMessages(null);
-                    StudioActivity.mpall.stop();
-                    for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
-                        StudioActivity.mediaPlayersAll.get(i).stop();
-
-                    }
-                }
-                if (StudioActivity.mpInst != null) {
-                    StudioActivity.mpInst.stop();
-                }
-
-                if (mRecordingThread != null) {
-                    mRecordingThread.stopRunning();
-                }
-
-                if (isRecording) {
-                    StudioActivity.ivRecord.setEnabled(false);
-                    StudioActivity.handler.removeCallbacksAndMessages(null);
-
-                    if (recorder != null) {
+                    } else {
                         try {
-                            recorder.stop();
 
-                        } catch (RuntimeException ex) {
-                            //Ignore
+                            StudioActivity.rlRecordingButton.setEnabled(true);
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
                         }
-                    }
-                    try {
-                        recorder.release();
-                        recorder = null;
-                        isRecording = false;
-                        StudioActivity.tvDone.setEnabled(true);
-                        StudioActivity.chrono.stop();
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
+
                     }
 
-                } else {
-                    try {
 
-                        StudioActivity.rlRecordingButton.setEnabled(true);
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                    }
-
+                    Intent intent = new Intent(StudioActivity.this, MelodyActivity.class);
+                    startActivity(intent);
+                    SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("cover response", MODE_PRIVATE).edit();
+                    editor.clear();
+                    editor.commit();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
 
-
-                Intent intent = new Intent(StudioActivity.this, MelodyActivity.class);
-                startActivity(intent);
-                SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("cover response", MODE_PRIVATE).edit();
-                editor.clear();
-                editor.commit();
             }
         });
 
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (StudioActivity.mp_start != null) {
 
-                    for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
-                        StudioActivity.mp_start.get(i).stop();
+                try {
+                    if (StudioActivity.mp_start != null) {
 
-                    }
-                }
-                if (mpall != null) {
-                    mpall.stop();
-                    if (mediaPlayersAll.size() > 0) {
-                        for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                            mediaPlayersAll.get(i).stop();
+                        for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
+                            StudioActivity.mp_start.get(i).stop();
+
                         }
                     }
+                    if (mpall != null) {
+                        mpall.stop();
+                        if (mediaPlayersAll.size() > 0) {
+                            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                                mediaPlayersAll.get(i).stop();
+                            }
+                        }
+                    }
+                    if (StudioActivity.mpInst != null) {
+                        StudioActivity.mpInst.stop();
+                    }
+                    instrumentList.clear();
+                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                    startActivity(intent);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
-                if (StudioActivity.mpInst != null) {
-                    StudioActivity.mpInst.stop();
-                }
-                instrumentList.clear();
-                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-                startActivity(intent);
+
 
                 //finish();;
             }
@@ -700,149 +735,179 @@ public class StudioActivity extends AppCompatActivity {
         ivHomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (StudioActivity.mp_start != null) {
+                try {
+                    if (StudioActivity.mp_start != null) {
 
-                    for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
-                        StudioActivity.mp_start.get(i).stop();
+                        for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
+                            StudioActivity.mp_start.get(i).stop();
 
-                    }
-                }
-                if (mpall != null) {
-                    mpall.stop();
-                    if (mediaPlayersAll.size() > 0) {
-                        for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                            mediaPlayersAll.get(i).stop();
                         }
                     }
+                    if (mpall != null) {
+                        mpall.stop();
+                        if (mediaPlayersAll.size() > 0) {
+                            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                                mediaPlayersAll.get(i).stop();
+                            }
+                        }
+                    }
+                    if (StudioActivity.mpInst != null) {
+                        StudioActivity.mpInst.stop();
+                    }
+                    instrumentList.clear();
+                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                    startActivity(intent);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
-                if (StudioActivity.mpInst != null) {
-                    StudioActivity.mpInst.stop();
-                }
-                instrumentList.clear();
-                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-                startActivity(intent);
+
             }
         });
 
         discover.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (StudioActivity.mp_start != null) {
+                try {
+                    if (StudioActivity.mp_start != null) {
 
-                    for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
-                        StudioActivity.mp_start.get(i).stop();
+                        for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
+                            StudioActivity.mp_start.get(i).stop();
 
-                    }
-                }
-                if (mpall != null) {
-                    mpall.stop();
-                    if (mediaPlayersAll.size() > 0) {
-                        for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                            mediaPlayersAll.get(i).stop();
                         }
                     }
+                    if (mpall != null) {
+                        mpall.stop();
+                        if (mediaPlayersAll.size() > 0) {
+                            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                                mediaPlayersAll.get(i).stop();
+                            }
+                        }
+                    }
+                    if (StudioActivity.mpInst != null) {
+                        StudioActivity.mpInst.stop();
+                    }
+                    Intent intent = new Intent(getApplicationContext(), DiscoverActivity.class);
+                    startActivity(intent);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
-                if (StudioActivity.mpInst != null) {
-                    StudioActivity.mpInst.stop();
-                }
-                Intent intent = new Intent(getApplicationContext(), DiscoverActivity.class);
-                startActivity(intent);
+
             }
         });
 
         message.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (StudioActivity.mp_start != null) {
+                try {
+                    if (StudioActivity.mp_start != null) {
 
-                    for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
-                        StudioActivity.mp_start.get(i).stop();
+                        for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
+                            StudioActivity.mp_start.get(i).stop();
 
-                    }
-                }
-                if (mpall != null) {
-                    mpall.stop();
-                    if (mediaPlayersAll.size() > 0) {
-                        for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                            mediaPlayersAll.get(i).stop();
                         }
                     }
+                    if (mpall != null) {
+                        mpall.stop();
+                        if (mediaPlayersAll.size() > 0) {
+                            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                                mediaPlayersAll.get(i).stop();
+                            }
+                        }
+                    }
+                    if (StudioActivity.mpInst != null) {
+                        StudioActivity.mpInst.stop();
+                    }
+                    Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
+                    startActivity(intent);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
-                if (StudioActivity.mpInst != null) {
-                    StudioActivity.mpInst.stop();
-                }
-                Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
-                startActivity(intent);
+
             }
         });
 
         ivProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (StudioActivity.mp_start != null) {
+                try {
+                    if (StudioActivity.mp_start != null) {
 
-                    for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
-                        StudioActivity.mp_start.get(i).stop();
+                        for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
+                            StudioActivity.mp_start.get(i).stop();
 
-                    }
-                }
-                if (mpall != null) {
-                    mpall.stop();
-                    if (mediaPlayersAll.size() > 0) {
-                        for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                            mediaPlayersAll.get(i).stop();
                         }
                     }
+                    if (mpall != null) {
+                        mpall.stop();
+                        if (mediaPlayersAll.size() > 0) {
+                            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                                mediaPlayersAll.get(i).stop();
+                            }
+                        }
+                    }
+                    if (StudioActivity.mpInst != null) {
+                        StudioActivity.mpInst.stop();
+                    }
+                    Intent i = new Intent(StudioActivity.this, ProfileActivity.class);
+                    startActivity(i);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
-                if (StudioActivity.mpInst != null) {
-                    StudioActivity.mpInst.stop();
-                }
-                Intent i = new Intent(StudioActivity.this, ProfileActivity.class);
-                startActivity(i);
+
             }
         });
 
         audio_feed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (StudioActivity.mp_start != null) {
+                try {
+                    if (StudioActivity.mp_start != null) {
 
-                    for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
-                        StudioActivity.mp_start.get(i).stop();
+                        for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
+                            StudioActivity.mp_start.get(i).stop();
 
-                    }
-                }
-                if (mpall != null) {
-                    mpall.stop();
-                    if (mediaPlayersAll.size() > 0) {
-                        for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                            mediaPlayersAll.get(i).stop();
                         }
                     }
+                    if (mpall != null) {
+                        mpall.stop();
+                        if (mediaPlayersAll.size() > 0) {
+                            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                                mediaPlayersAll.get(i).stop();
+                            }
+                        }
+                    }
+                    if (StudioActivity.mpInst != null) {
+                        StudioActivity.mpInst.stop();
+                    }
+                    Intent i = new Intent(StudioActivity.this, StationActivity.class);
+                    startActivity(i);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
-                if (StudioActivity.mpInst != null) {
-                    StudioActivity.mpInst.stop();
-                }
-                Intent i = new Intent(StudioActivity.this, StationActivity.class);
-                startActivity(i);
+
             }
         });
 
         tvDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (userId != null && melodyPackId != null || userId != null && joinRecordingId != null) {
-                    openDialog();
-                    ivRecord.setVisibility(View.VISIBLE);
-                    ivRecord.setEnabled(true);
-                } else if (userId == null) {
-                    Intent i = new Intent(getApplicationContext(), SignInActivity.class);
-                    startActivity(i);
-                    Toast.makeText(StudioActivity.this, "SignIn to Save Recording", Toast.LENGTH_SHORT).show();
-                }
+                try {
+                    if (userId != null && melodyPackId != null || userId != null && joinRecordingId != null) {
+                        openDialog();
+                        ivRecord.setVisibility(View.VISIBLE);
+                        ivRecord.setEnabled(true);
+                    } else if (userId == null) {
+                        Intent i = new Intent(getApplicationContext(), SignInActivity.class);
+                        startActivity(i);
+                        Toast.makeText(StudioActivity.this, "SignIn to Save Recording", Toast.LENGTH_SHORT).show();
+                    }
 //                else if (melodyPackId == null) {
 //                    Toast.makeText(StudioActivity.this, "Add Melody Packs to save recording", Toast.LENGTH_SHORT).show();
 //                }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
 
             }
         });
@@ -851,11 +916,15 @@ public class StudioActivity extends AppCompatActivity {
         rlRedoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ivRecord_play.setVisibility(View.INVISIBLE);
-                rlRedoButton.setVisibility(View.INVISIBLE);
-                ivRecord.setVisibility(View.VISIBLE);
-                rlMelodyButton.setVisibility(View.VISIBLE);
-                StudioActivity.this.recreate();
+                try {
+                    ivRecord_play.setVisibility(View.INVISIBLE);
+                    rlRedoButton.setVisibility(View.INVISIBLE);
+                    ivRecord.setVisibility(View.VISIBLE);
+                    rlMelodyButton.setVisibility(View.VISIBLE);
+                    StudioActivity.this.recreate();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
 
 
             }
@@ -864,11 +933,15 @@ public class StudioActivity extends AppCompatActivity {
         rlSetCover.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
-               /* Intent photoCaptureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                try {
+                /* Intent photoCaptureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(photoCaptureIntent, requestCode);*/
-                showFileChooser();
+                    showFileChooser();
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
 
             }
         });
@@ -876,8 +949,13 @@ public class StudioActivity extends AppCompatActivity {
         rlInviteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(getApplicationContext(), .class);
-//                startActivity(intent);
+                try{
+                Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
+                startActivity(intent);
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                }
+
             }
         });
 
@@ -1674,9 +1752,9 @@ public class StudioActivity extends AppCompatActivity {
                             rlMelodyButton.setVisibility(View.VISIBLE);
                             switchPublic.setChecked(false);
                             switchFlag = "0";
-                            SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
-                            FilterPref.remove("instrumentsPos");
-                            FilterPref.apply();
+//                            SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
+//                            FilterPref.remove("instrumentsPos");
+//                            FilterPref.apply();
 
                         } else {
                             tvDone.setEnabled(false);
@@ -1699,10 +1777,10 @@ public class StudioActivity extends AppCompatActivity {
                             rlMelodyButton.setVisibility(View.VISIBLE);
                             switchPublic.setChecked(false);
                             switchFlag = "0";
-                            SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
-                            FilterPref.remove("instrumentsPos");
-                            FilterPref.apply();
-                            Toast.makeText(StudioActivity.this, "Saved as Recording", Toast.LENGTH_SHORT).show();
+//                            SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
+//                            FilterPref.remove("instrumentsPos");
+//                            FilterPref.apply();
+//                            Toast.makeText(StudioActivity.this, "Saved as Recording", Toast.LENGTH_SHORT).show();
                         }
 
                         if (progressDialog != null) {
@@ -2181,26 +2259,30 @@ public class StudioActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if (StudioActivity.mp_start != null) {
+        try {
+            if (StudioActivity.mp_start != null) {
 
-            for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
-                StudioActivity.mp_start.get(i).stop();
+                for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
+                    StudioActivity.mp_start.get(i).stop();
 
-            }
-        }
-        if (mpall != null) {
-            mpall.stop();
-            if (mediaPlayersAll.size() > 0) {
-                for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                    mediaPlayersAll.get(i).stop();
                 }
             }
+            if (mpall != null) {
+                mpall.stop();
+                if (mediaPlayersAll.size() > 0) {
+                    for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                        mediaPlayersAll.get(i).stop();
+                    }
+                }
+            }
+            if (StudioActivity.mpInst != null) {
+                StudioActivity.mpInst.stop();
+            }
+            Intent i = new Intent(this, HomeActivity.class);
+            startActivity(i);
+        }catch (Exception ex){
+            ex.printStackTrace();
         }
-        if (StudioActivity.mpInst != null) {
-            StudioActivity.mpInst.stop();
-        }
-        Intent i = new Intent(this, HomeActivity.class);
-        startActivity(i);
     }
 
     public static void closeInput(final View caller) {
