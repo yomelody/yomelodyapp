@@ -80,6 +80,7 @@ import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.MelodyMixing;
 import com.instamelody.instamelody.Models.MixingData;
+import com.instamelody.instamelody.Models.ModelPlayAllMediaPlayer;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.utils.AppHelper;
@@ -163,6 +164,7 @@ public class StudioActivity extends AppCompatActivity {
     private String FILE1 = "file1";
     private String USER_ID1 = "user_id";
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
+
     ArrayList<Genres> genresArrayList = new ArrayList<>();
     ArrayList<String> genresName = new ArrayList<>();
     ArrayList<String> genresId = new ArrayList<>();
@@ -263,6 +265,7 @@ public class StudioActivity extends AppCompatActivity {
     String MixparentRecordingID = "parentRecordingID";
     public static MediaPlayer mpall;
     public static ArrayList<MediaPlayer> mediaPlayersAll = new ArrayList<MediaPlayer>();
+    public static ArrayList<ModelPlayAllMediaPlayer> PlayAllModel = new ArrayList<>();
     public static List<MediaPlayer> mp_start = new ArrayList<MediaPlayer>();
     public static final Handler handler = new Handler();
     private String RECORDING_ID = "rid";
@@ -2256,26 +2259,30 @@ public class StudioActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if (StudioActivity.mp_start != null) {
+        try {
+            if (StudioActivity.mp_start != null) {
 
-            for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
-                StudioActivity.mp_start.get(i).stop();
+                for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
+                    StudioActivity.mp_start.get(i).stop();
 
-            }
-        }
-        if (mpall != null) {
-            mpall.stop();
-            if (mediaPlayersAll.size() > 0) {
-                for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                    mediaPlayersAll.get(i).stop();
                 }
             }
+            if (mpall != null) {
+                mpall.stop();
+                if (mediaPlayersAll.size() > 0) {
+                    for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                        mediaPlayersAll.get(i).stop();
+                    }
+                }
+            }
+            if (StudioActivity.mpInst != null) {
+                StudioActivity.mpInst.stop();
+            }
+            Intent i = new Intent(this, HomeActivity.class);
+            startActivity(i);
+        }catch (Exception ex){
+            ex.printStackTrace();
         }
-        if (StudioActivity.mpInst != null) {
-            StudioActivity.mpInst.stop();
-        }
-        Intent i = new Intent(this, HomeActivity.class);
-        startActivity(i);
     }
 
     public static void closeInput(final View caller) {

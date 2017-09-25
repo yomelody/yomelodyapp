@@ -42,6 +42,7 @@ import com.android.volley.toolbox.ByteArrayPool;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.MixingData;
+import com.instamelody.instamelody.Models.ModelPlayAllMediaPlayer;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.StudioActivity;
 import com.instamelody.instamelody.utils.UtilsRecording;
@@ -150,6 +151,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         notifyDataSetChanged();
     }
 
+    boolean IsPlaySoloAll = false, IsPlayMuteAll = false;
     ArrayList ArRepeate = new ArrayList();
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -361,6 +363,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
         StudioActivity.playAll.setVisibility(View.VISIBLE);
         viewHolder = new ViewHolder();
+        StudioActivity.setInsCount(instrumentList.size());
         viewHolder.seekBar = (SeekBar) holder.melodySlider.findViewById(R.id.melodySlider);
         viewHolder.TempRlRepeats = (RelativeLayout) holder.rlrepeat.findViewById(R.id.rlrepeat);
         viewHolder.holderPause = (ImageView) holder.ivPause.findViewById(R.id.ivPause);
@@ -406,9 +409,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             @Override
             public void onClick(View v) {
                 try {
-                    if (!holder.mp.isPlaying()) {
-                        holder.deleteLl.setVisibility(View.VISIBLE);
-                    }
+
+                    holder.deleteLl.setVisibility(View.VISIBLE);
+
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -426,6 +429,13 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     if (StudioActivity.mpInst != null) {
                         StudioActivity.mpInst.stop();
                     }
+
+                    for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
+                        if(i==holder.getAdapterPosition()) {
+                            StudioActivity.mediaPlayersAll.get(i).stop();
+                        }
+                    }
+
                     int newPosition = holder.getAdapterPosition();
                     instrumentList.remove(newPosition);
                     notifyItemRemoved(newPosition);
@@ -468,14 +478,36 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                             IsMute = false;
                             holder.tvMButton.setBackgroundColor(Color.WHITE);
                         }
-
                     }
 
+                    if (StudioActivity.PlayAllModel.size() > 0) {
+
+                        for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
+
+
+                            if (i == holder.getAdapterPosition()) {
+                                IsPlaySoloAll = StudioActivity.PlayAllModel.get(i).isSolo();
+                                IsPlayMuteAll = StudioActivity.PlayAllModel.get(i).isMute();
+                                if (IsPlayMuteAll == false && IsPlaySoloAll == false) {
+                                    StudioActivity.PlayAllModel.get(i).setMute(true);
+                                    //StudioActivity.PlayAllModel.set(i,new ModelPlayAllMediaPlayer(true,true,false,StudioActivity.mpall));
+                                    holder.tvMButton.setBackgroundColor(Color.GRAY);
+                                    StudioActivity.mediaPlayersAll.get(i).setVolume(0, 0);
+                                } else if (IsPlayMuteAll = true) {
+                                    StudioActivity.PlayAllModel.get(i).setMute(false);
+                                    holder.tvMButton.setBackgroundColor(Color.WHITE);
+                                }
+
+                            }
+
+                        }
+
+
+                    }
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-
             }
         });
 
@@ -502,9 +534,43 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                         }
                     }
 
-                    if (StudioActivity.mediaPlayersAll.size() > 0) {
+                    //if (IsPlaySoloAll == false) {
+                    //holder.tvSButton.setBackgroundColor(Color.GRAY);
+                    //StudioActivity.mediaPlayersAll.get(i).setVolume(1,1);
+                    //StudioActivity.mediaPlayersAll
+                    //StudioActivity.PlayAllModel.add(i,new ModelPlayAllMediaPlayer(false,false,false,StudioActivity.mpall));
+                    if (StudioActivity.PlayAllModel.size() > 0) {
+                        IsPlaySoloAll = true;
+                        for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
+                            IsPlaySoloAll = StudioActivity.PlayAllModel.get(i).isSolo();
+                            IsPlayMuteAll = StudioActivity.PlayAllModel.get(i).isMute();
+                            if (i == holder.getAdapterPosition()) {
+
+                                if (IsPlaySoloAll == false) {
+
+                                    StudioActivity.PlayAllModel.get(i).setSolo(true);
+                                    holder.tvSButton.setBackgroundColor(Color.GRAY);
+                                    StudioActivity.mediaPlayersAll.get(i).setVolume(1, 1);
+
+                                } else if (IsPlaySoloAll == true) {
+
+                                    StudioActivity.PlayAllModel.get(i).setSolo(false);
+                                    holder.tvSButton.setBackgroundColor(Color.WHITE);
+                                    StudioActivity.mediaPlayersAll.get(i).setVolume(0, 0);
+
+                                }
+
+
+                            } else if (IsPlaySoloAll == false) {
+                                StudioActivity.mediaPlayersAll.get(i).setVolume(0, 0);
+                            }
+
+
+                        }
 
                     }
+                    //}
+
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -513,7 +579,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
             }
         });
-
 
 
         holder.rlFX.setOnClickListener(new View.OnClickListener() {
@@ -943,9 +1008,14 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     if (StudioActivity.mediaPlayersAll.size() > 0) {
                         StudioActivity.mediaPlayersAll.clear();
                     }
+                    if (StudioActivity.PlayAllModel.size() > 0) {
+                        StudioActivity.PlayAllModel.clear();
+                    }
                     if (pts != null) {
                         pts.stop();
                     }
+                    IsPlaySoloAll = false;
+                    IsPlayMuteAll = false;
                     new PrepareInstrumentsForPlayAll().execute();
                     StudioActivity.playAll.setVisibility(View.GONE);
                     StudioActivity.pauseAll.setVisibility(View.VISIBLE);
@@ -970,6 +1040,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             @Override
             public void onClick(View v) {
                 try {
+                    IsPlaySoloAll = false;
+                    IsPlayMuteAll = false;
                     StudioActivity.pauseAll.setVisibility(View.GONE);
                     StudioActivity.playAll.setVisibility(View.VISIBLE);
                     StudioActivity.ivRecord.setEnabled(true);
@@ -980,18 +1052,26 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     if (pts != null) {
                         pts.stop();
                     }
-                    for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
-                        StudioActivity.mediaPlayersAll.get(i).stop();
-                        final SeekBar seekBar = lstViewHolder.get(i).seekBar;
-                        final ImageView holderPlay = lstViewHolder.get(i).holderPlay;
-                        final ImageView holderPause = lstViewHolder.get(i).holderPause;
-
-                        holderPlay.setVisibility(View.VISIBLE);
-                        holderPause.setVisibility(View.GONE);
-                        holderPause.setEnabled(true);
-                        seekBar.setProgress(0);
-
+                    StudioActivity.handler.removeCallbacksAndMessages(null);
+                    if(StudioActivity.mpInst!=null) {
+                        StudioActivity.mpInst.stop();
                     }
+
+                        for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
+
+
+                            final ImageView holderPlay = lstViewHolder.get(i).holderPlay;
+                            final ImageView holderPause = lstViewHolder.get(i).holderPause;
+                            final SeekBar seekBar = lstViewHolder.get(i).seekBar;
+                            seekBar.setProgress(0);
+                            holderPlay.setVisibility(View.VISIBLE);
+                            holderPause.setVisibility(View.GONE);
+                            holderPause.setEnabled(true);
+
+                            StudioActivity.mediaPlayersAll.get(i).stop();
+
+                        }
+
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -1315,6 +1395,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
                     new PrepareInstruments().execute();
 
+
                 } catch (IllegalStateException e) {
                     e.printStackTrace();
                 }
@@ -1381,7 +1462,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
                                 final ImageView holderPlay = lstViewHolder.get(i).holderPlay;
                                 final ImageView holderPause = lstViewHolder.get(i).holderPause;
-
+                                final SeekBar seekBar = lstViewHolder.get(i).seekBar;
+                                seekBar.setProgress(0);
                                 holderPlay.setVisibility(View.VISIBLE);
                                 holderPause.setVisibility(View.GONE);
                                 holderPause.setEnabled(true);
@@ -1389,6 +1471,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                                 StudioActivity.mediaPlayersAll.get(i).stop();
 
                             }
+
                         }
                         StudioActivity.tvDone.setEnabled(true);
                         StudioActivity.chrono.stop();
@@ -1417,7 +1500,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-
 
             }
 
@@ -1629,7 +1711,12 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     StudioActivity.playAll.setVisibility(View.GONE);
                     StudioActivity.pauseAll.setVisibility(View.VISIBLE);
                     StudioActivity.pauseAll.setEnabled(false);
-
+                    if (StudioActivity.PlayAllModel.size() > 0) {
+                        StudioActivity.PlayAllModel.clear();
+                    }
+                    if (StudioActivity.mediaPlayersAll.size() > 0) {
+                        StudioActivity.mediaPlayersAll.clear();
+                    }
 
                 } catch (Throwable e) {
                     e.printStackTrace();
@@ -1651,8 +1738,18 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                         StudioActivity.mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
                         StudioActivity.mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
                         StudioActivity.mpall.prepare();
-                        StudioActivity.mediaPlayersAll.add(StudioActivity.mpall);
+                        /*StudioActivity.mpall.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
+                                    final SeekBar seekBar = lstViewHolder.get(i).seekBar;
+                                    seekBar.setProgress(0);
+                                }
 
+                            }
+                        });*/
+                        StudioActivity.mediaPlayersAll.add(StudioActivity.mpall);
+                        StudioActivity.PlayAllModel.add(i, new ModelPlayAllMediaPlayer(false, false, false, StudioActivity.mpall));
                         //am.setStreamMute(AudioManager.STREAM_MUSIC, false);
                     }
                 }
@@ -1741,6 +1838,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                         StudioActivity.mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
                         StudioActivity.mpall.prepare();
                         StudioActivity.mediaPlayersAll.add(StudioActivity.mpall);
+                        StudioActivity.PlayAllModel.add(i, new ModelPlayAllMediaPlayer(false, false, false, StudioActivity.mpall));
 
                         //am.setStreamMute(AudioManager.STREAM_MUSIC, false);
                     }
