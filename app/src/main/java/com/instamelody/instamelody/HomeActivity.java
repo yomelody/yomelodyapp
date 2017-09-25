@@ -102,7 +102,7 @@ public class HomeActivity extends AppCompatActivity {
         Fresco.initialize(this);
 
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
-        Fabric.with(this, new Twitter(authConfig));
+//        Fabric.with(this, new Twitter(authConfig));
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_home);
@@ -112,6 +112,7 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             setPermissions();
         }
+
         rlMessenger = (RelativeLayout) findViewById(R.id.rlMessenger);
         Settings = (Button) findViewById(R.id.btn_settings);
         SignIn = (Button) findViewById(R.id.btn_sign_in);

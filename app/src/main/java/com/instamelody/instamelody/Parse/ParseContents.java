@@ -8,6 +8,7 @@ import android.view.View;
 import com.instamelody.instamelody.ChatActivity;
 import com.instamelody.instamelody.ContactsActivity;
 import com.instamelody.instamelody.JoinActivity;
+import com.instamelody.instamelody.Models.AdvertisePagingData;
 import com.instamelody.instamelody.Models.Comments;
 import com.instamelody.instamelody.Models.Contacts;
 import com.instamelody.instamelody.Models.Genres;
@@ -19,6 +20,7 @@ import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.MixingData;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
+import com.instamelody.instamelody.Models.SubscriptionPackage;
 import com.instamelody.instamelody.StudioActivity;
 
 import org.json.JSONArray;

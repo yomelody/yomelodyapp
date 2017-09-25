@@ -36,6 +36,8 @@ import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
+import com.instamelody.instamelody.StationActivity;
+import com.instamelody.instamelody.StationCommentActivity;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
@@ -373,9 +375,19 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         editor.putString("LikeStatus", LikeStatus);
                         editor.commit();
 
-                        Intent intent = new Intent(context, CommentsActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(intent);
+                        if(context instanceof StationActivity){
+                            Intent intent = new Intent(context, StationCommentActivity.class);
+                            intent.putExtra("recording_modle",recording);
+                            intent.putExtra("recording_pool",recordingsPools.get(getAdapterPosition()));
+
+                            context.startActivity(intent);
+                        }
+                        else {
+                            Intent intent = new Intent(context, CommentsActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            context.startActivity(intent);
+                        }
+
                     } else {
                         Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(context, SignInActivity.class);
@@ -481,7 +493,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         holder.TemptxtJoinCount.setText(recordingList.get(listPosition).getJoinCount());
 
         holder.txtJoinCount.setText(totaljoincount);
-        Picasso.with(holder.userProfileImage.getContext()).load(recordingList.get(listPosition).getUserProfilePic()).into(holder.userProfileImage);
+        Picasso.with(context).load(recordingList.get(listPosition).getUserProfilePic()).into(holder.userProfileImage);
 
         holder.tvUserName.setText(recordingList.get(listPosition).getUserName());
         holder.tvRecordingName.setText(recordingList.get(listPosition).getRecordingName());

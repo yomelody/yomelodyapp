@@ -1,10 +1,12 @@
 package com.instamelody.instamelody.Models;
 
+import java.io.Serializable;
+
 /**
  * Created by Saurabh Singh on 20/03/2017.
  */
 
-public class RecordingsModel {
+public class RecordingsModel implements Serializable{
 
     String recordingId;
     String addedBy;

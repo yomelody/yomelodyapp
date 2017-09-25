@@ -418,6 +418,7 @@ public class CommentsActivity extends AppCompatActivity {
                 params.put(USER_ID, userId);
                 params.put(TOPIC, melodyName);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+
                 return params;
             }
         };
