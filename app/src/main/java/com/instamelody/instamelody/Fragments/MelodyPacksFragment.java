@@ -154,7 +154,7 @@ public class MelodyPacksFragment extends Fragment {
         String joinRecordingId;
         SharedPreferences fromJoin = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE);
         joinRecordingId = fromJoin.getString("instrumentsPos", null);
-        if (StudioActivity.joinRecordingId != null || joinRecordingId !=null) {
+        if (StudioActivity.joinRecordingId != null || joinRecordingId != null) {
             try {
                 SharedPreferences.Editor FilterPref1 = getApplicationContext().getSharedPreferences("FromHomeToMelody", MODE_PRIVATE).edit();
                 FilterPref1.clear();

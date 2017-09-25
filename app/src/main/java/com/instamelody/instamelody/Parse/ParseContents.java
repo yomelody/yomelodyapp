@@ -21,6 +21,7 @@ import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.MixingData;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
+import com.instamelody.instamelody.Models.SubscriptionPackage;
 import com.instamelody.instamelody.StudioActivity;
 
 import org.json.JSONArray;
@@ -86,14 +87,6 @@ public class ParseContents {
 
     String KEY_GENRENAME_ID = "id";
     String KEY_GENRE_NAME = "genre_name";
-
-    String ADV_ID = "id";
-    String ADV_NAME = "adv_name";
-    String ADV_IMAGE = "adv_image";
-    String ADV_URL = "adv_url";
-    String ADV_START_DATE = "start_date";
-    String ADV_END_DATE = "end_date";
-
 
     String SUBSCRIPTION_PACKAGE_ID = "package_id";
     String SUBSCRIPTION_PACKAGE_NAME = "package_name";
@@ -407,6 +400,7 @@ public class ParseContents {
                     card.setPlayCount(cardJson.getInt("play_count"));
                     card.setCommentCount(cardJson.getInt("comment_count"));
                     card.setLikeCount(cardJson.getInt("like_count"));
+                    card.setJoinCount(cardJson.getString("join_count"));
                     card.setLikeStatus(cardJson.getInt("like_status"));
                     if (cardJson.isNull("recording_url")) {
                         card.setrecordingurl("");
@@ -489,7 +483,7 @@ public class ParseContents {
         return JoinArtist;
     }
 
-    public ArrayList<MelodyInstruments> parseJoinInstrument(String response, ArrayList<MelodyInstruments> instrumentList, String mpid) {
+    public ArrayList<MelodyInstruments> parseJoinInstrument(String response, ArrayList<MelodyInstruments> instrumentList, int mpid) {
 
         JSONObject jsonObject;
         JSONArray jsonArray;
@@ -497,7 +491,7 @@ public class ParseContents {
             jsonObject = new JSONObject(response);
             if (jsonObject.getString(KEY_FLAG).equals("success")) {
                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
-                JSONObject selectedObj = jsonArray.getJSONObject(Integer.parseInt(mpid));
+                JSONObject selectedObj = jsonArray.getJSONObject(mpid);
 
                 jsonArray = selectedObj.getJSONArray(KEY_INSTRUMENTS);
 

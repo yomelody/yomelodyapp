@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
@@ -122,6 +123,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
         ImageView join_image;
         TextView Join_usr_name;
         ImageView redCross;
+        RelativeLayout joined_profile;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -183,7 +185,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     }
 
     static class ViewHolder {
-        ImageView redCross;
+        ImageView redCross, join_image;
+        TextView Join_usr_name;
     }
 
     @Override
@@ -191,6 +194,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
         final JoinedArtists joinArt = Joined_artist.get(position);
         viewHolder = new ViewHolder();
         viewHolder.redCross = (ImageView) holder.redCross.findViewById(R.id.redCross);
+        viewHolder.join_image = (ImageView) holder.join_image.findViewById(R.id.ivImageName);
+        viewHolder.Join_usr_name = (TextView) holder.Join_usr_name.findViewById(R.id.tvUserName);
         lstViewHolder.add(viewHolder);
         holder.Join_usr_name.setText(joinArt.getJoined_usr_name());
         Picasso.with(holder.join_image.getContext()).load(joinArt.getJoined_image()).into(holder.join_image);
@@ -203,22 +208,45 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
             e.printStackTrace();
         }
         //  tempUserID = joinArt.getUser_id();
-        if (getItemCount() == 1) {
+
+        SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+        SharedPreferences twitterPref = context.getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = context.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
+        }
+
+
+        if (getItemCount() == 1 && userId.equals(Joined_artist.get(0).getUser_id())) {
             holder.redCross.setVisibility(VISIBLE);
         }
 
         JoinInstrumentListAdp.count = MelodyInstruments.getInstrumentCount();
         if (position == 0 && checkSt == true) {
             lstViewHolder.get(position).redCross.setVisibility(VISIBLE);
+            lstViewHolder.get(position).join_image.setBackgroundColor(Color.parseColor("#656565"));
+            lstViewHolder.get(position).Join_usr_name.setTextColor(Color.parseColor("#FFFFFF"));
             getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, click_pos);
         }
 
+//        if (userId.equals(joinArt.getUser_id())) {
+//            holder.redCross.setVisibility(VISIBLE);
+//        } else {
+//            holder.redCross.setVisibility(GONE);
+//        }
 
         holder.join_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (position != 0) {
                     lstViewHolder.get(0).redCross.setVisibility(GONE);
+                    lstViewHolder.get(0).join_image.setBackgroundColor(Color.parseColor("#383838"));
+                    lstViewHolder.get(0).Join_usr_name.setTextColor(Color.parseColor("#275AAB"));
                 }
                 String user_id = JoinActivity.listProfile.get(position).getUserId();
                 String status = JoinActivity.listProfile.get(position).getStatus();
@@ -234,11 +262,17 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     if (lastModifiedHoled != null) {
                         lastPosition = lastModifiedHoled.getAdapterPosition();
                         lastModifiedHoled.itemView.findViewById(R.id.redCross).setVisibility(GONE);
+                        lastModifiedHoled.itemView.findViewById(R.id.ivImageName).setBackgroundColor(Color.parseColor("#383838"));
+                      //  lastModifiedHoled.itemView.findViewById(R.id.tvUserName).setBackgroundColor(Color.parseColor("#275AAB"));
                         notifyItemChanged(lastPosition);
-
+                        holder.Join_usr_name.setTextColor(Color.parseColor("#FFFFFF"));
+                        holder.join_image.setBackgroundColor(Color.parseColor("#656565"));
                         holder.redCross.setVisibility(VISIBLE);
                     } else {
+                        holder.join_image.setBackgroundColor(Color.parseColor("#656565"));
+                        holder.Join_usr_name.setTextColor(Color.parseColor("#FFFFFF"));
                         holder.redCross.setVisibility(VISIBLE);
+
                     }
 
                     getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, position);
@@ -249,6 +283,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                             JoinActivity.listProfile.set(lastPosition, new JoinedUserProfile(JoinActivity.listProfile.get(lastPosition).getUserId(), "0"));
                             checkSt = false;
                         }
+
                     } catch (IndexOutOfBoundsException e) {
                         e.printStackTrace();
                     }
@@ -274,6 +309,13 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
 
         });
+        holder.redCross.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+            }
+        });
         JoinActivity.txtCount.setText(count + 1 + " of " + getItemCount());
         JoinActivity.rlJoinButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -293,7 +335,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
                     }
                 }
-               // Toast.makeText(context, ""+posForStudio, Toast.LENGTH_SHORT).show();
+                // Toast.makeText(context, ""+posForStudio, Toast.LENGTH_SHORT).show();
                 StudioActivity.instrumentList.clear();
                 SharedPreferences.Editor editor = context.getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
                 editor.putString("instrumentsPos", String.valueOf(posForStudio));

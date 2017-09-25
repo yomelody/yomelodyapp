@@ -7,7 +7,9 @@
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:id="@+id/joined_profile"
+        >
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/ivImageName"
@@ -15,7 +17,8 @@
             android:layout_height="70dp"
             android:background="#383838"
             android:padding="10dp"
-            android:src="@drawable/profile1" />
+            android:src="@drawable/profile1"
+            />
 
 
         <ImageView
@@ -40,7 +43,7 @@
             android:background="@color/color_translucent_black"
             android:text="sillypoet"
             android:textSize="10dp"
-            android:textColor="#FFFFFF"
+            android:textColor="#275AAB"
             android:textStyle="bold"
             android:gravity="center"/>
 

@@ -49,6 +49,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.fabric.sdk.android.Fabric;
 
+import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.instamelody.instamelody.utils.Const.PUSH_NOTIFICATION;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
@@ -304,6 +305,18 @@ public class HomeActivity extends AppCompatActivity {
                 try {
                     if (StudioActivity.melodyPackId != null) {
                         StudioActivity.melodyPackId = null;
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    SharedPreferences fromHome = getApplicationContext().getSharedPreferences("FromHomeToMelody", MODE_PRIVATE);
+                    String home = fromHome.getString("click", null);
+                    if (home != null) {
+                        SharedPreferences.Editor FilterPref1 = getApplicationContext().getSharedPreferences("FromHomeToMelody", MODE_PRIVATE).edit();
+                        FilterPref1.clear();
+                        FilterPref1.apply();
                     }
                 } catch (Throwable e) {
                     e.printStackTrace();

@@ -200,7 +200,7 @@ public class StudioActivity extends AppCompatActivity {
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";//JSONArray
 
-    public static String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, melodyPackId, joinRecordingId, instrumentCount,haveJoinid;
+    public static String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, melodyPackId, joinRecordingId, instrumentCount, haveJoinid;
     String selectedGenre;
     int statusNormal, statusFb, statusTwitter;
     String melodyName, instrumentName, joinRecordingName, joinInstrumentName;
@@ -242,7 +242,7 @@ public class StudioActivity extends AppCompatActivity {
     public static FrameLayout frameInstrument;
     public static RelativeLayout rlFX, rlEQ, eqContent, fxContent, RltvFxButton, RltvEqButton, rlInviteButton;
     public static TextView tvDoneFxEq, tvInstrumentLength, tvUserName, tvInstrumentName, tvBpmRate;
-    public static ImageView userProfileImage, ivInstrumentCover, FramesivPause, FramesivPlay,playAll;
+    public static ImageView userProfileImage, ivInstrumentCover, FramesivPause, FramesivPlay, playAll;
     public static SeekBar FramemelodySlider;
     public static SeekBar volumeSeekbar, sbTreble, sbBase, sbPan, sbPitch, sbReverb, sbCompression, sbDelay, sbTempo;
     public static MelodyMixing melodyMixing = new MelodyMixing();
@@ -387,7 +387,7 @@ public class StudioActivity extends AppCompatActivity {
         }
         try {
             melodyPackId = intent.getExtras().getString("clickPosition");
-            haveJoinid=intent.getExtras().getString("haveJoinId");
+            haveJoinid = intent.getExtras().getString("haveJoinId");
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
@@ -397,7 +397,7 @@ public class StudioActivity extends AppCompatActivity {
         SharedPreferences filterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE);
         joinRecordingId = filterPref.getString("instrumentsPos", null);
 
-        if (joinRecordingId != null && melodyPackId==null) {
+        if (joinRecordingId != null && melodyPackId == null) {
             fetchInstrumentsForJoin(JoinActivity.addedBy, JoinActivity.RecId, Integer.parseInt(joinRecordingId));
             noMelodyNote.setVisibility(View.GONE);
             recyclerViewInstruments.setVisibility(View.VISIBLE);
@@ -1724,6 +1724,13 @@ public class StudioActivity extends AppCompatActivity {
 //                            FilterPref.remove("instrumentsPos");
 //                            FilterPref.apply();
 //                            Toast.makeText(StudioActivity.this, "Saved as Recording", Toast.LENGTH_SHORT).show();
+                        }
+                        try {
+                            SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
+                            FilterPref.clear();
+                            FilterPref.apply();
+                        } catch (Throwable e) {
+                            e.printStackTrace();
                         }
 
                         if (progressDialog != null) {
