@@ -12,7 +12,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.wearable.view.DotsPageIndicator;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -28,22 +30,28 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.instamelody.instamelody.Adapters.DiscoverAdapter;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
+import com.instamelody.instamelody.Models.AdvertisePagingData;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
+import com.instamelody.instamelody.utils.PagerIndicator;
+import com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,6 +69,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import me.relex.circleindicator.CircleIndicator;
+
+import static com.instamelody.instamelody.utils.Const.ServiceType.ADVERTISEMENT;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
@@ -83,6 +94,7 @@ public class DiscoverActivity extends AppCompatActivity {
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
     ArrayList<Genres> genresArrayList = new ArrayList<>();
+    ArrayList<AdvertisePagingData> pagingDataArrayList = new ArrayList<>();
     private String ID = "id";
     private String KEY = "key";
     private String STATION = "station";
@@ -103,13 +115,16 @@ public class DiscoverActivity extends AppCompatActivity {
     String strName, strSearch, strArtist, strInstruments, strBPM;
     String titleString;
     String userIdNormal, userIdFb, userIdTwitter, artistName, Instruments, BPM;
-    ;
     int statusNormal, statusFb, statusTwitter;
     ProgressDialog progressDialog;
     LongOperation myTask = null;
-    RelativeLayout rlDiscoverSearch;
+    RelativeLayout rlDiscoverSearch, rlViewPagerMain;
     android.support.v7.widget.SearchView search2;
     Button btnCancel;
+    RecyclerViewPager recyclerViewPager;
+    RecyclerViewPager.Adapter adapterAdvertiseMent;
+    CircleIndicator recyclerViewPagerIndicator;
+    DotsPageIndicator page_indicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,10 +133,20 @@ public class DiscoverActivity extends AppCompatActivity {
 
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
         discover = (ImageView) findViewById(R.id.discover);
-        discover.setEnabled(false);
         message = (ImageView) findViewById(R.id.message);
         audio_feed = (ImageView) findViewById(R.id.audio_feed);
         ivProfile = (ImageView) findViewById(R.id.ivProfileD);
+        rlViewPagerMain = (RelativeLayout) findViewById(R.id.rlViewPagerMain);
+        recyclerViewPager = (RecyclerViewPager) findViewById(R.id.recyclerViewPager);
+        recyclerViewPagerIndicator = (CircleIndicator) findViewById(R.id.recyclerViewPagerIndicator);
+        recyclerViewPager.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        adapterAdvertiseMent = new DiscoverAdapter(pagingDataArrayList, getApplicationContext());
+        recyclerViewPager.setAdapter(adapterAdvertiseMent);
+        PagerSnapHelper snapHelper = new PagerSnapHelper();
+        snapHelper.attachToRecyclerView(recyclerViewPager);
+        recyclerViewPager.addItemDecoration(new PagerIndicator());
+
+
 
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userId = loginSharedPref.getString("userId", null);
@@ -165,7 +190,7 @@ public class DiscoverActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-
+        advertisePaging();
         if (userId != null && userId != "") {
             adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList, recordingsPools);
             fetchGenreNames();
@@ -406,6 +431,36 @@ public class DiscoverActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
+    public void advertisePaging() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, ADVERTISEMENT,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("AdvertisementData", response);
+                        pagingDataArrayList.clear();
+                        new ParseContents(getApplicationContext()).parseAdvertisePaging(response, pagingDataArrayList);
+                        adapterAdvertiseMent.notifyDataSetChanged();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
+                        String errorMsg = error.toString();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+    }
+
 
     public void fetchRecordings() {
 
@@ -442,6 +497,11 @@ public class DiscoverActivity extends AppCompatActivity {
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        stringRequest.setRetryPolicy(policy);
         requestQueue.add(stringRequest);
     }
 
