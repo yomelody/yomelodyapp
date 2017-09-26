@@ -22,6 +22,17 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.braintreepayments.api.BraintreeFragment;
+import com.braintreepayments.api.dropin.DropInActivity;
+import com.braintreepayments.api.dropin.DropInRequest;
+import com.braintreepayments.api.dropin.DropInResult;
+import com.braintreepayments.api.exceptions.BraintreeError;
+import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.interfaces.BraintreeCancelListener;
+import com.braintreepayments.api.interfaces.BraintreeErrorListener;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.instamelody.instamelody.Models.SubscriptionPackage;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
@@ -48,6 +59,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static android.content.Context.MODE_PRIVATE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
+import static com.instamelody.instamelody.utils.Const.ServiceType.BRAINTREE_FILES_CHECKOUT;
+import static com.instamelody.instamelody.utils.Const.ServiceType.BRAINTREE_FILES_CLIENT_TOKEN;
 import static com.instamelody.instamelody.utils.Const.ServiceType.PACKAGES;
 import static com.instamelody.instamelody.utils.Const.ServiceType.SUBSCRIPTION;
 import static com.instamelody.instamelody.utils.Const.ServiceType.SUBSCRIPTION_DETAIL;
@@ -57,7 +70,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.SUB_DETAIL;
  * Created by Shubhansh Jaiswal on 11/29/2016.
  */
 
-public class SubscriptionsFragment extends Fragment {
+public class SubscriptionsFragment extends Fragment implements PaymentMethodNonceCreatedListener {
     String KEY_SUBSCRIPTION = "key";
     String USER_ID = "user_id";
     String STATUS = "status";
@@ -69,7 +82,12 @@ public class SubscriptionsFragment extends Fragment {
     String PAYPAL_ID = "id";
     String SUB_ID = "sub_id";
 
+    String AMOUNT = "amount";
+    String PAYMENT_METHOD_NOUNCE = "payment_method_nonce";
+
     String cost;
+    String nonce;
+
 
     ProgressDialog progressDialog;
     ArrayList<SubscriptionPackage> subscriptionPackageArrayList = new ArrayList<>();
@@ -92,6 +110,9 @@ public class SubscriptionsFragment extends Fragment {
             .clientId("AeE8pO8NpWo4hbsM8Ha5sjRXXvFVjUNO4R6VKF7Oic0UeLcbgrAXdtXsjtvLtkDaGfB9RSAKC3qfDDq6");
 
     PayPalPayment payment;
+    BraintreeFragment brainTreeFragment;
+    String Authorization;
+    private static int REQUEST_CODE = 12458;
 
 
     public SubscriptionsFragment() {
@@ -101,6 +122,7 @@ public class SubscriptionsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         progressDialog = new ProgressDialog(getActivity());
+        brainTreeGenerate_Client_key();
 
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userIdNormal = loginSharedPref.getString("userId", null);
@@ -137,6 +159,37 @@ public class SubscriptionsFragment extends Fragment {
             userId = userIdTwitter;
         }
 
+        try {
+            brainTreeFragment = BraintreeFragment.newInstance(getActivity(), Authorization);
+            // mBraintreeFragment is ready to use!
+        } catch (InvalidArgumentException e) {
+            // There was an issue with your authorization string.
+        }
+
+        /*brainTreeFragment.addListener(new BraintreeCancelListener() {
+            @Override
+            public void onCancel(int requestCode) {
+
+            }
+        });
+
+        brainTreeFragment.addListener(new BraintreeErrorListener() {
+            @Override
+            public void onError(Exception error) {
+                if (error instanceof ErrorWithResponse) {
+                    ErrorWithResponse errorWithResponse = (ErrorWithResponse) error;
+                    BraintreeError cardErrors = errorWithResponse.errorFor("creditCard");
+                    if (cardErrors != null) {
+                        // There is an issue with the credit card.
+                        BraintreeError expirationMonthError = cardErrors.errorFor("expirationMonth");
+                        if (expirationMonthError != null) {
+                            // There is an issue with the expiration month.
+                            Toast.makeText(getActivity(), "" + expirationMonthError.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            }
+        });*/
 
 //For PayPal Integration
         Intent intent = new Intent(getActivity(), PayPalService.class);
@@ -144,7 +197,6 @@ public class SubscriptionsFragment extends Fragment {
         getActivity().startService(intent);
 
     }
-
 
 
     @Override
@@ -201,7 +253,18 @@ public class SubscriptionsFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE) {
+            if (requestCode == Activity.RESULT_OK) {
+                DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+
+            } else {
+                // handle errors here, an exception may be available in
+                Exception error = (Exception) data.getSerializableExtra(DropInActivity.EXTRA_ERROR);
+            }
+        }
         if (resultCode == Activity.RESULT_OK) {
+            DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
             PaymentConfirmation confirm = data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
             if (confirm != null) {
                 try {
@@ -237,6 +300,8 @@ public class SubscriptionsFragment extends Fragment {
             Log.i("payment", "The user canceled.");
         } else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
             Log.i("payment", "An invalid Payment or PayPalConfiguration was submitted. Please see the docs.");
+        } else {
+            Exception error = (Exception) data.getSerializableExtra(DropInActivity.EXTRA_ERROR);
         }
     }
 
@@ -251,6 +316,7 @@ public class SubscriptionsFragment extends Fragment {
         getActivity().stopService(new Intent(getActivity(), PayPalService.class));
         super.onDestroy();
     }
+
 
     public void subscriptionPackage() {
         progressDialog.setTitle("Processing...");
@@ -374,6 +440,8 @@ public class SubscriptionsFragment extends Fragment {
                                     packageId = "2";
 //                                    subscription();
                                     onBuyPressed(v);
+//                                    onBraintreeSubmit(v);
+//                                    brainTree();
                                 }
                             }
                         });
@@ -399,6 +467,8 @@ public class SubscriptionsFragment extends Fragment {
                                     packageId = "3";
 //                                    subscription();
                                     onBuyPressed(v);
+//                                    onBraintreeSubmit(v);
+//                                    brainTree();
                                 }
                             }
                         });
@@ -424,6 +494,8 @@ public class SubscriptionsFragment extends Fragment {
                                     packageId = "4";
 //                                    subscription();
                                     onBuyPressed(v);
+//                                    onBraintreeSubmit(v);
+//                                    brainTree();
                                 }
                             }
                         });
@@ -675,6 +747,113 @@ public class SubscriptionsFragment extends Fragment {
         requestQueue.add(stringRequest);
     }
 
+
+    public void brainTree() {
+
+        for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
+            subscriptionPackageArrayList.get(i).getCost();
+            if (packageId.equals("2")) {
+                cost = subscriptionPackageArrayList.get(1).getCost();
+            } else if (packageId.equals("3")) {
+                cost = subscriptionPackageArrayList.get(2).getCost();
+            } else if (packageId.equals("4")) {
+                cost = subscriptionPackageArrayList.get(3).getCost();
+            }
+        }
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, BRAINTREE_FILES_CHECKOUT,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String result = response;
+                        try {
+                            JSONObject jsonObject = new JSONObject(result);
+                            String flag = jsonObject.getString("flag");
+                            String response1 = jsonObject.getString("res");
+                            JSONArray jsonArray = jsonObject.getJSONArray("res");
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                                String time = jsonObject1.getString("time");
+                                String dt = time;  // Start date
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                Calendar c = Calendar.getInstance();
+                                c.setTime(sdf.parse(dt));
+                                c.add(Calendar.DATE, 30);
+                                dt = sdf.format(c.getTime());
+
+                                if (dt.equals(true)) {
+                                    Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+                        String errorMsg = error.toString();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(AMOUNT, cost);
+                params.put(PAYMENT_METHOD_NOUNCE, nonce);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(stringRequest);
+    }
+
+
+    public void brainTreeGenerate_Client_key() {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, BRAINTREE_FILES_CLIENT_TOKEN,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String result = response;
+                        try {
+                            JSONObject jsonObject = new JSONObject(result);
+                            String status = jsonObject.getString("status");
+                            String brainTree_clientToken = jsonObject.getString("clientToken");
+                            SharedPreferences.Editor brainTree_Client_Token_Editor = getActivity().getSharedPreferences("brainTree_Client_TokenPref", MODE_PRIVATE).edit();
+                            brainTree_Client_Token_Editor.putString("brainTree_client_Token", brainTree_clientToken);
+                            brainTree_Client_Token_Editor.apply();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+                        String errorMsg = error.toString();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(stringRequest);
+    }
+
+
     public void onBuyPressed(View pressed) {
 
         for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
@@ -698,4 +877,19 @@ public class SubscriptionsFragment extends Fragment {
 
         startActivityForResult(intent, 0);
     }
+
+    @Override
+    public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+        nonce = paymentMethodNonce.getNonce();
+    }
+
+    public void onBraintreeSubmit(View v) {
+        SharedPreferences brainTree_Client_Token_Editor = getActivity().getSharedPreferences("brainTree_Client_TokenPref", MODE_PRIVATE);
+        brainTree_Client_Token_Editor.getString("brainTree_client_Token", null);
+
+        DropInRequest dropInRequest = new DropInRequest()
+                .clientToken(brainTree_Client_Token_Editor.getString("brainTree_client_Token", null));
+        startActivityForResult(dropInRequest.getIntent(getActivity()), REQUEST_CODE);
+    }
+
 }

@@ -15,8 +15,8 @@ repositories {
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.0"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.1"
     defaultConfig {
         applicationId "com.instamelody.instamelody"
         minSdkVersion 18
@@ -81,6 +81,8 @@ dependencies {
     compile 'com.github.asne:asne-googleplus:0.3.3'
     compile 'com.jlubecki.soundcloud:soundcloud-api:1.2.1'
     compile 'com.paypal.sdk:paypal-android-sdk:2.15.3'
+    compile 'com.braintreepayments.api:braintree:2.6.2'
+    compile 'com.braintreepayments.api:drop-in:3.1.0'
     testCompile 'junit:junit:4.12'
     compile 'com.github.lsjwzh.RecyclerViewPager:lib:v1.1.2'
     //    compile files('libs/facebook.jar')
