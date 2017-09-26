@@ -113,7 +113,7 @@ public class ChatActivity extends AppCompatActivity {
 
     public static TextView tvUserName, tvNamePlayer, tvUserNamePlayer, tvAudioNamePlayer, tvNumPlayer;
     public static ImageView ivPausePlayer, ivPlayPlayer, userProfileImagePlayer;
-    public static RelativeLayout rlChatPlayer;
+    public static RelativeLayout rlChatPlayer, rlNothing;
     public static FrameLayout flSeekbar;
     public static SeekBar seekBarChata;
     public static FrameLayout flPlayPausePlayer;
@@ -216,6 +216,7 @@ public class ChatActivity extends AppCompatActivity {
         rlSelectedImage = (RelativeLayout) findViewById(R.id.rlSelectedImage);
         ivClose = (ImageView) findViewById(R.id.ivClose);
         ivSelectedImage = (ImageView) findViewById(R.id.ivSelectedImage);
+        rlNothing = (RelativeLayout) findViewById(R.id.rlChatPlayer);
         rlChatPlayer = (RelativeLayout) findViewById(R.id.rlChatPlayer);
         flSeekbar = (FrameLayout) findViewById(R.id.flSeekbar);
         seekBarChata = (SeekBar) findViewById(R.id.seekBarChata);
@@ -585,6 +586,7 @@ public class ChatActivity extends AppCompatActivity {
                     ivGroupImage.setClickable(false);
                     etGroupName.setClickable(false);
                     Picasso.with(ivGroupImage.getContext()).load(groupImage).into(ivGroupImage);
+                    Picasso.with(ivGroupImage.getContext()).load(groupImage).placeholder(getResources().getDrawable(R.drawable.loading)).error(getResources().getDrawable(R.drawable.no_image)).into(ivGroupImage);
                     etGroupName.setText(receiverName);
                 }
             }
@@ -669,10 +671,21 @@ public class ChatActivity extends AppCompatActivity {
         ivJoin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), JoinActivity.class);
+                Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
                 startActivity(intent);
             }
         });
+
+        rlNothing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(rlChatPlayer.getVisibility() == View.VISIBLE){
+                    rlChatPlayer.setVisibility(View.GONE);
+                    ChatAdapter.mp.stop();
+                }
+            }
+        });
+
 
         Runnable chatRunnable = new Runnable() {
             public void run() {
@@ -680,7 +693,7 @@ public class ChatActivity extends AppCompatActivity {
             }
         };
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleAtFixedRate(chatRunnable, 0, 1, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(chatRunnable, 0, 5, TimeUnit.SECONDS);
     }
 
     @Override
@@ -1273,8 +1286,6 @@ public class ChatActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(String response) {
 
-
-
                 }
             }, new Response.ErrorListener()
 
@@ -1332,6 +1343,7 @@ public class ChatActivity extends AppCompatActivity {
                                 if (jsonObject.getString("flag").equals("Success")) {
                                     result = jsonObject.getJSONObject("response");
                                     groupImage = result.getString("url");
+                                    receiverName = result.getString("groupName");
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();

@@ -2,6 +2,7 @@ package com.instamelody.instamelody.Adapters;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -24,11 +25,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.ChatActivity;
+import com.instamelody.instamelody.JoinActivity;
 import com.instamelody.instamelody.Models.AudioDetails;
 import com.instamelody.instamelody.Models.JoinRecordingModel;
 import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.SharedAudios;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.StudioActivity;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
@@ -44,7 +47,11 @@ import static android.content.Context.MODE_PRIVATE;
 import static com.instamelody.instamelody.ChatActivity.flSeekbar;
 import static com.instamelody.instamelody.ChatActivity.ivPausePlayer;
 import static com.instamelody.instamelody.ChatActivity.ivPlayPlayer;
+import static com.instamelody.instamelody.ChatActivity.rlChatPlayer;
+import static com.instamelody.instamelody.ChatActivity.rlNothing;
 import static com.instamelody.instamelody.ChatActivity.seekBarChata;
+import static com.instamelody.instamelody.ChatActivity.tvNamePlayer;
+import static com.instamelody.instamelody.ChatActivity.tvUserNamePlayer;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.JoinRecording;
@@ -76,7 +83,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     public static String str;
     public static ImageView ivPrev, ivNext;
     //    public TextView tvNum;
-    MediaPlayer mp;
+    public static MediaPlayer mp;
     String parentRec;
     public static int origCount = 0;
 
@@ -299,7 +306,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
                     try {
                         if (parentRec != null) {
-                            ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
+                            rlNothing.setVisibility(View.VISIBLE);
+                            rlChatPlayer.setVisibility(View.VISIBLE);
                             flSeekbar.setVisibility(View.VISIBLE);
                             ivPlayPlayer.setVisibility(View.GONE);
                             ivPausePlayer.setVisibility(View.VISIBLE);
@@ -382,7 +390,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                     try {
                         if (JoinMp != null) {
                             if (JoinMp.size() > 0) {
-                                ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
+                                rlNothing.setVisibility(View.VISIBLE);
+                                rlChatPlayer.setVisibility(View.VISIBLE);
                                 flSeekbar.setVisibility(View.VISIBLE);
                                 ivPlayPlayer.setVisibility(View.GONE);
                                 ivPausePlayer.setVisibility(View.VISIBLE);
@@ -410,8 +419,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                 if (!sharedAudios.getProfileUrl().equals("")) {
                                     Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(ChatActivity.userProfileImagePlayer);
                                 }
-                                ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
-                                ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
+                                tvNamePlayer.setText(sharedAudios.getName());
+                                tvUserNamePlayer.setText(sharedAudios.getUserName());
 
                                 for (int i = 0; i <= JoinMp.size() - 1; i++) {
                                     if (origCount == i) {
@@ -475,7 +484,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                     try {
                         if (JoinMp != null) {
                             if (JoinMp.size() > 0) {
-                                ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
+                                rlChatPlayer.setVisibility(View.VISIBLE);
                                 flSeekbar.setVisibility(View.VISIBLE);
                                 ivPlayPlayer.setVisibility(View.GONE);
                                 ivPausePlayer.setVisibility(View.VISIBLE);
@@ -503,8 +512,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                 if (!sharedAudios.getProfileUrl().equals("")) {
                                     Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(ChatActivity.userProfileImagePlayer);
                                 }
-                                ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
-                                ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
+                                tvNamePlayer.setText(sharedAudios.getName());
+                                tvUserNamePlayer.setText(sharedAudios.getUserName());
 
                                 for (int i = 0; i <= JoinMp.size() - 1; i++) {
                                     if (origCount == i) {
@@ -548,6 +557,14 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
+                }
+            });
+
+            holder.ivSettings.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(context, JoinActivity.class);
+                    context.startActivity(intent);
                 }
             });
 

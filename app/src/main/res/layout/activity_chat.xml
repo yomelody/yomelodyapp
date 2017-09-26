@@ -224,6 +224,7 @@
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="79dp"
+            android:clickable="true"
             android:background="@drawable/background_home3"
             android:visibility="gone">
 

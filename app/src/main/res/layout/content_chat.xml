@@ -91,6 +91,15 @@
             android:scrollbars="none" />
 
         <RelativeLayout
+            android:id="@+id/rlNothing"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/rlChatPlayer"
+            android:layout_marginTop="1dp"
+            android:scrollbars="none"
+            android:visibility="gone"/>
+
+        <RelativeLayout
             android:id="@+id/rlChatPlayer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -28,6 +28,7 @@ import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.ContactsActivity;
 import com.instamelody.instamelody.Models.Contacts;
 import com.instamelody.instamelody.Parse.ParseContents;
+import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
 import com.squareup.picasso.Picasso;
 
@@ -150,7 +151,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                                 recieverName = "New Group";
                                 editor.putString("receiverName", recieverName);
                                 editor.putString("chatType", "group");
-                            }else{
+                            } else {
                                 editor.putString("chatType", "single");
                             }
                             editor.commit();
@@ -198,6 +199,16 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                     editor.putString("receiverName", recieverName);
                     editor.putString("receiverImage", recieverImage);
                     editor.commit();
+                }
+            });
+
+            userProfileImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String sendrID = contactsList.get(getAdapterPosition()).getUser_id();
+                    Intent intent = new Intent(context, ProfileActivity.class);
+                    intent.putExtra("showProfileUserId", sendrID);
+                    view.getContext().startActivity(intent);
                 }
             });
         }
