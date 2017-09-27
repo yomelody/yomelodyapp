@@ -60,13 +60,13 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
 
     Context context;
     ArrayList<Contacts> contactsList = new ArrayList<>();
-    String rsList[], newList[];
+    String rsList[];
     String senderID = "";
     String recieverId = "";
     String recId = "";
     String recieverName = "";
     String recieverImage = "";
-    int Count = 0, nonNullCount = 0;
+    int Count = 0;
 
     public ContactsAdapter(Context context, ArrayList<Contacts> contactsList) {
         this.contactsList = contactsList;
@@ -135,7 +135,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                         if (!userId.equals("")) {
                             getChatId(userId, recId);
                         } else {
-                            Toast.makeText(context, "Logged in user null id Error", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Logged in user null id error", Toast.LENGTH_SHORT).show();
                         }
 
                         String fname = contactsList.get(getAdapterPosition()).getfName();

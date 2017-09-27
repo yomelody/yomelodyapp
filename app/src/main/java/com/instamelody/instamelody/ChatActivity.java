@@ -124,7 +124,7 @@ public class ChatActivity extends AppCompatActivity {
     ImageView ivBackButton, ivHomeButton, ivCamera, ivNewChat, ivRecieverProfilePic, ivSelectedImage, ivGroupImage;
     TextView tvSend, tvRecieverName, tvDone, tvEdit, tvUpdate;
     RecyclerView recycleImage, recyclerViewChat;
-    RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton, rlMessage, rlSelectedImage, rlUserName, rlPrevPlayer, rlNextPlayer, rlUpdateGroup;
+    RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton, rlMessage, rlSelectedImage, rlUserName, rlPrevPlayer, rlNextPlayer, rlUpdateGroup, contInviteButton;
 
     RecentImagesAdapter riAdapter;
     ChatAdapter cAdapter;
@@ -216,7 +216,7 @@ public class ChatActivity extends AppCompatActivity {
         rlSelectedImage = (RelativeLayout) findViewById(R.id.rlSelectedImage);
         ivClose = (ImageView) findViewById(R.id.ivClose);
         ivSelectedImage = (ImageView) findViewById(R.id.ivSelectedImage);
-        rlNothing = (RelativeLayout) findViewById(R.id.rlChatPlayer);
+        rlNothing = (RelativeLayout) findViewById(R.id.rlNothing);
         rlChatPlayer = (RelativeLayout) findViewById(R.id.rlChatPlayer);
         flSeekbar = (FrameLayout) findViewById(R.id.flSeekbar);
         seekBarChata = (SeekBar) findViewById(R.id.seekBarChata);
@@ -238,6 +238,26 @@ public class ChatActivity extends AppCompatActivity {
         etGroupName = (EditText) findViewById(R.id.etGroupName);
         ivJoin = (ImageView) findViewById(R.id.ivJoin);
         flCover = (FrameLayout) findViewById(R.id.flCover);
+        rlInviteButton = (RelativeLayout) findViewById(R.id.rlInviteButton);
+        contInviteButton = (RelativeLayout) findViewById(R.id.contInviteButton);
+
+        SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
+        senderId = prefs.getString("senderId", null);
+        receiverId = prefs.getString("receiverId", null);
+        RemoveNullValue();
+        receiverName = prefs.getString("receiverName", null);
+        receiverImage = prefs.getString("receiverImage", null);
+        chatId = prefs.getString("chatId", null);
+        chatType = prefs.getString("chatType", null);
+        groupImage = prefs.getString("groupImage", null);
+        tvUserName = (TextView) findViewById(R.id.tvUserName);
+        tvUserName.setText(receiverName);
+
+        if (chatType.equals("single")) {
+            rlInviteButton.setClickable(false);
+            rlInviteButton.setEnabled(false);
+            contInviteButton.setVisibility(View.GONE);
+        }
 
         SharedPreferences selectedImagePos = getApplicationContext().getSharedPreferences("selectedImagePos", MODE_PRIVATE);
         if (selectedImagePos.getString("pos", null) != null) {
@@ -259,18 +279,6 @@ public class ChatActivity extends AppCompatActivity {
         imageFileList.clear();
         fileInfo.clear();
         getGalleryImages();
-
-        SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
-        senderId = prefs.getString("senderId", null);
-        receiverId = prefs.getString("receiverId", null);
-        RemoveNullValue();
-        receiverName = prefs.getString("receiverName", null);
-        receiverImage = prefs.getString("receiverImage", null);
-        chatId = prefs.getString("chatId", null);
-        chatType = prefs.getString("chatType", null);
-        groupImage = prefs.getString("groupImage", null);
-        tvUserName = (TextView) findViewById(R.id.tvUserName);
-        tvUserName.setText(receiverName);
 
         SharedPreferences audioShareData = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE);
         if (audioShareData.getString("recID", null) != null) {
@@ -352,8 +360,8 @@ public class ChatActivity extends AppCompatActivity {
                 editor.putString("receiverName", "");
                 editor.putString("receiverImage", "");
                 editor.putString("chatId", "");
+                editor.putString("purpose", "newChat");
                 editor.commit();
-
                 Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
                 intent.putExtra("Previous", "Chat");
                 startActivity(intent);
@@ -397,6 +405,7 @@ public class ChatActivity extends AppCompatActivity {
                 editor.putString("receiverName", "");
                 editor.putString("receiverImage", "");
                 editor.putString("chatId", "");
+                editor.putString("purpose", "invite");
                 editor.commit();
                 Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
                 intent.putExtra("Previous", "Chat");
@@ -679,7 +688,7 @@ public class ChatActivity extends AppCompatActivity {
         rlNothing.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(rlChatPlayer.getVisibility() == View.VISIBLE){
+                if (rlChatPlayer.getVisibility() == View.VISIBLE) {
                     rlChatPlayer.setVisibility(View.GONE);
                     ChatAdapter.mp.stop();
                 }
@@ -687,13 +696,13 @@ public class ChatActivity extends AppCompatActivity {
         });
 
 
-        Runnable chatRunnable = new Runnable() {
-            public void run() {
-                getChatMsgs(chatId);
-            }
-        };
-        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleAtFixedRate(chatRunnable, 0, 5, TimeUnit.SECONDS);
+//        Runnable chatRunnable = new Runnable() {
+//            public void run() {
+//                getChatMsgs(chatId);
+//            }
+//        };
+//        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+//        executor.scheduleAtFixedRate(chatRunnable, 0, 5, TimeUnit.SECONDS);
     }
 
     @Override
@@ -914,11 +923,15 @@ public class ChatActivity extends AppCompatActivity {
 //                                            }
 //                                        }
 
-                                        if (i == (resultArray.length() - 1)) {
-                                            if (chatJson.getString("isread").equals("0") && (!chatJson.getString("senderID").equals(usrId))) {
-                                                readStatus(chatJson.getString("id"), chatJson.getString("chatID"));
-                                            }
+                                        if (chatJson.getString("isread").equals("0") && (!chatJson.getString("senderID").equals(usrId))) {
+                                            readStatus(chatJson.getString("id"), chatJson.getString("chatID"));
                                         }
+
+//                                        if (i == (resultArray.length() - 1)) {
+//                                            if (chatJson.getString("isread").equals("0") && (!chatJson.getString("senderID").equals(usrId))) {
+//                                                readStatus(chatJson.getString("id"), chatJson.getString("chatID"));
+//                                            }
+//                                        }
                                         chatList.add(i, message);
                                     }
                                 } else {

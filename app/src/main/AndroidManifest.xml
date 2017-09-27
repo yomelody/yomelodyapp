@@ -151,7 +151,8 @@
         <activity
             android:name=".JoinCommentActivity"
             android:label="@string/title_activity_join_comment"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme">
+        </activity>
 
         <activity
             android:name="com.auth0.android.lock.LockActivity"

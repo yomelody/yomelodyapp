@@ -48,31 +48,38 @@
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true">
+            android:layout_alignParentTop="true"
+            android:clickable="false">
 
-            <ImageView
-                android:id="@+id/ivInvite"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_gravity="start|bottom"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                app:srcCompat="@drawable/plus" />
+            <RelativeLayout
+                android:id="@+id/contInviteButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/tvInvite"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="8dp"
-                android:layout_toLeftOf="@+id/ivInvite"
-                android:text="Invite"
-                android:textColor="@color/cardview_dark_background"
-                android:textSize="14sp" />
+                <ImageView
+                    android:id="@+id/ivInvite"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="start|bottom"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp"
+                    app:srcCompat="@drawable/plus" />
 
+                <TextView
+                    android:id="@+id/tvInvite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="8dp"
+                    android:layout_toLeftOf="@+id/ivInvite"
+                    android:text="Invite"
+                    android:textColor="@color/cardview_dark_background"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
         </RelativeLayout>
     </RelativeLayout>
 
@@ -97,7 +104,7 @@
             android:layout_above="@+id/rlChatPlayer"
             android:layout_marginTop="1dp"
             android:scrollbars="none"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <RelativeLayout
             android:id="@+id/rlChatPlayer"
