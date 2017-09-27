@@ -23,6 +23,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.braintreepayments.api.BraintreeFragment;
+import com.braintreepayments.api.Card;
+import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.dropin.DropInActivity;
 import com.braintreepayments.api.dropin.DropInRequest;
 import com.braintreepayments.api.dropin.DropInResult;
@@ -32,7 +34,11 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
+import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.api.models.PayPalAccountNonce;
+import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.models.PostalAddress;
 import com.instamelody.instamelody.Models.SubscriptionPackage;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
@@ -52,6 +58,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -159,37 +166,18 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
             userId = userIdTwitter;
         }
 
+        SharedPreferences brainTree_Client_Token_Editor = getActivity().getSharedPreferences("brainTree_Client_TokenPref", MODE_PRIVATE);
+        brainTree_Client_Token_Editor.getString("brainTree_client_Token", null);
+
+
         try {
-            brainTreeFragment = BraintreeFragment.newInstance(getActivity(), Authorization);
+            brainTreeFragment = BraintreeFragment.newInstance(getActivity(), brainTree_Client_Token_Editor.getString("brainTree_client_Token", null));
             // mBraintreeFragment is ready to use!
         } catch (InvalidArgumentException e) {
             // There was an issue with your authorization string.
         }
 
-        /*brainTreeFragment.addListener(new BraintreeCancelListener() {
-            @Override
-            public void onCancel(int requestCode) {
 
-            }
-        });
-
-        brainTreeFragment.addListener(new BraintreeErrorListener() {
-            @Override
-            public void onError(Exception error) {
-                if (error instanceof ErrorWithResponse) {
-                    ErrorWithResponse errorWithResponse = (ErrorWithResponse) error;
-                    BraintreeError cardErrors = errorWithResponse.errorFor("creditCard");
-                    if (cardErrors != null) {
-                        // There is an issue with the credit card.
-                        BraintreeError expirationMonthError = cardErrors.errorFor("expirationMonth");
-                        if (expirationMonthError != null) {
-                            // There is an issue with the expiration month.
-                            Toast.makeText(getActivity(), "" + expirationMonthError.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }
-            }
-        });*/
 
 //For PayPal Integration
         Intent intent = new Intent(getActivity(), PayPalService.class);
@@ -238,9 +226,18 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
         tvUserUpgrade = (TextView) view.findViewById(R.id.tvUserUpgrade);
         userImage = (ImageView) view.findViewById(R.id.userImage);
         userProfileImage = (CircleImageView) view.findViewById(R.id.userProfileImage);
+        switchFree = (Switch) view.findViewById(R.id.switchFree);
+
+        if (userId != null) {
+            userImage.setVisibility(View.INVISIBLE);
+            userProfileImage.setVisibility(View.VISIBLE);
+            Picasso.with(getActivity()).load(profilePicLogin).into(userProfileImage);
+            switchFree.setChecked(true);
+            tvUserUpgrade.setText("Upgrade" + " " + userNameLogin + "!");
+        }
 
 
-//        /For PayPal Integration
+//        For PayPal Integration
         Intent intent = new Intent(getActivity(), PayPalService.class);
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
         getActivity().startService(intent);
@@ -441,6 +438,10 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
 //                                    subscription();
                                     onBuyPressed(v);
 //                                    onBraintreeSubmit(v);
+                                    CardBuilder cardBuilder = new CardBuilder()
+                                            .cardNumber("4111111111111111")
+                                            .expirationDate("09/2018");
+                                    Card.tokenize(brainTreeFragment, cardBuilder);
 //                                    brainTree();
                                 }
                             }
@@ -747,6 +748,25 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
         requestQueue.add(stringRequest);
     }
 
+    @Override
+    public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+        nonce = paymentMethodNonce.getNonce();
+        Log.d("nonce",paymentMethodNonce.getNonce());
+        if (paymentMethodNonce instanceof PayPalAccountNonce) {
+            PayPalAccountNonce payPalAccountNonce = (PayPalAccountNonce) paymentMethodNonce;
+
+            // Access additional information
+            String email = payPalAccountNonce.getEmail();
+            String firstName = payPalAccountNonce.getFirstName();
+            String lastName = payPalAccountNonce.getLastName();
+            String phone = payPalAccountNonce.getPhone();
+
+            // See PostalAddress.java for details
+            PostalAddress billingAddress = payPalAccountNonce.getBillingAddress();
+            PostalAddress shippingAddress = payPalAccountNonce.getShippingAddress();
+        }
+    }
+
 
     public void brainTree() {
 
@@ -805,7 +825,7 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(AMOUNT, cost);
-                params.put(PAYMENT_METHOD_NOUNCE, nonce);
+                params.put(PAYMENT_METHOD_NOUNCE,nonce);
                 return params;
             }
         };
@@ -878,18 +898,13 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
         startActivityForResult(intent, 0);
     }
 
-    @Override
-    public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
-        nonce = paymentMethodNonce.getNonce();
-    }
-
     public void onBraintreeSubmit(View v) {
         SharedPreferences brainTree_Client_Token_Editor = getActivity().getSharedPreferences("brainTree_Client_TokenPref", MODE_PRIVATE);
         brainTree_Client_Token_Editor.getString("brainTree_client_Token", null);
 
         DropInRequest dropInRequest = new DropInRequest()
                 .clientToken(brainTree_Client_Token_Editor.getString("brainTree_client_Token", null));
+
         startActivityForResult(dropInRequest.getIntent(getActivity()), REQUEST_CODE);
     }
-
 }
