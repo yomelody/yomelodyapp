@@ -3,6 +3,7 @@ package com.instamelody.instamelody.Fragments;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -923,6 +924,12 @@ public class MelodyPacksFragment extends Fragment {
             adapter = new MelodyCardListAdapter(melodyList, getActivity());
             progressDialog.dismiss();
         }
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
     }
 }

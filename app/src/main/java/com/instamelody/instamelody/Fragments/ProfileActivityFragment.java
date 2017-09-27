@@ -1,5 +1,6 @@
 package com.instamelody.instamelody.Fragments;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
@@ -9,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +32,9 @@ import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.ActivityCardAdapter;
 import com.instamelody.instamelody.Models.ActivityData;
 import com.instamelody.instamelody.Models.ActivityModel;
+import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.utils.AppHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,6 +64,9 @@ public class ProfileActivityFragment extends Fragment {
     String KEY_FLAG = "flag";
     String USER_ID = "user_id";
     String KEY_RESPONSE = "response";
+    Activity mActivity;
+
+
     public ProfileActivityFragment() {
     }
 
@@ -72,7 +79,7 @@ public class ProfileActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_activity_profile, container, false);
-
+        mActivity=getActivity();
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewActivity);
         recyclerView.setHasFixedSize(true);
         lmactivity = new LinearLayoutManager(getActivity());
@@ -80,8 +87,14 @@ public class ProfileActivityFragment extends Fragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         String position, userId;
         arraylist = new ArrayList<ActivityModel>();
+
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-        userId = loginSharedPref.getString("userId", null);
+
+        userId = ((ProfileActivity)mActivity).getUserId();
+        if (TextUtils.isEmpty(userId)){
+            userId = loginSharedPref.getString("userId", null);
+        }
+
         if(userId!=null) {
             //fetchActivityData(userId);
             new ProfileActivityFragment.FetchActivityDetails().execute(userId);
@@ -140,7 +153,7 @@ public class ProfileActivityFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        //Toast.makeText(getActivity(), "" + response, Toast.LENGTH_SHORT).show();
+                        AppHelper.sop("response===="+response);
                         JSONObject jsonObject;
                         JSONArray jsonArray;
 
@@ -205,6 +218,7 @@ public class ProfileActivityFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(USER_ID, userId);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params===="+params+"\nURL===="+ACTIVITY);
                 return params;
             }
         };

@@ -616,6 +616,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(StudioActivity.this, ContactsActivity.class);
+                intent.putExtra("Previous","studioActivity");
                 startActivity(intent);
             }
         });
@@ -949,10 +950,11 @@ public class StudioActivity extends AppCompatActivity {
         rlInviteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try{
-                Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
-                startActivity(intent);
-                }catch (Exception ex){
+                try {
+                    Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
+                    intent.putExtra("Previous", "studioActivity");
+                    startActivity(intent);
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
 

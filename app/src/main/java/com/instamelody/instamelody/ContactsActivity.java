@@ -1,5 +1,6 @@
 package com.instamelody.instamelody;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.ContactsAdapter;
 import com.instamelody.instamelody.Models.Contacts;
 import com.instamelody.instamelody.Parse.ParseContents;
+import com.instamelody.instamelody.utils.AppHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,12 +54,13 @@ public class ContactsActivity extends AppCompatActivity {
     ImageView discover, message, profile, audio_feed, ivBackButton, ivHomeButton;
     String userId = "";
     public static RelativeLayout rlNoContacts;
+    Activity mActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
-
+        mActivity=ContactsActivity.this;
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
         SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
@@ -102,21 +105,33 @@ public class ContactsActivity extends AppCompatActivity {
                 editor.putString("receiverImage", "");
                 editor.putString("chatId", "");
                 editor.commit();
-                finish();
-                String caller = getIntent().getStringExtra("Previous");
+                String caller = "";
+                if(getIntent()!=null && getIntent().hasExtra("Previous")){
+                    caller = getIntent().getStringExtra("Previous");
+                }
+                AppHelper.sop("caller===="+caller);
                 Intent intent;
                 if (caller.equals("chat")) {
-                    intent = new Intent(getApplicationContext(), ChatActivity.class);
+                    intent = new Intent(mActivity, ChatActivity.class);
+                    startActivity(intent);
                 } else if (caller.equals("station")) {
-                    intent = new Intent(getApplicationContext(), StationActivity.class);
+                    intent = new Intent(mActivity, StationActivity.class);
+                    startActivity(intent);
                 } else if (caller.equals("profile")) {
-                    intent = new Intent(getApplicationContext(), ProfileActivity.class);
+                    intent = new Intent(mActivity, ProfileActivity.class);
+                    startActivity(intent);
                 } else if (caller.equals("discover")) {
-                    intent = new Intent(getApplicationContext(), DiscoverActivity.class);
-                } else {
-                    intent = new Intent(getApplicationContext(), MessengerActivity.class);
+                    intent = new Intent(mActivity, DiscoverActivity.class);
+                    startActivity(intent);
+                }else if (caller.equals("studioActivity")) {
+                    /*intent = new Intent(mActivity, StudioActivity.class);
+                    startActivity(intent);*/
+                } else if (caller.equals("Messenger")){
+                    intent = new Intent(mActivity, MessengerActivity.class);
+                    startActivity(intent);
                 }
-                startActivity(intent);
+
+                finish();
             }
         });
         btnOK.setOnClickListener(new View.OnClickListener() {
@@ -166,21 +181,33 @@ public class ContactsActivity extends AppCompatActivity {
                 editor.putString("receiverImage", "");
                 editor.putString("chatId", "");
                 editor.commit();
-                finish();
-                String caller = getIntent().getStringExtra("Previous");
+                String caller = "";
+                if(getIntent()!=null && getIntent().hasExtra("Previous")){
+                    caller = getIntent().getStringExtra("Previous");
+                }
+                AppHelper.sop("caller===="+caller);
                 Intent intent;
                 if (caller.equals("chat")) {
-                    intent = new Intent(getApplicationContext(), ChatActivity.class);
+                    intent = new Intent(mActivity, ChatActivity.class);
+                    startActivity(intent);
                 } else if (caller.equals("station")) {
-                    intent = new Intent(getApplicationContext(), StationActivity.class);
+                    intent = new Intent(mActivity, StationActivity.class);
+                    startActivity(intent);
                 } else if (caller.equals("profile")) {
-                    intent = new Intent(getApplicationContext(), ProfileActivity.class);
+                    intent = new Intent(mActivity, ProfileActivity.class);
+                    startActivity(intent);
                 } else if (caller.equals("discover")) {
-                    intent = new Intent(getApplicationContext(), DiscoverActivity.class);
-                } else {
-                    intent = new Intent(getApplicationContext(), MessengerActivity.class);
+                    intent = new Intent(mActivity, DiscoverActivity.class);
+                    startActivity(intent);
+                }else if (caller.equals("studioActivity")) {
+                    /*intent = new Intent(mActivity, StudioActivity.class);
+                    startActivity(intent);*/
+                } else if (caller.equals("Messenger")){
+                    intent = new Intent(mActivity, MessengerActivity.class);
+                    startActivity(intent);
                 }
-                startActivity(intent);
+
+                finish();
             }
         });
 
@@ -211,21 +238,33 @@ public class ContactsActivity extends AppCompatActivity {
         editor.putString("receiverImage", "");
         editor.putString("chatId", "");
         editor.commit();
-        finish();
-        String caller = getIntent().getStringExtra("Previous");
+        String caller = "";
+        if(getIntent()!=null && getIntent().hasExtra("Previous")){
+            caller = getIntent().getStringExtra("Previous");
+        }
+        AppHelper.sop("caller===="+caller);
         Intent intent;
         if (caller.equals("chat")) {
-            intent = new Intent(getApplicationContext(), ChatActivity.class);
+            intent = new Intent(mActivity, ChatActivity.class);
+            startActivity(intent);
         } else if (caller.equals("station")) {
-            intent = new Intent(getApplicationContext(), StationActivity.class);
+            intent = new Intent(mActivity, StationActivity.class);
+            startActivity(intent);
         } else if (caller.equals("profile")) {
-            intent = new Intent(getApplicationContext(), ProfileActivity.class);
+            intent = new Intent(mActivity, ProfileActivity.class);
+            startActivity(intent);
         } else if (caller.equals("discover")) {
-            intent = new Intent(getApplicationContext(), DiscoverActivity.class);
-        } else {
-            intent = new Intent(getApplicationContext(), MessengerActivity.class);
+            intent = new Intent(mActivity, DiscoverActivity.class);
+            startActivity(intent);
+        }else if (caller.equals("studioActivity")) {
+            /*intent = new Intent(mActivity, StudioActivity.class);
+            startActivity(intent);*/
+        } else if (caller.equals("Messenger")){
+            intent = new Intent(mActivity, MessengerActivity.class);
+            startActivity(intent);
         }
-        startActivity(intent);
+
+        finish();
     }
 
     public void getContacts() {

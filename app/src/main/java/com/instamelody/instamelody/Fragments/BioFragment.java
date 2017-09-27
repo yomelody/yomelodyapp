@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.text.method.KeyListener;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,8 +15,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.instamelody.instamelody.HomeActivity;
+import com.instamelody.instamelody.Models.UserDetails;
 import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.utils.AppHelper;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -36,6 +39,7 @@ public class BioFragment extends Fragment {
     CircleImageView userBioImage;
     String firstName,userNameLogin,profilePicLogin,Name,userName,profilePic,fbName,fbUserName,fbId;
     int statusNormal,statusFb,statusTwitter;
+    UserDetails userDetails;
 
     public BioFragment() {
 
@@ -63,8 +67,6 @@ public class BioFragment extends Fragment {
         tvDate.setText(dateString);
 
 
-
-
         ivEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,58 +85,81 @@ public class BioFragment extends Fragment {
         });
 
 
-        SharedPreferences loginSharedPref = this.getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-        firstName = loginSharedPref.getString("firstName", null);
-        userNameLogin = loginSharedPref.getString("userName", null);
-        profilePicLogin = loginSharedPref.getString("profilePic", null);
-        statusNormal = loginSharedPref.getInt("status", 0);
+        if (getArguments() != null && getArguments().containsKey("user_detail")) {
+            userDetails = (UserDetails) getArguments().getSerializable("user_detail");
 
-        if (statusNormal == 1){
-           textViewName.setText(firstName);
-            tvStation.setText(userNameLogin);
+            textViewName.setText(userDetails.getFname());
+            tvStation.setText(userDetails.getUsername());
+
+            if (userDetails.getProfilepic() != null) {
+                userBioImage.setVisibility(View.VISIBLE);
+                Picasso.with(getActivity()).load(userDetails.getProfilepic()).into(userBioImage);
+            }
+            if(!TextUtils.isEmpty(userDetails.getDiscrisption())){
+                etBio.setText(userDetails.getDiscrisption());
+                AppHelper.sop(userDetails.getDiscrisption());
+                etBio.setEnabled(false);
+            }
+
+        }
+        else {
+            etBio.setEnabled(true);
+            SharedPreferences loginSharedPref = this.getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+            firstName = loginSharedPref.getString("firstName", null);
+            userNameLogin = loginSharedPref.getString("userName", null);
+            profilePicLogin = loginSharedPref.getString("profilePic", null);
+            statusNormal = loginSharedPref.getInt("status", 0);
+
+            if (statusNormal == 1){
+                textViewName.setText(firstName);
+                tvStation.setText(userNameLogin);
+            }
+
+            if (profilePicLogin != null) {
+                // ivProfile.setVisibility(View.GONE);
+                userBioImage.setVisibility(View.VISIBLE);
+                Picasso.with(getActivity()).load(profilePicLogin).into(userBioImage);
+            }
+
+
+            SharedPreferences twitterPref = this.getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+            Name = twitterPref.getString("Name", null);
+            userName = twitterPref.getString("userName", null);
+            profilePic = twitterPref.getString("ProfilePic", null);
+            statusTwitter = twitterPref.getInt("status", 0);
+
+            if (statusTwitter == 1){
+                textViewName.setText(Name);
+                tvStation.setText(userName);
+            }
+
+            if (profilePic != null) {
+                // ivProfile.setVisibility(View.GONE);
+                userBioImage.setVisibility(View.VISIBLE);
+                Picasso.with(getActivity()).load(profilePic).into(userBioImage);
+            }
+
+
+            SharedPreferences fbPref = this.getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+            fbName = fbPref.getString("FbName", null);
+            fbUserName = fbPref.getString("userName", null);
+            fbId = fbPref.getString("fbId",null);
+            statusFb = fbPref.getInt("status", 0);
+
+            if (statusFb == 1){
+                textViewName.setText(fbName);
+                tvStation.setText("@"+fbName);
+            }
+
+            if (fbId != null) {
+                //ivProfile.setVisibility(View.GONE);
+                userBioImage.setVisibility(View.VISIBLE);
+                Picasso.with(getActivity()).load("https://graph.facebook.com/" + fbId + "/picture").into(userBioImage);
+            }
         }
 
-        if (profilePicLogin != null) {
-           // ivProfile.setVisibility(View.GONE);
-            userBioImage.setVisibility(View.VISIBLE);
-            Picasso.with(getActivity()).load(profilePicLogin).into(userBioImage);
-        }
 
 
-        SharedPreferences twitterPref = this.getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
-        Name = twitterPref.getString("Name", null);
-        userName = twitterPref.getString("userName", null);
-        profilePic = twitterPref.getString("ProfilePic", null);
-        statusTwitter = twitterPref.getInt("status", 0);
-
-        if (statusTwitter == 1){
-            textViewName.setText(Name);
-            tvStation.setText(userName);
-        }
-
-        if (profilePic != null) {
-           // ivProfile.setVisibility(View.GONE);
-            userBioImage.setVisibility(View.VISIBLE);
-            Picasso.with(getActivity()).load(profilePic).into(userBioImage);
-        }
-
-
-        SharedPreferences fbPref = this.getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
-        fbName = fbPref.getString("FbName", null);
-        fbUserName = fbPref.getString("userName", null);
-        fbId = fbPref.getString("fbId",null);
-        statusFb = fbPref.getInt("status", 0);
-
-        if (statusFb == 1){
-            textViewName.setText(fbName);
-            tvStation.setText("@"+fbName);
-        }
-
-        if (fbId != null) {
-            //ivProfile.setVisibility(View.GONE);
-            userBioImage.setVisibility(View.VISIBLE);
-            Picasso.with(getActivity()).load("https://graph.facebook.com/" + fbId + "/picture").into(userBioImage);
-        }
         return view;
     }
 }

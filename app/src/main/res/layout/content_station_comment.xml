@@ -425,6 +425,7 @@
                             <RelativeLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:background="#E5E5E5"
                                 android:layout_weight="0.20">
 
                                 <ImageView

@@ -1,12 +1,17 @@
 package com.instamelody.instamelody;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
 import android.graphics.Color;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -40,19 +45,27 @@ import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.CommentsAdapter;
 import com.instamelody.instamelody.Models.Comments;
 import com.instamelody.instamelody.Parse.ParseContents;
+import com.instamelody.instamelody.utils.AppHelper;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.COMMENTS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.COMMENT_LIST;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LIKESAPI;
+import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
 
 /**
  * Created by Shubhansh Jaiswal on 11/29/2016.
@@ -69,6 +82,10 @@ public class CommentsActivity extends AppCompatActivity {
     String Topic = "topic";
     String LIKES = "likes";
     String TYPE = "type";
+
+    String USER_TYPE = "user_type";
+    String USERID = "userid";
+    String FILEID = "fileid";
 
     CommentsAdapter adapter;
     ImageView ivBackButton, ivHomeButton, ivCamera, tvImgChat, ivShareButton;
@@ -88,12 +105,17 @@ public class CommentsActivity extends AppCompatActivity {
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";
     String userId = "";
+    ProgressDialog progressDialog;
+    Activity mActivity;
+    private MediaPlayer mediaPlayer;
+    private String adapterPosition;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
-
+        mActivity=CommentsActivity.this;
         tvInstrumentsUsed = (TextView) findViewById(R.id.tvInstrumentsUsed);
         tvBpmRate = (TextView) findViewById(R.id.tvBpmRate);
         tvMelodyGenre = (TextView) findViewById(R.id.tvMelodyGenre);
@@ -113,7 +135,13 @@ public class CommentsActivity extends AppCompatActivity {
         ivShareButton = (ImageView) findViewById(R.id.ivShareButton);
         ivLikeButton = (ImageView) findViewById(R.id.ivLikeButton);
         ivDislikeButton = (ImageView) findViewById(R.id.ivDislikeButton);
+        ivPlay = (ImageView) findViewById(R.id.ivPlay);
+        ivPause = (ImageView) findViewById(R.id.ivPause);
         rlLike = (RelativeLayout) findViewById(R.id.rlLike);
+        rlSeekbarTracer = (RelativeLayout) findViewById(R.id.rlSeekbarTracer);
+        melodySlider = (SeekBar) findViewById(R.id.melodySlider);
+        btnMelodyAdd = (Button) findViewById(R.id.btnMelodyAdd);
+
         SharedPreferences prefs = getSharedPreferences("commentData", MODE_PRIVATE);
         instruments = prefs.getString("instruments", null);
         bpm = prefs.getString("bpm", null);
@@ -133,6 +161,7 @@ public class CommentsActivity extends AppCompatActivity {
         RecordingURL = prefs.getString("RecordingURL", null);
         LikeStatus = prefs.getString("LikeStatus", null);
         CoverUrl = prefs.getString("CoverUrl", null);
+        adapterPosition = prefs.getString("adapterPosition", null);
         getComments();
 
         tvInstrumentsUsed.setText(instruments);
@@ -303,7 +332,6 @@ public class CommentsActivity extends AppCompatActivity {
                         tvLikeCount.setText(like);
                         SetLikeState(userId, melodyID, "0", melodyName);
 
-
                     } else if (ivDislikeButton.getVisibility() == View.GONE) {
                         ivLikeButton.setVisibility(View.GONE);
                         ivDislikeButton.setVisibility(View.VISIBLE);
@@ -321,7 +349,196 @@ public class CommentsActivity extends AppCompatActivity {
             }
         });
 
+        ivPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                progressDialog = new ProgressDialog(v.getContext());
+                progressDialog.setMessage("Loading...");
+                progressDialog.show();
+
+                ivPause.setVisibility(VISIBLE);
+                melodySlider.setVisibility(VISIBLE);
+                rlSeekbarTracer.setVisibility(VISIBLE);
+
+                String position;
+                position = melodyID;
+
+                String play = tvPlayCount.getText().toString().trim();
+                int playValue = Integer.parseInt(play) + 1;
+                play = String.valueOf(playValue);
+                tvPlayCount.setText(play);
+
+                fetchViewCount(userId, position);
+                ParseContents pc = new ParseContents(mActivity);
+
+                mediaPlayer = new MediaPlayer();
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                try {
+                    mediaPlayer.setDataSource(RecordingURL);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                mediaPlayer.prepareAsync();
+                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mediaPlayer) {
+                        progressDialog.dismiss();
+                        ivPlay.setVisibility(GONE);
+                        ivPause.setVisibility(VISIBLE);
+                        mediaPlayer.start();
+                        primarySeekBarProgressUpdater();
+                    }
+                });
+                mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                    @Override
+                    public boolean onError(MediaPlayer MediaPlayer, int what, int extra) {
+                        progressDialog.dismiss();
+                        return false;
+                    }
+                });
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mediaPlayer) {
+//                        duration = mediaPlayer.getDuration();
+                        ivPause.setVisibility(GONE);
+                        ivPlay.setVisibility(VISIBLE);
+                        melodySlider.setVisibility(GONE);
+                        rlSeekbarTracer.setVisibility(GONE);
+                        melodySlider.setProgress(0);
+                        progressDialog.dismiss();
+                    }
+                });
+
+            }
+        });
+
+        ivPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ivPlay.setVisibility(VISIBLE);
+                ivPause.setVisibility(GONE);
+                try {
+                    mediaPlayer.pause();
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+
+                melodySlider.setProgress(0);
+            }
+        });
+
+        melodySlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+                if (mediaPlayer != null && fromUser) {
+                    try {
+                        int playPositionInMilliseconds = mediaPlayer.getDuration() / 100 * melodySlider.getProgress();
+                        mediaPlayer.seekTo(playPositionInMilliseconds);
+                    } catch (IllegalStateException e) {
+                        e.printStackTrace();
+                    }
+
+                } else {
+                    // the event was fired from code and you shouldn't call player.seekTo()
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+
+        btnMelodyAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String position = adapterPosition;
+                StudioActivity.instrumentList.clear();
+                Intent intent = new Intent(v.getContext(), StudioActivity.class);
+                intent.putExtra("clickPosition", position);
+                v.getContext().startActivity(intent);
+                StudioActivity.list.clear();
+                if (mediaPlayer != null) {
+                    try {
+                        mediaPlayer.reset();
+                    } catch (IllegalStateException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        });
+
+    }
+
+    private void primarySeekBarProgressUpdater() {
+        Handler mHandler1 = new Handler();
+        try {
+            melodySlider.setProgress((int) (((float) mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
+            if (mediaPlayer.isPlaying()) {
+                Runnable notification = new Runnable() {
+                    public void run() {
+                        primarySeekBarProgressUpdater();
+                    }
+                };
+                mHandler1.postDelayed(notification, 100);
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void fetchViewCount(final String userId, final String pos) {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, PLAY_COUNT,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //       Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
+                        JSONObject jsonObject, respObject;
+
+                        try {
+                            jsonObject = new JSONObject(response);
+                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
+                                respObject = jsonObject.getJSONObject(KEY_RESPONSE);
+                                String str = respObject.getString("play_count");
+                                //      Toast.makeText(context, "" + str, Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //       Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
+                        String errorMsg = error.toString();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put(USER_TYPE, "admin");
+                params.put(USERID, userId);
+                params.put(FILEID, pos);
+                //    params.put(TYPE, "admin_melody");
+                params.put(TYPE, "melody");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                return params;
+            }
+        };
+        RequestQueue requestQueue1 = Volley.newRequestQueue(mActivity);
+        requestQueue1.add(stringRequest);
     }
 
     public void getComments() {
@@ -329,7 +546,7 @@ public class CommentsActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
+                        AppHelper.sop("response=="+response);
                         commentList.clear();
                         adapter.notifyDataSetChanged();
                         recyclerView.smoothScrollToPosition(adapter.getItemCount());
@@ -365,6 +582,7 @@ public class CommentsActivity extends AppCompatActivity {
                 params.put(FILE_ID, melodyID);
                 params.put(FILE_TYPE, fileType);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params=="+params+"\nURL=="+COMMENT_LIST);
                 return params;
             }
         };
@@ -374,12 +592,11 @@ public class CommentsActivity extends AppCompatActivity {
 
     public void sendComment(final String cmnt, final String userId) {
 
-
         final StringRequest stringRequest = new StringRequest(Request.Method.POST, COMMENTS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
+                        AppHelper.sop("params=="+response);
                         adapter.notifyDataSetChanged();
                         getComments();
                         recyclerView.smoothScrollToPosition(adapter.getItemCount());
@@ -418,7 +635,7 @@ public class CommentsActivity extends AppCompatActivity {
                 params.put(USER_ID, userId);
                 params.put(TOPIC, melodyName);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-
+                AppHelper.sop("params=="+params+"\nURL=="+COMMENTS);
                 return params;
             }
         };
@@ -488,6 +705,19 @@ public class CommentsActivity extends AppCompatActivity {
             }
         } catch (Exception e) {
             Log.v("VM", "Exception while sending image on" + nameApp + " " + e.getMessage());
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mediaPlayer!=null ) {
+            if(mediaPlayer.isPlaying()){
+                mediaPlayer.stop();
+            }
+            mediaPlayer.reset();
+            mediaPlayer.release();
+            mediaPlayer = null;
         }
     }
 }

@@ -318,6 +318,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         editor.putString("RecordingURL", RecordingURL);
                         editor.putString("CoverUrl", CoverUrl);
                         editor.putString("LikeStatus", LikeStatus);
+                        editor.putString("adapterPosition", Integer.toString(getAdapterPosition()));
                         editor.commit();
 
                         SharedPreferences.Editor PreviousActivity = context.getSharedPreferences("PreviousActivity", MODE_PRIVATE).edit();
@@ -513,6 +514,11 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     public void onCompletion(MediaPlayer mediaPlayer) {
                         duration = mediaPlayer.getDuration();
                         holder.progressDialog.dismiss();
+                        lastModifiedHoled.itemView.findViewById(R.id.ivPlay).setVisibility(VISIBLE);
+                        lastModifiedHoled.itemView.findViewById(R.id.ivPause).setVisibility(GONE);
+                        lastModifiedHoled.itemView.findViewById(R.id.melodySlider).setVisibility(GONE);
+                        lastModifiedHoled.itemView.findViewById(R.id.rlSeekbarTracer).setVisibility(GONE);
+
                     }
                 });
 

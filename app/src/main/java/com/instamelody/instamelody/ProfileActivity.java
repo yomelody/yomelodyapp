@@ -51,6 +51,7 @@ import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Models.UserDetails;
 import com.instamelody.instamelody.Parse.ParseContents;
+import com.instamelody.instamelody.utils.AppHelper;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -127,6 +128,8 @@ public class ProfileActivity extends AppCompatActivity {
     private static RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView recyclerView;
+    UserDetails userDetails;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,9 +197,14 @@ public class ProfileActivity extends AppCompatActivity {
             userId = twitterPref.getString("userId", null);
         }
 
-        if (bundle != null) {
+        /*if (bundle != null) {
             showProfileUserId = bundle.getString("showProfileUserId");
-        } else {
+        }*/
+        if (getIntent() != null && getIntent().hasExtra("showProfileUserId")) {
+            showProfileUserId = getIntent().getStringExtra("showProfileUserId");
+            AppHelper.sop("showProfileUserId======"+showProfileUserId);
+        }
+        else {
             if (loginSharedPref.getString("userId", null) != null) {
                 showProfileUserId = loginSharedPref.getString("userId", null);
             } else if (fbPref.getString("userId", null) != null) {
@@ -211,7 +219,6 @@ public class ProfileActivity extends AppCompatActivity {
             fetchUserBio();
             fetchGenreNames();
             fetchRecordings();
-
         } else {
             Toast.makeText(getApplicationContext(), "Log in to view your Profile", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
@@ -342,7 +349,10 @@ public class ProfileActivity extends AppCompatActivity {
                 rlPartProfile.setVisibility(View.VISIBLE);
                 getFragmentManager().popBackStack();
 
-
+                if(getFragmentManager().findFragmentById(R.id.activity_profile)!=null){
+                    getFragmentManager().beginTransaction().remove(getFragmentManager().
+                            findFragmentById(R.id.activity_profile)).commit();
+                }
                 /*AudioFragment af = new AudioFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_profile, af).commit();*//*
                 rlPartProfile.setVisibility(View.VISIBLE);
@@ -377,6 +387,11 @@ public class ProfileActivity extends AppCompatActivity {
 
                 BioFragment bioFragment = new BioFragment();
                 android.app.FragmentManager fragmentManager = getFragmentManager();
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("user_detail", userDetails);
+                bioFragment.setArguments(bundle);
+
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.activity_profile, bioFragment);
                 fragmentTransaction.commit();
@@ -478,6 +493,10 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
+    public String getUserId(){
+        return showProfileUserId;
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -495,6 +514,7 @@ public class ProfileActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        AppHelper.sop("response==="+response);
                         String records, fans, followers;
                         String str = response;
                         JSONObject jsonObject;
@@ -504,7 +524,7 @@ public class ProfileActivity extends AppCompatActivity {
                             if (jsonObject.getString(KEY_FLAG).equals(SUCCESS)) {
                                 jsonArray = jsonObject.getJSONArray(KEY_RESULT);
                                 for (int i = 0; i < jsonArray.length(); i++) {
-                                    UserDetails userDetails = new UserDetails();
+                                    userDetails = new UserDetails();
                                     JSONObject userJson = jsonArray.getJSONObject(i);
                                     Name = userJson.getString("fname") + " " + userJson.getString("lname");
                                     if (!Name.equals("")) {
@@ -576,7 +596,9 @@ public class ProfileActivity extends AppCompatActivity {
                                     userDetails.setProfilepic(userJson.getString("profilepic"));
                                     userDetails.setCoverpic(userJson.getString("coverpic"));
                                     userDetails.setRegisterdate(userJson.getString("registerdate"));
-                                    userDetails.setFollowers(userJson.getString("followers"));
+                                    if(userJson.has("followers")){
+                                        userDetails.setFollowers(userJson.getString("followers"));
+                                    }
                                     userDetails.setFans(userJson.getString("fans"));
                                     userDetails.setRecords(userJson.getString("records"));
                                     userDetails.setDevicetoken(userJson.getString("devicetoken"));
@@ -632,6 +654,7 @@ public class ProfileActivity extends AppCompatActivity {
                 params.put(USER_ID, showProfileUserId);
                 params.put(MY_ID, userId);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("Param==="+params+"\nURL===="+USERS_BIO);
                 return params;
             }
         };
@@ -644,7 +667,7 @@ public class ProfileActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
+                        AppHelper.sop("Response==="+response);
                         JSONObject jsonObject, genreJson;
                         JSONArray jsonArray;
                         String titleString;
@@ -708,6 +731,7 @@ public class ProfileActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("Param==="+params+"\nURL===="+GENERE);
                 return params;
             }
         };
@@ -721,12 +745,13 @@ public class ProfileActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
+                        AppHelper.sop("response==="+response);
 //                        Toast.makeText(getActivity(), ""+response, Toast.LENGTH_SHORT).show();
                         Log.d("ReturnData", response);
                         recordingList.clear();
                         new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
+                        tv_records.setText(""+recordingList.size());
                     }
                 },
                 new Response.ErrorListener() {
@@ -740,10 +765,11 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
+                params.put(ID, showProfileUserId);
                 params.put(KEY, "Myrecording");
                 params.put(GENRE, genreString);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("Param==="+params+"\nURL===="+RECORDINGS);
                 return params;
             }
         };

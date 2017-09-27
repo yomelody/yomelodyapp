@@ -332,7 +332,8 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 public void onClick(View view) {
                     if (!userId.equals("") && userId != null) {
                         //Toast.makeText(context, "comment", Toast.LENGTH_SHORT).show();
-                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, melodyID, RecordingURL, CoverUrl, LikeStatus, ProfilePick;
+                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes,
+                                comments, shares, melodyID, RecordingURL, CoverUrl, LikeStatus, ProfilePick;
 
                         RecordingsModel recording = recordingList.get(getAdapterPosition());
 
@@ -375,18 +376,21 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         editor.putString("LikeStatus", LikeStatus);
                         editor.commit();
 
-                        if(context instanceof StationActivity){
-                            Intent intent = new Intent(context, StationCommentActivity.class);
-                            intent.putExtra("recording_modle",recording);
-                            intent.putExtra("recording_pool",recordingsPools.get(getAdapterPosition()));
+                        Intent intent = new Intent(context, StationCommentActivity.class);
+                        intent.putExtra("likes", likes);
+                        intent.putExtra("LikeStatus", LikeStatus);
+                        intent.putExtra("recording_modle",recording);
+                        intent.putExtra("recording_pool",recordingsPools.get(getAdapterPosition()));
+                        context.startActivity(intent);
 
-                            context.startActivity(intent);
+                        /*if(context instanceof StationActivity){
+
                         }
                         else {
                             Intent intent = new Intent(context, CommentsActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             context.startActivity(intent);
-                        }
+                        }*/
 
                     } else {
                         Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
@@ -397,16 +401,20 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 }
             });
 
-            rlProfilePic.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+            if(!(context instanceof ProfileActivity)){
+                rlProfilePic.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
 
-                    String showProfileUserId = recordingList.get(getAdapterPosition()).getAddedBy();
-                    Intent intent = new Intent(view.getContext(), ProfileActivity.class);
-                    intent.putExtra("showProfileUserId", showProfileUserId);
-                    view.getContext().startActivity(intent);
-                }
-            });
+                        String showProfileUserId = recordingList.get(getAdapterPosition()).getAddedBy();
+                        Intent intent = new Intent(view.getContext(), ProfileActivity.class);
+                        intent.putExtra("showProfileUserId", showProfileUserId);
+                        view.getContext().startActivity(intent);
+                    }
+                });
+            }
+
+
 
             seekBarRecordings.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -1077,6 +1085,17 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             ex.printStackTrace();
         }
         return jCount;
+    }
+
+    public void releaseMediaPlayer(){
+        if(mp!=null){
+            if(mp.isPlaying()){
+                mp.stop();
+            }
+            mp.reset();
+            mp.release();
+            mp=null;
+        }
     }
 
 }

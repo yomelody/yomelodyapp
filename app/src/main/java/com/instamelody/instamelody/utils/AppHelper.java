@@ -1,11 +1,13 @@
 package com.instamelody.instamelody.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
@@ -43,4 +45,14 @@ public class AppHelper {
 	public static void sop(String msg){
         System.out.println(""+ msg);
     }
+
+	public static void hideSoftKeyboard(Activity mActivity){
+        InputMethodManager inputManager = (InputMethodManager)
+                mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(mActivity.getCurrentFocus().getWindowToken(),
+                InputMethodManager.HIDE_NOT_ALWAYS);
+
+    }
+
+
 }

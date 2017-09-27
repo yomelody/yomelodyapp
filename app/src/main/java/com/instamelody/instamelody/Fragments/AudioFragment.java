@@ -371,6 +371,13 @@ public class AudioFragment extends Fragment {
                         }
 //                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+
                     }
                 }) {
             @Override
@@ -433,6 +440,12 @@ public class AudioFragment extends Fragment {
                         }
 //                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 }) {
             @Override
@@ -510,6 +523,13 @@ public class AudioFragment extends Fragment {
                         }
 //                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+
                     }
                 }) {
             @Override
@@ -569,6 +589,12 @@ public class AudioFragment extends Fragment {
                                 progressDialog.dismiss();
                             }
                         }
+
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -591,6 +617,12 @@ public class AudioFragment extends Fragment {
                         }
 //                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 }) {
             @Override
@@ -666,6 +698,13 @@ public class AudioFragment extends Fragment {
                         }
 //                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+
                     }
                 }) {
             @Override
@@ -744,6 +783,13 @@ public class AudioFragment extends Fragment {
                         }
 //                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+
                     }
                 }) {
             @Override
@@ -822,6 +868,13 @@ public class AudioFragment extends Fragment {
                         }
 //                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+
                     }
                 }) {
             @Override
@@ -956,7 +1009,11 @@ public class AudioFragment extends Fragment {
 
 
             //Toast.makeText(getActivity(), "1111", Toast.LENGTH_SHORT).show();
-            progressDialog.dismiss();
+            if (progressDialog != null) {
+                if (progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+            }
 
             //Toast.makeText(getActivity(), "2222", Toast.LENGTH_SHORT).show();
 
@@ -1010,6 +1067,11 @@ public class AudioFragment extends Fragment {
                         }
 //                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 }) {
             @Override
