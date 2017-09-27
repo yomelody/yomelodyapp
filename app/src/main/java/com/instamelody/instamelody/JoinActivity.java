@@ -75,7 +75,7 @@ public class JoinActivity extends AppCompatActivity {
     public static TextView mDecibelView, recording_name, artist_name;
     public static ImageView profile_image, ivShareButton;
     public static ImageView ivBackButton, ivHomeButton;
-    public static TextView melody_detail, txtCount;
+    public static TextView melody_detail, txtCount, tvIncluded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +91,7 @@ public class JoinActivity extends AppCompatActivity {
         ivShareButton = (ImageView) findViewById(R.id.ivShareButton);
         ivPlayNext = (ImageView) findViewById(R.id.ivPlayNext);
         txtCount = (TextView) findViewById(R.id.txtCount);
+        tvIncluded = (TextView) findViewById(R.id.tvIncluded);
         ivPlayPre = (ImageView) findViewById(R.id.ivPlayPre);
         waveform_view = (com.instamelody.instamelody.utils.WaveformView) findViewById(R.id.waveform_view);
         mDecibelView = (TextView) findViewById(R.id.decibel_view);

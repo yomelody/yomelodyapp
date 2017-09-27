@@ -141,7 +141,7 @@
                                 android:layout_toLeftOf="@+id/rlInviteButton">
 
                                 <TextView
-                                    android:id="@+id/tvPublic"
+                                    android:id="@+id/tvIncluded"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_centerVertical="true"
