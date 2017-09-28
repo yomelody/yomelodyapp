@@ -96,6 +96,7 @@ import static android.os.Environment.isExternalStorageEmulated;
 import static android.os.Environment.isExternalStorageRemovable;
 //import static com.instamelody.instamelody.Adapters.ChatAdapter.tvNum;
 import static com.instamelody.instamelody.utils.Const.PUSH_NOTIFICATION;
+import static com.instamelody.instamelody.utils.Const.READ_NOTIFICATION;
 import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
@@ -192,22 +193,15 @@ public class ChatActivity extends AppCompatActivity {
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-
-                if (intent.getAction().equals(PUSH_NOTIFICATION)) {
-                    // new push notification is received
-//                    String message = intent.getStringExtra("message");
-//                    String imageUrl = intent.getStringExtra("fileUrl");
+                if (intent.getAction().equals(READ_NOTIFICATION)) {
+                    String readStatus = intent.getStringExtra("status");
+                    if(readStatus.equals("read")){
+                        String chatId = intent.getStringExtra("chatId");
+                        getChatMsgs(chatId);
+                    }
+                } else if (intent.getAction().equals(PUSH_NOTIFICATION)) {
                     String chatId = intent.getStringExtra("chatId");
                     getChatMsgs(chatId);
-
-//                    if (imageUrl != null && imageUrl.length() > 4 && Patterns.WEB_URL.matcher(imageUrl).matches()) {
-//                        Bitmap bitmap = getBitmapFromURL(imageUrl);
-//                        if (bitmap != null) {
-//                            tvImgChat.setImageBitmap(bitmap);
-//                        } else {
-//                            Toast.makeText(getApplicationContext(), "No Image!!", Toast.LENGTH_LONG).show();
-//                        }
-//                    }
                 }
             }
         };
@@ -836,7 +830,6 @@ public class ChatActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         getChatMsgs(chatId);
-
         imageFileList.clear();
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(PUSH_NOTIFICATION));

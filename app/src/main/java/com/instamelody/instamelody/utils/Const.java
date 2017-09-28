@@ -49,7 +49,7 @@ public class Const {
         public static final String SUBSCRIPTION = BASE_URL + "subscription.php";
         public static final String SUBSCRIPTION_DETAIL = BASE_URL + "subscription_detail.php";
         public static final String SUB_DETAIL = BASE_URL + "sub_detail.php";
-
+        public static final String TOTAL_COUNT = BASE_URL + "totalnewmessage.php";
 //        public static final String USERS_BIO = BASE_URL + "uploads/melody/instruments/";
     }
 
@@ -59,6 +59,7 @@ public class Const {
     // broadcast receiver intent filters
     public static final String REGISTRATION_COMPLETE = "registrationComplete";
     public static final String PUSH_NOTIFICATION = "pushNotification";
+    public static final String READ_NOTIFICATION = "readNotification";
 
     // id to handle the notification in the notification tray
     public static final int NOTIFICATION_ID = 100;
