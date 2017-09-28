@@ -896,6 +896,9 @@ public class StationCommentActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(String response) {
                             //Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
+                            Intent resultIntent = new Intent();
+                            resultIntent.putExtra("LIKE", "Like");
+                            setResult(Activity.RESULT_OK, resultIntent);
                         }
                     },
                     new Response.ErrorListener() {
@@ -1082,10 +1085,15 @@ public class StationCommentActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         AppHelper.sop("response=="+response);
+
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("PARAMETER", "Like");
+                        setResult(Activity.RESULT_OK, resultIntent);
+
                         adapter.notifyDataSetChanged();
                         getComments();
                         recyclerView.smoothScrollToPosition(adapter.getItemCount());
-//                        new ParseContents(getApplicationContext()).parseComments(response, commentList);
+//                      new ParseContents(getApplicationContext()).parseComments(response, commentList);
                     }
                 },
                 new Response.ErrorListener() {

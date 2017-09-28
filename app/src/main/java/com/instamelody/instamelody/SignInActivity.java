@@ -60,6 +60,7 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.instamelody.instamelody.Models.HandelLogin;
+import com.instamelody.instamelody.utils.AppHelper;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -110,7 +111,7 @@ public class SignInActivity extends AppCompatActivity {
     String KEY_DEVICE_TYPE = "device_type";
     String KEY_PROFILE_PIC = "profile_pic_url";
 
-    String DeviceToken;
+    String DeviceToken="";
     String f_name;
     String l_name;
     String userId;
@@ -604,6 +605,7 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY_DEVICE_TOKEN, DeviceToken);
                 params.put(KEY_DEVICE_TYPE, "Android");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("param==="+params+"\nURL=="+LOGIN);
                 return params;
             }
         };

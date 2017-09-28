@@ -1,7 +1,9 @@
 package com.instamelody.instamelody.Fragments;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -28,12 +30,14 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.utils.AppHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -90,6 +94,8 @@ public class RecordingsFragment extends Fragment {
     ProgressDialog progressDialog;
     String strName, strSearch, strArtist, strInstruments, strBPM;
     TabHost host = null;
+    private Activity mActivity;
+    RecyclerView rv;
 
     public RecordingsFragment() {
 
@@ -130,6 +136,17 @@ public class RecordingsFragment extends Fragment {
             userId = userIdTwitter;
         }
 
+        callApi();
+
+        new DownloadFileFromURL();
+        adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
+    }
+
+    private void callApi(){
+        if(rv!=null){
+            rv.setAdapter(adapter);
+        }
+
         if (strName == null && strSearch == null) {
             fetchRecordings();
         } else if (strSearch != null) {
@@ -143,10 +160,6 @@ public class RecordingsFragment extends Fragment {
         } else {
             fetchRecordingsFilter();
         }
-
-
-        new DownloadFileFromURL();
-        adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
     }
 
     @Nullable
@@ -154,9 +167,7 @@ public class RecordingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_recordings, container, false);
-
-
-
+        mActivity=getActivity();
         return view;
     }
 
@@ -688,7 +699,7 @@ public class RecordingsFragment extends Fragment {
         return new TabHost.TabContentFactory() {
             @Override
             public View createTabContent(String tag) {
-                RecyclerView rv = new RecyclerView(getActivity());
+                rv = new RecyclerView(getActivity());
                 rv.setHasFixedSize(true);
                 RecyclerView.LayoutManager lm = new LinearLayoutManager(getActivity());
                 rv.setLayoutManager(lm);
@@ -728,5 +739,18 @@ public class RecordingsFragment extends Fragment {
 
     public void SharedPrefClear() {
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        AppHelper.sop("onActivityResult==called="+"requestCode=="+requestCode+"=resultCode="+resultCode+"=data="+data);
+        if(RecordingsCardAdapter.REQUEST_RECORDING_COMMENT==requestCode){
+            if (resultCode==mActivity.RESULT_OK){
+                callApi();
+                AppHelper.sop("onActivityResult==called="+"resultCode=="+resultCode);
+            }
+
+        }
     }
 }

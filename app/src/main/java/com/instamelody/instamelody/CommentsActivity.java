@@ -592,11 +592,18 @@ public class CommentsActivity extends AppCompatActivity {
 
     public void sendComment(final String cmnt, final String userId) {
 
+        AppHelper.hideSoftKeyboard(mActivity);
+
         final StringRequest stringRequest = new StringRequest(Request.Method.POST, COMMENTS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         AppHelper.sop("params=="+response);
+
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("PARAMETER", "Like");
+                        setResult(Activity.RESULT_OK, resultIntent);
+
                         adapter.notifyDataSetChanged();
                         getComments();
                         recyclerView.smoothScrollToPosition(adapter.getItemCount());
@@ -651,6 +658,10 @@ public class CommentsActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(String response) {
 //                            Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
+                            AppHelper.sop("response===="+response);
+                            Intent resultIntent = new Intent();
+                            resultIntent.putExtra("PARAMETER", "Like");
+                            setResult(Activity.RESULT_OK, resultIntent);
                         }
                     },
                     new Response.ErrorListener() {
@@ -670,6 +681,7 @@ public class CommentsActivity extends AppCompatActivity {
                     params.put(TYPE, fileType);
                     params.put(LIKES, likeState);
                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                    AppHelper.sop("params=="+params+"\nURL="+LIKESAPI);
                     return params;
                 }
             };

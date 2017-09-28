@@ -2,6 +2,7 @@ package com.instamelody.instamelody;
 
 
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
@@ -30,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
 import com.instamelody.instamelody.Fragments.MelodyPacksFragment;
 import com.instamelody.instamelody.Fragments.RecordingsFragment;
 import com.instamelody.instamelody.Fragments.SubscriptionsFragment;
@@ -68,6 +70,8 @@ public class MelodyActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private static RecyclerView recyclerView;
     //  LinearLayout tab1,llFragSubs;
+    MelodyPacksFragment mpf;
+    RecordingsFragment rf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +119,7 @@ public class MelodyActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        MelodyPacksFragment mpf = new MelodyPacksFragment();
+        mpf = new MelodyPacksFragment();
         getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
 
         btnMelodyPacks.setOnClickListener(new View.OnClickListener() {
@@ -140,7 +144,7 @@ public class MelodyActivity extends AppCompatActivity {
                 btnSubscriptions.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 clicked_button = 1;
                 clearSharePrefMelody();
-                RecordingsFragment rf = new RecordingsFragment();
+                rf = new RecordingsFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_melody, rf).commit();
             }
         });
@@ -644,5 +648,16 @@ public class MelodyActivity extends AppCompatActivity {
         }*/
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        AppHelper.sop("onActivityResult=of=Activity");
+        if (mpf!=null){
+            mpf.onActivityResult(requestCode, resultCode, data);
+        }
+        if (rf!=null){
+            rf.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 
 }

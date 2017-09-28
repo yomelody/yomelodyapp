@@ -1,5 +1,6 @@
 package com.instamelody.instamelody.Fragments;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
@@ -43,6 +44,7 @@ import com.instamelody.instamelody.Models.UserMelodyPlay;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.StudioActivity;
+import com.instamelody.instamelody.utils.AppHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -64,6 +66,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
  */
 
 public class MelodyPacksFragment extends Fragment {
+
 
     RecyclerView.Adapter adapter, adapter1;
     ArrayList<MelodyCard> melodyList = new ArrayList<>();
@@ -107,6 +110,9 @@ public class MelodyPacksFragment extends Fragment {
     ProgressDialog progressDialog;
     LinearLayoutManager linearLayoutManager;
     int post = 0;
+    Activity mActivity;
+    RecyclerView rv;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -137,7 +143,7 @@ public class MelodyPacksFragment extends Fragment {
         }
         new LongOperation().execute();
 
-        adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
+//        adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
 
 
 //        SharedPreferences fromHome = getApplicationContext().getSharedPreferences("FromHomeToMelody", MODE_PRIVATE);
@@ -181,6 +187,7 @@ public class MelodyPacksFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         final View view = inflater.inflate(R.layout.fragment_melody_packs, container, false);
+        mActivity=getActivity();
         return view;
     }
 
@@ -297,6 +304,7 @@ public class MelodyPacksFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        AppHelper.sop("response==="+response);
                         melodyList.clear();
                         instrumentList.clear();
                         JSONObject jsonObject;
@@ -372,6 +380,7 @@ public class MelodyPacksFragment extends Fragment {
 //                if (userId != null) {
 ////                    params.put(USER_ID, userId);
 //                }
+                AppHelper.sop("params==="+params+"\nURL=="+MELODY);
                 return params;
             }
 
@@ -685,7 +694,7 @@ public class MelodyPacksFragment extends Fragment {
         return new TabHost.TabContentFactory() {
             @Override
             public View createTabContent(String tag) {
-                RecyclerView rv = new RecyclerView(getActivity());
+                rv = new RecyclerView(getActivity());
                 rv.setHasFixedSize(true);
                 linearLayoutManager = new LinearLayoutManager(getActivity());
 //                RecyclerView.LayoutManager lm = new LinearLayoutManager(getActivity());
@@ -892,6 +901,13 @@ public class MelodyPacksFragment extends Fragment {
     private class LongOperation extends AsyncTask<String, Void, String> {
         protected void onPreExecute() {
             try {
+
+                adapter = new MelodyCardListAdapter(melodyList, getActivity());
+                if (rv!=null){
+                    rv.setAdapter(adapter);
+                }
+
+                AppHelper.sop("LongOperation==onPreExecute");
                 progressDialog = new ProgressDialog(getActivity());
                 progressDialog.setTitle("Processing...");
                 progressDialog.setMessage("Please wait...");
@@ -921,8 +937,9 @@ public class MelodyPacksFragment extends Fragment {
         }
 
         protected void onPostExecute(String result) {
-            adapter = new MelodyCardListAdapter(melodyList, getActivity());
+
             progressDialog.dismiss();
+            AppHelper.sop("onPostExecute=melodyList=="+melodyList);
         }
 
     }
@@ -930,6 +947,13 @@ public class MelodyPacksFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        AppHelper.sop("onActivityResult==called="+"requestCode=="+requestCode+"=resultCode="+resultCode+"=data="+data);
+        if(MelodyCardListAdapter.REQUEST_MELODY_COMMENT==requestCode){
+            if (resultCode==mActivity.RESULT_OK){
+                new LongOperation().execute();
+                AppHelper.sop("onActivityResult==called="+"resultCode=="+resultCode);
+            }
 
+        }
     }
 }

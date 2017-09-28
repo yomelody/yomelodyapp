@@ -1,5 +1,6 @@
 package com.instamelody.instamelody.Adapters;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +27,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.CommentsActivity;
+import com.instamelody.instamelody.Fragments.MelodyPacksFragment;
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.RecordingsPool;
@@ -64,6 +66,8 @@ import static com.instamelody.instamelody.R.id.tab_host;*/
  */
 
 public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAdapter.MyViewHolder> {
+
+    public static final int REQUEST_MELODY_COMMENT=001;
     String profile, cover;
     static ArrayList<MelodyCard> melodyList = new ArrayList<>();
     ArrayList<String> mpids = new ArrayList<>();
@@ -92,6 +96,8 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     String Key_shared_with = "shared_with";
     String Key_file_type = "file_type";
     String userId = "";
+    private Activity mActivity;
+
 
     private RecyclerView.ViewHolder lastModifiedHoled = null;
 
@@ -325,7 +331,8 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         PreviousActivity.putString("PreviousActivityName", "MelodyActivity.class");
                         PreviousActivity.commit();
                         Intent intent = new Intent(context, CommentsActivity.class);
-                        context.startActivity(intent);
+                        mActivity= (Activity) context;
+                        mActivity.startActivityForResult(intent, REQUEST_MELODY_COMMENT);
                     } else {
                         Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(context, SignInActivity.class);

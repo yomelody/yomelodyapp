@@ -37,6 +37,7 @@ import com.instamelody.instamelody.Fragments.ActivityFragment;
 import com.instamelody.instamelody.Fragments.AudioFragment;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
+import com.instamelody.instamelody.utils.AppHelper;
 
 import java.util.ArrayList;
 
@@ -90,6 +91,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     private boolean isLoading;
     private int visibleThreshold = 5;
     private int lastVisibleItem, totalItemCount;
+    AudioFragment af;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,18 +137,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
             userId = userIdTwitter;
         }
 
-
-
-
-
-
-        AudioFragment af = new AudioFragment();
+        af = new AudioFragment();
         getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
-
-
-
-
-
 
         btnAudio.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -756,6 +748,13 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     }
 
 
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        AppHelper.sop("onActivityResult=of=Activity");
+        if (af!=null){
+            af.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 
 }

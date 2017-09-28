@@ -172,7 +172,13 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
-        <activity android:name=".StationCommentActivity"></activity>
+        <activity
+            android:name=".StationCommentActivity"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_melody"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+
     </application>
 
 </manifest>

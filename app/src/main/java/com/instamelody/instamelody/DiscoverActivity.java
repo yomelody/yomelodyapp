@@ -1,5 +1,6 @@
 package com.instamelody.instamelody;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -50,6 +51,7 @@ import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
+import com.instamelody.instamelody.utils.AppHelper;
 import com.instamelody.instamelody.utils.PagerIndicator;
 import com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager;
 
@@ -125,12 +127,15 @@ public class DiscoverActivity extends AppCompatActivity {
     RecyclerViewPager.Adapter adapterAdvertiseMent;
     CircleIndicator recyclerViewPagerIndicator;
     DotsPageIndicator page_indicator;
+    Activity mActivity;
+    RecyclerView rv;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discover);
-
+        mActivity=DiscoverActivity.this;
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
         discover = (ImageView) findViewById(R.id.discover);
         message = (ImageView) findViewById(R.id.message);
@@ -140,7 +145,7 @@ public class DiscoverActivity extends AppCompatActivity {
         recyclerViewPager = (RecyclerViewPager) findViewById(R.id.recyclerViewPager);
         recyclerViewPagerIndicator = (CircleIndicator) findViewById(R.id.recyclerViewPagerIndicator);
         recyclerViewPager.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        adapterAdvertiseMent = new DiscoverAdapter(pagingDataArrayList, getApplicationContext());
+        adapterAdvertiseMent = new DiscoverAdapter(pagingDataArrayList, mActivity);
         recyclerViewPager.setAdapter(adapterAdvertiseMent);
         PagerSnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(recyclerViewPager);
@@ -192,7 +197,7 @@ public class DiscoverActivity extends AppCompatActivity {
 
         advertisePaging();
         if (userId != null && userId != "") {
-            adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList, recordingsPools);
+            adapter = new RecordingsCardAdapter(mActivity, recordingList, recordingsPools);
             fetchGenreNames();
             fetchRecordings();
         } else {
@@ -202,15 +207,15 @@ public class DiscoverActivity extends AppCompatActivity {
             getApplicationContext().startActivity(intent);
         }
 
-        adapter = new RecordingsCardAdapter(getApplicationContext(), recordingList, recordingsPools);
+        adapter = new RecordingsCardAdapter(mActivity, recordingList, recordingsPools);
 
-        discover.setOnClickListener(new View.OnClickListener() {
+        /*discover.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), DiscoverActivity.class);
+                Intent intent = new Intent(mActivity, DiscoverActivity.class);
                 startActivity(intent);
             }
-        });
+        });*/
 
         message.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -463,6 +468,10 @@ public class DiscoverActivity extends AppCompatActivity {
 
 
     public void fetchRecordings() {
+
+        if (rv!=null){
+            rv.setAdapter(adapter);
+        }
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {
@@ -967,7 +976,7 @@ public class DiscoverActivity extends AppCompatActivity {
         return new TabHost.TabContentFactory() {
             @Override
             public View createTabContent(String tag) {
-                RecyclerView rv = new RecyclerView(DiscoverActivity.this);
+                rv = new RecyclerView(DiscoverActivity.this);
                 rv.setHasFixedSize(true);
                 RecyclerView.LayoutManager lm = new LinearLayoutManager(DiscoverActivity.this);
                 rv.setLayoutManager(lm);
@@ -1038,5 +1047,16 @@ public class DiscoverActivity extends AppCompatActivity {
             progressDialog.dismiss();
         }
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        AppHelper.sop("onActivityResult=requestCode="+requestCode+"=resultCode="+resultCode);
+        if (requestCode==RecordingsCardAdapter.REQUEST_RECORDING_COMMENT){
+            if (resultCode==RESULT_OK){
+                fetchRecordings();
+            }
+        }
     }
 }

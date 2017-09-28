@@ -129,6 +129,7 @@ public class ProfileActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView recyclerView;
     UserDetails userDetails;
+    RecyclerView rv;
 
 
     @Override
@@ -741,6 +742,10 @@ public class ProfileActivity extends AppCompatActivity {
 
     public void fetchRecordings() {
 
+        if (rv!=null){
+            rv.setAdapter(adapter);
+        }
+
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
@@ -843,7 +848,7 @@ public class ProfileActivity extends AppCompatActivity {
         return new TabHost.TabContentFactory() {
             @Override
             public View createTabContent(String tag) {
-                RecyclerView rv = new RecyclerView(ProfileActivity.this);
+                rv = new RecyclerView(ProfileActivity.this);
                 rv.setHasFixedSize(true);
                 RecyclerView.LayoutManager lm = new LinearLayoutManager(ProfileActivity.this);
                 rv.setLayoutManager(lm);
@@ -1401,4 +1406,16 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        AppHelper.sop("onActivityResult=requestCode="+requestCode+"=resultCode="+resultCode);
+        if (requestCode==RecordingsCardAdapter.REQUEST_RECORDING_COMMENT){
+            if (resultCode==RESULT_OK){
+                fetchRecordings();
+            }
+        }
+    }
+
 }

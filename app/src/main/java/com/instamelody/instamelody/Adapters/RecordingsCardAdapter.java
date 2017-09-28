@@ -1,5 +1,6 @@
 package com.instamelody.instamelody.Adapters;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -68,6 +69,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
 
 public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAdapter.MyViewHolder> {
 
+    public static final int REQUEST_RECORDING_COMMENT=711;
     String genreName, mpid, MelodyName, profile;
     static String instrumentFile;
     public static MediaPlayer mp;
@@ -108,6 +110,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     String totaljoincount = "";
     int MinJoinCount = 0;
     int MaxJoinCount = 0;
+    private Activity mActivity;
 
     public RecordingsCardAdapter(Context context, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools) {
         this.recordingList = recordingList;
@@ -381,7 +384,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         intent.putExtra("LikeStatus", LikeStatus);
                         intent.putExtra("recording_modle",recording);
                         intent.putExtra("recording_pool",recordingsPools.get(getAdapterPosition()));
-                        context.startActivity(intent);
+//                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mActivity= (Activity) context;
+                        mActivity.startActivityForResult(intent, REQUEST_RECORDING_COMMENT);
 
                         /*if(context instanceof StationActivity){
 
@@ -906,6 +911,8 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         @Override
                         public void onResponse(String response) {
                             //Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
+
+
                         }
                     },
                     new Response.ErrorListener() {
