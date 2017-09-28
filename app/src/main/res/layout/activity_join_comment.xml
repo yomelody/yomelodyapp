@@ -94,10 +94,12 @@
 
     <include layout="@layout/content_join_comment" />
     <RelativeLayout
+        android:id="@+id/commentTextAria"
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:layout_gravity="bottom"
-        android:background="#fbf7f7">
+        android:background="#fbf7f7"
+        >
 
         <RelativeLayout
             android:id="@+id/rlComment"

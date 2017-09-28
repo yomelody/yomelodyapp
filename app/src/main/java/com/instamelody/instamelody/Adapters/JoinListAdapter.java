@@ -1,5 +1,6 @@
 package com.instamelody.instamelody.Adapters;
 
+import android.app.FragmentTransaction;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -43,6 +44,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.common.references.SharedReference;
 import com.instamelody.instamelody.CommentsActivity;
+import com.instamelody.instamelody.Fragments.CommentJoinFragment;
 import com.instamelody.instamelody.JoinActivity;
 import com.instamelody.instamelody.JoinCommentActivity;
 import com.instamelody.instamelody.MessengerActivity;
@@ -104,7 +106,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     private RecyclerView.ViewHolder lastModifiedHoled;
     int counter = 0;
     String tempUserID;
-    private ArrayList<JoinedArtists> Joined_artist = new ArrayList<>();
+    public static ArrayList<JoinedArtists> Joined_artist = new ArrayList<>();
     final int SAMPLING_RATE = 44100;
     private int mBufferSize;
     private short[] mAudioBuffer;
@@ -119,6 +121,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     boolean checkSt = true;
     int count = 0;
     boolean playSt = false;
+    public static int click = 0;
+
 
     public JoinListAdapter(ArrayList<JoinedArtists> Joined_artist, Context context) {
         this.Joined_artist = Joined_artist;
@@ -146,7 +150,6 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
             JoinActivity.tvIncluded.setText("Included : " + getItemCount());
             mBufferSize = AudioRecord.getMinBufferSize(SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO,
                     AudioFormat.ENCODING_PCM_16BIT);
-
             mAudioBuffer = new short[mBufferSize / 2];
             if (loginSharedPref.getString("userId", null) != null) {
                 userId = loginSharedPref.getString("userId", null);
@@ -201,6 +204,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         final JoinedArtists joinArt = Joined_artist.get(position);
+        Log.d("Position", "" + position);
+        click=getItemCount()-1;
         viewHolder = new ViewHolder();
         viewHolder.redCross = (ImageView) holder.redCross.findViewById(R.id.redCross);
         viewHolder.join_image = (ImageView) holder.join_image.findViewById(R.id.ivImageName);
@@ -208,14 +213,15 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
         if (lstViewHolder.size() < getItemCount()) {
             lstViewHolder.add(viewHolder);
         }
-
+        JoinedArtists join = Joined_artist.get(0);
         holder.Join_usr_name.setText(joinArt.getJoined_usr_name());
         Picasso.with(holder.join_image.getContext()).load(joinArt.getJoined_image()).into(holder.join_image);
         try {
-            JoinActivity.play_count.setText(joinArt.getPlay_counts());
-            JoinActivity.tvLikeCount.setText(joinArt.getLike_counts());
-            JoinActivity.tvCommentCount.setText(joinArt.getComment_counts());
-            JoinActivity.tvShareCount.setText(joinArt.getShare_counts());
+
+            JoinActivity.play_count.setText(join.getPlay_counts());
+            JoinActivity.tvLikeCount.setText(join.getLike_counts());
+            JoinActivity.tvCommentCount.setText(join.getComment_counts());
+            JoinActivity.tvShareCount.setText(join.getShare_counts());
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
@@ -343,6 +349,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
 
         });
+
+
         holder.redCross.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -843,23 +851,6 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     Toast.makeText(context, "Log in to like this Recording", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(context, SignInActivity.class);
                     context.startActivity(intent);
-                }
-
-            }
-        });
-
-        JoinActivity.rlComment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                try {
-
-                    Intent intent = new Intent(context, JoinCommentActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra("Position", String.valueOf(position));
-                    context.startActivity(intent);
-                } catch (Throwable e) {
-                    e.printStackTrace();
                 }
 
             }

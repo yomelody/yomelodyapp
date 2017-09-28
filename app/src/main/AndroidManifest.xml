@@ -144,12 +144,15 @@
         <activity
             android:name=".JoinActivity"
             android:label="@string/title_activity_join"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize|stateHidden"
+            />
         <activity android:name=".Update" />
         <activity android:name=".PrivacyPolicy" />
         <activity
             android:name=".JoinCommentActivity"
             android:label="@string/title_activity_join_comment"
+            android:windowSoftInputMode="stateHidden|adjustPan"
             android:theme="@style/AppTheme"></activity>
 
         <activity
