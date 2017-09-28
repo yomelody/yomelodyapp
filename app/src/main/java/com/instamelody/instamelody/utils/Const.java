@@ -49,6 +49,7 @@ public class Const {
         public static final String SUBSCRIPTION = BASE_URL + "subscription.php";
         public static final String SUBSCRIPTION_DETAIL = BASE_URL + "subscription_detail.php";
         public static final String SUB_DETAIL = BASE_URL + "sub_detail.php";
+        public static final String JOIN_DELETE = BASE_URL + "join_hide_recordings.php";
 
 //        public static final String USERS_BIO = BASE_URL + "uploads/melody/instruments/";
     }

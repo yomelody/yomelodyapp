@@ -13,11 +13,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:orientation="vertical"
         tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
+        tools:layout_editor_absoluteY="8dp">
 
         <android.support.v7.widget.CardView
             android:id="@+id/card_recording"
@@ -141,7 +141,7 @@
                                 android:layout_toLeftOf="@+id/rlInviteButton">
 
                                 <TextView
-                                    android:id="@+id/tvPublic"
+                                    android:id="@+id/tvIncluded"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_centerVertical="true"
@@ -173,7 +173,7 @@
                             <ImageView
                                 android:id="@+id/ivNewRecordCover"
                                 android:layout_width="match_parent"
-                                android:layout_height="175dp"
+                                android:layout_height="wrap_content"
                                 android:background="@drawable/background_home3"
                                 android:scaleType="fitXY" />
 
@@ -197,7 +197,7 @@
                         <FrameLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="bottom">
+                            >
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
@@ -209,13 +209,12 @@
                             </RelativeLayout>
 
                             <ImageView
-                                android:id="@+id/ivRecord"
+                                android:id="@+id/ivRecord1"
                                 android:layout_width="110dp"
                                 android:layout_height="110dp"
                                 android:layout_gravity="end|bottom"
-                                android:layout_marginBottom="4dp"
+
                                 android:layout_marginRight="80dp"
-                                android:visibility="visible"
                                 app:srcCompat="@drawable/dark_mike" />
 
                             <LinearLayout
@@ -335,200 +334,207 @@
                                     </RelativeLayout>
                                 </FrameLayout>
 
-                                <RelativeLayout
-                                    android:id="@+id/joincenter"
+                                <FrameLayout
                                     android:layout_width="match_parent"
-                                    android:layout_height="40dp"
-                                    android:layout_alignParentBottom="true"
-                                    android:background="#EDEDED">
+                                    android:layout_height="wrap_content"
+                                    android:id="@+id/commentContainer">
 
                                     <RelativeLayout
-                                        android:id="@+id/relativeLayout"
-                                        android:layout_width="50dp"
-                                        android:layout_height="match_parent">
+                                        android:id="@+id/joincenter"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="40dp"
+                                        android:background="#EDEDED"
+                                       >
 
-                                        <ImageView
-                                            android:id="@+id/playBlack"
-                                            android:layout_width="20dp"
-                                            android:layout_height="20dp"
-                                            android:layout_centerHorizontal="true"
-                                            android:layout_centerVertical="true"
-                                            android:src="@drawable/play_fill" />
+                                        <RelativeLayout
+                                            android:id="@+id/relativeLayout"
+                                            android:layout_width="50dp"
+                                            android:layout_height="match_parent">
 
-                                    </RelativeLayout>
+                                            <ImageView
+                                                android:id="@+id/playBlack"
+                                                android:layout_width="20dp"
+                                                android:layout_height="20dp"
+                                                android:layout_centerHorizontal="true"
+                                                android:layout_centerVertical="true"
+                                                android:src="@drawable/play_fill" />
 
-                                    <RelativeLayout
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_centerVertical="true"
-                                        android:layout_toEndOf="@+id/relativeLayout"
-                                        android:layout_toRightOf="@+id/relativeLayout">
-
-                                        <TextView
-                                            android:id="@+id/melody_name"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_alignParentLeft="true"
-                                            android:layout_alignParentStart="true"
-                                            android:text="New Melody"
-                                            android:textColor="@color/cardview_dark_background"
-                                            android:textSize="14sp"
-                                            android:textStyle="normal|bold" />
-
-                                        <LinearLayout
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_alignParentLeft="true"
-                                            android:layout_alignParentStart="true"
-                                            android:layout_below="@+id/melody_name">
-
-                                            <TextView
-                                                android:id="@+id/melody_date"
-                                                android:layout_width="wrap_content"
-                                                android:layout_height="wrap_content"
-                                                android:text="6/16/16"
-                                                android:textColor="@color/cardview_dark_background"
-                                                android:textSize="10sp" />
-
-                                            <TextView
-                                                android:layout_width="wrap_content"
-                                                android:layout_height="wrap_content"
-                                                android:text="    |    "
-                                                android:textColor="@color/cardview_dark_background"
-                                                android:textSize="12sp" />
-
-                                            <TextView
-                                                android:id="@+id/melody_detail"
-                                                android:layout_width="wrap_content"
-                                                android:layout_height="wrap_content"
-                                                android:layout_below="@+id/textVi"
-                                                android:text="No Instrumental"
-                                                android:textColor="@color/cardview_dark_background"
-                                                android:textSize="10sp"
-                                                android:textStyle="normal|italic" />
-
-                                        </LinearLayout>
-                                    </RelativeLayout>
-
-                                    <RelativeLayout
-                                        android:id="@+id/rlJoinButton"
-                                        android:layout_width="100dp"
-                                        android:layout_height="match_parent"
-                                        android:layout_alignParentEnd="true"
-                                        android:layout_alignParentRight="true"
-                                        android:layout_alignParentTop="true"
-                                        android:background="#FFFFFF"
-                                        android:visibility="visible">
-
-                                        <ImageView
-                                            android:id="@+id/ivMelodyAdd"
-                                            android:layout_width="18dp"
-                                            android:layout_height="18dp"
-                                            android:layout_alignParentEnd="true"
-                                            android:layout_alignParentRight="true"
-                                            android:layout_centerVertical="true"
-                                            android:layout_gravity="start|bottom"
-                                            android:layout_marginEnd="20dp"
-                                            android:layout_marginRight="20dp"
-                                            app:srcCompat="@drawable/red_plus" />
-
-                                        <TextView
-                                            android:id="@+id/tvMelodyAdd"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_centerVertical="true"
-                                            android:layout_marginLeft="20dp"
-
-                                            android:text="Join"
-                                            android:textColor="@color/cardview_dark_background"
-                                            android:textSize="15sp"
-                                            android:textStyle="normal|bold" />
-
-                                    </RelativeLayout>
-
-                                    <RelativeLayout
-                                        android:id="@+id/rlRecordingButton"
-                                        android:layout_width="100dp"
-                                        android:layout_height="match_parent"
-                                        android:layout_alignParentEnd="true"
-                                        android:layout_alignParentRight="true"
-                                        android:layout_alignParentTop="true"
-                                        android:background="#D31616"
-                                        android:visibility="gone">
-
-                                        <TextView
-                                            android:id="@+id/tvRecording"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_centerHorizontal="true"
-                                            android:layout_centerVertical="true"
-                                            android:text="Recording"
-                                            android:textColor="#FFFFFF"
-                                            android:textSize="15sp"
-                                            android:textStyle="normal|italic|bold" />
-
-                                    </RelativeLayout>
-
-                                    <RelativeLayout
-                                        android:id="@+id/rlRedoButton"
-                                        android:layout_width="100dp"
-                                        android:layout_height="match_parent"
-                                        android:layout_alignParentEnd="true"
-                                        android:layout_alignParentRight="true"
-                                        android:layout_alignParentTop="true"
-                                        android:background="#FFFFFF"
-                                        android:visibility="gone">
+                                        </RelativeLayout>
 
                                         <RelativeLayout
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:layout_centerHorizontal="true"
-                                            android:layout_centerVertical="true">
-
-                                            <ImageView
-                                                android:id="@+id/ivReload"
-                                                android:layout_width="22dp"
-                                                android:layout_height="22dp"
-                                                app:srcCompat="@drawable/reload" />
+                                            android:layout_centerVertical="true"
+                                            android:layout_toEndOf="@+id/relativeLayout"
+                                            android:layout_toRightOf="@+id/relativeLayout">
 
                                             <TextView
-                                                android:id="@+id/tvRedo"
+                                                android:id="@+id/melody_name"
                                                 android:layout_width="wrap_content"
                                                 android:layout_height="wrap_content"
-                                                android:layout_centerVertical="true"
-                                                android:layout_marginLeft="8dp"
-                                                android:layout_toEndOf="@+id/ivReload"
-                                                android:layout_toRightOf="@+id/ivReload"
-                                                android:text="Redo"
+                                                android:layout_alignParentLeft="true"
+                                                android:layout_alignParentStart="true"
+                                                android:text="New Melody"
                                                 android:textColor="@color/cardview_dark_background"
                                                 android:textSize="14sp"
                                                 android:textStyle="normal|bold" />
 
+                                            <LinearLayout
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_alignParentLeft="true"
+                                                android:layout_alignParentStart="true"
+                                                android:layout_below="@+id/melody_name">
+
+                                                <TextView
+                                                    android:id="@+id/melody_date"
+                                                    android:layout_width="wrap_content"
+                                                    android:layout_height="wrap_content"
+                                                    android:text="6/16/16"
+                                                    android:textColor="@color/cardview_dark_background"
+                                                    android:textSize="10sp" />
+
+                                                <TextView
+                                                    android:layout_width="wrap_content"
+                                                    android:layout_height="wrap_content"
+                                                    android:text="    |    "
+                                                    android:textColor="@color/cardview_dark_background"
+                                                    android:textSize="12sp" />
+
+                                                <TextView
+                                                    android:id="@+id/melody_detail"
+                                                    android:layout_width="wrap_content"
+                                                    android:layout_height="wrap_content"
+                                                    android:layout_below="@+id/textVi"
+                                                    android:text="No Instrumental"
+                                                    android:textColor="@color/cardview_dark_background"
+                                                    android:textSize="10sp"
+                                                    android:textStyle="normal|italic" />
+
+                                            </LinearLayout>
+                                        </RelativeLayout>
+
+                                        <RelativeLayout
+                                            android:id="@+id/rlJoinButton"
+                                            android:layout_width="100dp"
+                                            android:layout_height="match_parent"
+                                            android:layout_alignParentEnd="true"
+                                            android:layout_alignParentRight="true"
+                                            android:layout_alignParentTop="true"
+                                            android:background="#FFFFFF"
+                                            android:visibility="visible">
+
+                                            <ImageView
+                                                android:id="@+id/ivMelodyAdd"
+                                                android:layout_width="18dp"
+                                                android:layout_height="18dp"
+                                                android:layout_alignParentEnd="true"
+                                                android:layout_alignParentRight="true"
+                                                android:layout_centerVertical="true"
+                                                android:layout_gravity="start|bottom"
+                                                android:layout_marginEnd="20dp"
+                                                android:layout_marginRight="20dp"
+                                                app:srcCompat="@drawable/red_plus" />
+
+                                            <TextView
+                                                android:id="@+id/tvMelodyAdd"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_centerVertical="true"
+                                                android:layout_marginLeft="20dp"
+
+                                                android:text="Join"
+                                                android:textColor="@color/cardview_dark_background"
+                                                android:textSize="15sp"
+                                                android:textStyle="normal|bold" />
+
+                                        </RelativeLayout>
+
+                                        <RelativeLayout
+                                            android:id="@+id/rlRecordingButton"
+                                            android:layout_width="100dp"
+                                            android:layout_height="match_parent"
+                                            android:layout_alignParentEnd="true"
+                                            android:layout_alignParentRight="true"
+                                            android:layout_alignParentTop="true"
+                                            android:background="#D31616"
+                                            android:visibility="gone">
+
+                                            <TextView
+                                                android:id="@+id/tvRecording"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_centerHorizontal="true"
+                                                android:layout_centerVertical="true"
+                                                android:text="Recording"
+                                                android:textColor="#FFFFFF"
+                                                android:textSize="15sp"
+                                                android:textStyle="normal|italic|bold" />
+
+                                        </RelativeLayout>
+
+                                        <RelativeLayout
+                                            android:id="@+id/rlRedoButton"
+                                            android:layout_width="100dp"
+                                            android:layout_height="match_parent"
+                                            android:layout_alignParentEnd="true"
+                                            android:layout_alignParentRight="true"
+                                            android:layout_alignParentTop="true"
+                                            android:background="#FFFFFF"
+                                            android:visibility="gone">
+
+                                            <RelativeLayout
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_centerHorizontal="true"
+                                                android:layout_centerVertical="true">
+
+                                                <ImageView
+                                                    android:id="@+id/ivReload"
+                                                    android:layout_width="22dp"
+                                                    android:layout_height="22dp"
+                                                    app:srcCompat="@drawable/reload" />
+
+                                                <TextView
+                                                    android:id="@+id/tvRedo"
+                                                    android:layout_width="wrap_content"
+                                                    android:layout_height="wrap_content"
+                                                    android:layout_centerVertical="true"
+                                                    android:layout_marginLeft="8dp"
+                                                    android:layout_toEndOf="@+id/ivReload"
+                                                    android:layout_toRightOf="@+id/ivReload"
+                                                    android:text="Redo"
+                                                    android:textColor="@color/cardview_dark_background"
+                                                    android:textSize="14sp"
+                                                    android:textStyle="normal|bold" />
+
+                                            </RelativeLayout>
+                                        </RelativeLayout>
+
+                                        <RelativeLayout
+                                            android:id="@+id/rlListeningButton"
+                                            android:layout_width="100dp"
+                                            android:layout_height="match_parent"
+                                            android:layout_alignParentEnd="true"
+                                            android:layout_alignParentRight="true"
+                                            android:layout_alignParentTop="true"
+                                            android:background="#FFFFFF"
+                                            android:visibility="gone">
+
+                                            <TextView
+                                                android:id="@+id/tvListening"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_centerHorizontal="true"
+                                                android:layout_centerVertical="true"
+                                                android:text="Listening"
+                                                android:textColor="@color/cardview_dark_background"
+                                                android:textSize="15sp"
+                                                android:textStyle="normal|italic|bold" />
                                         </RelativeLayout>
                                     </RelativeLayout>
 
-                                    <RelativeLayout
-                                        android:id="@+id/rlListeningButton"
-                                        android:layout_width="100dp"
-                                        android:layout_height="match_parent"
-                                        android:layout_alignParentEnd="true"
-                                        android:layout_alignParentRight="true"
-                                        android:layout_alignParentTop="true"
-                                        android:background="#FFFFFF"
-                                        android:visibility="gone">
-
-                                        <TextView
-                                            android:id="@+id/tvListening"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_centerHorizontal="true"
-                                            android:layout_centerVertical="true"
-                                            android:text="Listening"
-                                            android:textColor="@color/cardview_dark_background"
-                                            android:textSize="15sp"
-                                            android:textStyle="normal|italic|bold" />
-                                    </RelativeLayout>
-                                </RelativeLayout>
+                                </FrameLayout>
                             </LinearLayout>
                         </FrameLayout>
                     </RelativeLayout>
@@ -536,14 +542,14 @@
             </RelativeLayout>
         </android.support.v7.widget.CardView>
 
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerViewInstruments"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="41dp"
-            android:layout_marginTop="1dp"
             android:scrollbars="vertical"
             android:visibility="visible" />
+
 
     </LinearLayout>
 </RelativeLayout>

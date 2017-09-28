@@ -892,8 +892,8 @@ public class StudioActivity extends AppCompatActivity {
         tvDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    if (userId != null && melodyPackId != null || userId != null && joinRecordingId != null) {
+                if (joinRecordingId == null) {
+                    if (userId != null && melodyPackId != null) {
                         openDialog();
                         ivRecord.setVisibility(View.VISIBLE);
                         ivRecord.setEnabled(true);
@@ -902,6 +902,10 @@ public class StudioActivity extends AppCompatActivity {
                         startActivity(i);
                         Toast.makeText(StudioActivity.this, "SignIn to Save Recording", Toast.LENGTH_SHORT).show();
                     }
+                } else {
+                    uploadRecordingsMixing("5");
+                }
+
 //                else if (melodyPackId == null) {
 //                    Toast.makeText(StudioActivity.this, "Add Melody Packs to save recording", Toast.LENGTH_SHORT).show();
 //                }
@@ -1752,6 +1756,7 @@ public class StudioActivity extends AppCompatActivity {
                             ivRecord_play.setVisibility(View.INVISIBLE);
                             rlRedoButton.setVisibility(View.INVISIBLE);
                             rlMelodyButton.setVisibility(View.VISIBLE);
+                            ivRecord.setVisibility(View.VISIBLE);
                             switchPublic.setChecked(false);
                             switchFlag = "0";
 //                            SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
@@ -1777,12 +1782,23 @@ public class StudioActivity extends AppCompatActivity {
                             ivRecord_play.setVisibility(View.INVISIBLE);
                             rlRedoButton.setVisibility(View.INVISIBLE);
                             rlMelodyButton.setVisibility(View.VISIBLE);
+                            ivRecord.setVisibility(View.VISIBLE);
                             switchPublic.setChecked(false);
                             switchFlag = "0";
 //                            SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
 //                            FilterPref.remove("instrumentsPos");
 //                            FilterPref.apply();
 //                            Toast.makeText(StudioActivity.this, "Saved as Recording", Toast.LENGTH_SHORT).show();
+                        }
+                        if (joinRecordingId != null) {
+                            Toast.makeText(StudioActivity.this, "Joined Successfully", Toast.LENGTH_SHORT).show();
+                        }
+                        try {
+                            SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
+                            FilterPref.clear();
+                            FilterPref.apply();
+                        } catch (Throwable e) {
+                            e.printStackTrace();
                         }
 
                         if (progressDialog != null) {
@@ -1823,8 +1839,6 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put(MixisMelody, value1);
-                params.put(Mixtopic_name, subEtTopicName.getText().toString().trim());
                 params.put(Mixuser_id, userId);
                 params.put(Mixpublic_flag, switchFlag);
                 params.put(MixrecordWith, "withoutMike");
@@ -1833,8 +1847,12 @@ public class StudioActivity extends AppCompatActivity {
                 params.put(Mixdurations, recordingDuration);
                 params.put(MixCommand, "SaveRecord");
                 if (joinRecordingId != null) {
+                    params.put(MixisMelody, "Recording");
                     params.put(MixparentRecordingID, JoinActivity.RecId);
+                    params.put(Mixtopic_name, "");
                 } else {
+                    params.put(Mixtopic_name, subEtTopicName.getText().toString().trim());
+                    params.put(MixisMelody, value1);
                     params.put(MixparentRecordingID, "");
                 }
                 //params.put(Mixrecording, list.toString());

@@ -10,7 +10,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Chronometer;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -29,6 +31,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.JoinInstrumentListAdp;
 import com.instamelody.instamelody.Adapters.JoinListAdapter;
+import com.instamelody.instamelody.Fragments.CommentJoinFragment;
 import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Models.JoinedUserProfile;
 import com.instamelody.instamelody.Models.MelodyInstruments;
@@ -40,6 +43,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.view.View.GONE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.JOINED_USERS;
@@ -66,7 +70,7 @@ public class JoinActivity extends AppCompatActivity {
     public static String addedBy, RecId, UserName, ProfileImageRec, RecordingName;
     public static TextView play_count, tvLikeCount, tvCommentCount, tvShareCount;
     public static ImageView ivJoinPlay, ivJoinPause, ivLikeButton, ivDislikeButton, ivPlayNext, ivPlayPre;
-    public static RelativeLayout rlLike, rlComment, joinFooter;
+    public static RelativeLayout rlLike, rlComment;
     public static int position;
     ProgressDialog progressDialog;
     public static ArrayList<JoinedUserProfile> listProfile = new ArrayList<JoinedUserProfile>();
@@ -75,7 +79,9 @@ public class JoinActivity extends AppCompatActivity {
     public static TextView mDecibelView, recording_name, artist_name;
     public static ImageView profile_image, ivShareButton;
     public static ImageView ivBackButton, ivHomeButton;
-    public static TextView melody_detail, txtCount;
+    public static TextView melody_detail, txtCount, tvIncluded;
+    public static RelativeLayout joincenter, joinFooter;
+    public static FrameLayout commentContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +97,7 @@ public class JoinActivity extends AppCompatActivity {
         ivShareButton = (ImageView) findViewById(R.id.ivShareButton);
         ivPlayNext = (ImageView) findViewById(R.id.ivPlayNext);
         txtCount = (TextView) findViewById(R.id.txtCount);
+        tvIncluded = (TextView) findViewById(R.id.tvIncluded);
         ivPlayPre = (ImageView) findViewById(R.id.ivPlayPre);
         waveform_view = (com.instamelody.instamelody.utils.WaveformView) findViewById(R.id.waveform_view);
         mDecibelView = (TextView) findViewById(R.id.decibel_view);
@@ -112,6 +119,8 @@ public class JoinActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewArtists);
         joinFooter = (RelativeLayout) findViewById(R.id.joinFooter);
         recyclerViewInstruments = (RecyclerView) findViewById(R.id.recyclerViewInstruments);
+        joincenter = (RelativeLayout) findViewById(R.id.joincenter);
+        commentContainer = (FrameLayout) findViewById(R.id.commentContainer);
         recyclerViewInstruments.setVisibility(View.VISIBLE);
         recyclerViewInstruments.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getApplicationContext());
@@ -140,6 +149,29 @@ public class JoinActivity extends AppCompatActivity {
         rlJoinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+            }
+        });
+
+
+        rlComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                try {
+                    joinFooter.setVisibility(GONE);
+                    //joincenter.setVisibility(GONE);
+                    //  recyclerViewInstruments.setVisibility(GONE);
+                    CommentJoinFragment af = new CommentJoinFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.commentContainer, af).commit();
+
+//                    Intent intent = new Intent(context, JoinCommentActivity.class);
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                    intent.putExtra("Position", String.valueOf(position));
+//                    context.startActivity(intent);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
 
             }
         });
