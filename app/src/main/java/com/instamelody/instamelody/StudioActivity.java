@@ -902,10 +902,6 @@ public class StudioActivity extends AppCompatActivity {
 //                else if (melodyPackId == null) {
 //                    Toast.makeText(StudioActivity.this, "Add Melody Packs to save recording", Toast.LENGTH_SHORT).show();
 //                }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-
 
             }
         });

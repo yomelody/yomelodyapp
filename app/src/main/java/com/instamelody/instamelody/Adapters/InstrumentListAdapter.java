@@ -108,7 +108,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     private boolean mShouldContinue = true;
     int duration;
     short MAX_STRENGTH_FOR_BASS = 1000;
-    // ArrayList<ViewHolder> lstViewHolder = new ArrayList<ViewHolder>();
+   // ArrayList<ViewHolder> lstViewHolder = new ArrayList<ViewHolder>();
     MediaPlayer Mall;
 
     public InstrumentListAdapter(ArrayList<MelodyInstruments> instrumentList, Context context) {
@@ -814,7 +814,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     for(int i=0;i<=StudioActivity.mp_start.size()-1;i++){
                         //Toast.makeText(getApplicationContext(), "SBPAN "+i+" toholder "+String.valueOf(InstrumentListPosition), Toast.LENGTH_SHORT).show();
                         //if(i==InstrumentListPosition){
-                        StudioActivity.mp_start.get(i).setVolume(PanVolLeft,PanVolRight);
+                            StudioActivity.mp_start.get(i).setVolume(PanVolLeft,PanVolRight);
                         //}
                     }
                 } catch (Exception ex) {
@@ -1107,7 +1107,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                                 }
 
                                 bass = new BassBoost(0, mps.getAudioSessionId());
-                                //int bassval = bass.getProperties().strength;
+                                int bassval = bass.getProperties().strength;
 
                                 equalizer = new Equalizer(0, mps.getAudioSessionId());
                                 equalizer.setEnabled(true);
@@ -1783,6 +1783,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                         StudioActivity.mediaPlayersAll.add(StudioActivity.mpall);
                         StudioActivity.PlayAllModel.add(i, new ModelPlayAllMediaPlayer(false, false, false, StudioActivity.mpall));
 
+                       
                     }
                     StudioActivity.mpall.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
@@ -1807,7 +1808,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                                 StudioActivity.pauseAll.setVisibility(View.GONE);
                                 StudioActivity.mediaPlayersAll.get(i).stop();
                                 StudioActivity.ivRecord.setEnabled(true);
-                                InstrumentCountSize = 0;
+
                             }
 
                         }
@@ -1832,7 +1833,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
 
                     StudioActivity.mediaPlayersAll.get(i).start();
-
                     if (IsRepeat == true) {
                         StudioActivity.mediaPlayersAll.get(i).setLooping(true);
                     } else if (IsRepeat == false) {
