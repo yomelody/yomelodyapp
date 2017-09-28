@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import static com.instamelody.instamelody.utils.Const.PUSH_NOTIFICATION;
+import static com.instamelody.instamelody.utils.Const.READ_NOTIFICATION;
 
 /**
  * Created by Shubhansh Jaiswal on 11/29/2016.
@@ -54,7 +55,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private void handleNotification(String message) {
         if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) {// app is in foreground, broadcast the push message
-
             // app is in foreground, broadcast the push message
             Intent pushNotification = new Intent(PUSH_NOTIFICATION);
             pushNotification.putExtra("message", message);
@@ -73,51 +73,64 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         try {
             JSONObject data = new JSONObject(json.toString());
             JSONObject body = data.getJSONObject("body");
-            String message = body.getString("message");
-            String senderId = body.getString("senderid");
-            String senderName = body.getString("sender_name");
-            String chatId = body.getString("chat_id");
-            String fileUrl = "", title = "", fileId = "";
-            if (body.has("file_url")) {
-                fileUrl = body.getString("file_url");
-            }
-            if (body.has("title")) {
-                title = body.getString("title");
-            }
-            if (body.has("file_id")) {
-                fileId = body.getString("file_id");
-            }
-
-            Log.e("fbs", "message: " + message);
-            Log.e("fbs", "file_id: " + fileId);
-            Log.e("fbs", "senderId: " + senderId);
-            Log.e("fbs", "senderName " + senderName);
-            Log.e("fbs", "chatId: " + chatId);
-            Log.e("fbs", "fileUrl: " + fileUrl);
-            Log.e("fbs", "title: " + title);
-
-            if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) { // app is in foreground, broadcast the push message
-                Intent pushNotification = new Intent(PUSH_NOTIFICATION);
-
-                pushNotification.putExtra("chatId", chatId);
-                LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-                // play notification sound
-                if (flagSoundPlayedAlready.equals("false")) {
-                    NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
-                    notificationUtils.playNotificationSound();
+            if (body.has("status")) {
+                String status = body.getString("status");
+                String chatId = body.getString("chatID");
+                Log.e("fbs", "status: " + status);
+                Log.e("fbs", "chatId: " + chatId);
+                if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) { // app is in foreground, broadcast the push message
+                    Intent pushNotification = new Intent(READ_NOTIFICATION);
+                    pushNotification.putExtra("status", status);
+                    pushNotification.putExtra("chatId", chatId);
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
+                } else {
+                    // app is in background, do nothing
                 }
-            } else { // app is in background, show the notification in notification tray
-                Intent resultIntent = new Intent(getApplicationContext(), ChatActivity.class);
-                resultIntent.putExtra("sender_name", senderName);
-                resultIntent.putExtra("message", message);
-                resultIntent.putExtra("chat_id", chatId);
+            } else {
+                String message = body.getString("message");
+                String senderId = body.getString("senderid");
+                String senderName = body.getString("sender_name");
+                String chatId = body.getString("chat_id");
+                String fileUrl = "", title = "", fileId = "";
+                if (body.has("file_url")) {
+                    fileUrl = body.getString("file_url");
+                }
+                if (body.has("title")) {
+                    title = body.getString("title");
+                }
+                if (body.has("file_id")) {
+                    fileId = body.getString("file_id");
+                }
+                Log.e("fbs", "message: " + message);
+                Log.e("fbs", "file_id: " + fileId);
+                Log.e("fbs", "senderId: " + senderId);
+                Log.e("fbs", "senderName " + senderName);
+                Log.e("fbs", "chatId: " + chatId);
+                Log.e("fbs", "fileUrl: " + fileUrl);
+                Log.e("fbs", "title: " + title);
 
-                if (TextUtils.isEmpty(fileUrl)) { // check for image attachment
-                    showNotificationMessage(getApplicationContext(), title, senderId, senderName, message, chatId, /*file_id,*/ resultIntent);
-                } else if (TextUtils.isEmpty(fileId)) {
-                    showNotificationMessageWithBigImage(getApplicationContext(), title, senderId, senderName, message, chatId, /*file_id,*/ resultIntent, fileUrl);
-                } else { // image is present, show notification with image
-                    showNotificationMessageWithBigImage(getApplicationContext(), title, senderId, senderName, message, chatId, /*file_id,*/ resultIntent, fileUrl);
+                if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) { // app is in foreground, broadcast the push message
+                    Intent pushNotification = new Intent(PUSH_NOTIFICATION);
+                    pushNotification.putExtra("chatId", chatId);
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
+                    // play notification sound
+                    if (flagSoundPlayedAlready.equals("false")) {
+                        NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
+                        notificationUtils.playNotificationSound();
+                    }
+                } else { // app is in background, show the notification in notification tray
+                    Intent resultIntent = new Intent(getApplicationContext(), ChatActivity.class);
+                    resultIntent.putExtra("sender_name", senderName);
+                    resultIntent.putExtra("message", message);
+                    resultIntent.putExtra("chat_id", chatId);
+
+                    if (TextUtils.isEmpty(fileUrl)) { // check for image attachment
+                        showNotificationMessage(getApplicationContext(), title, senderId, senderName, message, chatId, /*file_id,*/ resultIntent);
+                    } else if (TextUtils.isEmpty(fileId)) {
+                        showNotificationMessageWithBigImage(getApplicationContext(), title, senderId, senderName, message, chatId, /*file_id,*/ resultIntent, fileUrl);
+                    } else { // image is present, show notification with image
+                        showNotificationMessageWithBigImage(getApplicationContext(), title, senderId, senderName, message, chatId, /*file_id,*/ resultIntent, fileUrl);
+                    }
                 }
             }
         } catch (JSONException e) {

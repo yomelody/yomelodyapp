@@ -51,12 +51,11 @@ public class Const {
         public static final String SUBSCRIPTION = BASE_URL + "subscription.php";
         public static final String SUBSCRIPTION_DETAIL = BASE_URL + "subscription_detail.php";
         public static final String SUB_DETAIL = BASE_URL + "sub_detail.php";
-
+        public static final String TOTAL_COUNT = BASE_URL + "totalnewmessage.php";
         public static final String JOIN_DELETE = BASE_URL + "join_hide_recordings.php";
         public static final String BRAINTREE_FILES_CHECKOUT = BASE_URL + "braintree/files/checkout.php";
         public static final String BRAINTREE_FILES_CLIENT_TOKEN = BASE_URL + "braintree/files/client_token.php";
         public static final String BRAINTREE_FILES_TRANSACTION = BASE_URL + "braintree/files/transaction.php";
-
 
 
 
@@ -69,6 +68,7 @@ public class Const {
     // broadcast receiver intent filters
     public static final String REGISTRATION_COMPLETE = "registrationComplete";
     public static final String PUSH_NOTIFICATION = "pushNotification";
+    public static final String READ_NOTIFICATION = "readNotification";
 
     // id to handle the notification in the notification tray
     public static final int NOTIFICATION_ID = 100;
