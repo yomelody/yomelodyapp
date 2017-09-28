@@ -51,6 +51,7 @@ public class Const {
         public static final String JoinRecording = BASE_URL + "join_recording.php";
         public static final String BRAINTREE_FILES_CHECKOUT = BASE_URL + "braintree/files/checkout.php";
         public static final String BRAINTREE_FILES_CLIENT_TOKEN = BASE_URL + "braintree/files/client_token.php";
+        public static final String BRAINTREE_FILES_TRANSACTION = BASE_URL + "braintree/files/transaction.php";
 
 
 

@@ -68,6 +68,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.Authentication
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.BRAINTREE_FILES_CHECKOUT;
 import static com.instamelody.instamelody.utils.Const.ServiceType.BRAINTREE_FILES_CLIENT_TOKEN;
+import static com.instamelody.instamelody.utils.Const.ServiceType.BRAINTREE_FILES_TRANSACTION;
 import static com.instamelody.instamelody.utils.Const.ServiceType.PACKAGES;
 import static com.instamelody.instamelody.utils.Const.ServiceType.SUBSCRIPTION;
 import static com.instamelody.instamelody.utils.Const.ServiceType.SUBSCRIPTION_DETAIL;
@@ -91,6 +92,7 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
 
     String AMOUNT = "amount";
     String PAYMENT_METHOD_NOUNCE = "payment_method_nonce";
+    String BRAIN_TREE_TRANSACTION_ID = "id";
 
     String cost;
     String nonce;
@@ -171,12 +173,11 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
 
 
         try {
-            brainTreeFragment = BraintreeFragment.newInstance(getActivity(), brainTree_Client_Token_Editor.getString("brainTree_client_Token", null));
+            brainTreeFragment = BraintreeFragment.newInstance(getActivity(), Authorization);
             // mBraintreeFragment is ready to use!
         } catch (InvalidArgumentException e) {
             // There was an issue with your authorization string.
         }
-
 
 
 //For PayPal Integration
@@ -244,24 +245,15 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
 
         return view;
 
-
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE) {
-            if (requestCode == Activity.RESULT_OK) {
-                DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
-            } else if (resultCode == Activity.RESULT_CANCELED) {
-
-            } else {
-                // handle errors here, an exception may be available in
-                Exception error = (Exception) data.getSerializableExtra(DropInActivity.EXTRA_ERROR);
-            }
-        }
         if (resultCode == Activity.RESULT_OK) {
             DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
+            nonce = result.getPaymentMethodNonce().getNonce();
+            brainTree(nonce);
             PaymentConfirmation confirm = data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
             if (confirm != null) {
                 try {
@@ -436,13 +428,9 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                                     switchFlag = "1";
                                     packageId = "2";
 //                                    subscription();
-                                    onBuyPressed(v);
-//                                    onBraintreeSubmit(v);
-                                    CardBuilder cardBuilder = new CardBuilder()
-                                            .cardNumber("4111111111111111")
-                                            .expirationDate("09/2018");
-                                    Card.tokenize(brainTreeFragment, cardBuilder);
-//                                    brainTree();
+//                                    onBuyPressed(v);
+                                    onBraintreeSubmit(v);
+
                                 }
                             }
                         });
@@ -467,9 +455,8 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                                     switchFlag = "1";
                                     packageId = "3";
 //                                    subscription();
-                                    onBuyPressed(v);
-//                                    onBraintreeSubmit(v);
-//                                    brainTree();
+//                                    onBuyPressed(v);
+                                    onBraintreeSubmit(v);
                                 }
                             }
                         });
@@ -494,9 +481,9 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                                     switchFlag = "1";
                                     packageId = "4";
 //                                    subscription();
-                                    onBuyPressed(v);
-//                                    onBraintreeSubmit(v);
-//                                    brainTree();
+//                                    onBuyPressed(v);
+                                    onBraintreeSubmit(v);
+
                                 }
                             }
                         });
@@ -750,8 +737,8 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
 
     @Override
     public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
-        nonce = paymentMethodNonce.getNonce();
-        Log.d("nonce",paymentMethodNonce.getNonce());
+//        nonce = paymentMethodNonce.getNonce();
+        Log.d("nonce", paymentMethodNonce.getNonce());
         if (paymentMethodNonce instanceof PayPalAccountNonce) {
             PayPalAccountNonce payPalAccountNonce = (PayPalAccountNonce) paymentMethodNonce;
 
@@ -768,7 +755,7 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
     }
 
 
-    public void brainTree() {
+    public void brainTree(final String nonce) {
 
         for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
             subscriptionPackageArrayList.get(i).getCost();
@@ -787,8 +774,10 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                         String result = response;
                         try {
                             JSONObject jsonObject = new JSONObject(result);
-                            String flag = jsonObject.getString("flag");
-                            String response1 = jsonObject.getString("res");
+                            String status = jsonObject.getString("status");
+                            String success = jsonObject.getString("success");
+                            String transactionId = jsonObject.getString("transaction_id");
+                            brainTreeTransaction(transactionId);
                             JSONArray jsonArray = jsonObject.getJSONArray("res");
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject jsonObject1 = jsonArray.getJSONObject(i);
@@ -825,7 +814,60 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(AMOUNT, cost);
-                params.put(PAYMENT_METHOD_NOUNCE,nonce);
+                params.put(PAYMENT_METHOD_NOUNCE, nonce);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(stringRequest);
+    }
+
+
+    public void brainTreeTransaction(final String transaction_Id) {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, BRAINTREE_FILES_TRANSACTION,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String result = response;
+                        try {
+                            JSONObject jsonObject = new JSONObject(result);
+                            String status = jsonObject.getString("status");
+                            String success = jsonObject.getString("success");
+                            String transaction_message = jsonObject.getString("message");
+                            JSONObject jsonObject1 = jsonObject.getJSONObject("transaction_detail");
+                            String transaction_id = jsonObject1.getString("id");
+                            String type = jsonObject1.getString("amount");
+                            String status_detail = jsonObject1.getString("status");
+                            String created_at = jsonObject1.getString("created_at");
+                            String updated_at = jsonObject1.getString("updated_at");
+                            JSONObject jsonObject2 = jsonObject.getJSONObject("payment_detail");
+//                            String token = jsonObject2.getString("token");
+                            String bin = jsonObject2.getString("bin");
+                            String last_4 = jsonObject2.getString("last_4");
+                            String cardType = jsonObject2.getString("card_type");
+                            String expirationDate = jsonObject2.getString("expiration_date");
+//                            String cardHolderName = jsonObject2.getString("cardholder_name");
+                            String location = jsonObject2.getString("customer_location");
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+                        String errorMsg = error.toString();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(BRAIN_TREE_TRANSACTION_ID, transaction_Id);
                 return params;
             }
         };
