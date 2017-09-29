@@ -1808,7 +1808,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                                 StudioActivity.pauseAll.setVisibility(View.GONE);
                                 StudioActivity.mediaPlayersAll.get(i).stop();
                                 StudioActivity.ivRecord.setEnabled(true);
-
+                                InstrumentCountSize = 0;
                             }
 
                         }
