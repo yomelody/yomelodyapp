@@ -47,6 +47,8 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorPrimaryDark" />
 
+        <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true"/>
+
         <activity
             android:name=".HomeActivity"
             android:configChanges="orientation"
@@ -175,7 +177,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="$APP-80W284485P519543T.braintree" />
+                <data android:scheme="$com.instamelody.instamelody.braintree" />
             </intent-filter>
         </activity>
     </application>
