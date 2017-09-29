@@ -12,7 +12,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.CAMERA" />
 
     <uses-sdk tools:node="merge" />
     <uses-feature
@@ -47,6 +46,8 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorPrimaryDark" />
+
+        <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true"/>
 
         <activity
             android:name=".HomeActivity"
@@ -151,8 +152,7 @@
         <activity
             android:name=".JoinCommentActivity"
             android:label="@string/title_activity_join_comment"
-            android:theme="@style/AppTheme">
-        </activity>
+            android:theme="@style/AppTheme"></activity>
 
         <activity
             android:name="com.auth0.android.lock.LockActivity"
@@ -168,6 +168,16 @@
                     android:host="@string/com_auth0_domain"
                     android:pathPrefix="/android/$com.instamelody.instamelody/callback"
                     android:scheme="https" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="$com.instamelody.instamelody.braintree" />
             </intent-filter>
         </activity>
     </application>

@@ -48,6 +48,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static android.content.Context.MODE_PRIVATE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
+import static com.instamelody.instamelody.utils.Const.ServiceType.BRAINTREE_FILES_TRANSACTION;
 import static com.instamelody.instamelody.utils.Const.ServiceType.PACKAGES;
 import static com.instamelody.instamelody.utils.Const.ServiceType.SUBSCRIPTION;
 import static com.instamelody.instamelody.utils.Const.ServiceType.SUBSCRIPTION_DETAIL;
@@ -69,6 +70,7 @@ public class SubscriptionsFragment extends Fragment {
     String PAYPAL_ID = "id";
     String SUB_ID = "sub_id";
 
+    String BRAIN_TREE_TRANSACTION_ID = "id";
     String cost;
 
     ProgressDialog progressDialog;
@@ -137,7 +139,7 @@ public class SubscriptionsFragment extends Fragment {
             userId = userIdTwitter;
         }
 
-
+            brainTreeFragment = BraintreeFragment.newInstance(getActivity(), Authorization);
 //For PayPal Integration
         Intent intent = new Intent(getActivity(), PayPalService.class);
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
@@ -195,13 +197,14 @@ public class SubscriptionsFragment extends Fragment {
 
         return view;
 
-
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
+            nonce = result.getPaymentMethodNonce().getNonce();
+            brainTree(nonce);
             PaymentConfirmation confirm = data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
             if (confirm != null) {
                 try {
@@ -373,7 +376,9 @@ public class SubscriptionsFragment extends Fragment {
                                     switchFlag = "1";
                                     packageId = "2";
 //                                    subscription();
-                                    onBuyPressed(v);
+//                                    onBuyPressed(v);
+                                    onBraintreeSubmit(v);
+
                                 }
                             }
                         });
@@ -398,7 +403,8 @@ public class SubscriptionsFragment extends Fragment {
                                     switchFlag = "1";
                                     packageId = "3";
 //                                    subscription();
-                                    onBuyPressed(v);
+//                                    onBuyPressed(v);
+                                    onBraintreeSubmit(v);
                                 }
                             }
                         });
@@ -423,7 +429,9 @@ public class SubscriptionsFragment extends Fragment {
                                     switchFlag = "1";
                                     packageId = "4";
 //                                    subscription();
-                                    onBuyPressed(v);
+//                                    onBuyPressed(v);
+                                    onBraintreeSubmit(v);
+
                                 }
                             }
                         });
@@ -675,6 +683,67 @@ public class SubscriptionsFragment extends Fragment {
         requestQueue.add(stringRequest);
     }
 
+//        nonce = paymentMethodNonce.getNonce();
+        Log.d("nonce", paymentMethodNonce.getNonce());
+    public void brainTree(final String nonce) {
+                            String status = jsonObject.getString("status");
+                            String success = jsonObject.getString("success");
+                            String transactionId = jsonObject.getString("transaction_id");
+                            brainTreeTransaction(transactionId);
+                params.put(PAYMENT_METHOD_NOUNCE, nonce);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(stringRequest);
+    }
+
+
+    public void brainTreeTransaction(final String transaction_Id) {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, BRAINTREE_FILES_TRANSACTION,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String result = response;
+                        try {
+                            JSONObject jsonObject = new JSONObject(result);
+                            String status = jsonObject.getString("status");
+                            String success = jsonObject.getString("success");
+                            String transaction_message = jsonObject.getString("message");
+                            JSONObject jsonObject1 = jsonObject.getJSONObject("transaction_detail");
+                            String transaction_id = jsonObject1.getString("id");
+                            String type = jsonObject1.getString("amount");
+                            String status_detail = jsonObject1.getString("status");
+                            String created_at = jsonObject1.getString("created_at");
+                            String updated_at = jsonObject1.getString("updated_at");
+                            JSONObject jsonObject2 = jsonObject.getJSONObject("payment_detail");
+//                            String token = jsonObject2.getString("token");
+                            String bin = jsonObject2.getString("bin");
+                            String last_4 = jsonObject2.getString("last_4");
+                            String cardType = jsonObject2.getString("card_type");
+                            String expirationDate = jsonObject2.getString("expiration_date");
+//                            String cardHolderName = jsonObject2.getString("cardholder_name");
+                            String location = jsonObject2.getString("customer_location");
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+                        String errorMsg = error.toString();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(BRAIN_TREE_TRANSACTION_ID, transaction_Id);
     public void onBuyPressed(View pressed) {
 
         for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
