@@ -251,9 +251,9 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
-            nonce = result.getPaymentMethodNonce().getNonce();
-            brainTree(nonce);
+//            DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
+//            nonce = result.getPaymentMethodNonce().getNonce();
+//            brainTree(nonce);
             PaymentConfirmation confirm = data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
             if (confirm != null) {
                 try {
@@ -428,8 +428,8 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                                     switchFlag = "1";
                                     packageId = "2";
 //                                    subscription();
-//                                    onBuyPressed(v);
-                                    onBraintreeSubmit(v);
+                                    onBuyPressed(v);
+//                                    onBraintreeSubmit(v);
 
                                 }
                             }
@@ -455,8 +455,8 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                                     switchFlag = "1";
                                     packageId = "3";
 //                                    subscription();
-//                                    onBuyPressed(v);
-                                    onBraintreeSubmit(v);
+                                    onBuyPressed(v);
+//                                    onBraintreeSubmit(v);
                                 }
                             }
                         });
@@ -481,8 +481,8 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                                     switchFlag = "1";
                                     packageId = "4";
 //                                    subscription();
-//                                    onBuyPressed(v);
-                                    onBraintreeSubmit(v);
+                                    onBuyPressed(v);
+//                                    onBraintreeSubmit(v);
 
                                 }
                             }
