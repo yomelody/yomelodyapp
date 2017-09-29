@@ -129,6 +129,9 @@ public class ContactsActivity extends AppCompatActivity {
                 } else if (caller.equals("Messenger")){
                     intent = new Intent(mActivity, MessengerActivity.class);
                     startActivity(intent);
+                }else if (caller.equals("JoinActivity")){
+                    intent = new Intent(mActivity, JoinActivity.class);
+                    startActivity(intent);
                 }
 
                 finish();

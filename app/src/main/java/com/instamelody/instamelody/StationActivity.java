@@ -49,7 +49,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
     Button btnActivity, btnAudio, btnCancel;
     RelativeLayout rlFragmentActivity, rlPartStation, rlSearch;
-    ImageView ivBackButton, ivHomeButton, discover, message, ivProfile, audio_feed, ivStationSearch, ivMelodyStation, ivFilter;
+   public static ImageView ivBackButton, ivHomeButton, discover, message, ivProfile, audio_feed, ivStationSearch, ivMelodyStation, ivFilter;
     EditText subEtFilterName, subEtFilterInstruments, subEtFilterBPM;
 
     TabHost host;
@@ -168,7 +168,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 btnAudio.setEnabled(true);
 
                 clearSharePrefStation();
-
+                ivFilter.setVisibility(View.GONE);
                 ActivityFragment actf = new ActivityFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_station, actf).commit();
 

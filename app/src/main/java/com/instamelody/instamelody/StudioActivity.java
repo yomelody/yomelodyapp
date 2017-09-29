@@ -112,6 +112,7 @@ import java.util.TimerTask;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.instamelody.instamelody.StudioActivity.recordingDuration;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ADD_RECORDINGS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
@@ -612,14 +613,6 @@ public class StudioActivity extends AppCompatActivity {
 //            }
 //        });
 
-        rlInviteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(StudioActivity.this, ContactsActivity.class);
-                intent.putExtra("Previous","studioActivity");
-                startActivity(intent);
-            }
-        });
         rlMelodyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -909,10 +902,6 @@ public class StudioActivity extends AppCompatActivity {
 //                else if (melodyPackId == null) {
 //                    Toast.makeText(StudioActivity.this, "Add Melody Packs to save recording", Toast.LENGTH_SHORT).show();
 //                }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-
 
             }
         });
@@ -2494,6 +2483,7 @@ public class StudioActivity extends AppCompatActivity {
             melody_detail.setText("" + instCount + " Instrumentals");
         }
     }
+
 }
 
 

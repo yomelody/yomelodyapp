@@ -111,7 +111,7 @@ public class SignInActivity extends AppCompatActivity {
     String KEY_DEVICE_TYPE = "device_type";
     String KEY_PROFILE_PIC = "profile_pic_url";
 
-    String DeviceToken="";
+    String DeviceToken = "";
     String f_name;
     String l_name;
     String userId;
@@ -140,7 +140,6 @@ public class SignInActivity extends AppCompatActivity {
     String flag, user_id, First_name, Last_name, emailfinal, profilePic, coverPic, lastLogin, userName, fbId, fbEmail;
     String fans, followers, records;
     HandelLogin obj = new HandelLogin();
-    ProgressDialog progressDialog;
     String photoUrlNormalSize;
     Long TwitterId;
     EditText subEtTopicName;
@@ -151,13 +150,14 @@ public class SignInActivity extends AppCompatActivity {
     private boolean customButtonLogin;
     private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
     private boolean pendingPublishReauthorization = false;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_sign_in);
-
+        progressDialog = new ProgressDialog(SignInActivity.this);
         final TextView tvFirstName = (TextView) findViewById(R.id.tvFirstName);
         final TextView tvUserName = (TextView) findViewById(R.id.tvUserName);
 
@@ -520,6 +520,10 @@ public class SignInActivity extends AppCompatActivity {
         final String email = etEmail.getText().toString().trim();
         final String password = etPassword.getText().toString().trim();
 
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, LOGIN,
                 new Response.Listener<String>() {
                     @Override
@@ -574,6 +578,11 @@ public class SignInActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -594,6 +603,11 @@ public class SignInActivity extends AppCompatActivity {
                         }
                         Toast.makeText(SignInActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 }) {
 
@@ -605,7 +619,7 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY_DEVICE_TOKEN, DeviceToken);
                 params.put(KEY_DEVICE_TYPE, "Android");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("param==="+params+"\nURL=="+LOGIN);
+                AppHelper.sop("param===" + params + "\nURL==" + LOGIN);
                 return params;
             }
         };
@@ -704,7 +718,7 @@ public class SignInActivity extends AppCompatActivity {
                 }) {
             @Override
             protected Map<String, String> getParams() {
-                if (fbEmail==null){
+                if (fbEmail == null) {
                     fbEmail = "amol@codingbrains.com";
                 }
                 Map<String, String> params = new HashMap<String, String>();
@@ -954,7 +968,7 @@ public class SignInActivity extends AppCompatActivity {
                         String accessToken = credentials.getAccessToken();
                         SharedPreferences.Editor soundCloudCredentialE = getApplicationContext().getSharedPreferences("SoundCloudCred", MODE_PRIVATE).edit();
                         soundCloudCredentialE.putString("idToken", idToken);
-                        soundCloudCredentialE.putString("accessToken",accessToken);
+                        soundCloudCredentialE.putString("accessToken", accessToken);
                         soundCloudCredentialE.apply();
                         // Navigate to your main activity
                     }

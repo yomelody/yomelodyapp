@@ -80,7 +80,7 @@ public class JoinActivity extends AppCompatActivity {
     public static ImageView profile_image, ivShareButton;
     public static ImageView ivBackButton, ivHomeButton;
     public static TextView melody_detail, txtCount, tvIncluded;
-    public static RelativeLayout joincenter, joinFooter;
+    public static RelativeLayout joincenter, joinFooter, rlInviteButton;
     public static FrameLayout commentContainer;
 
     @Override
@@ -121,6 +121,7 @@ public class JoinActivity extends AppCompatActivity {
         recyclerViewInstruments = (RecyclerView) findViewById(R.id.recyclerViewInstruments);
         joincenter = (RelativeLayout) findViewById(R.id.joincenter);
         commentContainer = (FrameLayout) findViewById(R.id.commentContainer);
+        rlInviteButton = (RelativeLayout) findViewById(R.id.rlInviteButton);
         recyclerViewInstruments.setVisibility(View.VISIBLE);
         recyclerViewInstruments.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getApplicationContext());
@@ -173,6 +174,19 @@ public class JoinActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
+            }
+        });
+
+        rlInviteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
+                    intent.putExtra("Previous", "JoinActivity");
+                    startActivity(intent);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         });
 
