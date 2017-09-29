@@ -251,9 +251,9 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
-            nonce = result.getPaymentMethodNonce().getNonce();
-            brainTree(nonce);
+//            DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
+//            nonce = result.getPaymentMethodNonce().getNonce();
+//            brainTree(nonce);
             PaymentConfirmation confirm = data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
             if (confirm != null) {
                 try {
@@ -355,7 +355,10 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                         tv2[3] = (TextView) rootView.findViewById(R.id.priceProducer);
 
                         for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
-                            tv2[i].setText(subscriptionPackageArrayList.get(i).getCost());
+                            tv2[0].setText(subscriptionPackageArrayList.get(0).getCost());
+                            tv2[1].setText("$"+(subscriptionPackageArrayList.get(1).getCost()));
+                            tv2[2].setText("$"+(subscriptionPackageArrayList.get(2).getCost()));
+                            tv2[3].setText("$"+(subscriptionPackageArrayList.get(3).getCost()));
                         }
 
                         TextView[] tv3 = new TextView[4];
@@ -428,8 +431,8 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                                     switchFlag = "1";
                                     packageId = "2";
 //                                    subscription();
-//                                    onBuyPressed(v);
-                                    onBraintreeSubmit(v);
+                                    onBuyPressed(v);
+//                                    onBraintreeSubmit(v);
 
                                 }
                             }
@@ -455,8 +458,8 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                                     switchFlag = "1";
                                     packageId = "3";
 //                                    subscription();
-//                                    onBuyPressed(v);
-                                    onBraintreeSubmit(v);
+                                    onBuyPressed(v);
+//                                    onBraintreeSubmit(v);
                                 }
                             }
                         });
@@ -481,8 +484,8 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                                     switchFlag = "1";
                                     packageId = "4";
 //                                    subscription();
-//                                    onBuyPressed(v);
-                                    onBraintreeSubmit(v);
+                                    onBuyPressed(v);
+//                                    onBraintreeSubmit(v);
 
                                 }
                             }
