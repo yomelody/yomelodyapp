@@ -30,6 +30,7 @@ import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.ActivityCardAdapter;
 import com.instamelody.instamelody.Models.ActivityModel;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.StationActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -73,7 +74,6 @@ public class ActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_activity, container, false);
-
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewActivity);
         recyclerView.setHasFixedSize(true);
         lmactivity = new LinearLayoutManager(getActivity());
@@ -94,10 +94,10 @@ public class ActivityFragment extends Fragment {
             userId = twitterPref.getString("userId", null);
             //MelodyUser=userId;
         }
-
+//        StationActivity.ivFilter.setVisibility(View.GONE);
 
         if (!userId.equals("") && userId != null) {
-            new FetchActivityDetails().execute(userId);
+            fetchActivityData(userId);
         }
 //        else {
 //            Toast.makeText(getApplicationContext(), "Log in to Chat", Toast.LENGTH_SHORT).show();
@@ -114,7 +114,7 @@ public class ActivityFragment extends Fragment {
             progressDialog = new ProgressDialog(getActivity());
             progressDialog.setTitle("Processing...");
             progressDialog.setMessage("Please wait...");
-            //progressDialog.setCancelable(false);
+            progressDialog.setCancelable(false);
             progressDialog.show();
 
         }
@@ -123,7 +123,7 @@ public class ActivityFragment extends Fragment {
 
             try {
                 String UserID = params[0];
-                fetchActivityData(UserID);
+
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -141,6 +141,11 @@ public class ActivityFragment extends Fragment {
     }
 
     public void fetchActivityData(final String userId) {
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, ACTIVITY,
                 new Response.Listener<String>() {
                     @Override
@@ -183,6 +188,11 @@ public class ActivityFragment extends Fragment {
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
+                        }
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
                         }
                     }
                 },

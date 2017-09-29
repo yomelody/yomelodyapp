@@ -1,5 +1,6 @@
 package com.instamelody.instamelody;
 
+import android.*;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -7,12 +8,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -109,6 +113,8 @@ public class SignUpActivity extends AppCompatActivity {
     private String KEY_IMAGE = "encodedImage";
     private Bitmap bitmap;
     private final int requestCode = 20;
+    private static final int PERMISSION_READ_STORAGE = 201;
+    private static final int PERMISSION_CAMERA = 202;
 
     public String profilepic2;
     String DeviceToken;
@@ -130,12 +136,13 @@ public class SignUpActivity extends AppCompatActivity {
     String formatedDate;
     String date;
     int day, month, year;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-
+        progressDialog = new ProgressDialog(SignUpActivity.this);
         etfirstname = (EditText) findViewById(R.id.etFirstName);
         etlastname = (EditText) findViewById(R.id.etLastName);
         etemail = (EditText) findViewById(R.id.etEmail);
@@ -570,18 +577,40 @@ public class SignUpActivity extends AppCompatActivity {
                                                         alertDialog.setNegativeButton("Open Camera", new DialogInterface.OnClickListener() {
                                                             public void onClick(DialogInterface dialog, int which) {
                                                                 //uploadImage();
-                                                                Intent photoCaptureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                                                startActivityForResult(photoCaptureIntent, requestCode);
+                                                                try {
+                                                                    Intent photoCaptureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                                                    startActivityForResult(photoCaptureIntent, requestCode);
+                                                                } catch (Throwable e) {
+                                                                    e.printStackTrace();
+                                                                }
+
                                                             }
                                                         });
                                                         alertDialog.show();
+                                                        setPermissions();
                                                     }
                                                 }
                                             }
 
+
         );
     }
 
+    public void setPermissions() {
+        if (ContextCompat.checkSelfPermission(SignUpActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(SignUpActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                ActivityCompat.requestPermissions(SignUpActivity.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_STORAGE);
+            } else {
+                ActivityCompat.requestPermissions(SignUpActivity.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_STORAGE);
+            }
+        } else if (ContextCompat.checkSelfPermission(SignUpActivity.this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(SignUpActivity.this, android.Manifest.permission.CAMERA)) {
+                ActivityCompat.requestPermissions(SignUpActivity.this, new String[]{android.Manifest.permission.CAMERA}, PERMISSION_CAMERA);
+            } else {
+                ActivityCompat.requestPermissions(SignUpActivity.this, new String[]{android.Manifest.permission.CAMERA}, PERMISSION_CAMERA);
+            }
+        }
+    }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -765,6 +794,11 @@ public class SignUpActivity extends AppCompatActivity {
 //        final String date = b.replace(":", "").replace("|", "/");
         final String phone = etphone.getText().toString().trim();
         final String usertype = "USER";
+
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER,
                 new Response.Listener<String>() {
                     @Override
@@ -808,6 +842,12 @@ public class SignUpActivity extends AppCompatActivity {
 
                         }
 
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+
                     }
                 },
                 new Response.ErrorListener() {
@@ -816,6 +856,11 @@ public class SignUpActivity extends AppCompatActivity {
 //                        Toast.makeText(SignUpActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
                         String errormsg = error.toString();
                         Log.d("Error", errormsg);
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 }) {
             @Override

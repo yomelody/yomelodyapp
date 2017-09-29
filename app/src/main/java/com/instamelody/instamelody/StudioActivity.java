@@ -586,14 +586,17 @@ public class StudioActivity extends AppCompatActivity {
                 Environment.getExternalStorageDirectory().getAbsolutePath()
                         + "/InstaMelody.mp3";
 
-        rlInviteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(StudioActivity.this, ContactsActivity.class);
-                intent.putExtra("Previous","studioActivity");
-                startActivity(intent);
-            }
-        });
+
+//        chrono.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+//            @Override
+//            public void onChronometerTick(Chronometer chronometer) {
+//                countUp = ((SystemClock.elapsedRealtime() - chronometer.getBase()) / 1000);
+//                countUp_milli = ((SystemClock.elapsedRealtime() - chronometer.getBase()));
+//                asText = (countUp / 60) + ":" + (countUp % 60);
+//                recording_time.setText(asText);
+//            }
+//        });
+
         rlMelodyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

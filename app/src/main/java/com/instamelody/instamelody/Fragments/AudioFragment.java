@@ -41,6 +41,7 @@ import com.instamelody.instamelody.Models.RecordingsModelMore;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.StationActivity;
 import com.instamelody.instamelody.utils.AppHelper;
 
 import org.json.JSONArray;
@@ -121,6 +122,7 @@ public class AudioFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_audio, container, false);
         mActivity=getActivity();
+       StationActivity.ivFilter.setVisibility(View.VISIBLE);
         rv = (RecyclerView) view.findViewById(R.id.recyclerViewAudio);
 
         /*//setRetainInstance(true);
