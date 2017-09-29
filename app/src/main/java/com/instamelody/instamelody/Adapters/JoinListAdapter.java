@@ -205,7 +205,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         final JoinedArtists joinArt = Joined_artist.get(position);
         Log.d("Position", "" + position);
-        click=getItemCount()-1;
+        click = getItemCount() - 1;
         viewHolder = new ViewHolder();
         viewHolder.redCross = (ImageView) holder.redCross.findViewById(R.id.redCross);
         viewHolder.join_image = (ImageView) holder.join_image.findViewById(R.id.ivImageName);
@@ -564,7 +564,10 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     lstViewHolder.get(realPosition - 1).redCross.setVisibility(GONE);
                     lstViewHolder.get(realPosition).Join_usr_name.setTextColor(Color.parseColor("#FFFFFF"));
                     lstViewHolder.get(realPosition).join_image.setBackgroundColor(Color.parseColor("#656565"));
-                    lstViewHolder.get(realPosition).redCross.setVisibility(VISIBLE);
+                    if (userId.equals(Joined_artist.get(0).getUser_id())) {
+                        lstViewHolder.get(realPosition).redCross.setVisibility(VISIBLE);
+                    }
+
                     JoinActivity.txtCount.setText(realPosition + 1 + " of " + getItemCount());
                     JoinedArtists join = Joined_artist.get(realPosition);
                     JoinActivity.waveform_view.setVisibility(VISIBLE);
@@ -683,7 +686,10 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         lstViewHolder.get(realPosition).redCross.setVisibility(GONE);
                         lstViewHolder.get(realPosition - 1).Join_usr_name.setTextColor(Color.parseColor("#FFFFFF"));
                         lstViewHolder.get(realPosition - 1).join_image.setBackgroundColor(Color.parseColor("#656565"));
-                        lstViewHolder.get(realPosition - 1).redCross.setVisibility(VISIBLE);
+                        if (userId.equals(Joined_artist.get(0).getUser_id())) {
+                            lstViewHolder.get(realPosition - 1).redCross.setVisibility(VISIBLE);
+                        }
+
                         realPosition = realPosition - 1;
                         count = realPosition;
                         JoinActivity.ivPlayNext.setEnabled(true);
