@@ -145,7 +145,8 @@
         <activity
             android:name=".JoinActivity"
             android:label="@string/title_activity_join"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
         <activity android:name=".Update" />
         <activity android:name=".PrivacyPolicy" />
         <activity
@@ -153,6 +154,12 @@
             android:label="@string/title_activity_join_comment"
             android:theme="@style/AppTheme">
         </activity>
+        <activity
+            android:name=".StationCommentActivity"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_melody"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
 
         <activity
             android:name="com.auth0.android.lock.LockActivity"
