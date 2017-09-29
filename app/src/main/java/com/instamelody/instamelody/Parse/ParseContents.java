@@ -399,7 +399,9 @@ public class ParseContents {
                     card.setPlayCount(cardJson.getInt("play_count"));
                     card.setCommentCount(cardJson.getInt("comment_count"));
                     card.setLikeCount(cardJson.getInt("like_count"));
+                    card.setJoinCount(cardJson.getString("join_count"));
                     card.setLikeStatus(cardJson.getInt("like_status"));
+                    card.setJoinCount(cardJson.getString("join_count"));
                     if (cardJson.isNull("recording_url")) {
                         card.setrecordingurl("");
                     } else {

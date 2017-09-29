@@ -145,7 +145,7 @@ public class DiscoverActivity extends AppCompatActivity {
         recyclerViewPager = (RecyclerViewPager) findViewById(R.id.recyclerViewPager);
         recyclerViewPagerIndicator = (CircleIndicator) findViewById(R.id.recyclerViewPagerIndicator);
         recyclerViewPager.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        adapterAdvertiseMent = new DiscoverAdapter(pagingDataArrayList, mActivity);
+        adapterAdvertiseMent = new DiscoverAdapter(pagingDataArrayList, getApplicationContext());
         recyclerViewPager.setAdapter(adapterAdvertiseMent);
         PagerSnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(recyclerViewPager);

@@ -280,14 +280,6 @@ public class MessengerActivity extends AppCompatActivity {
         }
     }
 
-//    @Override
-//    public void onRestart() {
-//        super.onRestart();
-//        if (userId != null)
-//            getChats(userId);
-//    }
-
-
     @Override
     protected void onPause() {
         super.onPause();

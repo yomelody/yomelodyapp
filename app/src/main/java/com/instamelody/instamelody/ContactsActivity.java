@@ -318,4 +318,10 @@ public class ContactsActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getContacts();
+    }
 }

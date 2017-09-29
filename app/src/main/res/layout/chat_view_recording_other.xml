@@ -176,7 +176,6 @@
 
                         </RelativeLayout>
                     </LinearLayout>
-
                 </RelativeLayout>
 
                 <FrameLayout
@@ -197,7 +196,8 @@
                         android:paddingRight="0dp"
                         android:paddingStart="0dp"
                         android:progress="0"
-                        android:progressDrawable="@drawable/new_seekbar" />
+                        android:progressDrawable="@drawable/new_seekbar"
+                        android:thumb="@drawable/slider_thumb_chat_player"/>
 
                 </FrameLayout>
 
