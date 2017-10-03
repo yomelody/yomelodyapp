@@ -30,7 +30,7 @@ android {
 
     }
     dexOptions {
-        javaMaxHeapSize "4g"
+//        javaMaxHeapSize "4g"
     }
     buildTypes {
         release {
@@ -74,7 +74,6 @@ dependencies {
     compile 'com.cleveroad:audiovisualization:1.0.0'
     compile 'com.google.android.gms:play-services:11.0.0'
     compile 'com.writingminds:FFmpegAndroid:0.3.2'
-    compile 'com.facebook.fresco:fresco:1.4.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.auth0.android:auth0:1.+'
     compile 'com.auth0.android:lock:2.+'

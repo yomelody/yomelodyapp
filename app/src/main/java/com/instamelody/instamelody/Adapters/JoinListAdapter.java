@@ -42,7 +42,6 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.facebook.common.references.SharedReference;
 import com.instamelody.instamelody.CommentsActivity;
 import com.instamelody.instamelody.Fragments.CommentJoinFragment;
 import com.instamelody.instamelody.JoinActivity;
