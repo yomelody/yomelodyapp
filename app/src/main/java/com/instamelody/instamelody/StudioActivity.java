@@ -1329,7 +1329,6 @@ public class StudioActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-
             recorder.release();
         }
 
