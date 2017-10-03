@@ -3,6 +3,7 @@ package com.instamelody.instamelody;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -35,6 +36,7 @@ import com.instamelody.instamelody.Fragments.CommentJoinFragment;
 import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Models.JoinedUserProfile;
 import com.instamelody.instamelody.Models.MelodyInstruments;
+import com.instamelody.instamelody.Models.ModelPlayAllMediaPlayer;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.squareup.picasso.Picasso;
 
@@ -77,11 +79,12 @@ public class JoinActivity extends AppCompatActivity {
     public static com.instamelody.instamelody.utils.WaveformView waveform_view;
     private boolean mShouldContinue = true;
     public static TextView mDecibelView, recording_name, artist_name;
-    public static ImageView profile_image, ivShareButton;
-    public static ImageView ivBackButton, ivHomeButton;
+    public static ImageView profile_image, ivShareButton, ivRecordJoin;
+    public static ImageView ivBackButton, ivHomeButton,playAll,pauseAll;
     public static TextView melody_detail, txtCount, tvIncluded;
     public static RelativeLayout joincenter, joinFooter, rlInviteButton;
     public static FrameLayout commentContainer;
+    public static ArrayList<MediaPlayer> mediaPlayersAll = new ArrayList<MediaPlayer>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +102,9 @@ public class JoinActivity extends AppCompatActivity {
         txtCount = (TextView) findViewById(R.id.txtCount);
         tvIncluded = (TextView) findViewById(R.id.tvIncluded);
         ivPlayPre = (ImageView) findViewById(R.id.ivPlayPre);
+        ivRecordJoin = (ImageView) findViewById(R.id.ivRecordJoin);
+        playAll = (ImageView) findViewById(R.id.playAll);
+        pauseAll = (ImageView) findViewById(R.id.pauseAll);
         waveform_view = (com.instamelody.instamelody.utils.WaveformView) findViewById(R.id.waveform_view);
         mDecibelView = (TextView) findViewById(R.id.decibel_view);
         play_count = (TextView) findViewById(R.id.tvPlayCount);

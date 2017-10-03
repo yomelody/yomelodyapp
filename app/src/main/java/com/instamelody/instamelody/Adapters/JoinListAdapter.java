@@ -448,6 +448,35 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
             }
         });
 
+        JoinActivity.ivRecordJoin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //    String position = Integer.toString();
+                if (mp != null) {
+                    mp.stop();
+                }
+                if (mRecordingThread != null) {
+                    mRecordingThread.stopRunning();
+                    mRecordingThread = null;
+                    //    mShouldContinue=true;
+                }
+                if (JoinInstrumentListAdp.mp_start != null) {
+                    for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
+                        JoinInstrumentListAdp.mp_start.get(i).stop();
+
+                    }
+                }
+                // Toast.makeText(context, ""+posForStudio, Toast.LENGTH_SHORT).show();
+                StudioActivity.instrumentList.clear();
+                SharedPreferences.Editor editor = context.getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
+                editor.putString("instrumentsPos", String.valueOf(posForStudio));
+                editor.commit();
+                Intent intent = new Intent(view.getContext(), StudioActivity.class);
+                view.getContext().startActivity(intent);
+                StudioActivity.list.clear();
+            }
+        });
+
         JoinActivity.ivJoinPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

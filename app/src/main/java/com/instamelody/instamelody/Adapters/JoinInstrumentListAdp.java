@@ -19,13 +19,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.instamelody.instamelody.JoinActivity;
 import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Models.MelodyInstruments;
+import com.instamelody.instamelody.Models.ModelPlayAllMediaPlayer;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.StudioActivity;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
@@ -62,6 +66,7 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
     static int duration1, currentPosition;
     public static List<MediaPlayer> mp_start = new ArrayList<MediaPlayer>();
     public static int count = 0;
+    int InstrumentCountSize = 0;
 
     public JoinInstrumentListAdp(ArrayList<MelodyInstruments> instrumentList, Context context) {
         this.instrumentList = instrumentList;
@@ -100,7 +105,7 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
             count = getItemCount();
 
             JoinActivity.melody_detail.setText(count + " " + "Instrumentals");
-            
+
 
             audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
             ivPause.setOnClickListener(new View.OnClickListener() {
@@ -204,6 +209,9 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
         final MelodyInstruments instruments = instrumentList.get(listPosition);
         String abc = instrumentList.get(listPosition).getInstrumentFile();
         // Toast.makeText(context, "" + abc, Toast.LENGTH_SHORT).show();
+        if (InstrumentCountSize == 0) {
+            InstrumentCountSize = MelodyInstruments.getInstrumentCount();
+        }
 
         if (coverPicStudio != null) {
             Picasso.with(holder.ivInstrumentCover.getContext()).load(coverPicStudio).into(holder.ivInstrumentCover);
@@ -312,6 +320,51 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
             }
         });
 
+        JoinActivity.playAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                JoinActivity.playAll.setVisibility(View.GONE);
+                JoinActivity.pauseAll.setVisibility(View.VISIBLE);
+                for (int i = 0; i < InstrumentCountSize; i++) {
+                    MediaPlayer mp = new MediaPlayer();
+                    mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    try {
+                        mp.setDataSource(instrumentList.get(i).getInstrumentFile());
+                        mp.prepare();
+                        JoinActivity.mediaPlayersAll.add(mp);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+                for (MediaPlayer mp: JoinActivity.mediaPlayersAll) {
+                    mp.start();
+                }
+
+            }
+        });
+
+        JoinActivity.pauseAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                JoinActivity.playAll.setVisibility(View.VISIBLE);
+                JoinActivity.pauseAll.setVisibility(View.GONE);
+                // Pause button code ...
+                for (MediaPlayer mp: JoinActivity.mediaPlayersAll) {
+                    try {
+                        mp.stop();
+                        mp.reset();
+                        mp.release();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                JoinActivity.mediaPlayersAll.clear();
+
+            }
+        });
+
 
         Intent i = new Intent("fetchingInstrumentsJoin");
         i.putStringArrayListExtra("instrumentsJoin", instrument_url_count);
@@ -385,6 +438,5 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
 
 
     }
-
 
 }

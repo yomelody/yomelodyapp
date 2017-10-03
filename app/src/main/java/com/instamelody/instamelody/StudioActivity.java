@@ -294,6 +294,7 @@ public class StudioActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_studio);
+        progressDialog = new ProgressDialog(StudioActivity.this);
 //        instruments_count = InstrumentListAdapter.instruments_url;
 //        Log.d("abc", "" + instruments_count.size());
         rlBase = (RelativeLayout) findViewById(R.id.rlBase);
@@ -1745,6 +1746,10 @@ public class StudioActivity extends AppCompatActivity {
     }
 
     public void uploadRecordingsMixing(final String id) {
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
 
         VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, MixingAudio_InstrumentsAudio, new Response.Listener<NetworkResponse>() {
             @Override
