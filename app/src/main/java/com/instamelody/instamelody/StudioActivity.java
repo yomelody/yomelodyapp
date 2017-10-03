@@ -2,6 +2,7 @@ package com.instamelody.instamelody;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,6 +13,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
@@ -39,6 +41,8 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -221,7 +225,7 @@ public class StudioActivity extends AppCompatActivity {
     public static Switch switchPublic;
     public static RelativeLayout rlMelodyButton, rlRecordingButton, rlRedoButton, rlListeningButton, rlSetCover, rlPublic;
     public static FrameLayout frameTrans, frameSync, frameProgress;
-    public static ImageView ivBackButton, ivHomeButton, ivRecord, ivRecord_stop, ivRecord_play, ivRecord_pause, discover, message, ivProfile, ivNewRecordCover;
+    public static ImageView ivBackButton, ivHomeButton, ivRecord, ivRecord_stop, ivRecord_play, ivRecord_pause, discover, ivSound, message, ivProfile, ivNewRecordCover;
     CircleImageView profile_image;
     TextView artist_name, noMelodyNote;
     public static RecyclerView recyclerViewInstruments;
@@ -324,6 +328,7 @@ public class StudioActivity extends AppCompatActivity {
         tvUserName = (TextView) findViewById(R.id.tvUserName);
         tvBpmRate = (TextView) findViewById(R.id.tvBpmRate);
         frameProgress = (FrameLayout) findViewById(R.id.frameProgress);
+        ivSound = (ImageView) findViewById(R.id.ivSound);
 
         playAll = (ImageView) findViewById(R.id.playAll);
         pauseAll = (ImageView) findViewById(R.id.pauseAll);
@@ -1020,19 +1025,32 @@ public class StudioActivity extends AppCompatActivity {
                     });
                     alertDialog.show();
                 }
-
-
             }
         });
 
+
+        ivSound.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                LayoutInflater mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View customView = mInflater.inflate(R.layout.view_master_vol, null, false);
+                final Dialog alertDialog = new Dialog(StudioActivity.this);
+                alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                alertDialog.setContentView(customView);
+                alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                WindowManager.LayoutParams wmlp = alertDialog.getWindow().getAttributes();
+                wmlp.width = WindowManager.LayoutParams.MATCH_PARENT;
+                wmlp.height = WindowManager.LayoutParams.MATCH_PARENT;
+                alertDialog.show();
+            }
+        });
 
         // To get preferred buffer size and sampling rate.
         AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
         String rate = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
         String size = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
         Log.d("Buffer Size & sample rate", "Size :" + size + " & Rate: " + rate);
-
-
     }
 
     private boolean StopMediaPlayer(MediaPlayer mp) {
