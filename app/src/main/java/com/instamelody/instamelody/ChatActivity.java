@@ -195,7 +195,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(READ_NOTIFICATION)) {
                     String readStatus = intent.getStringExtra("status");
-                    if(readStatus.equals("read")){
+                    if (readStatus.equals("read")) {
                         String chatId = intent.getStringExtra("chatId");
                         getChatMsgs(chatId);
                     }
@@ -440,9 +440,7 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        ivCamera.setOnClickListener(new View.OnClickListener()
-
-        {
+        ivCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 /**
