@@ -27,17 +27,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.instamelody.instamelody.CommentsActivity;
 import com.instamelody.instamelody.JoinActivity;
 import com.instamelody.instamelody.MessengerActivity;
 import com.instamelody.instamelody.Models.JoinRecordingModel;
-//import com.instamelody.instamelody.Models.RecJoinRecordingModel;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
-import com.instamelody.instamelody.StationActivity;
 import com.instamelody.instamelody.StationCommentActivity;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
@@ -60,6 +57,8 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.Authentication
 import static com.instamelody.instamelody.utils.Const.ServiceType.JoinRecording;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LIKESAPI;
 import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
+
+//import com.instamelody.instamelody.Models.RecJoinRecordingModel;
 
 /**
  * Created by Saurabh Singh on 12//2016.
@@ -496,7 +495,8 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
         RecordingsModel recording = recordingList.get(listPosition);
         lazycount = lazycount + 1;
-
+        int includedCount=Integer.parseInt(recordingList.get(listPosition).getJoinCount());
+        holder.tvIncludedCount.setText("Included: "+includedCount);
 
         mpid = recording.getRecordingId();
         mpids.add(mpid);

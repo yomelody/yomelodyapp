@@ -477,7 +477,7 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                                         switchFlag = "1";
                                         packageId = "2";
 //                                    subscription();
-                                        onBuyPressed(v);
+                                    onBuyPressed(v);
 //                                    onBraintreeSubmit(v);
 
                                     }
@@ -504,7 +504,7 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                                         switchFlag = "1";
                                         packageId = "3";
 //                                    subscription();
-                                        onBuyPressed(v);
+                                    onBuyPressed(v);
 //                                    onBraintreeSubmit(v);
                                     }
                                 }
@@ -530,7 +530,7 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                                         switchFlag = "1";
                                         packageId = "4";
 //                                    subscription();
-                                        onBuyPressed(v);
+                                    onBuyPressed(v);
 //                                    onBraintreeSubmit(v);
 
                                     }
