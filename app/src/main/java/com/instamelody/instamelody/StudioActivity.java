@@ -39,6 +39,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -620,12 +621,20 @@ public class StudioActivity extends AppCompatActivity {
                     if (mpall != null) {
                         mpall.stop();
                         for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                            try {
                             mediaPlayersAll.get(i).stop();
+                            } catch (IllegalStateException e) {
+                                e.printStackTrace();
+                            }
                         }
                         mediaPlayersAll.clear();
                     }
                     if (mpInst != null) {
+                        try{
                         mpInst.stop();
+                        } catch (IllegalStateException e) {
+                            e.printStackTrace();
+                        }
                     }
 
                     if (mRecordingThread != null) {
@@ -684,33 +693,44 @@ public class StudioActivity extends AppCompatActivity {
                 try {
 
                     handler.removeCallbacksAndMessages(null);
-
                     if (lstViewHolder.size() > 0) {
                         lstViewHolder.clear();
                     }
                     if (mp_start != null) {
 
                         for (int i = 0; i <= mp_start.size() - 1; i++) {
-                            mp_start.get(i).stop();
-                            mp_start.get(i).release();
+                            try {
+                                mp_start.get(i).stop();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+
                         }
-                        mp_start.clear();
                     }
+                    mp_start.clear();
                     if (mpall != null) {
                         mpall.stop();
                         if (mediaPlayersAll.size() > 0) {
                             for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                                mediaPlayersAll.get(i).stop();
-                                mediaPlayersAll.get(i).release();
+                                try {
+                                    mediaPlayersAll.get(i).stop();
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
                             }
                         }
                         mediaPlayersAll.clear();
-
                     }
                     if (mpInst != null) {
-                        mpInst.stop();
+                        try {
+                            mpInst.stop();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
-                    instrumentList.clear();
+                    if(instrumentList.size()>0) {
+                        instrumentList.clear();
+                    }
                     Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                     startActivity(intent);
                 } catch (Exception ex) {
@@ -733,23 +753,39 @@ public class StudioActivity extends AppCompatActivity {
                     if (mp_start != null) {
 
                         for (int i = 0; i <= mp_start.size() - 1; i++) {
-                            mp_start.get(i).stop();
+                            try {
+                                mp_start.get(i).stop();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
 
                         }
                     }
+                    mp_start.clear();
                     if (mpall != null) {
                         mpall.stop();
                         if (mediaPlayersAll.size() > 0) {
                             for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                                mediaPlayersAll.get(i).stop();
+                                try {
+                                    mediaPlayersAll.get(i).stop();
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
                             }
                         }
                         mediaPlayersAll.clear();
                     }
                     if (mpInst != null) {
-                        mpInst.stop();
+                        try {
+                            mpInst.stop();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
-                    instrumentList.clear();
+                    if(instrumentList.size()>0) {
+                        instrumentList.clear();
+                    }
+
                     Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                     startActivity(intent);
                 } catch (Exception ex) {
@@ -768,23 +804,41 @@ public class StudioActivity extends AppCompatActivity {
                         lstViewHolder.clear();
                     }
                     if (mp_start != null) {
+
                         for (int i = 0; i <= mp_start.size() - 1; i++) {
-                            mp_start.get(i).stop();
+                            try {
+                                mp_start.get(i).stop();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+
                         }
-                        mp_start.clear();
                     }
+                    mp_start.clear();
                     if (mpall != null) {
                         mpall.stop();
                         if (mediaPlayersAll.size() > 0) {
                             for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                                mediaPlayersAll.get(i).stop();
+                                try {
+                                    mediaPlayersAll.get(i).stop();
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
                             }
                         }
                         mediaPlayersAll.clear();
                     }
                     if (mpInst != null) {
-                        mpInst.stop();
+                        try {
+                            mpInst.stop();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
+                    if(instrumentList.size()>0) {
+                        instrumentList.clear();
+                    }
+
                     Intent intent = new Intent(getApplicationContext(), DiscoverActivity.class);
                     startActivity(intent);
                 } catch (Exception ex) {
@@ -803,22 +857,39 @@ public class StudioActivity extends AppCompatActivity {
                         lstViewHolder.clear();
                     }
                     if (mp_start != null) {
+
                         for (int i = 0; i <= mp_start.size() - 1; i++) {
-                            mp_start.get(i).stop();
+                            try {
+                                mp_start.get(i).stop();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+
                         }
-                        mp_start.clear();
                     }
+                    mp_start.clear();
                     if (mpall != null) {
                         mpall.stop();
                         if (mediaPlayersAll.size() > 0) {
                             for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                                mediaPlayersAll.get(i).stop();
+                                try {
+                                    mediaPlayersAll.get(i).stop();
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
                             }
                         }
                         mediaPlayersAll.clear();
                     }
                     if (mpInst != null) {
-                        mpInst.stop();
+                        try {
+                            mpInst.stop();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                    if(instrumentList.size()>0) {
+                        instrumentList.clear();
                     }
                     Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
                     startActivity(intent);
@@ -838,22 +909,39 @@ public class StudioActivity extends AppCompatActivity {
                         lstViewHolder.clear();
                     }
                     if (mp_start != null) {
+
                         for (int i = 0; i <= mp_start.size() - 1; i++) {
-                            mp_start.get(i).stop();
+                            try {
+                                mp_start.get(i).stop();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+
                         }
-                        mp_start.clear();
                     }
+                    mp_start.clear();
                     if (mpall != null) {
                         mpall.stop();
                         if (mediaPlayersAll.size() > 0) {
                             for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                                mediaPlayersAll.get(i).stop();
+                                try {
+                                    mediaPlayersAll.get(i).stop();
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
                             }
                         }
                         mediaPlayersAll.clear();
                     }
                     if (mpInst != null) {
-                        mpInst.stop();
+                        try {
+                            mpInst.stop();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                    if(instrumentList.size()>0) {
+                        instrumentList.clear();
                     }
                     Intent i = new Intent(StudioActivity.this, ProfileActivity.class);
                     startActivity(i);
@@ -873,22 +961,39 @@ public class StudioActivity extends AppCompatActivity {
                         lstViewHolder.clear();
                     }
                     if (mp_start != null) {
+
                         for (int i = 0; i <= mp_start.size() - 1; i++) {
-                            mp_start.get(i).stop();
+                            try {
+                                mp_start.get(i).stop();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+
                         }
-                        mp_start.clear();
                     }
+                    mp_start.clear();
                     if (mpall != null) {
                         mpall.stop();
                         if (mediaPlayersAll.size() > 0) {
                             for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                                mediaPlayersAll.get(i).stop();
+                                try {
+                                    mediaPlayersAll.get(i).stop();
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
                             }
                         }
                         mediaPlayersAll.clear();
                     }
                     if (mpInst != null) {
-                        mpInst.stop();
+                        try {
+                            mpInst.stop();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                    if(instrumentList.size()>0) {
+                        instrumentList.clear();
                     }
                     Intent i = new Intent(StudioActivity.this, StationActivity.class);
                     startActivity(i);
@@ -1097,8 +1202,31 @@ public class StudioActivity extends AppCompatActivity {
         subEtTopicName = (EditText) subView.findViewById(R.id.dialogEtTopicName);
         sp = (Spinner) subView.findViewById(R.id.spinnerGenre);
 
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, genresName);
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, genresName){
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent)
+            {
+                View v = null;
+
+                // If this is the initial dummy entry, make it hidden
+                if (position == 0) {
+                    TextView tv = new TextView(getContext());
+                    tv.setHeight(0);
+                    tv.setVisibility(View.GONE);
+                    v = tv;
+                }
+                else {
+                    // Pass convertView as null to prevent reuse of special case views
+                    v = super.getDropDownView(position, null, parent);
+                }
+
+                // Hide scroll bar because it appears sometimes unnecessarily, this does not prevent scrolling
+                parent.setVerticalScrollBarEnabled(false);
+                return v;
+            }
+
+        };
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sp.setAdapter(dataAdapter);
 
@@ -1138,10 +1266,19 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //tvInfo.setText(subEtTopicName.getText().toString());
-                openDialog2();
+                //&& !selectedGenre.equals("1"))
+                String SubTopic=subEtTopicName.getText().toString();
+                if(!SubTopic.trim().equals(""))  {
+                    openDialog2();
 
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(subEtTopicName.getWindowToken(), 0);
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(subEtTopicName.getWindowToken(), 0);
+                }else{
+                    openDialog();
+                    subEtTopicName.setHint("Enter Topic Name");
+                    //Toast.makeText(StudioActivity.this, "Please enter topic name.", Toast.LENGTH_SHORT).show();
+                    //openDialog();
+                }
 
 
             }
@@ -1772,6 +1909,8 @@ public class StudioActivity extends AppCompatActivity {
                             ivRecord.setVisibility(View.VISIBLE);
                             switchPublic.setChecked(false);
                             switchFlag = "0";
+                            frameProgress.refreshDrawableState();
+
 //                            SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
 //                            FilterPref.remove("instrumentsPos");
 //                            FilterPref.apply();
@@ -1797,11 +1936,16 @@ public class StudioActivity extends AppCompatActivity {
                             rlMelodyButton.setVisibility(View.VISIBLE);
                             ivRecord.setVisibility(View.VISIBLE);
                             switchPublic.setChecked(false);
+                            frameProgress.refreshDrawableState();
                             switchFlag = "0";
 //                            SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
 //                            FilterPref.remove("instrumentsPos");
 //                            FilterPref.apply();
 //                            Toast.makeText(StudioActivity.this, "Saved as Recording", Toast.LENGTH_SHORT).show();
+                        }
+                        handler.removeCallbacksAndMessages(null);
+                        if(StudioActivity.lstViewHolder.size()>0){
+                            StudioActivity.lstViewHolder.clear();
                         }
                         if (joinRecordingId != null) {
                             Toast.makeText(StudioActivity.this, "Joined Successfully", Toast.LENGTH_SHORT).show();
@@ -1840,12 +1984,12 @@ public class StudioActivity extends AppCompatActivity {
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
                             switchFbEditor1.clear();
                             switchFbEditor1.apply();
-                        } else if (switchFbStatus == 2 && switchFbStatus!=1) {
+                        } else if (switchFbStatus == 2 && switchFbStatus != 1) {
                             TweetShare();
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
                             switchFbEditor1.clear();
                             switchFbEditor1.apply();
-                        }else if (switchFbStatus == 3){
+                        } else if (switchFbStatus == 3) {
                             FbShare();
                             TweetShare();
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
@@ -2179,14 +2323,18 @@ public class StudioActivity extends AppCompatActivity {
                                     genres.setName(titleString);
                                     genres.setId(genreJson.getString(KEY_GENRE_ID));
                                     genresArrayList.add(genres);
-                                    genresName.add(i, genresArrayList.get(i).getName());
+                                    if(i==0) {
+                                        genresName.add(i, "Genre");
+                                    }else {
+                                        genresName.add(i, genresArrayList.get(i).getName());
+                                    }
                                     genresId.add(i, genresArrayList.get(i).getId());
 
                                 }
                             }
-                            genresArrayList.remove(0);
+                            /*genresArrayList.remove(0);
                             genresName.remove(0);
-                            genresId.remove(0);
+                            genresId.remove(0);*/
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -2539,6 +2687,7 @@ public class StudioActivity extends AppCompatActivity {
             melody_detail.setText("" + instCount + " Instrumentals");
         }
     }
+
     public void FbShare() {
         SharedPreferences editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE);
         String fetchThumbNailUrl = editorT.getString("thumbnailUrl", null);
