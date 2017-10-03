@@ -799,7 +799,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     ex.printStackTrace();
                 }
 
-
             }
         });
 
