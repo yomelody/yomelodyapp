@@ -1,6 +1,5 @@
 package com.instamelody.instamelody;
 
-import android.*;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -298,7 +297,6 @@ public class ChatActivity extends AppCompatActivity {
 
         getChatMsgs(chatId);
 
-//        groupImageBitmap = ((BitmapDrawable) ivGroupImage.getDrawable()).getBitmap();
         etMessage = (EditText) findViewById(R.id.etMessage);
         etMessage.setHintTextColor(Color.parseColor("#7B888F"));
         inflater = LayoutInflater.from(ChatActivity.this);
