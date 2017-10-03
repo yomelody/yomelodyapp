@@ -94,7 +94,7 @@ public class Update extends AppCompatActivity {
     String passwordNil = "";
     int day, month, year;
     int userIdUpdate = 0;
-    String finalDate;
+    String finalDate="";
     public static ProgressDialog progressDialog;
 
     @Override
@@ -181,6 +181,7 @@ public class Update extends AppCompatActivity {
             etuUsername.setText(profileEditor.getString("updateUserName", null));
             etuPhone.setText(profileEditor.getString("updateMobile", null));
             tvDobUpdate.setText(profileEditor.getString("updateDOB", null));
+            finalDate=profileEditor.getString("updateDOB",null);
             if (profileImageEditor.getString("ProfileImage", null) != null) {
                 Picasso.with(Update.this).load(profileImageEditor.getString("ProfileImage", null)).into(userProfileImageUpdate);
             }
@@ -406,9 +407,15 @@ public class Update extends AppCompatActivity {
                 }
             }
         });
+
+        etuFirstName.setSelection(etuFirstName.getText().length());
+        etuLastName.setSelection(etuLastName.getText().length());
+        etuUsername.setSelection(etuUsername.getText().length());
+        etuPhone.setSelection(etuPhone.getText().length());
     }
 
     private void updateData() {
+
         final String firstname = etuFirstName.getText().toString().trim();
         final String lastname = etuLastName.getText().toString().trim();
         final String username = etuUsername.getText().toString().trim();
@@ -429,6 +436,7 @@ public class Update extends AppCompatActivity {
             }
         } else {
             finalDate = tvDobUpdate.getText().toString().trim();
+            AppHelper.sop("else=finalDate=="+tvDobUpdate.getText().toString().trim());
         }
         final String phone = etuPhone.getText().toString().trim();
         final String usertype = "USER";
@@ -527,6 +535,7 @@ public class Update extends AppCompatActivity {
             public void onResponse(NetworkResponse response) {
                 String resultResponse = new String(response.data);
 //                Toast.makeText(getApplicationContext(), "Profile Picture Updated", Toast.LENGTH_SHORT).show();
+                AppHelper.sop("response==="+response);
                 try {
                     JSONObject jsonObject = new JSONObject(resultResponse);
                     String flag = jsonObject.getString("flag");
@@ -565,6 +574,7 @@ public class Update extends AppCompatActivity {
                 params.put(USER_ID, userId);
                 params.put(FILE_TYPE, String.valueOf(1));
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params==="+params+"\nURL==="+UPLOAD_FILE);
                 return params;
             }
 
@@ -574,6 +584,7 @@ public class Update extends AppCompatActivity {
                 // file name could found file base or direct access from real path
                 // for now just get bitmap data from ImageView
                 params.put(FILE1, new DataPart("img.jpg", AppHelper.getFileDataFromDrawable(getBaseContext(), userProfileImageUpdate.getDrawable()), "image/jpeg"));
+                AppHelper.sop("getByteData=params==="+params);
                 return params;
             }
 
@@ -597,14 +608,14 @@ public class Update extends AppCompatActivity {
             progressDialog.setMessage("Please wait...");
             progressDialog.setCancelable(false);
             progressDialog.show();
-            long delayInMillis = 5000;
+            /*long delayInMillis = 5000;
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     progressDialog.dismiss();
                 }
-            }, delayInMillis);
+            }, delayInMillis);*/
         }
 
         protected String doInBackground(String... params) {
@@ -626,6 +637,7 @@ public class Update extends AppCompatActivity {
                 etuPhone.setText(profileEditor.getString("updateMobile", null));
                 tvDobUpdate.setText(profileEditor.getString("updateDOB", null));
             }
+
             Toast.makeText(Update.this, "Profile Updated", Toast.LENGTH_SHORT).show();
             SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
             editor.clear();
@@ -636,13 +648,14 @@ public class Update extends AppCompatActivity {
             SharedPreferences.Editor fbeditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
             fbeditor.clear();
             fbeditor.apply();
-            SharedPreferences.Editor profileEditor1 = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE).edit();
+            /*SharedPreferences.Editor profileEditor1 = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE).edit();
             profileEditor1.clear();
             profileEditor1.apply();
             SharedPreferences.Editor profileImageEditor1 = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE).edit();
             profileImageEditor1.clear();
-            profileImageEditor1.apply();
+            profileImageEditor1.apply();*/
             LoginManager.getInstance().logOut();
+            progressDialog.dismiss();
         }
 
     }
