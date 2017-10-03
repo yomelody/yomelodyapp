@@ -202,6 +202,20 @@ public class HomeActivity extends AppCompatActivity {
             Picasso.with(HomeActivity.this).load("https://graph.facebook.com/" + fbId + "/picture").into(userProfileImage);
         }
 
+        SharedPreferences profileEditor = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE);
+        SharedPreferences profileImageEditor = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE);
+        if (profileImageEditor.getString("ProfileImage",null) != null){
+            ivProfile.setVisibility(View.GONE);
+            userProfileImage.setVisibility(View.VISIBLE);
+            Picasso.with(HomeActivity.this).load(profileImageEditor.getString("ProfileImage",null)).into(userProfileImage);
+        }
+        if (profileEditor.getString("updateId",null) != null){
+            SignOut.setVisibility(View.VISIBLE);
+            SignIn.setVisibility(View.INVISIBLE);
+            tvFirstName.setText(profileEditor.getString("updateFirstName", null) + " "+profileEditor.getString("updateLastName",null));
+            tvUserName.setText("@" +profileEditor.getString("updateUserName",null));
+        }
+
 
         Settings.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -234,6 +248,12 @@ public class HomeActivity extends AppCompatActivity {
                 SharedPreferences.Editor fbeditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
                 fbeditor.clear();
                 fbeditor.commit();
+                SharedPreferences.Editor profileEditor1 = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE).edit();
+                profileEditor1.clear();
+                profileEditor1.apply();
+                SharedPreferences.Editor profileImageEditor1 = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE).edit();
+                profileImageEditor1.clear();
+                profileImageEditor1.apply();
                 LoginManager.getInstance().logOut();
                 SignOut.setVisibility(View.INVISIBLE);
                 SignIn.setVisibility(View.VISIBLE);

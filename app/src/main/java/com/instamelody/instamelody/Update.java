@@ -636,12 +636,12 @@ public class Update extends AppCompatActivity {
             SharedPreferences.Editor fbeditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
             fbeditor.clear();
             fbeditor.apply();
-            SharedPreferences.Editor profileEditor1 = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE).edit();
+            /*SharedPreferences.Editor profileEditor1 = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE).edit();
             profileEditor1.clear();
             profileEditor1.apply();
             SharedPreferences.Editor profileImageEditor1 = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE).edit();
             profileImageEditor1.clear();
-            profileImageEditor1.apply();
+            profileImageEditor1.apply();*/
             LoginManager.getInstance().logOut();
         }
 
