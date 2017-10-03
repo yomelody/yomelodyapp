@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
+import com.instamelody.instamelody.Fragments.SubscriptionsFragment;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -186,8 +187,12 @@ public class SettingsActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
 
-                    Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
-                    startActivity(intent);
+                    /*Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
+                    startActivity(intent);*/
+
+                    Intent openFragmentBIntent = new Intent(SettingsActivity.this, MelodyActivity.class);
+                    openFragmentBIntent.putExtra("OPEN_FRAGMENT_SUBSCRIPTION", 1);
+                    startActivity(openFragmentBIntent);
 
                 }
             });
@@ -405,8 +410,12 @@ public class SettingsActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
 
-                    Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
-                    startActivity(intent);
+                    /*Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
+                    startActivity(intent);*/
+
+                    Intent openFragmentBIntent = new Intent(SettingsActivity.this, MelodyActivity.class);
+                    openFragmentBIntent.putExtra("OPEN_FRAGMENT_SUBSCRIPTION", 1);
+                    startActivity(openFragmentBIntent);
 
                 }
             });

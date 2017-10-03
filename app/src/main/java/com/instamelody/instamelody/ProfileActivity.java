@@ -113,7 +113,8 @@ public class ProfileActivity extends AppCompatActivity {
     ArrayList<Genres> genresArrayList = new ArrayList<>();
     Button btnAudio, btnActivity, btnBio, btnCancel;
     RelativeLayout rlPartProfile, rlFragmentActivity, rlFragmentBio, rlSearch, rlFollow, tab1, rlMessage;
-    ImageView ivBackButton, ivHomeButton, ivAudio_feed, ivDiscover, ivMessage, ivProfile, ivSearchProfile, userCover, ivToMelody, ivFilterProfile;
+    ImageView ivBackButton, ivHomeButton, ivAudio_feed, ivDiscover, ivMessage, ivProfile, ivSearchProfile, userCover, ivToMelody;
+    public static ImageView ivFilterProfile;
     ImageView ivFollow, ivUnfollow;
     CircleImageView userProfileImageInProf;
     TextView tvNameInProf, tvUserNameInProf, tv_records, tv_fans, tv_following;
@@ -122,9 +123,9 @@ public class ProfileActivity extends AppCompatActivity {
     String strName, strSearch, strArtist, strInstruments, strBPM;
     String artistName, Instruments, BPM;
     EditText subEtFilterName, subEtFilterInstruments, subEtFilterBPM;
-    SearchView search1;
+    public static SearchView search1;
     ProgressDialog progressDialog;
-//    LongOperation myTask = null;
+    //    LongOperation myTask = null;
     private static RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView recyclerView;
@@ -203,9 +204,8 @@ public class ProfileActivity extends AppCompatActivity {
         }*/
         if (getIntent() != null && getIntent().hasExtra("showProfileUserId")) {
             showProfileUserId = getIntent().getStringExtra("showProfileUserId");
-            AppHelper.sop("showProfileUserId======"+showProfileUserId);
-        }
-        else {
+            AppHelper.sop("showProfileUserId======" + showProfileUserId);
+        } else {
             if (loginSharedPref.getString("userId", null) != null) {
                 showProfileUserId = loginSharedPref.getString("userId", null);
             } else if (fbPref.getString("userId", null) != null) {
@@ -341,6 +341,8 @@ public class ProfileActivity extends AppCompatActivity {
                 btnActivity.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnBio.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnAudio.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                ivFilterProfile.setVisibility(View.VISIBLE);
+                ivSearchProfile.setVisibility(View.VISIBLE);
                 List<android.support.v4.app.Fragment> fragments = getSupportFragmentManager().getFragments();
                 if (fragments != null) {
                     for (android.support.v4.app.Fragment fragment : fragments) {
@@ -348,9 +350,10 @@ public class ProfileActivity extends AppCompatActivity {
                     }
                 }
                 rlPartProfile.setVisibility(View.VISIBLE);
+
                 getFragmentManager().popBackStack();
 
-                if(getFragmentManager().findFragmentById(R.id.activity_profile)!=null){
+                if (getFragmentManager().findFragmentById(R.id.activity_profile) != null) {
                     getFragmentManager().beginTransaction().remove(getFragmentManager().
                             findFragmentById(R.id.activity_profile)).commit();
                 }
@@ -368,6 +371,8 @@ public class ProfileActivity extends AppCompatActivity {
                 btnAudio.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnActivity.setBackgroundColor(Color.parseColor("#FFFFFF"));
                 rlPartProfile.setVisibility(View.GONE);
+                ivSearchProfile.setVisibility(View.VISIBLE);
+                ivFilterProfile.setVisibility(View.GONE);
 
                 ProfileActivityFragment pactf = new ProfileActivityFragment();
                 android.app.FragmentManager fragmentManager = getFragmentManager();
@@ -385,6 +390,9 @@ public class ProfileActivity extends AppCompatActivity {
                 btnAudio.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnBio.setBackgroundColor(Color.parseColor("#FFFFFF"));
                 rlPartProfile.setVisibility(View.GONE);
+                ivFilterProfile.setVisibility(View.GONE);
+                ivSearchProfile.setVisibility(View.GONE);
+
 
                 BioFragment bioFragment = new BioFragment();
                 android.app.FragmentManager fragmentManager = getFragmentManager();
@@ -411,9 +419,9 @@ public class ProfileActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-                try{
+                try {
                     finish();
-                }catch (Throwable e){
+                } catch (Throwable e) {
                     e.printStackTrace();
                 }
 
@@ -494,7 +502,7 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
-    public String getUserId(){
+    public String getUserId() {
         return showProfileUserId;
     }
 
@@ -515,7 +523,7 @@ public class ProfileActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response==="+response);
+                        AppHelper.sop("response===" + response);
                         String records, fans, followers;
                         String str = response;
                         JSONObject jsonObject;
@@ -597,7 +605,7 @@ public class ProfileActivity extends AppCompatActivity {
                                     userDetails.setProfilepic(userJson.getString("profilepic"));
                                     userDetails.setCoverpic(userJson.getString("coverpic"));
                                     userDetails.setRegisterdate(userJson.getString("registerdate"));
-                                    if(userJson.has("followers")){
+                                    if (userJson.has("followers")) {
                                         userDetails.setFollowers(userJson.getString("followers"));
                                     }
                                     userDetails.setFans(userJson.getString("fans"));
@@ -655,7 +663,7 @@ public class ProfileActivity extends AppCompatActivity {
                 params.put(USER_ID, showProfileUserId);
                 params.put(MY_ID, userId);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("Param==="+params+"\nURL===="+USERS_BIO);
+                AppHelper.sop("Param===" + params + "\nURL====" + USERS_BIO);
                 return params;
             }
         };
@@ -668,7 +676,7 @@ public class ProfileActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("Response==="+response);
+                        AppHelper.sop("Response===" + response);
                         JSONObject jsonObject, genreJson;
                         JSONArray jsonArray;
                         String titleString;
@@ -732,7 +740,7 @@ public class ProfileActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("Param==="+params+"\nURL===="+GENERE);
+                AppHelper.sop("Param===" + params + "\nURL====" + GENERE);
                 return params;
             }
         };
@@ -742,7 +750,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     public void fetchRecordings() {
 
-        if (rv!=null){
+        if (rv != null) {
             rv.setAdapter(adapter);
         }
 
@@ -750,13 +758,13 @@ public class ProfileActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response==="+response);
+                        AppHelper.sop("response===" + response);
 //                        Toast.makeText(getActivity(), ""+response, Toast.LENGTH_SHORT).show();
                         Log.d("ReturnData", response);
                         recordingList.clear();
                         new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
-                        tv_records.setText(""+recordingList.size());
+                        tv_records.setText("" + recordingList.size());
                     }
                 },
                 new Response.ErrorListener() {
@@ -774,7 +782,7 @@ public class ProfileActivity extends AppCompatActivity {
                 params.put(KEY, "Myrecording");
                 params.put(GENRE, genreString);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("Param==="+params+"\nURL===="+RECORDINGS);
+                AppHelper.sop("Param===" + params + "\nURL====" + RECORDINGS);
                 return params;
             }
         };
@@ -1410,9 +1418,9 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        AppHelper.sop("onActivityResult=requestCode="+requestCode+"=resultCode="+resultCode);
-        if (requestCode==RecordingsCardAdapter.REQUEST_RECORDING_COMMENT){
-            if (resultCode==RESULT_OK){
+        AppHelper.sop("onActivityResult=requestCode=" + requestCode + "=resultCode=" + resultCode);
+        if (requestCode == RecordingsCardAdapter.REQUEST_RECORDING_COMMENT) {
+            if (resultCode == RESULT_OK) {
                 fetchRecordings();
             }
         }

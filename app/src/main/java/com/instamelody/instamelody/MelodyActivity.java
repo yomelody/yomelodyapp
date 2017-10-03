@@ -3,6 +3,7 @@ package com.instamelody.instamelody;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
@@ -119,8 +120,19 @@ public class MelodyActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        mpf = new MelodyPacksFragment();
-        getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
+
+        if ((getIntent().hasExtra("OPEN_FRAGMENT_SUBSCRIPTION"))== true)
+        {
+            btnMelodyPacks.setBackgroundColor(Color.parseColor("#E4E4E4"));
+            btnRecordings.setBackgroundColor(Color.parseColor("#E4E4E4"));
+            btnSubscriptions.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            SubscriptionsFragment subf = new SubscriptionsFragment();
+            getFragmentManager().beginTransaction().replace(R.id.activity_melody, subf).commit();
+        }else {
+            mpf = new MelodyPacksFragment();
+            getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
+        }
+
 
         btnMelodyPacks.setOnClickListener(new View.OnClickListener() {
             @Override
