@@ -11,8 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.instamelody.instamelody.ChatActivity;
 import com.instamelody.instamelody.Models.RecentImagesModel;
 import com.instamelody.instamelody.R;
@@ -24,8 +22,6 @@ import java.util.ArrayList;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION;
-import static com.instamelody.instamelody.R.attr.failureImage;
-import static com.instamelody.instamelody.R.attr.placeholderImage;
 
 /**
  * Created by Shubhansh Jaiswal on 23/01/17.
