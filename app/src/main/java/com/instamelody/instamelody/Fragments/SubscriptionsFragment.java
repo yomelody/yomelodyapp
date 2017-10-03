@@ -42,6 +42,7 @@ import com.braintreepayments.api.models.PostalAddress;
 import com.instamelody.instamelody.Models.SubscriptionPackage;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.SignInActivity;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PayPalService;
@@ -228,6 +229,10 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
         userImage = (ImageView) view.findViewById(R.id.userImage);
         userProfileImage = (CircleImageView) view.findViewById(R.id.userProfileImage);
         switchFree = (Switch) view.findViewById(R.id.switchFree);
+        switchStandard = (Switch)view.findViewById(R.id.switchStandard);
+        switchPremium = (Switch)view.findViewById(R.id.switchPremium);
+        switchProducer = (Switch)view.findViewById(R.id.switchProducer);
+
 
         if (userId != null) {
             userImage.setVisibility(View.INVISIBLE);
@@ -375,122 +380,148 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                         switchStandard = (Switch) rootView.findViewById(R.id.switchStandard);
                         switchPremium = (Switch) rootView.findViewById(R.id.switchPremium);
                         switchProducer = (Switch) rootView.findViewById(R.id.switchProducer);
-                        switchFree.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (switchFree.isChecked()) {
-                                    SharedPreferences.Editor switchFreeEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE).edit();
-                                    switchFreeEditor.putBoolean("switchFree", true);
-                                    switchFreeEditor.apply();
-                                } else {
-                                    SharedPreferences.Editor switchFreeEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE).edit();
-                                    switchFreeEditor.putBoolean("switchFree", false);
-                                    switchFreeEditor.apply();
+                        if (userId==null){
+                            switchFree.setChecked(true);
+                            switchStandard.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Intent i = new Intent(getActivity(), SignInActivity.class);
+                                    startActivity(i);
                                 }
+                            });
 
-                                if (switchFlag == "1") {
-                                    switchFree.setChecked(false);
-                                    switchFlag = "0";
-                                } else {
-                                    switchFree.setChecked(true);
-                                    switchFlag = "1";
-                                    packageId = "1";
-                                    if (userId != null) {
-                                        tvUserUpgrade.setText("Upgrade" + " " + userNameLogin + "!");
-                                        userImage.setVisibility(View.INVISIBLE);
-                                        userProfileImage.setVisibility(View.VISIBLE);
-                                        Picasso.with(getActivity()).load(profilePicLogin).into(userProfileImage);
+                            switchProducer.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Intent i = new Intent(getActivity(), SignInActivity.class);
+                                    startActivity(i);
+                                }
+                            });
+
+                            switchPremium.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Intent i = new Intent(getActivity(), SignInActivity.class);
+                                    startActivity(i);
+                                }
+                            });
+                        }else {
+                            switchFree.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (switchFree.isChecked()) {
+                                        SharedPreferences.Editor switchFreeEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE).edit();
+                                        switchFreeEditor.putBoolean("switchFree", true);
+                                        switchFreeEditor.apply();
+                                    } else {
+                                        SharedPreferences.Editor switchFreeEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE).edit();
+                                        switchFreeEditor.putBoolean("switchFree", false);
+                                        switchFreeEditor.apply();
                                     }
+
+                                    if (switchFlag == "1") {
+                                        switchFree.setChecked(false);
+                                        switchFlag = "0";
+                                    } else {
+                                        switchFree.setChecked(true);
+                                        switchFlag = "1";
+                                        packageId = "1";
+                                        if (userId != null) {
+                                            tvUserUpgrade.setText("Upgrade" + " " + userNameLogin + "!");
+                                            userImage.setVisibility(View.INVISIBLE);
+                                            userProfileImage.setVisibility(View.VISIBLE);
+                                            Picasso.with(getActivity()).load(profilePicLogin).into(userProfileImage);
+                                        }
 //                                    subscription();
 
 //                                    onBuyPressed(v);
 
 
+                                    }
                                 }
-                            }
-                        });
+                            });
 
-                        switchStandard.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (switchStandard.isChecked()) {
-                                    SharedPreferences.Editor switchStandardEditor = getActivity().getSharedPreferences("SwitchStatusStandard", MODE_PRIVATE).edit();
-                                    switchStandardEditor.putBoolean("switchStandard", true);
-                                    switchStandardEditor.apply();
-                                } else {
-                                    SharedPreferences.Editor switchStandardEditor = getActivity().getSharedPreferences("SwitchStatusStandard", MODE_PRIVATE).edit();
-                                    switchStandardEditor.putBoolean("switchStandard", false);
-                                    switchStandardEditor.apply();
-                                }
+                            switchStandard.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (switchStandard.isChecked()) {
+                                        SharedPreferences.Editor switchStandardEditor = getActivity().getSharedPreferences("SwitchStatusStandard", MODE_PRIVATE).edit();
+                                        switchStandardEditor.putBoolean("switchStandard", true);
+                                        switchStandardEditor.apply();
+                                    } else {
+                                        SharedPreferences.Editor switchStandardEditor = getActivity().getSharedPreferences("SwitchStatusStandard", MODE_PRIVATE).edit();
+                                        switchStandardEditor.putBoolean("switchStandard", false);
+                                        switchStandardEditor.apply();
+                                    }
 
-                                if (switchFlag == "1") {
-                                    switchStandard.setChecked(false);
-                                    switchFlag = "0";
-                                } else {
-                                    switchStandard.setChecked(true);
-                                    switchFlag = "1";
-                                    packageId = "2";
+                                    if (switchFlag == "1") {
+                                        switchStandard.setChecked(false);
+                                        switchFlag = "0";
+                                    } else {
+                                        switchStandard.setChecked(true);
+                                        switchFlag = "1";
+                                        packageId = "2";
 //                                    subscription();
-                                    onBuyPressed(v);
+                                        onBuyPressed(v);
 //                                    onBraintreeSubmit(v);
 
+                                    }
                                 }
-                            }
-                        });
+                            });
 
-                        switchPremium.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (switchPremium.isChecked()) {
-                                    SharedPreferences.Editor switchPremiumEditor = getActivity().getSharedPreferences("SwitchStatusPremium", MODE_PRIVATE).edit();
-                                    switchPremiumEditor.putBoolean("switchPremium", true);
-                                    switchPremiumEditor.apply();
-                                } else {
-                                    SharedPreferences.Editor switchPremiumEditor = getActivity().getSharedPreferences("SwitchStatusPremium", MODE_PRIVATE).edit();
-                                    switchPremiumEditor.putBoolean("switchPremium", false);
-                                    switchPremiumEditor.apply();
-                                }
-                                if (switchFlag == "1") {
-                                    switchPremium.setChecked(false);
-                                    switchFlag = "0";
-                                } else {
-                                    switchPremium.setChecked(true);
-                                    switchFlag = "1";
-                                    packageId = "3";
+                            switchPremium.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (switchPremium.isChecked()) {
+                                        SharedPreferences.Editor switchPremiumEditor = getActivity().getSharedPreferences("SwitchStatusPremium", MODE_PRIVATE).edit();
+                                        switchPremiumEditor.putBoolean("switchPremium", true);
+                                        switchPremiumEditor.apply();
+                                    } else {
+                                        SharedPreferences.Editor switchPremiumEditor = getActivity().getSharedPreferences("SwitchStatusPremium", MODE_PRIVATE).edit();
+                                        switchPremiumEditor.putBoolean("switchPremium", false);
+                                        switchPremiumEditor.apply();
+                                    }
+                                    if (switchFlag == "1") {
+                                        switchPremium.setChecked(false);
+                                        switchFlag = "0";
+                                    } else {
+                                        switchPremium.setChecked(true);
+                                        switchFlag = "1";
+                                        packageId = "3";
 //                                    subscription();
-                                    onBuyPressed(v);
+                                        onBuyPressed(v);
 //                                    onBraintreeSubmit(v);
+                                    }
                                 }
-                            }
-                        });
+                            });
 
-                        switchProducer.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (switchProducer.isChecked()) {
-                                    SharedPreferences.Editor switchProducerEditor = getActivity().getSharedPreferences("SwitchStatusProducer", MODE_PRIVATE).edit();
-                                    switchProducerEditor.putBoolean("switchProducer", true);
-                                    switchProducerEditor.apply();
-                                } else {
-                                    SharedPreferences.Editor switchProducerEditor = getActivity().getSharedPreferences("SwitchStatusProducer", MODE_PRIVATE).edit();
-                                    switchProducerEditor.putBoolean("switchProducer", false);
-                                    switchProducerEditor.apply();
-                                }
-                                if (switchFlag == "1") {
-                                    switchProducer.setChecked(false);
-                                    switchFlag = "0";
-                                } else {
-                                    switchProducer.setChecked(true);
-                                    switchFlag = "1";
-                                    packageId = "4";
+                            switchProducer.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (switchProducer.isChecked()) {
+                                        SharedPreferences.Editor switchProducerEditor = getActivity().getSharedPreferences("SwitchStatusProducer", MODE_PRIVATE).edit();
+                                        switchProducerEditor.putBoolean("switchProducer", true);
+                                        switchProducerEditor.apply();
+                                    } else {
+                                        SharedPreferences.Editor switchProducerEditor = getActivity().getSharedPreferences("SwitchStatusProducer", MODE_PRIVATE).edit();
+                                        switchProducerEditor.putBoolean("switchProducer", false);
+                                        switchProducerEditor.apply();
+                                    }
+                                    if (switchFlag == "1") {
+                                        switchProducer.setChecked(false);
+                                        switchFlag = "0";
+                                    } else {
+                                        switchProducer.setChecked(true);
+                                        switchFlag = "1";
+                                        packageId = "4";
 //                                    subscription();
-                                    onBuyPressed(v);
+                                        onBuyPressed(v);
 //                                    onBraintreeSubmit(v);
 
+                                    }
                                 }
-                            }
-                        });
-
+                            });
+                        }
                     }
                 },
                 new Response.ErrorListener() {
