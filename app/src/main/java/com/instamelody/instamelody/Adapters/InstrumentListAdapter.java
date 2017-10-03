@@ -466,7 +466,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                             }
                         } else if (IsMute == true) {
                             IsMute = false;
-                            holder.tvMButton.setBackgroundColor(Color.WHITE);
+                            holder.tvMButton.setBackgroundColor(Color.TRANSPARENT);
                         }
                     }
 
@@ -478,15 +478,36 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                             if (i == holder.getAdapterPosition()) {
                                 IsPlaySoloAll = StudioActivity.PlayAllModel.get(i).isSolo();
                                 IsPlayMuteAll = StudioActivity.PlayAllModel.get(i).isMute();
-                                if (IsPlayMuteAll == false && IsPlaySoloAll == false) {
+
+                                if(IsPlayMuteAll==false){
+                                    StudioActivity.PlayAllModel.get(i).setMute(true);
+                                    //StudioActivity.PlayAllModel.get(i).setSolo(false);
+                                    holder.tvMButton.setBackgroundColor(Color.GRAY);
+                                    holder.tvSButton.setBackgroundColor(Color.TRANSPARENT);
+                                    StudioActivity.mediaPlayersAll.get(i).setVolume(0, 0);
+                                }else if(IsPlayMuteAll==true){
+                                    StudioActivity.PlayAllModel.get(i).setMute(false);
+                                    //StudioActivity.PlayAllModel.get(i).setSolo(false);
+                                    holder.tvMButton.setBackgroundColor(Color.TRANSPARENT);
+                                    holder.tvSButton.setBackgroundColor(Color.TRANSPARENT);
+                                    StudioActivity.mediaPlayersAll.get(i).setVolume(1, 1);
+                                }
+
+                                /*if (IsPlayMuteAll == false && IsPlaySoloAll == false) {
                                     StudioActivity.PlayAllModel.get(i).setMute(true);
                                     //StudioActivity.PlayAllModel.set(i,new ModelPlayAllMediaPlayer(true,true,false,StudioActivity.mpall));
                                     holder.tvMButton.setBackgroundColor(Color.GRAY);
                                     StudioActivity.mediaPlayersAll.get(i).setVolume(0, 0);
-                                } else if (IsPlayMuteAll = true) {
+                                } else if (IsPlayMuteAll == true && IsPlaySoloAll == false) {
                                     StudioActivity.PlayAllModel.get(i).setMute(false);
-                                    holder.tvMButton.setBackgroundColor(Color.WHITE);
-                                }
+                                    holder.tvMButton.setBackgroundColor(Color.TRANSPARENT);
+                                }else if( IsPlaySoloAll == true && IsPlayMuteAll == false){
+                                    holder.tvMButton.setBackgroundColor(Color.TRANSPARENT);
+                                    StudioActivity.mediaPlayersAll.get(i).setVolume(0, 0);
+                                }else if( IsPlaySoloAll == true && IsPlayMuteAll == true){
+                                    StudioActivity.PlayAllModel.get(i).setMute(false);
+                                    holder.tvMButton.setBackgroundColor(Color.TRANSPARENT);
+                                }*/
 
                             }
 
@@ -517,7 +538,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                             }
                         } else if (IsSolo == true) {
                             IsSolo = false;
-                            holder.tvSButton.setBackgroundColor(Color.WHITE);
+                            holder.tvSButton.setBackgroundColor(Color.TRANSPARENT);
                             if (IsSolo == false && IsMute == true) {
                                 holder.mp.setVolume(0, 0);
                             }
@@ -537,20 +558,30 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                             if (i == holder.getAdapterPosition()) {
 
                                 if (IsPlaySoloAll == false) {
+                                    StudioActivity.PlayAllModel.get(i).setSolo(true);
+                                    StudioActivity.PlayAllModel.get(i).setMute(false);
+                                    holder.tvSButton.setBackgroundColor(Color.GRAY);
+                                    holder.tvMButton.setBackgroundColor(Color.TRANSPARENT);
+                                    StudioActivity.mediaPlayersAll.get(i).setVolume(1, 1);
+                                }else if(IsPlaySoloAll == true){
+                                    StudioActivity.PlayAllModel.get(i).setSolo(false);
+                                    StudioActivity.PlayAllModel.get(i).setMute(false);
+                                    holder.tvSButton.setBackgroundColor(Color.TRANSPARENT);
+                                    holder.tvMButton.setBackgroundColor(Color.TRANSPARENT);
+                                    StudioActivity.mediaPlayersAll.get(i).setVolume(1, 1);
+                                }
 
+                                /*if (IsPlaySoloAll == false) {
                                     StudioActivity.PlayAllModel.get(i).setSolo(true);
                                     holder.tvSButton.setBackgroundColor(Color.GRAY);
                                     StudioActivity.mediaPlayersAll.get(i).setVolume(1, 1);
-
                                 } else if (IsPlaySoloAll == true) {
-
                                     StudioActivity.PlayAllModel.get(i).setSolo(false);
-                                    holder.tvSButton.setBackgroundColor(Color.WHITE);
-                                    StudioActivity.mediaPlayersAll.get(i).setVolume(0, 0);
-
-                                }
-
-
+                                    holder.tvSButton.setBackgroundColor(Color.TRANSPARENT);
+                                    if (IsPlayMuteAll == true) {
+                                        StudioActivity.mediaPlayersAll.get(i).setVolume(0, 0);
+                                    }
+                                }*/
                             } else if (IsPlaySoloAll == false) {
                                 StudioActivity.mediaPlayersAll.get(i).setVolume(0, 0);
                             }
@@ -1046,6 +1077,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     if (holder.mp != null) {
                         holder.mp.stop();
                     }
+
                     for(int i=0;i<=StudioActivity.mp_start.size()-1;i++){
 
                         try{
@@ -1055,6 +1087,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                         }catch (Exception ex){
                             ex.printStackTrace();
                         }
+                    }
+                    if(StudioActivity.PlayAllModel.size()>0){
+                        StudioActivity.PlayAllModel.clear();
                     }
                     for(int i=0;i<=StudioActivity.lstViewHolder.size()-1;i++){
 
