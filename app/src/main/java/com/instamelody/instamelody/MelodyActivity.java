@@ -419,6 +419,7 @@ public class MelodyActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //tvInfo.setText(subEtTopicName.getText().toString());
+                clearSharePrefMelody();
                 strArtist = subEtFilterName.getText().toString().trim();
                 SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
                 editorFilterArtist.putString("stringFilterArtist", strArtist);
@@ -488,6 +489,7 @@ public class MelodyActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //tvInfo.setText(subEtTopicName.getText().toString());
+                clearSharePrefMelody();
                 Instruments = subEtFilterInstruments.getText().toString().trim();
                 SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
                 editorFilterInstruments.putString("stringFilterInstruments", Instruments);
@@ -558,6 +560,7 @@ public class MelodyActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //tvInfo.setText(subEtTopicName.getText().toString());
+                clearSharePrefMelody();
                 BPM = subEtFilterBPM.getText().toString().trim();
                 SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
                 editorFilterBPM.putString("stringFilterBPM", BPM);

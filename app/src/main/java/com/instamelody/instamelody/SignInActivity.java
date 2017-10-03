@@ -300,8 +300,8 @@ public class SignInActivity extends AppCompatActivity {
                     passwordRequired.setVisibility(View.VISIBLE);
                     passwordRequired.setText("required");
                 } else {
-                    LogIn();
                     btnLogIn.setEnabled(false);
+                    LogIn();
                 }
             }
         });
@@ -579,7 +579,7 @@ public class SignInActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                        btnLogIn.setEnabled(true);
                         String errorMsg = "";
                         if (error instanceof TimeoutError || error instanceof NoConnectionError) {
                             errorMsg = "There is either no connection or it timed out.";

@@ -440,6 +440,7 @@ public class Update extends AppCompatActivity {
 
                         String successmsg = response.toString();
 //                        Toast.makeText(Update.this, "Login to Proceed", Toast.LENGTH_SHORT).show();
+                        AppHelper.sop("response==="+response);
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
                             String flag = jsonObject.getString("flag");
@@ -511,6 +512,7 @@ public class Update extends AppCompatActivity {
                 params.put(KEY_DOB, finalDate);
                 params.put(KEY_PHONE, phone);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params==="+params+"\nURL===="+UPDATEPROFILE);
                 return params;
             }
 

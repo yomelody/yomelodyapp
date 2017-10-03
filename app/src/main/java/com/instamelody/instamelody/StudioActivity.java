@@ -244,7 +244,7 @@ public class StudioActivity extends AppCompatActivity {
     public static byte[] bytes, soundBytes;
     String idUpload;
     int InstrumentCountSize = 0;
-    private boolean mShouldContinue = true;
+    public static boolean mShouldContinue = true;
     ArrayList<String> urls;
     MediaPlayer[] media;
     List<MediaPlayer> mps = new ArrayList<MediaPlayer>();
@@ -590,7 +590,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(StudioActivity.this, ContactsActivity.class);
-                intent.putExtra("Previous","studioActivity");
+                intent.putExtra("Previous", "studioActivity");
                 startActivity(intent);
             }
         });
@@ -1331,7 +1331,7 @@ public class StudioActivity extends AppCompatActivity {
         }
 
 
-        private synchronized boolean shouldContinue() {
+        public synchronized boolean shouldContinue() {
             return mShouldContinue;
         }
 
@@ -1340,7 +1340,7 @@ public class StudioActivity extends AppCompatActivity {
         }
 
 
-        private void updateDecibelLevel() {
+        public void updateDecibelLevel() {
 
             double sum = 0;
 
@@ -1837,12 +1837,12 @@ public class StudioActivity extends AppCompatActivity {
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
                             switchFbEditor1.clear();
                             switchFbEditor1.apply();
-                        } else if (switchFbStatus == 2 && switchFbStatus!=1) {
+                        } else if (switchFbStatus == 2 && switchFbStatus != 1) {
                             TweetShare();
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
                             switchFbEditor1.clear();
                             switchFbEditor1.apply();
-                        }else if (switchFbStatus == 3){
+                        } else if (switchFbStatus == 3) {
                             FbShare();
                             TweetShare();
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
@@ -2536,6 +2536,7 @@ public class StudioActivity extends AppCompatActivity {
             melody_detail.setText("" + instCount + " Instrumentals");
         }
     }
+
     public void FbShare() {
         SharedPreferences editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE);
         String fetchThumbNailUrl = editorT.getString("thumbnailUrl", null);
