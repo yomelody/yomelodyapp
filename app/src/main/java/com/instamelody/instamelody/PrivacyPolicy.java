@@ -3,18 +3,23 @@ package com.instamelody.instamelody;
 import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 
 public class PrivacyPolicy extends AppCompatActivity {
     WebView wv;
     String url="file:///android_asset/index.html";
+    ImageView backIv;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_privacy_policy);
         wv=(WebView)findViewById(R.id.privacy);
+        backIv=(ImageView) findViewById(R.id.backIv);
 //        WebSettings webSettings = wv.getSettings();
 //        wv.getSettings().setLoadWithOverviewMode(true);
 //        wv.getSettings().setUseWideViewPort(true);
@@ -22,6 +27,13 @@ public class PrivacyPolicy extends AppCompatActivity {
         wv.setWebViewClient(new myWebClient());
         wv.loadUrl(url);
 
+
+        backIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
     public class myWebClient extends WebViewClient {
         @Override

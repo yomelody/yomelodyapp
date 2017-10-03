@@ -197,7 +197,7 @@ public class MelodyPacksFragment extends Fragment {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-
+                            AppHelper.sop("response=="+response);
                             JSONObject jsonObject, genreJson;
                             JSONArray jsonArray;
                             String titleString;
@@ -286,6 +286,7 @@ public class MelodyPacksFragment extends Fragment {
                     Map<String, String> params = new HashMap<String, String>();
                     params.put(SAVE_MELODY, "saverecording");
                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                    AppHelper.sop("params=="+params+"\nURL=="+GENERE);
                     return params;
                 }
             };
@@ -396,7 +397,7 @@ public class MelodyPacksFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
+                        AppHelper.sop("response=="+response);
 //                        Toast.makeText(getActivity(), "" + response, Toast.LENGTH_SHORT).show();
 
                         Log.d("ReturnData1", response);
@@ -436,6 +437,7 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(FILTER_TYPE, strName);
                 params.put(FILTER, "extrafilter");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params=="+params+"\nURL=="+MELODY);
                 return params;
             }
         };
@@ -449,7 +451,7 @@ public class MelodyPacksFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
+                        AppHelper.sop("response=="+response);
                         String successMsg = response.toString();
                         try {
                             JSONObject jsonObject = new JSONObject(successMsg);
@@ -497,6 +499,7 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(FILE_TYPE, "admin_melody");
                 params.put(KEY_SEARCH, strSearch);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params=="+params+"\nURL=="+MELODY);
                 return params;
             }
         };
@@ -511,6 +514,7 @@ public class MelodyPacksFragment extends Fragment {
                     @Override
                     public void onResponse(String response) {
                         String rs = response.toString();
+                        AppHelper.sop("response=="+response);
                         try {
                             JSONObject jsonObject = new JSONObject(rs);
                             String flag = jsonObject.getString("flag");
@@ -559,6 +563,7 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(USER_NAME, strArtist);
                 params.put(FILTER, "extrafilter");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params=="+params+"\nURL=="+MELODY);
                 return params;
             }
         };
@@ -572,6 +577,7 @@ public class MelodyPacksFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        AppHelper.sop("response=="+response);
                         String rs = response.toString();
                         try {
                             JSONObject jsonObject = new JSONObject(rs);
@@ -621,6 +627,7 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(COUNT, strInstruments);
                 params.put(FILTER, "extrafilter");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params=="+params+"\nURL=="+MELODY);
                 return params;
             }
         };
@@ -635,6 +642,7 @@ public class MelodyPacksFragment extends Fragment {
                     @Override
                     public void onResponse(String response) {
                         String rs = response.toString();
+                        AppHelper.sop("response=="+response);
                         try {
                             JSONObject jsonObject = new JSONObject(rs);
                             String flag = jsonObject.getString("flag");
@@ -683,6 +691,7 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(COUNT, strBPM);
                 params.put(FILTER, "extrafilter");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params=="+params+"\nURL=="+MELODY);
                 return params;
             }
         };
@@ -806,6 +815,7 @@ public class MelodyPacksFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        AppHelper.sop("response=="+response);
                         melodyList.clear();
                         instrumentList.clear();
                         JSONObject jsonObject;
@@ -881,6 +891,7 @@ public class MelodyPacksFragment extends Fragment {
 //                if (userId != null) {
 ////                    params.put(USER_ID, userId);
 //                }
+                AppHelper.sop("params=="+params+"\nURL=="+MELODY);
                 return params;
             }
 

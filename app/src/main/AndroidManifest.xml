@@ -48,8 +48,6 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorPrimaryDark" />
 
-        <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true"/>
-
         <activity
             android:name=".HomeActivity"
             android:configChanges="orientation"
@@ -147,8 +145,7 @@
         <activity
             android:name=".JoinActivity"
             android:label="@string/title_activity_join"
-            android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustResize|stateHidden"/>
+            android:theme="@style/AppTheme" />
         <activity android:name=".Update" />
         <activity android:name=".PrivacyPolicy" />
         <activity
@@ -156,12 +153,6 @@
             android:label="@string/title_activity_join_comment"
             android:theme="@style/AppTheme">
         </activity>
-        <activity
-            android:name=".StationCommentActivity"
-            android:configChanges="orientation"
-            android:label="@string/title_activity_melody"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
 
         <activity
             android:name="com.auth0.android.lock.LockActivity"
@@ -179,16 +170,13 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".StationCommentActivity"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_melody"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
 
-        <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
-            android:launchMode="singleTask">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="$com.instamelody.instamelody.braintree" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>
