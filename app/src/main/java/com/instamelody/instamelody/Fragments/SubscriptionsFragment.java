@@ -43,6 +43,7 @@ import com.instamelody.instamelody.Models.SubscriptionPackage;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
+import com.instamelody.instamelody.StudioActivity;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PayPalService;
@@ -242,6 +243,18 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
             tvUserUpgrade.setText("Upgrade" + " " + userNameLogin + "!");
         }
 
+        SharedPreferences profileEditor = getActivity().getSharedPreferences("ProfileUpdate", MODE_PRIVATE);
+        SharedPreferences profileImageEditor = getActivity().getSharedPreferences("ProfileImage", MODE_PRIVATE);
+        if (profileImageEditor.getString("ProfileImage",null) != null){
+            userImage.setVisibility(View.INVISIBLE);
+            userProfileImage.setVisibility(View.VISIBLE);
+            Picasso.with(getActivity()).load(profileImageEditor.getString("ProfileImage",null)).into(userProfileImage);
+        }
+        if (profileEditor.getString("updateId",null) != null){
+            switchFree.setChecked(true);
+            tvUserUpgrade.setText("Upgrade" + " " +profileEditor.getString("updateUserName",null)+ "!");
+        }
+
 
 //        For PayPal Integration
         Intent intent = new Intent(getActivity(), PayPalService.class);
@@ -380,7 +393,9 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                         switchStandard = (Switch) rootView.findViewById(R.id.switchStandard);
                         switchPremium = (Switch) rootView.findViewById(R.id.switchPremium);
                         switchProducer = (Switch) rootView.findViewById(R.id.switchProducer);
-                        if (userId==null){
+                        SharedPreferences profileEditor = getActivity().getSharedPreferences("ProfileUpdate", MODE_PRIVATE);
+                        SharedPreferences profileImageEditor = getActivity().getSharedPreferences("ProfileImage", MODE_PRIVATE);
+                        if (userId == null && (profileEditor.getString("updateId",null) == null) ){
                             switchFree.setChecked(true);
                             switchStandard.setOnClickListener(new View.OnClickListener() {
                                 @Override
