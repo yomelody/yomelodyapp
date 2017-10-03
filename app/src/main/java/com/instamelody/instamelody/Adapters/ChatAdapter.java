@@ -72,6 +72,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     public static ArrayList<JoinRecordingModel> JoinList = new ArrayList<JoinRecordingModel>();
     public ArrayList<MediaPlayer> JoinMp = new ArrayList<MediaPlayer>();
 
+    Handler mHandler1 = new Handler();
+
     private String userId;
     private int SELF = 100;
     private int SELF_IMAGE = 101;
@@ -119,7 +121,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         }
 
         private void primarySeekBarProgressUpdater() {
-            Handler mHandler1 = new Handler();
             try {
 //                seekBarChat.setProgress((int) (((float) mp.getCurrentPosition() / mp.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
                 seekBarChata.setProgress((int) (((float) mp.getCurrentPosition() / mp.getDuration()) * 100));
@@ -223,8 +224,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             if (message.getIsRead().equals("1")) {
                 holder.ivTick.setVisibility(View.GONE);
                 holder.ivDoubleTick.setVisibility(View.VISIBLE);
-            }
-            else{
+            } else {
                 holder.ivDoubleTick.setVisibility(View.GONE);
                 holder.ivTick.setVisibility(View.VISIBLE);
             }
@@ -352,7 +352,12 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                 @Override
                                 public void onCompletion(MediaPlayer mp) {
                                     if (mp != null) {
-                                        mp.stop();
+                                        try {
+                                            mHandler1.removeCallbacksAndMessages(null);
+                                            mp.stop();
+                                        } catch (Exception ex) {
+                                            ex.printStackTrace();
+                                        }
                                     }
                                     holder.progressDialog.dismiss();
 //                                    holder.seekBarChat.setProgress(0);
@@ -449,8 +454,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                 mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                                     @Override
                                     public void onCompletion(MediaPlayer mp) {
-                                        if (mp != null) {
+                                        try {
+                                            mHandler1.removeCallbacksAndMessages(null);
                                             mp.stop();
+                                        } catch (Exception ex) {
+                                            ex.printStackTrace();
                                         }
                                         holder.progressDialog.dismiss();
 //                                        holder.seekBarChat.setProgress(0);
@@ -543,8 +551,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                 mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                                     @Override
                                     public void onCompletion(MediaPlayer mp) {
-                                        if (mp != null) {
+                                        try {
+                                            mHandler1.removeCallbacksAndMessages(null);
                                             mp.stop();
+                                        } catch (Exception ex) {
+                                            ex.printStackTrace();
                                         }
                                         holder.progressDialog.dismiss();
 //                                        holder.seekBarChat.setProgress(0);
@@ -577,8 +588,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             if (message.getIsRead().equals("1")) {
                 holder.ivTick.setVisibility(View.GONE);
                 holder.ivDoubleTick.setVisibility(View.VISIBLE);
-            }
-            else{
+            } else {
                 holder.ivDoubleTick.setVisibility(View.GONE);
                 holder.ivTick.setVisibility(View.VISIBLE);
             }
@@ -605,8 +615,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             if (message.getIsRead().equals("1")) {
                 holder.ivTick.setVisibility(View.GONE);
                 holder.ivDoubleTick.setVisibility(View.VISIBLE);
-            }
-            else{
+            } else {
                 holder.ivDoubleTick.setVisibility(View.GONE);
                 holder.ivTick.setVisibility(View.VISIBLE);
             }
