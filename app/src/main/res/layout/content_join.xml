@@ -209,7 +209,7 @@
                             </RelativeLayout>
 
                             <ImageView
-                                android:id="@+id/ivRecord1"
+                                android:id="@+id/ivRecordJoin"
                                 android:layout_width="110dp"
                                 android:layout_height="110dp"
                                 android:layout_gravity="end|bottom"
@@ -352,12 +352,20 @@
                                             android:layout_height="match_parent">
 
                                             <ImageView
-                                                android:id="@+id/playBlack"
+                                                android:id="@+id/playAll"
                                                 android:layout_width="20dp"
                                                 android:layout_height="20dp"
                                                 android:layout_centerHorizontal="true"
                                                 android:layout_centerVertical="true"
                                                 android:src="@drawable/play_fill" />
+                                            <ImageView
+                                                android:id="@+id/pauseAll"
+                                                android:layout_width="20dp"
+                                                android:layout_height="20dp"
+                                                android:layout_centerHorizontal="true"
+                                                android:layout_centerVertical="true"
+                                                android:src="@drawable/pause_all"
+                                                android:visibility="gone"/>
 
                                         </RelativeLayout>
 
