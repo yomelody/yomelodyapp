@@ -500,7 +500,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
         mpid = recording.getRecordingId();
         mpids.add(mpid);
-        int includedCount=Integer.parseInt(recordingList.get(listPosition).getJoinCount());
+
         holder.tvIncludedCount.setText("Included: "+includedCount);
         if (recordingList.get(listPosition).getJoinCount() == null) {
             totaljoincount = "(" + "0" + " of " + "1" + ")";
