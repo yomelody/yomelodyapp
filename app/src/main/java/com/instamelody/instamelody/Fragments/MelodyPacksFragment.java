@@ -94,7 +94,6 @@ public class MelodyPacksFragment extends Fragment {
     String packId = "0";
     String resp;
     String strName, strSearch, strArtist, strInstruments, strBPM;
-    ;
     String userId;
 
     private String ID = "id";
@@ -556,7 +555,7 @@ public class MelodyPacksFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
+//                params.put(ID, userId);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "admin_melody");
                 params.put(FILTER_TYPE, strName);
@@ -620,7 +619,7 @@ public class MelodyPacksFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
+//                params.put(ID, userId);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "admin_melody");
                 params.put(FILTER_TYPE, "Instruments");
@@ -684,7 +683,7 @@ public class MelodyPacksFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
+//                params.put(ID, userId);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "admin_melody");
                 params.put(FILTER_TYPE, strName);
@@ -710,7 +709,7 @@ public class MelodyPacksFragment extends Fragment {
 //                rv.setLayoutManager(lm);
                 rv.setLayoutManager(linearLayoutManager);
                 rv.setItemAnimator(new DefaultItemAnimator());
-                rv.addOnScrollListener(recyclerViewOnScrollListener);
+//                rv.addOnScrollListener(recyclerViewOnScrollListener);
                 rv.setAdapter(adapter);
                 linearLayoutManager = (LinearLayoutManager) rv.getLayoutManager();
                 return rv;
