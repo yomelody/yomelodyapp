@@ -62,7 +62,6 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.instamelody.instamelody.StudioActivity.bytes;
 import static com.instamelody.instamelody.StudioActivity.formateMilliSeccond;
 import static com.instamelody.instamelody.StudioActivity.isRecording;
-import static com.instamelody.instamelody.StudioActivity.mRecordingThread;
 import static com.instamelody.instamelody.StudioActivity.rlBase;
 
 /**
@@ -84,7 +83,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     String instrumentName, melodyName;
     int rvLength;
     boolean IsRepeat = false, IsMute = false, IsSolo = false;
-
+    int Compdurations = 0, tmpduration = 0, MaxMpSessionID;
     SoundPool mSoundPool;
     public static ArrayList<String> instruments_url = new ArrayList<String>();
     View mLayout;
@@ -387,7 +386,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         String InstLen;
         if (instruments.getInstrumentLength() != null) {
             holder.tvInstrumentLength.setText(CalInstLen(instruments.getInstrumentLength()));
-        }else{
+        } else {
             holder.tvInstrumentLength.setText(instruments.getInstrumentLength());
         }
 
@@ -1646,6 +1645,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             try {
                 try {
 
+
                     StudioActivity.frameProgress.setVisibility(View.VISIBLE);
                     StudioActivity.playAll.setVisibility(View.GONE);
                     StudioActivity.pauseAll.setVisibility(View.VISIBLE);
@@ -1680,6 +1680,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
             try {
                 if (InstrumentCountSize == 0) {
+                    tmpduration=0;
+                    Compdurations=0;
+                    MaxMpSessionID=0;
                     //InstrumentCountSize = MelodyInstruments.getInstrumentCount();
                     InstrumentCountSize = instrumentList.size();
                     for (int i = 0; i < InstrumentCountSize; i++) {
@@ -1687,43 +1690,50 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                         StudioActivity.mpall = new MediaPlayer();
                         StudioActivity.mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
                         StudioActivity.mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
-                        StudioActivity.mpall.prepare();
+                        try {
+                            StudioActivity.mpall.prepare();
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
                         StudioActivity.mediaPlayersAll.add(StudioActivity.mpall);
                         StudioActivity.PlayAllModel.add(i, new ModelPlayAllMediaPlayer(false, false, false, StudioActivity.mpall));
+
+                        Compdurations = StudioActivity.mediaPlayersAll.get(i).getDuration();
+                        if (Compdurations > tmpduration) {
+                            tmpduration = Compdurations;
+                            MaxMpSessionID = StudioActivity.mediaPlayersAll.get(i).getAudioSessionId();
+                        }
                     }
+
+
                     StudioActivity.mpall.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mp) {
 
-                            for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
+                            if (MaxMpSessionID == mp.getAudioSessionId()) {
+                                StudioActivity.handler.removeCallbacksAndMessages(null);
+                                for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
 
-                               /* final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                                final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
-                                final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
-                                seekBar.setProgress(0);
-                                holderPlay.setVisibility(View.VISIBLE);
-                                holderPause.setVisibility(View.GONE);*/
-                               if(!StudioActivity.mediaPlayersAll.get(i).isPlaying()) {
-                                   StudioActivity.handler.removeCallbacksAndMessages(null);
-                                   final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                                   final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
-                                   final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
-                                   final TextView txtMutes = StudioActivity.lstViewHolder.get(i).TxtMuteViewHolder;
-                                   final TextView txtSolos = StudioActivity.lstViewHolder.get(i).TxtSoloViewHolder;
-                                   final RelativeLayout RlsRepets = StudioActivity.lstViewHolder.get(i).TempRlRepeats;
-                                   seekBar.setProgress(0);
-                                   holderPlay.setVisibility(View.VISIBLE);
-                                   holderPause.setVisibility(View.GONE);
-                                   txtMutes.setBackgroundColor(Color.TRANSPARENT);
-                                   txtSolos.setBackgroundColor(Color.TRANSPARENT);
-                                   RlsRepets.setBackgroundColor(Color.TRANSPARENT);
-                                   holderPause.setEnabled(true);
-                                   StudioActivity.playAll.setVisibility(View.VISIBLE);
-                                   StudioActivity.pauseAll.setVisibility(View.GONE);
-                                   //StudioActivity.mediaPlayersAll.get(i).stop();
-                               }
-
+                                    final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
+                                    final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
+                                    final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
+                                    final TextView txtMutes = StudioActivity.lstViewHolder.get(i).TxtMuteViewHolder;
+                                    final TextView txtSolos = StudioActivity.lstViewHolder.get(i).TxtSoloViewHolder;
+                                    final RelativeLayout RlsRepets = StudioActivity.lstViewHolder.get(i).TempRlRepeats;
+                                    seekBar.setProgress(0);
+                                    holderPlay.setVisibility(View.VISIBLE);
+                                    holderPause.setVisibility(View.GONE);
+                                    txtMutes.setBackgroundColor(Color.TRANSPARENT);
+                                    txtSolos.setBackgroundColor(Color.TRANSPARENT);
+                                    RlsRepets.setBackgroundColor(Color.TRANSPARENT);
+                                    holderPause.setEnabled(true);
+                                    StudioActivity.playAll.setVisibility(View.VISIBLE);
+                                    StudioActivity.pauseAll.setVisibility(View.GONE);
+                                    //StudioActivity.mediaPlayersAll.get(i).stop();
+                                }
                             }
+
+                            //}
                         }
                     });
                 }
@@ -1745,8 +1755,13 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
                 for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
                     final MediaPlayer pts;
+
                     pts = StudioActivity.mediaPlayersAll.get(i);
-                    pts.start();
+                    try {
+                        pts.start();
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                     if (IsRepeat == true) {
                         pts.setLooping(true);
                     } else if (IsRepeat == false) {
@@ -1804,44 +1819,59 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             try {
                 if (InstrumentCountSize == 0) {
                     InstrumentCountSize = instrumentList.size();
-
+                    tmpduration=0;
+                    Compdurations=0;
+                    MaxMpSessionID=0;
                     for (int i = 0; i < InstrumentCountSize; i++) {
                         Log.d("Instrument url----------------:", "" + instrumentList.get(i).getInstrumentFile());
                         StudioActivity.mpall = new MediaPlayer();
                         StudioActivity.mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
                         StudioActivity.mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
-                        StudioActivity.mpall.prepare();
+                        try {
+
+                            StudioActivity.mpall.prepare();
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
                         StudioActivity.mediaPlayersAll.add(StudioActivity.mpall);
                         StudioActivity.PlayAllModel.add(i, new ModelPlayAllMediaPlayer(false, false, false, StudioActivity.mpall));
 
+                        Compdurations = StudioActivity.mediaPlayersAll.get(i).getDuration();
+                        if (Compdurations > tmpduration) {
+                            tmpduration = Compdurations;
+                            MaxMpSessionID = StudioActivity.mediaPlayersAll.get(i).getAudioSessionId();
+                        }
 
                     }
                     StudioActivity.mpall.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mp) {
+                            if (MaxMpSessionID == mp.getAudioSessionId()) {
+                                StudioActivity.handler.removeCallbacksAndMessages(null);
+                                for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
 
-                            StudioActivity.handler.removeCallbacksAndMessages(null);
-                            for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
-                                final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                                final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
-                                final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
-                                final TextView txtMutes = StudioActivity.lstViewHolder.get(i).TxtMuteViewHolder;
-                                final TextView txtSolos = StudioActivity.lstViewHolder.get(i).TxtSoloViewHolder;
-                                final RelativeLayout RlsRepets = StudioActivity.lstViewHolder.get(i).TempRlRepeats;
-                                seekBar.setProgress(0);
-                                holderPlay.setVisibility(View.VISIBLE);
-                                holderPause.setVisibility(View.GONE);
-                                txtMutes.setBackgroundColor(Color.TRANSPARENT);
-                                txtSolos.setBackgroundColor(Color.TRANSPARENT);
-                                RlsRepets.setBackgroundColor(Color.TRANSPARENT);
-                                holderPause.setEnabled(true);
-                                StudioActivity.playAll.setVisibility(View.VISIBLE);
-                                StudioActivity.pauseAll.setVisibility(View.GONE);
-                                StudioActivity.mediaPlayersAll.get(i).stop();
-                                StudioActivity.ivRecord.setEnabled(true);
-                                InstrumentCountSize = 0;
+
+                                    final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
+                                    final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
+                                    final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
+                                    final TextView txtMutes = StudioActivity.lstViewHolder.get(i).TxtMuteViewHolder;
+                                    final TextView txtSolos = StudioActivity.lstViewHolder.get(i).TxtSoloViewHolder;
+                                    final RelativeLayout RlsRepets = StudioActivity.lstViewHolder.get(i).TempRlRepeats;
+                                    seekBar.setProgress(0);
+                                    holderPlay.setVisibility(View.VISIBLE);
+                                    holderPause.setVisibility(View.GONE);
+                                    txtMutes.setBackgroundColor(Color.TRANSPARENT);
+                                    txtSolos.setBackgroundColor(Color.TRANSPARENT);
+                                    RlsRepets.setBackgroundColor(Color.TRANSPARENT);
+                                    holderPause.setEnabled(true);
+                                    StudioActivity.playAll.setVisibility(View.VISIBLE);
+                                    StudioActivity.pauseAll.setVisibility(View.GONE);
+                                    StudioActivity.mediaPlayersAll.get(i).stop();
+                                    StudioActivity.ivRecord.setEnabled(true);
+                                    InstrumentCountSize = 0;
+                                }
+
                             }
-
                         }
                     });
                 }
@@ -1863,7 +1893,15 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 StudioActivity.frameProgress.setVisibility(View.GONE);
                 for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
 
-                    StudioActivity.mediaPlayersAll.get(i).start();
+                    try{
+                        StudioActivity.mediaPlayersAll.get(i).start();
+                    }catch (IllegalArgumentException e) {
+
+                    } catch (IllegalStateException e) {
+
+                    } catch (Exception e) {
+
+                    }
                     if (IsRepeat == true) {
                         StudioActivity.mediaPlayersAll.get(i).setLooping(true);
                     } else if (IsRepeat == false) {
@@ -1963,25 +2001,28 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     }
 
     public void RunSeekbar() {
+
         try {
             for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
                 final MediaPlayer pts;
+                //final SeekBar seekBarf;
                 pts = StudioActivity.mediaPlayersAll.get(i);
 
+                final SeekBar seekBarf = StudioActivity.lstViewHolder.get(i).seekBar;
 
-                final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
                 Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
-
-                        int currentPosition = pts.getCurrentPosition() / 1000;
-                        int duration = pts.getDuration() / 1000;
-                        int progress = (currentPosition * 100) / duration;
-
-                        //seekBar.setProgress((int) (((float) pts.getCurrentPosition() / pts.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
-                        seekBar.setProgress(progress);
-
-                        StudioActivity.handler.postDelayed(this, 1000);
+                        try {
+                            int currentPosition = pts.getCurrentPosition() / 1000;
+                            int duration = pts.getDuration() / 1000;
+                            int progress = (currentPosition * 100) / duration;
+                            //seekBar.setProgress((int) (((float) pts.getCurrentPosition() / pts.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
+                            seekBarf.setProgress(progress);
+                            StudioActivity.handler.postDelayed(this, 1000);
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
                     }
                 };
                 StudioActivity.handler.postDelayed(runnable, 1000);
