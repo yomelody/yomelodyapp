@@ -64,7 +64,7 @@ public class BioFragment extends Fragment {
         long date = System.currentTimeMillis();
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy");
         String dateString = sdf.format(date);
-        tvDate.setText(dateString);
+        tvDate.setText("Created:"+" "+ dateString);
 
 
         ivEdit.setOnClickListener(new View.OnClickListener() {
@@ -88,8 +88,8 @@ public class BioFragment extends Fragment {
         if (getArguments() != null && getArguments().containsKey("user_detail")) {
             userDetails = (UserDetails) getArguments().getSerializable("user_detail");
 
-            textViewName.setText(userDetails.getFname());
-            tvStation.setText(userDetails.getUsername());
+            textViewName.setText("Artist:"+" "+userDetails.getFname());
+            tvStation.setText("Station:"+" "+"@"+userDetails.getUsername());
 
             if (userDetails.getProfilepic() != null) {
                 userBioImage.setVisibility(View.VISIBLE);
@@ -111,8 +111,8 @@ public class BioFragment extends Fragment {
             statusNormal = loginSharedPref.getInt("status", 0);
 
             if (statusNormal == 1){
-                textViewName.setText(firstName);
-                tvStation.setText(userNameLogin);
+                textViewName.setText("Artist:"+" "+firstName);
+                tvStation.setText("Station:"+" "+"@"+userNameLogin);
             }
 
             if (profilePicLogin != null) {
@@ -129,8 +129,8 @@ public class BioFragment extends Fragment {
             statusTwitter = twitterPref.getInt("status", 0);
 
             if (statusTwitter == 1){
-                textViewName.setText(Name);
-                tvStation.setText(userName);
+                textViewName.setText("Artist:"+" "+Name);
+                tvStation.setText("Station:"+" "+"@"+userName);
             }
 
             if (profilePic != null) {
@@ -147,8 +147,8 @@ public class BioFragment extends Fragment {
             statusFb = fbPref.getInt("status", 0);
 
             if (statusFb == 1){
-                textViewName.setText(fbName);
-                tvStation.setText("@"+fbName);
+                textViewName.setText("Artist:"+" "+fbName);
+                tvStation.setText("Station:"+" "+"@"+fbName);
             }
 
             if (fbId != null) {

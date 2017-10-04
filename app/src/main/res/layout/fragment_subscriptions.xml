@@ -566,7 +566,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10sp"
-                    android:text="InstaMelody Inc. TM 2016. All rights Reserved "
+                    android:text="InstaMelody Inc. TM 2017. All rights Reserved "
                     android:textAlignment="center"
                     android:textColor="#415560"
                     android:textSize="10sp" />

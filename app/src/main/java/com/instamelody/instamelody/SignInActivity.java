@@ -893,16 +893,17 @@ public class SignInActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         String successmsg = response.toString();
-                        Toast.makeText(SignInActivity.this, " UserName and new password has been sent to your email address.", Toast.LENGTH_SHORT).show();
                         tvForgetPassword.setEnabled(true);
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
                             flag = jsonObject.getString("flag");
                             String password = jsonObject.getString("password");
-                            if (flag.equals("unsuccess")) {
+                            if (flag.equals("Unsuccess")) {
                                 tvForgetPassword.setEnabled(true);
                                 Toast.makeText(SignInActivity.this, "Password not Reset Try Again", Toast.LENGTH_SHORT).show();
                                 tvForgetPassword.setEnabled(true);
+                            }else {
+                                Toast.makeText(SignInActivity.this, "The Link has been sent to your email address.", Toast.LENGTH_SHORT).show();
                             }
                             JSONObject rspns = jsonObject.getJSONObject("response");
 
