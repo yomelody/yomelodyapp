@@ -602,13 +602,13 @@ public class StudioActivity extends AppCompatActivity {
 
         SharedPreferences profileEditor = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE);
         SharedPreferences profileImageEditor = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE);
-        if (profileImageEditor.getString("ProfileImage",null) != null){
+        if (profileImageEditor.getString("ProfileImage", null) != null) {
             ivProfile.setVisibility(View.GONE);
             profile_image.setVisibility(View.VISIBLE);
-            Picasso.with(StudioActivity.this).load(profileImageEditor.getString("ProfileImage",null)).into(profile_image);
+            Picasso.with(StudioActivity.this).load(profileImageEditor.getString("ProfileImage", null)).into(profile_image);
         }
-        if (profileEditor.getString("updateId",null) != null){
-            artist_name.setText("@" +profileEditor.getString("updateUserName",null));
+        if (profileEditor.getString("updateId", null) != null) {
+            artist_name.setText("@" + profileEditor.getString("updateUserName", null));
         }
         mRecordingThread = new RecordingThread();
         mBufferSize = AudioRecord.getMinBufferSize(SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO,
@@ -654,7 +654,7 @@ public class StudioActivity extends AppCompatActivity {
                         mpall.stop();
                         for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                             try {
-                            mediaPlayersAll.get(i).stop();
+                                mediaPlayersAll.get(i).stop();
                             } catch (IllegalStateException e) {
                                 e.printStackTrace();
                             }
@@ -662,8 +662,8 @@ public class StudioActivity extends AppCompatActivity {
                         mediaPlayersAll.clear();
                     }
                     if (mpInst != null) {
-                        try{
-                        mpInst.stop();
+                        try {
+                            mpInst.stop();
                         } catch (IllegalStateException e) {
                             e.printStackTrace();
                         }
@@ -760,7 +760,7 @@ public class StudioActivity extends AppCompatActivity {
                             ex.printStackTrace();
                         }
                     }
-                    if(instrumentList.size()>0) {
+                    if (instrumentList.size() > 0) {
                         instrumentList.clear();
                     }
                     Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
@@ -814,7 +814,7 @@ public class StudioActivity extends AppCompatActivity {
                             ex.printStackTrace();
                         }
                     }
-                    if(instrumentList.size()>0) {
+                    if (instrumentList.size() > 0) {
                         instrumentList.clear();
                     }
 
@@ -867,7 +867,7 @@ public class StudioActivity extends AppCompatActivity {
                             ex.printStackTrace();
                         }
                     }
-                    if(instrumentList.size()>0) {
+                    if (instrumentList.size() > 0) {
                         instrumentList.clear();
                     }
 
@@ -920,7 +920,7 @@ public class StudioActivity extends AppCompatActivity {
                             ex.printStackTrace();
                         }
                     }
-                    if(instrumentList.size()>0) {
+                    if (instrumentList.size() > 0) {
                         instrumentList.clear();
                     }
                     Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
@@ -972,7 +972,7 @@ public class StudioActivity extends AppCompatActivity {
                             ex.printStackTrace();
                         }
                     }
-                    if(instrumentList.size()>0) {
+                    if (instrumentList.size() > 0) {
                         instrumentList.clear();
                     }
                     Intent i = new Intent(StudioActivity.this, ProfileActivity.class);
@@ -1024,7 +1024,7 @@ public class StudioActivity extends AppCompatActivity {
                             ex.printStackTrace();
                         }
                     }
-                    if(instrumentList.size()>0) {
+                    if (instrumentList.size() > 0) {
                         instrumentList.clear();
                     }
                     Intent i = new Intent(StudioActivity.this, StationActivity.class);
@@ -1287,10 +1287,9 @@ public class StudioActivity extends AppCompatActivity {
         sp = (Spinner) subView.findViewById(R.id.spinnerGenre);
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, genresName){
+                android.R.layout.simple_spinner_item, genresName) {
             @Override
-            public View getDropDownView(int position, View convertView, ViewGroup parent)
-            {
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
                 View v = null;
 
                 // If this is the initial dummy entry, make it hidden
@@ -1299,8 +1298,7 @@ public class StudioActivity extends AppCompatActivity {
                     tv.setHeight(0);
                     tv.setVisibility(View.GONE);
                     v = tv;
-                }
-                else {
+                } else {
                     // Pass convertView as null to prevent reuse of special case views
                     v = super.getDropDownView(position, null, parent);
                 }
@@ -1351,13 +1349,13 @@ public class StudioActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 //tvInfo.setText(subEtTopicName.getText().toString());
                 //&& !selectedGenre.equals("1"))
-                String SubTopic=subEtTopicName.getText().toString();
-                if(!SubTopic.trim().equals(""))  {
+                String SubTopic = subEtTopicName.getText().toString();
+                if (!SubTopic.trim().equals("")) {
                     openDialog2();
 
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(subEtTopicName.getWindowToken(), 0);
-                }else{
+                } else {
                     openDialog();
                     subEtTopicName.setHint("Enter Topic Name");
                     //Toast.makeText(StudioActivity.this, "Please enter topic name.", Toast.LENGTH_SHORT).show();
@@ -2032,7 +2030,7 @@ public class StudioActivity extends AppCompatActivity {
 //                            Toast.makeText(StudioActivity.this, "Saved as Recording", Toast.LENGTH_SHORT).show();
                         }
                         handler.removeCallbacksAndMessages(null);
-                        if(StudioActivity.lstViewHolder.size()>0){
+                        if (StudioActivity.lstViewHolder.size() > 0) {
                             StudioActivity.lstViewHolder.clear();
                         }
                         if (joinRecordingId != null) {
@@ -2408,9 +2406,9 @@ public class StudioActivity extends AppCompatActivity {
                                     genres.setName(titleString);
                                     genres.setId(genreJson.getString(KEY_GENRE_ID));
                                     genresArrayList.add(genres);
-                                    if(i==0) {
+                                    if (i == 0) {
                                         genresName.add(i, "Genre");
-                                    }else {
+                                    } else {
                                         genresName.add(i, genresArrayList.get(i).getName());
                                     }
                                     genresId.add(i, genresArrayList.get(i).getId());
@@ -2849,16 +2847,18 @@ public class StudioActivity extends AppCompatActivity {
 //                .image(Uri.parse(cover));
         builder.show();
     }
-    private void IsMicConnectet(){
+
+    private void IsMicConnectet() {
         AudioManager am1 = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         Log.i("WiredHeadsetOn = ", am1.isWiredHeadsetOn() + "");
         if (am1.isWiredHeadsetOn() == true) {
-            IsMicConnected="withMike";
+            IsMicConnected = "withMike";
             //Toast.makeText(getApplicationContext(), "Headset is connected", Toast.LENGTH_SHORT).show();
         } else {
-            IsMicConnected="withoutMike";
+            IsMicConnected = "withoutMike";
             //Toast.makeText(getApplicationContext(), "Headset not connected", Toast.LENGTH_SHORT).show();
         }
+    }
 
     @Override
     protected void onResume() {

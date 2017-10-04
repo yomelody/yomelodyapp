@@ -988,6 +988,7 @@ public class ChatActivity extends AppCompatActivity {
                         public void onResponse(NetworkResponse response) {
                             String str = new String(response.data);
 //                            Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
+                            getChatMsgs(chatId);
                             flagFileType = "0";
                         }
                     }, new Response.ErrorListener() {
@@ -1066,6 +1067,7 @@ public class ChatActivity extends AppCompatActivity {
                 public void onResponse(String response) {
                     String str = response;
 //                    Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
+                    getChatMsgs(chatId);
                     flagFileType = "0";
                 }
             }, new Response.ErrorListener() {
