@@ -700,23 +700,24 @@
 
             </FrameLayout>
 
-            <FrameLayout
+          <!--  <FrameLayout
                 android:id="@+id/frameSync"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
                 android:layout_marginBottom="80dp"
                 android:clickable="true"
-                android:visibility="visible">
+                android:visibility="visible">-->
 
                 <RelativeLayout
                     android:id="@+id/rlSync"
+                    android:layout_above="@id/rlBase"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|end"
-                    android:layout_marginBottom="60dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginBottom="35dp"
                     android:layout_marginRight="15dp">
 
                     <TextView
@@ -751,7 +752,7 @@
                         android:visibility="gone" />
 
                 </RelativeLayout>
-            </FrameLayout>
+           <!-- </FrameLayout>-->
         </RelativeLayout>
     </LinearLayout>
 </RelativeLayout>

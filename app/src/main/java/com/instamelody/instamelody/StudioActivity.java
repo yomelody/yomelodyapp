@@ -229,8 +229,8 @@ public class StudioActivity extends AppCompatActivity {
     int statusNormal, statusFb, statusTwitter;
     String melodyName, instrumentName;
     public static Switch switchPublic;
-    public static RelativeLayout rlMelodyButton, rlRecordingButton, rlRedoButton, rlListeningButton, rlSetCover, rlPublic;
-    public static FrameLayout frameTrans, frameSync, frameProgress;
+    public static RelativeLayout rlMelodyButton, rlRecordingButton, rlRedoButton, rlListeningButton, rlSetCover, rlPublic,rlSync;
+    public static FrameLayout frameTrans, frameProgress;
     public static ImageView ivBackButton, ivHomeButton, ivRecord, ivRecord_stop, ivRecord_play, ivRecord_pause, discover, ivSound, message, ivProfile, ivNewRecordCover;
     CircleImageView profile_image;
     TextView artist_name, noMelodyNote, message_count;
@@ -240,7 +240,7 @@ public class StudioActivity extends AppCompatActivity {
     public static ProgressDialog progressDialog, pDialog;
     public static ProgressBar frameprog;
     // LongOperation myTask = null;
-    RelativeLayout rlSync;
+
     // public static MediaPlayer mpInst;
     static int duration1, currentPosition;
     //SeekBar melodySlider;
@@ -329,7 +329,7 @@ public class StudioActivity extends AppCompatActivity {
         profile_image = (CircleImageView) findViewById(R.id.profile_image);
         artist_name = (TextView) findViewById(R.id.artist_name);
         melody_detail = (TextView) findViewById(R.id.melody_detail);
-        frameSync = (FrameLayout) findViewById(R.id.frameSync);
+        rlSync = (RelativeLayout) findViewById(R.id.rlSync);
         //frameInstrument = (FrameLayout) findViewById(R.id.frameInstrument);
         tvInstrumentLength = (TextView) findViewById(R.id.tvInstrumentLength);
         tvInstrumentName = (TextView) findViewById(R.id.tvInstrumentName);
@@ -387,7 +387,6 @@ public class StudioActivity extends AppCompatActivity {
         noMelodyNote = (TextView) findViewById(R.id.noMelodyNote);
         tvDone = (TextView) findViewById(R.id.tvDone);
         frameTrans = (FrameLayout) findViewById(R.id.frameTrans);
-        frameSync = (FrameLayout) findViewById(R.id.frameSync);
         rlSync = (RelativeLayout) findViewById(R.id.rlSync);
         SharedPreferences loginSharedPref1 = this.getSharedPreferences("Url_recording", MODE_PRIVATE);
         fetchRecordingUrl = loginSharedPref1.getString("Recording_url", null);
@@ -433,9 +432,9 @@ public class StudioActivity extends AppCompatActivity {
             adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
             recyclerViewInstruments.setAdapter(adapter);
             //frameTrans.setVisibility(View.VISIBLE);
-            frameSync.setVisibility(View.VISIBLE);
+            rlSync.setVisibility(View.VISIBLE);
             if (instrumentList.size() > 0) {
-                frameSync.setVisibility(View.VISIBLE);
+                rlSync.setVisibility(View.VISIBLE);
             }
 
 
@@ -479,9 +478,9 @@ public class StudioActivity extends AppCompatActivity {
                 adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
                 recyclerViewInstruments.setAdapter(adapter);
                 //frameTrans.setVisibility(View.VISIBLE);
-                frameSync.setVisibility(View.VISIBLE);
+                rlSync.setVisibility(View.VISIBLE);
                 if (instrumentList.size() > 0) {
-                    frameSync.setVisibility(View.VISIBLE);
+                    rlSync.setVisibility(View.VISIBLE);
                 }
 
 
@@ -2609,7 +2608,7 @@ public class StudioActivity extends AppCompatActivity {
             adapter.notifyDataSetChanged();
             adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
             adapter.notifyDataSetChanged();
-            frameSync.setVisibility(View.GONE);
+            rlSync.setVisibility(View.GONE);
             progressDialog.dismiss();
         }
 
@@ -2636,7 +2635,7 @@ public class StudioActivity extends AppCompatActivity {
             adapter.notifyDataSetChanged();
             adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
             adapter.notifyDataSetChanged();
-            frameSync.setVisibility(View.GONE);
+            rlSync.setVisibility(View.GONE);
             progressDialog.dismiss();
         }
 

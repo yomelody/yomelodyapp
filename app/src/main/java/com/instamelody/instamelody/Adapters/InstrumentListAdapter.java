@@ -614,15 +614,15 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     if (holder.fxContent.getVisibility() == View.VISIBLE) {
                         holder.fxContent.setVisibility(View.GONE);
                         holder.eqContent.setVisibility(View.GONE);
-                        //rlBase.setVisibility(View.VISIBLE);
+                        rlBase.setVisibility(View.VISIBLE);
                         holder.tvDoneFxEq.setVisibility(View.GONE);
-                        StudioActivity.frameSync.setVisibility(View.VISIBLE);
+                        StudioActivity.rlSync.setVisibility(View.VISIBLE);
                     } else if (holder.fxContent.getVisibility() == View.GONE) {
                         holder.fxContent.setVisibility(View.VISIBLE);
                         holder.tvDoneFxEq.setVisibility(View.VISIBLE);
                         holder.eqContent.setVisibility(View.GONE);
-                        //rlBase.setVisibility(View.GONE);
-                        StudioActivity.frameSync.setVisibility(View.GONE);
+                        rlBase.setVisibility(View.GONE);
+                        StudioActivity.rlSync.setVisibility(View.GONE);
                     }
 
                 } catch (Exception ex) {
@@ -646,14 +646,14 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                         holder.fxContent.setVisibility(View.GONE);
                         holder.tvDoneFxEq.setVisibility(View.GONE);
                         rlBase.setVisibility(View.VISIBLE);
-                        StudioActivity.frameSync.setVisibility(View.VISIBLE);
+                        StudioActivity.rlSync.setVisibility(View.VISIBLE);
 
                     } else if (holder.eqContent.getVisibility() == View.GONE) {
                         holder.eqContent.setVisibility(View.VISIBLE);
                         holder.fxContent.setVisibility(View.GONE);
                         holder.tvDoneFxEq.setVisibility(View.VISIBLE);
                         rlBase.setVisibility(View.GONE);
-                        StudioActivity.frameSync.setVisibility(View.GONE);
+                        StudioActivity.rlSync.setVisibility(View.GONE);
 
 
                     }
@@ -674,7 +674,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
                     holder.frameInstrument.setVisibility(View.GONE);
                     rlBase.setVisibility(View.VISIBLE);
-                    StudioActivity.frameSync.setVisibility(View.VISIBLE);
+                    StudioActivity.rlSync.setVisibility(View.VISIBLE);
                     if (StudioActivity.mpInst != null) {
                         StudioActivity.mpInst.pause();
 
