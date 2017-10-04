@@ -1655,10 +1655,7 @@ public class StudioActivity extends AppCompatActivity {
                             String flag = recordResponse.getString("flag");
                             String msg1 = recordResponse.getString("msg");
                             String response2 = recordResponse.getString("response");
-
                             JSONObject recResponse = recordResponse.getJSONObject("response");
-
-
                             JSONObject melodyData = recResponse.getJSONObject("melody_data");
                             idUpload = melodyData.getString("id");
                             packName = melodyData.getString("packname");
