@@ -33,6 +33,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
+import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
@@ -554,7 +555,6 @@ public class MelodyPacksFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-<<<<<<< HEAD
 //                params.put(ID, userId);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "admin_melody");
@@ -563,26 +563,6 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(FILTER, "extrafilter");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 AppHelper.sop("params=="+params+"\nURL=="+MELODY);
-=======
-                if (userId != null) {
-                    params.put(ID, userId);
-                    params.put(GENRE, genreString);
-                    params.put(FILE_TYPE, "admin_melody");
-                    params.put(FILTER_TYPE, strName);
-                    params.put(USER_NAME, strArtist);
-                    params.put(FILTER, "extrafilter");
-                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                    AppHelper.sop("params==" + params + "\nURL==" + MELODY);
-                }else{
-                    params.put(GENRE, genreString);
-                    params.put(FILE_TYPE, "admin_melody");
-                    params.put(FILTER_TYPE, strName);
-                    params.put(USER_NAME, strArtist);
-                    params.put(FILTER, "extrafilter");
-                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                    AppHelper.sop("params==" + params + "\nURL==" + MELODY);
-                }
->>>>>>> bebffebeebc9e6e32449d2c4cc24bac86a3ae843
                 return params;
             }
         };
@@ -752,9 +732,9 @@ public class MelodyPacksFragment extends Fragment {
             //Toast.makeText(getActivity(), "111111   >>>" + String.valueOf(post), Toast.LENGTH_SHORT).show();
             //Toast.makeText(getActivity(), String.valueOf(recordingList.size()), Toast.LENGTH_SHORT).show();
             //Toast.makeText(getActivity(), "post "+String.valueOf(post+1), Toast.LENGTH_SHORT).show();
-            //if (post + 1 == melodyList.size()) {
+            if (post + 1 == melodyList.size()) {
 
-                //new FetchActivityDetails().execute(String.valueOf(melodyList.size() + 10), String.valueOf(instrumentList.size() + 10));
+                new FetchActivityDetails().execute(String.valueOf(melodyList.size() + 10), String.valueOf(instrumentList.size() + 10));
 
                 //adapter.notifyDataSetChanged();
                 //linearLayoutManager.scrollToPosition(post+1);
@@ -762,7 +742,7 @@ public class MelodyPacksFragment extends Fragment {
                 //rv.setAdapter(adapter);
                 //adapter.notifyItemInserted(recordingList.size()-1);
                 //Toast.makeText(getActivity(), "list "+String.valueOf(recordingList.size()), Toast.LENGTH_SHORT).show();
-            //}
+            }
 
 
         }
@@ -923,6 +903,7 @@ public class MelodyPacksFragment extends Fragment {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
 
         stringRequest.setRetryPolicy(policy);
+        requestQueue.add(stringRequest);
         requestQueue.add(stringRequest);
     }
 
