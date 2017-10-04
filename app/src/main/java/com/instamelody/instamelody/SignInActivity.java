@@ -152,6 +152,7 @@ public class SignInActivity extends AppCompatActivity {
     private boolean pendingPublishReauthorization = false;
     ProgressDialog progressDialog;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

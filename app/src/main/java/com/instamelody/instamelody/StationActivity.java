@@ -49,7 +49,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
     Button btnActivity, btnAudio, btnCancel;
     RelativeLayout rlFragmentActivity, rlPartStation, rlSearch;
-   public static ImageView ivBackButton, ivHomeButton, discover, message, ivProfile, audio_feed, ivStationSearch, ivMelodyStation, ivFilter;
+    public static ImageView ivBackButton, ivHomeButton, discover, message, ivProfile, audio_feed, ivStationSearch, ivMelodyStation, ivFilter;
     EditText subEtFilterName, subEtFilterInstruments, subEtFilterBPM;
 
     TabHost host;
@@ -118,6 +118,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         search1 = (SearchView) findViewById(R.id.search1);
         btnCancel = (Button) findViewById(R.id.btnCancel);
         list = (ListView) findViewById(R.id.list);
+
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userNameLogin = loginSharedPref.getString("userName", null);
         statusNormal = loginSharedPref.getInt("status", 0);

@@ -1,5 +1,6 @@
 package com.instamelody.instamelody;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -96,13 +97,14 @@ public class Update extends AppCompatActivity {
     int userIdUpdate = 0;
     String finalDate="";
     public static ProgressDialog progressDialog;
+    Activity mActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update);
-
+        mActivity=Update.this;
         SharedPreferences profileEditor = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE);
         SharedPreferences profileImageEditor = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE);
 
@@ -246,8 +248,10 @@ public class Update extends AppCompatActivity {
         tvDoneUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Update.this, SettingsActivity.class);
-                startActivity(intent);
+                /*Intent intent = new Intent(Update.this, SettingsActivity.class);
+                startActivity(intent);*/
+                AppHelper.hideSoftKeyboard(mActivity);
+                finish();
             }
         });
 
@@ -441,6 +445,8 @@ public class Update extends AppCompatActivity {
         final String phone = etuPhone.getText().toString().trim();
         final String usertype = "USER";
 
+        AppHelper.hideSoftKeyboard(mActivity);
+
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UPDATEPROFILE,
                 new Response.Listener<String>() {
                     @Override
@@ -490,10 +496,12 @@ public class Update extends AppCompatActivity {
                                 tvDobUpdate.setText(profilePref.getString("updateDOB", null));
                             }
 
+                            setResult(RESULT_OK);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        progressDialog.dismiss();
                     }
                 },
                 new Response.ErrorListener() {
@@ -502,6 +510,7 @@ public class Update extends AppCompatActivity {
 //                        Toast.makeText(Update.this, error.toString(), Toast.LENGTH_SHORT).show();
                         String errormsg = error.toString();
                         Log.d("Error", errormsg);
+                        progressDialog.dismiss();
                     }
                 }) {
             @Override
@@ -533,9 +542,10 @@ public class Update extends AppCompatActivity {
         VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPLOAD_FILE, new Response.Listener<NetworkResponse>() {
             @Override
             public void onResponse(NetworkResponse response) {
+
                 String resultResponse = new String(response.data);
 //                Toast.makeText(getApplicationContext(), "Profile Picture Updated", Toast.LENGTH_SHORT).show();
-                AppHelper.sop("response==="+response);
+                AppHelper.sop("resultResponse=="+resultResponse);
                 try {
                     JSONObject jsonObject = new JSONObject(resultResponse);
                     String flag = jsonObject.getString("flag");
@@ -548,7 +558,7 @@ public class Update extends AppCompatActivity {
                     profileImageEditor.apply();
 
                     SharedPreferences profileImagePref = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE);
-                    profileImagePref.getString("ProfileImage", null);
+//                    profileImagePref.getString("ProfileImage", null);
                     if (profileImagePref.getString("ProfileImage", null) != null) {
                         Picasso.with(Update.this).load(profileImagePref.getString("ProfileImage", null)).into(userProfileImageUpdate);
                     }
@@ -598,7 +608,6 @@ public class Update extends AppCompatActivity {
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
-
     }
 
     private class LongOperation extends AsyncTask<String, Void, String> {
@@ -655,7 +664,7 @@ public class Update extends AppCompatActivity {
             profileImageEditor1.clear();
             profileImageEditor1.apply();*/
             LoginManager.getInstance().logOut();
-            progressDialog.dismiss();
+
         }
 
     }
@@ -675,6 +684,7 @@ public class Update extends AppCompatActivity {
                 bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
                 //Setting the Bitmap to ImageView
                 userProfileImageUpdate.setImageBitmap(bitmap);
+                AppHelper.sop("filePath==="+filePath);
             } catch (IOException e) {
                 e.printStackTrace();
             }

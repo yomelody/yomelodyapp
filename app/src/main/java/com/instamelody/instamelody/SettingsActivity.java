@@ -1,5 +1,6 @@
 package com.instamelody.instamelody;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.instamelody.instamelody.Fragments.SubscriptionsFragment;
+import com.instamelody.instamelody.utils.AppHelper;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -38,11 +40,14 @@ public class SettingsActivity extends AppCompatActivity {
     CircleImageView userProfileImageSettings;
     int statusNormal;
     Context context;
+    Activity mActivity;
+    private final int REQUEST_EDIT_PROFILE=13;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        mActivity=SettingsActivity.this;
         rlSocialConnect = (RelativeLayout) findViewById(R.id.rlSocialConnect);
         rlSubscription = (RelativeLayout) findViewById(R.id.rlSubscription);
         rlMyAccount = (RelativeLayout) findViewById(R.id.rlMyAccount);
@@ -58,6 +63,11 @@ public class SettingsActivity extends AppCompatActivity {
         rlTos = (RelativeLayout) findViewById(R.id.rlTos);
         rlRateApp = (RelativeLayout) findViewById(R.id.rlRateApp);
 
+        setFormData();
+
+    }
+
+    void setFormData(){
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userId = loginSharedPref.getString("userId", null);
         firstName = loginSharedPref.getString("firstName", null);
@@ -140,18 +150,19 @@ public class SettingsActivity extends AppCompatActivity {
                 userProfileImageSettings.setVisibility(View.VISIBLE);
                 Picasso.with(SettingsActivity.this).load(profilePic1).into(userProfileImageSettings);
             }
+
             rlMyAccount.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getApplicationContext(), Update.class);
-                    startActivity(intent);
+                    Intent intent = new Intent(mActivity, Update.class);
+                    startActivityForResult(intent,REQUEST_EDIT_PROFILE);
                 }
             });
             tvDone.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
-                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                    Intent intent = new Intent(mActivity, HomeActivity.class);
                     startActivity(intent);
 
                 }
@@ -160,7 +171,7 @@ public class SettingsActivity extends AppCompatActivity {
             rlPrivacyPolicy.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(SettingsActivity.this, PrivacyPolicy.class);
+                    Intent intent = new Intent(mActivity, PrivacyPolicy.class);
                     startActivity(intent);
                 }
             });
@@ -168,7 +179,7 @@ public class SettingsActivity extends AppCompatActivity {
             rlTos.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(SettingsActivity.this, PrivacyPolicy.class);
+                    Intent intent = new Intent(mActivity, PrivacyPolicy.class);
                     startActivity(intent);
                 }
             });
@@ -177,7 +188,7 @@ public class SettingsActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
 
-                    Intent intent = new Intent(getApplicationContext(), SocialActivity.class);
+                    Intent intent = new Intent(mActivity, SocialActivity.class);
                     startActivity(intent);
 
                 }
@@ -190,7 +201,7 @@ public class SettingsActivity extends AppCompatActivity {
                     /*Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
                     startActivity(intent);*/
 
-                    Intent openFragmentBIntent = new Intent(SettingsActivity.this, MelodyActivity.class);
+                    Intent openFragmentBIntent = new Intent(mActivity, MelodyActivity.class);
                     openFragmentBIntent.putExtra("OPEN_FRAGMENT_SUBSCRIPTION", 1);
                     startActivity(openFragmentBIntent);
 
@@ -446,6 +457,17 @@ public class SettingsActivity extends AppCompatActivity {
 //                Toast.makeText(getApplicationContext(),"seekbar touch stopped!", Toast.LENGTH_SHORT).show();
 //            }
 //        });
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        AppHelper.sop("requestCode="+requestCode+"=resultCode="+resultCode+"=data="+data);
+        if (requestCode==REQUEST_EDIT_PROFILE){
+            if (resultCode==RESULT_OK){
+                setFormData();
+            }
         }
     }
 }

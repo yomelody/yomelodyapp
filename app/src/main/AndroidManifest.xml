@@ -146,7 +146,12 @@
             android:name=".JoinActivity"
             android:label="@string/title_activity_join"
             android:theme="@style/AppTheme" />
-        <activity android:name=".Update" />
+        <activity
+            android:name=".Update"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"/>
+
         <activity android:name=".PrivacyPolicy" />
         <activity
             android:name=".JoinCommentActivity"
