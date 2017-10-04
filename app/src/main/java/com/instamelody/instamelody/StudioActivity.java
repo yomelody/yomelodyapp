@@ -2849,16 +2849,17 @@ public class StudioActivity extends AppCompatActivity {
 //                .image(Uri.parse(cover));
         builder.show();
     }
-    private void IsMicConnectet(){
+    private void IsMicConnectet() {
         AudioManager am1 = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         Log.i("WiredHeadsetOn = ", am1.isWiredHeadsetOn() + "");
         if (am1.isWiredHeadsetOn() == true) {
-            IsMicConnected="withMike";
+            IsMicConnected = "withMike";
             //Toast.makeText(getApplicationContext(), "Headset is connected", Toast.LENGTH_SHORT).show();
         } else {
-            IsMicConnected="withoutMike";
+            IsMicConnected = "withoutMike";
             //Toast.makeText(getApplicationContext(), "Headset not connected", Toast.LENGTH_SHORT).show();
         }
+    }
 
     @Override
     protected void onResume() {
