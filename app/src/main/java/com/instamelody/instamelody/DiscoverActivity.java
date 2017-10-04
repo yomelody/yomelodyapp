@@ -3,13 +3,16 @@ package com.instamelody.instamelody;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -52,6 +55,8 @@ import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.utils.AppHelper;
+import com.instamelody.instamelody.utils.Const;
+import com.instamelody.instamelody.utils.NotificationUtils;
 import com.instamelody.instamelody.utils.PagerIndicator;
 import com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager;
 
@@ -73,11 +78,13 @@ import java.util.Map;
 
 import me.relex.circleindicator.CircleIndicator;
 
+import static com.instamelody.instamelody.app.Config.PUSH_NOTIFICATION;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ADVERTISEMENT;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
+import static com.instamelody.instamelody.utils.Const.ServiceType.TOTAL_COUNT;
 
 /**
  * Created by Saurabh Singh on 05/17/2016.
@@ -88,7 +95,8 @@ public class DiscoverActivity extends AppCompatActivity {
     ImageView discover, message, ivBackButton, audio_feed, ivFilterDiscover, ivHomeDiscover, ivProfile;
     Button appBarSearchDiscoverBtn;
     EditText subEtFilterName, subEtFilterInstruments, subEtFilterBPM;
-    TextView appBarMainTextDiscover;
+    TextView appBarMainTextDiscover, message_count;
+
     TabHost host;
     private static RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -129,18 +137,20 @@ public class DiscoverActivity extends AppCompatActivity {
     DotsPageIndicator page_indicator;
     Activity mActivity;
     RecyclerView rv;
-
+    BroadcastReceiver mRegistrationBroadcastReceiver;
+    int totalCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discover);
-        mActivity=DiscoverActivity.this;
+        mActivity = DiscoverActivity.this;
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
         discover = (ImageView) findViewById(R.id.discover);
         message = (ImageView) findViewById(R.id.message);
         audio_feed = (ImageView) findViewById(R.id.audio_feed);
         ivProfile = (ImageView) findViewById(R.id.ivProfileD);
+        message_count = (TextView) findViewById(R.id.message_count);
         rlViewPagerMain = (RelativeLayout) findViewById(R.id.rlViewPagerMain);
         recyclerViewPager = (RecyclerViewPager) findViewById(R.id.recyclerViewPager);
         recyclerViewPagerIndicator = (CircleIndicator) findViewById(R.id.recyclerViewPagerIndicator);
@@ -150,7 +160,6 @@ public class DiscoverActivity extends AppCompatActivity {
         PagerSnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(recyclerViewPager);
         recyclerViewPager.addItemDecoration(new PagerIndicator());
-
 
 
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
@@ -179,6 +188,16 @@ public class DiscoverActivity extends AppCompatActivity {
         } else if (statusTwitter == 1) {
             userId = userIdTwitter;
         }
+
+        getTotalCount();
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(PUSH_NOTIFICATION)) {
+                    getTotalCount();
+                }
+            }
+        };
 
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
         discover = (ImageView) findViewById(R.id.discover);
@@ -469,7 +488,7 @@ public class DiscoverActivity extends AppCompatActivity {
 
     public void fetchRecordings() {
 
-        if (rv!=null){
+        if (rv != null) {
             rv.setAdapter(adapter);
         }
 
@@ -1052,11 +1071,80 @@ public class DiscoverActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        AppHelper.sop("onActivityResult=requestCode="+requestCode+"=resultCode="+resultCode);
-        if (requestCode==RecordingsCardAdapter.REQUEST_RECORDING_COMMENT){
-            if (resultCode==RESULT_OK){
+        AppHelper.sop("onActivityResult=requestCode=" + requestCode + "=resultCode=" + resultCode);
+        if (requestCode == RecordingsCardAdapter.REQUEST_RECORDING_COMMENT) {
+            if (resultCode == RESULT_OK) {
                 fetchRecordings();
             }
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getTotalCount();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(Const.PUSH_NOTIFICATION));
+        NotificationUtils.clearNotifications(getApplicationContext());
+    }
+
+    public void getTotalCount() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, TOTAL_COUNT,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //Toast.makeText(HomeActivity.this, "" + response.toString();, Toast.LENGTH_SHORT).show();
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            String flag = jsonObject.getString("flag");
+                            if (flag.equals("success")) {
+                                String str = jsonObject.getString("newMessage");
+                                totalCount = Integer.parseInt(str);
+                                if (totalCount > 0) {
+                                    message_count.setText(str);
+                                    message_count.setVisibility(View.VISIBLE);
+                                } else {
+                                    message_count.setVisibility(View.GONE);
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            errorMsg = "There is either no connection or it timed out.";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "ServerError";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "Network Error";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                params.put("userid", userId);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
     }
 }

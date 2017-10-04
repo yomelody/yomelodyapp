@@ -584,9 +584,13 @@ public class ChatActivity extends AppCompatActivity {
                     rlUpdateGroup.setVisibility(View.VISIBLE);
                     ivGroupImage.setClickable(false);
                     etGroupName.setClickable(false);
-                    Picasso.with(ivGroupImage.getContext()).load(groupImage).into(ivGroupImage);
-                    Picasso.with(ivGroupImage.getContext()).load(groupImage).placeholder(getResources().getDrawable(R.drawable.loading)).error(getResources().getDrawable(R.drawable.no_image)).into(ivGroupImage);
                     etGroupName.setText(receiverName);
+                    if (receiverName.equals("New Group") && (chatId.equals(""))) {
+                        String grpImg = "http://52.89.220.199/api/uploads/profilepics/group.png";
+                        Picasso.with(ivGroupImage.getContext()).load(grpImg).into(ivGroupImage);
+                    } else {
+                        Picasso.with(ivGroupImage.getContext()).load(groupImage).placeholder(getResources().getDrawable(R.drawable.loading)).error(getResources().getDrawable(R.drawable.no_image)).into(ivGroupImage);
+                    }
                 }
             }
         });

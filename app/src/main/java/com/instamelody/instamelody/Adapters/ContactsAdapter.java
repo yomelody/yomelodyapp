@@ -248,6 +248,11 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                         try {
                             jsonObject = new JSONObject(response);
                             String chat_Id = jsonObject.getString("chatID");
+                            String receiverName = jsonObject.getString("receiverName");
+                            String group_pick = "";
+                            if (jsonObject.has("group_pick")) {
+                                group_pick = jsonObject.getString("group_pick");
+                            }
 
                             if (chat_Id.equals("0")) {
                                 chat_Id = "";
@@ -255,6 +260,8 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
 
                             SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                             editor.putString("chatId", chat_Id);
+                            editor.putString("receiverName", receiverName);
+                            editor.putString("groupImage", group_pick);
                             editor.commit();
 
                         } catch (JSONException e) {

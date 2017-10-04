@@ -32,6 +32,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.MessengerAdapter;
 import com.instamelody.instamelody.Models.Chat;
+import com.instamelody.instamelody.app.Config;
+import com.instamelody.instamelody.utils.Const;
+import com.instamelody.instamelody.utils.NotificationUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,6 +48,7 @@ import static com.instamelody.instamelody.Adapters.MessengerAdapter.totalMsgCoun
 import static com.instamelody.instamelody.utils.Const.PUSH_NOTIFICATION;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
+import static com.instamelody.instamelody.utils.Const.ServiceType.TOTAL_COUNT;
 import static com.instamelody.instamelody.utils.Const.ServiceType.USER_CONVERSATION;
 
 /**
@@ -54,7 +58,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.USER_CONVERSAT
 public class MessengerActivity extends AppCompatActivity {
 
     ImageView discover, message, profile, audio_feed, ivBackButton, ivHomeButton, ivNewMessage;
-    public static TextView message_count;
+    TextView message_count;
     MessengerAdapter adapter;
     RecyclerView recyclerView;
     RelativeLayout rlNoMsg;
@@ -64,21 +68,12 @@ public class MessengerActivity extends AppCompatActivity {
     String USER_ID = "userid";
     String userId;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
+    int totalCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messenger);
-
-        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals(PUSH_NOTIFICATION)) {
-                    getChats(userId);
-                    rlNoMsg.setVisibility(View.GONE);
-                }
-            }
-        };
 
         ivNewMessage = (ImageView) findViewById(R.id.ivNewMessage);
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
@@ -101,6 +96,18 @@ public class MessengerActivity extends AppCompatActivity {
         } else if (twitterPref.getString("userId", null) != null) {
             userId = twitterPref.getString("userId", null);
         }
+
+        getTotalCount();
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(Config.PUSH_NOTIFICATION)) {
+                    getTotalCount();
+                    getChats(userId);
+                    rlNoMsg.setVisibility(View.GONE);
+                }
+            }
+        };
 
         if (userId != null) {
             getChats(userId);
@@ -272,6 +279,7 @@ public class MessengerActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        getTotalCount();
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(PUSH_NOTIFICATION));
         if (userId != null) {
@@ -284,5 +292,59 @@ public class MessengerActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+    }
+
+    public void getTotalCount() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, TOTAL_COUNT,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //Toast.makeText(HomeActivity.this, "" + response.toString();, Toast.LENGTH_SHORT).show();
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            String flag = jsonObject.getString("flag");
+                            if (flag.equals("success")) {
+                                String str = jsonObject.getString("newMessage");
+                                totalCount = Integer.parseInt(str);
+                                if (totalCount > 0) {
+                                    message_count.setText(str);
+                                    message_count.setVisibility(View.VISIBLE);
+                                } else {
+                                    message_count.setVisibility(View.GONE);
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            errorMsg = "There is either no connection or it timed out.";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "ServerError";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "Network Error";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                params.put("userid", userId);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
     }
 }
