@@ -809,12 +809,8 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 for (int i = 0; i <= JoinMp.size() - 1; i++) {
 
                                     if (MinJoinCount == i) {
-
                                         //currentSongIndex = currentSongIndex + 1;
-
                                         mp = JoinMp.get(i);
-
-
                                     }
                                 }
                                 mp.prepareAsync();

@@ -69,6 +69,7 @@ import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
@@ -1929,6 +1930,7 @@ public class StudioActivity extends AppCompatActivity {
                             instrumentList.add(melodyInstruments);
                             adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
                             recyclerViewInstruments.setAdapter(adapter);
+                            recyclerViewInstruments.smoothScrollToPosition(instrumentList.size());
                             adapter.notifyDataSetChanged();
                             ivRecord_play.setVisibility(View.INVISIBLE);
                             rlRedoButton.setVisibility(View.INVISIBLE);
@@ -2107,21 +2109,18 @@ public class StudioActivity extends AppCompatActivity {
                 params.put(Mixvocalsound, new DataPart("InstaMelody.mp3", soundBytes, "audio/amr"));
                 return params;
             }
-           /* @Override
-            protected Map<String, String> getParams() throws com.android.volley.AuthFailureError {
-                JSONObject paramss = new JSONObject();
-                try {
-                    for (int i=0; i <list.size();i++){
-                        paramss.put(Config.EVENT_ID, eventIDBeacon.get(i));
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                return paramss;
-            };*/
 
         };
-        VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
+        //VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
+
+        RequestQueue requestQueue = Volley.newRequestQueue(StudioActivity.this);
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        multipartRequest.setRetryPolicy(policy);
+        requestQueue.add(multipartRequest);
     }
 
 
