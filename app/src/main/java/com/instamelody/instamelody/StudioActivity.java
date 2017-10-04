@@ -1045,6 +1045,45 @@ public class StudioActivity extends AppCompatActivity {
                         ivRecord.setVisibility(View.VISIBLE);
                         ivRecord.setEnabled(true);
                     } else if (userId == null) {
+                        handler.removeCallbacksAndMessages(null);
+                        if (lstViewHolder.size() > 0) {
+                            lstViewHolder.clear();
+                        }
+                        if (mp_start != null) {
+
+                            for (int i = 0; i <= mp_start.size() - 1; i++) {
+                                try {
+                                    mp_start.get(i).stop();
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+
+                            }
+                        }
+                        mp_start.clear();
+                        if (mpall != null) {
+                            mpall.stop();
+                            if (mediaPlayersAll.size() > 0) {
+                                for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                                    try {
+                                        mediaPlayersAll.get(i).stop();
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
+                                }
+                            }
+                            mediaPlayersAll.clear();
+                        }
+                        if (mpInst != null) {
+                            try {
+                                mpInst.stop();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                        if(instrumentList.size()>0) {
+                            instrumentList.clear();
+                        }
                         Intent i = new Intent(getApplicationContext(), SignInActivity.class);
                         startActivity(i);
                         Toast.makeText(StudioActivity.this, "SignIn to Save Recording", Toast.LENGTH_SHORT).show();
@@ -2699,7 +2738,11 @@ public class StudioActivity extends AppCompatActivity {
 
                 for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
                     if (StudioActivity.mp_start.get(i).isPlaying()) {
-                        StudioActivity.mp_start.get(i).stop();
+                        try {
+                            StudioActivity.mp_start.get(i).stop();
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
                     }
 
                 }
@@ -2710,7 +2753,11 @@ public class StudioActivity extends AppCompatActivity {
                 if (mediaPlayersAll.size() > 0) {
                     for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                         if (mediaPlayersAll.get(i).isPlaying()) {
+                            try{
                             mediaPlayersAll.get(i).stop();
+                            }catch (Exception ex){
+                                ex.printStackTrace();
+                            }
                         }
                     }
                 }

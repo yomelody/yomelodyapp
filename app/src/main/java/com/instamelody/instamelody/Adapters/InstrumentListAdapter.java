@@ -614,14 +614,14 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     if (holder.fxContent.getVisibility() == View.VISIBLE) {
                         holder.fxContent.setVisibility(View.GONE);
                         holder.eqContent.setVisibility(View.GONE);
-                        rlBase.setVisibility(View.VISIBLE);
+                        //rlBase.setVisibility(View.VISIBLE);
                         holder.tvDoneFxEq.setVisibility(View.GONE);
                         StudioActivity.frameSync.setVisibility(View.VISIBLE);
                     } else if (holder.fxContent.getVisibility() == View.GONE) {
                         holder.fxContent.setVisibility(View.VISIBLE);
                         holder.tvDoneFxEq.setVisibility(View.VISIBLE);
                         holder.eqContent.setVisibility(View.GONE);
-                        rlBase.setVisibility(View.GONE);
+                        //rlBase.setVisibility(View.GONE);
                         StudioActivity.frameSync.setVisibility(View.GONE);
                     }
 
