@@ -187,6 +187,7 @@ public class AudioFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mActivity=getActivity();
         // fetchGenreNames();
         progressDialog = new ProgressDialog(getActivity());
         SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
@@ -214,8 +215,6 @@ public class AudioFragment extends Fragment {
         adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
         fetchGenreNames();
         callApi();
-
-
 
     }
 
@@ -483,7 +482,7 @@ public class AudioFragment extends Fragment {
                 return params;
             }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        RequestQueue requestQueue = Volley.newRequestQueue(mActivity);
 
         int socketTimeout = 30000; // 30 seconds. You can change it
         RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
@@ -561,7 +560,7 @@ public class AudioFragment extends Fragment {
                 return params;
             }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        RequestQueue requestQueue = Volley.newRequestQueue(mActivity);
 
         int socketTimeout = 30000; // 30 seconds. You can change it
         RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
@@ -651,7 +650,7 @@ public class AudioFragment extends Fragment {
                 return params;
             }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        RequestQueue requestQueue = Volley.newRequestQueue(mActivity);
 
         int socketTimeout = 30000; // 30 seconds. You can change it
         RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
@@ -737,7 +736,7 @@ public class AudioFragment extends Fragment {
                 return params;
             }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        RequestQueue requestQueue = Volley.newRequestQueue(mActivity);
 
         int socketTimeout = 30000; // 30 seconds. You can change it
         RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
@@ -822,7 +821,7 @@ public class AudioFragment extends Fragment {
                 return params;
             }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        RequestQueue requestQueue = Volley.newRequestQueue(mActivity);
 
         int socketTimeout = 30000; // 30 seconds. You can change it
         RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
@@ -907,7 +906,7 @@ public class AudioFragment extends Fragment {
                 return params;
             }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        RequestQueue requestQueue = Volley.newRequestQueue(mActivity);
 
         int socketTimeout = 30000; // 30 seconds. You can change it
         RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
@@ -1111,7 +1110,7 @@ public class AudioFragment extends Fragment {
                 return params;
             }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        RequestQueue requestQueue = Volley.newRequestQueue(mActivity);
 
         int socketTimeout = 30000; // 30 seconds. You can change it
         RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
@@ -1127,19 +1126,19 @@ public class AudioFragment extends Fragment {
     void ClearSharedPref() {
         try {
 
-            SharedPreferences.Editor FilterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+            SharedPreferences.Editor FilterPref = mActivity.getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
             FilterPref.clear();
             FilterPref.apply();
-            SharedPreferences.Editor SearchPref = getActivity().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+            SharedPreferences.Editor SearchPref = mActivity.getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
             SearchPref.clear();
             SearchPref.apply();
-            SharedPreferences.Editor FilterPrefArtist = getActivity().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
+            SharedPreferences.Editor FilterPrefArtist = mActivity.getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
             FilterPrefArtist.clear();
             FilterPrefArtist.apply();
-            SharedPreferences.Editor FilterPrefInstruments = getActivity().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
+            SharedPreferences.Editor FilterPrefInstruments = mActivity.getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
             FilterPrefInstruments.clear();
             FilterPrefInstruments.apply();
-            SharedPreferences.Editor FilterPrefBPM = getActivity().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
+            SharedPreferences.Editor FilterPrefBPM = mActivity.getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
             FilterPrefBPM.clear();
             FilterPrefBPM.apply();
         } catch (NullPointerException e) {

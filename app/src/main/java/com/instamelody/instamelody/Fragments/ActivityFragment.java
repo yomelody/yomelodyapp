@@ -31,6 +31,7 @@ import com.instamelody.instamelody.Adapters.ActivityCardAdapter;
 import com.instamelody.instamelody.Models.ActivityModel;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.StationActivity;
+import com.instamelody.instamelody.utils.AppHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -151,6 +152,7 @@ public class ActivityFragment extends Fragment {
                     @Override
                     public void onResponse(String response) {
                         //Toast.makeText(getActivity(), "" + response, Toast.LENGTH_SHORT).show();
+                        AppHelper.sop("response=="+response);
                         JSONObject jsonObject;
                         JSONArray jsonArray;
 
@@ -220,6 +222,11 @@ public class ActivityFragment extends Fragment {
                         } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
 
                     }
                 }) {
@@ -228,6 +235,7 @@ public class ActivityFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(USER_ID, userId);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params=="+params+"\nURL=="+ACTIVITY);
                 return params;
             }
         };
