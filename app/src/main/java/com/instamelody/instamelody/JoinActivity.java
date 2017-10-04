@@ -3,7 +3,9 @@ package com.instamelody.instamelody;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
@@ -29,12 +32,14 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.instamelody.instamelody.Adapters.InstrumentListAdapter;
 import com.instamelody.instamelody.Adapters.JoinInstrumentListAdp;
 import com.instamelody.instamelody.Adapters.JoinListAdapter;
 import com.instamelody.instamelody.Fragments.CommentJoinFragment;
 import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Models.JoinedUserProfile;
 import com.instamelody.instamelody.Models.MelodyInstruments;
+import com.instamelody.instamelody.Models.ModelPlayAllMediaPlayer;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.squareup.picasso.Picasso;
 
@@ -77,11 +82,15 @@ public class JoinActivity extends AppCompatActivity {
     public static com.instamelody.instamelody.utils.WaveformView waveform_view;
     private boolean mShouldContinue = true;
     public static TextView mDecibelView, recording_name, artist_name;
-    public static ImageView profile_image, ivShareButton;
-    public static ImageView ivBackButton, ivHomeButton;
+    public static ImageView profile_image, ivShareButton, ivRecordJoin;
+    public static ImageView ivBackButton, ivHomeButton, playAll, pauseAll;
     public static TextView melody_detail, txtCount, tvIncluded;
     public static RelativeLayout joincenter, joinFooter, rlInviteButton;
-    public static FrameLayout commentContainer;
+    public static FrameLayout commentContainer, frameProgress;
+    public static final Handler handler = new Handler();
+    public static ArrayList<JoinInstrumentListAdp.ViewHolder> lstViewHolder = new ArrayList<JoinInstrumentListAdp.ViewHolder>();
+    public static MediaPlayer mpall;
+    public static ArrayList<MediaPlayer> mediaPlayersAll = new ArrayList<MediaPlayer>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +108,9 @@ public class JoinActivity extends AppCompatActivity {
         txtCount = (TextView) findViewById(R.id.txtCount);
         tvIncluded = (TextView) findViewById(R.id.tvIncluded);
         ivPlayPre = (ImageView) findViewById(R.id.ivPlayPre);
+        ivRecordJoin = (ImageView) findViewById(R.id.ivRecordJoin);
+        playAll = (ImageView) findViewById(R.id.playAll);
+        pauseAll = (ImageView) findViewById(R.id.pauseAll);
         waveform_view = (com.instamelody.instamelody.utils.WaveformView) findViewById(R.id.waveform_view);
         mDecibelView = (TextView) findViewById(R.id.decibel_view);
         play_count = (TextView) findViewById(R.id.tvPlayCount);
@@ -127,14 +139,13 @@ public class JoinActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerViewInstruments.setLayoutManager(layoutManager);
         recyclerViewInstruments.setItemAnimator(new DefaultItemAnimator());
-
+        frameProgress = (FrameLayout) findViewById(R.id.frameProgress);
         RecyclerView.LayoutManager lm = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(lm);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(10);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-
 
         rlIncluded.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,6 +198,27 @@ public class JoinActivity extends AppCompatActivity {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
+                if (JoinListAdapter.mp != null) {
+                    JoinListAdapter.mp.stop();
+                }
+                if (JoinListAdapter.mRecordingThread != null) {
+                    JoinListAdapter.mRecordingThread.stopRunning();
+                    JoinListAdapter.mRecordingThread = null;
+                    //    mShouldContinue=true;
+                }
+                if (JoinInstrumentListAdp.mp_start != null) {
+                    for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
+                        JoinInstrumentListAdp.mp_start.get(i).stop();
+
+                    }
+                }
+                if (mediaPlayersAll != null) {
+                    for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                        mediaPlayersAll.get(i).stop();
+                    }
+                    mediaPlayersAll.clear();
+                    lstViewHolder.clear();
+                }
             }
         });
 
@@ -206,6 +238,13 @@ public class JoinActivity extends AppCompatActivity {
                         JoinInstrumentListAdp.mp_start.get(i).stop();
 
                     }
+                }
+                if (mediaPlayersAll != null) {
+                    for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                        mediaPlayersAll.get(i).stop();
+                    }
+                    mediaPlayersAll.clear();
+                    lstViewHolder.clear();
                 }
 
 
@@ -230,6 +269,13 @@ public class JoinActivity extends AppCompatActivity {
                         JoinInstrumentListAdp.mp_start.get(i).stop();
 
                     }
+                }
+                if (mediaPlayersAll != null) {
+                    for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                        mediaPlayersAll.get(i).stop();
+                    }
+                    mediaPlayersAll.clear();
+                    lstViewHolder.clear();
                 }
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
@@ -523,6 +569,13 @@ public class JoinActivity extends AppCompatActivity {
 
             }
         }
+        if (mediaPlayersAll != null) {
+            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                mediaPlayersAll.get(i).stop();
+            }
+            mediaPlayersAll.clear();
+            lstViewHolder.clear();
+        }
 
     }
 
@@ -544,6 +597,23 @@ public class JoinActivity extends AppCompatActivity {
 
             }
         }
+        if (mediaPlayersAll != null) {
+            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                mediaPlayersAll.get(i).stop();
+            }
+            mediaPlayersAll.clear();
+            lstViewHolder.clear();
+            try {
+                if (pauseAll.getVisibility() == View.VISIBLE) {
+                    pauseAll.setVisibility(GONE);
+                    playAll.setVisibility(View.VISIBLE);
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+
+        }
+
 
     }
 

@@ -1034,9 +1034,12 @@ public class StationCommentActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         AppHelper.sop("response=="+response);
                         commentList.clear();
-                        adapter.notifyDataSetChanged();
-                        recyclerView.smoothScrollToPosition(adapter.getItemCount());
+
+
                         new ParseContents(getApplicationContext()).parseComments(response, commentList);
+                        adapter.notifyDataSetChanged();
+//                        recyclerView.smoothScrollToPosition(adapter.getItemCount());
+                        recyclerView.scrollToPosition(commentList.size()-1);
                     }
                 },
                 new Response.ErrorListener() {
@@ -1090,9 +1093,9 @@ public class StationCommentActivity extends AppCompatActivity {
                         resultIntent.putExtra("PARAMETER", "Like");
                         setResult(Activity.RESULT_OK, resultIntent);
 
-                        adapter.notifyDataSetChanged();
+//                        adapter.notifyDataSetChanged();
                         getComments();
-                        recyclerView.smoothScrollToPosition(adapter.getItemCount());
+//                        recyclerView.smoothScrollToPosition(adapter.getItemCount()-1);
 //                      new ParseContents(getApplicationContext()).parseComments(response, commentList);
                     }
                 },

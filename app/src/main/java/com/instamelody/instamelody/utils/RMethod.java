@@ -1,5 +1,6 @@
 package com.instamelody.instamelody.utils;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -71,6 +72,53 @@ public class RMethod {
 
         return val;
     }
+
+
+    public static void printDifference(String dateTime){
+
+        SimpleDateFormat dff = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        Date currentDate = Calendar.getInstance().getTime();
+
+        try {
+            dff.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date date2 = dff.parse(dateTime);
+
+            //milliseconds
+            long different = currentDate.getTime() - date2.getTime();
+
+            System.out.println("startDate : " + currentDate.getTime());
+            System.out.println("endDate : "+ date2);
+            System.out.println("different : " + different);
+
+            long secondsInMilli = 1000;
+            long minutesInMilli = secondsInMilli * 60;
+            long hoursInMilli = minutesInMilli * 60;
+            long daysInMilli = hoursInMilli * 24;
+
+            long elapsedDays = different / daysInMilli;
+            different = different % daysInMilli;
+
+            long elapsedHours = different / hoursInMilli;
+            different = different % hoursInMilli;
+
+            long elapsedMinutes = different / minutesInMilli;
+            different = different % minutesInMilli;
+
+            long elapsedSeconds = different / secondsInMilli;
+
+            System.out.printf(
+                    "%d days, %d hours, %d minutes, %d seconds%n",
+                    elapsedDays,
+                    elapsedHours, elapsedMinutes, elapsedSeconds);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+
+    }
+
 }
 
 

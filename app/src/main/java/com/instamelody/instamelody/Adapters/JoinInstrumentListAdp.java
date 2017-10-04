@@ -19,13 +19,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.instamelody.instamelody.JoinActivity;
 import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Models.MelodyInstruments;
+import com.instamelody.instamelody.Models.ModelPlayAllMediaPlayer;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.StudioActivity;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
@@ -62,6 +66,12 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
     static int duration1, currentPosition;
     public static List<MediaPlayer> mp_start = new ArrayList<MediaPlayer>();
     public static int count = 0;
+    int InstrumentCountSize = 0;
+    // ArrayList<ViewHolder> lstViewHolder = new ArrayList<ViewHolder>();
+    ViewHolder viewHolder;
+    ImageView holderPlay, holderPause;
+    SeekBar seekBar;
+    int Compdurations = 0, tmpduration = 0, MaxMpSessionID;
 
     public JoinInstrumentListAdp(ArrayList<MelodyInstruments> instrumentList, Context context) {
         this.instrumentList = instrumentList;
@@ -100,7 +110,7 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
             count = getItemCount();
 
             JoinActivity.melody_detail.setText(count + " " + "Instrumentals");
-            
+
 
             audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
             ivPause.setOnClickListener(new View.OnClickListener() {
@@ -196,14 +206,28 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
 
     }
 
+    public static class ViewHolder {
+        SeekBar melodySlider;
+        ImageView ivPlay, ivPause;
+    }
+
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
-
-
         final MelodyInstruments instruments = instrumentList.get(listPosition);
-        String abc = instrumentList.get(listPosition).getInstrumentFile();
-        // Toast.makeText(context, "" + abc, Toast.LENGTH_SHORT).show();
+        viewHolder = new ViewHolder();
+        viewHolder.melodySlider = (SeekBar) holder.melodySlider.findViewById(R.id.melodySlider);
+        viewHolder.ivPlay = (ImageView) holder.ivPlay.findViewById(R.id.ivPlay);
+        viewHolder.ivPause = (ImageView) holder.ivPause.findViewById(R.id.ivPause);
+
+        if (JoinActivity.lstViewHolder.size() < getItemCount()) {
+            JoinActivity.lstViewHolder.add(viewHolder);
+        }
+
+
+        if (InstrumentCountSize == 0) {
+            InstrumentCountSize = MelodyInstruments.getInstrumentCount();
+        }
 
         if (coverPicStudio != null) {
             Picasso.with(holder.ivInstrumentCover.getContext()).load(coverPicStudio).into(holder.ivInstrumentCover);
@@ -244,7 +268,7 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
         holder.ivPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                JoinActivity.playAll.setEnabled(false);
                 holder.ivPlay.setVisibility(v.GONE);
                 holder.ivPause.setVisibility(v.VISIBLE);
                 instruments_url.add(instrumentFile);
@@ -304,11 +328,74 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
         holder.ivPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                JoinActivity.playAll.setEnabled(true);
                 holder.ivPlay.setVisibility(v.VISIBLE);
                 holder.ivPause.setVisibility(v.GONE);
                 holder.mp.pause();
                 length = holder.mp.getCurrentPosition();
                 holder.melodySlider.setProgress(0);
+            }
+        });
+
+        JoinActivity.playAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    if (holder.mp.isPlaying()) {
+                        JoinActivity.playAll.setEnabled(false);
+                    } else {
+                        JoinActivity.playAll.setEnabled(true);
+                    }
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
+
+                holder.ivPlay.setEnabled(false);
+                holder.ivPause.setEnabled(false);
+                holder.melodySlider.setEnabled(false);
+                JoinActivity.ivJoinPlay.setEnabled(false);
+                JoinActivity.ivJoinPause.setEnabled(false);
+                JoinActivity.ivPlayNext.setEnabled(false);
+                JoinActivity.ivPlayPre.setEnabled(false);
+                new PrepareInstrumentsForPlayAll().execute();
+            }
+        });
+
+        JoinActivity.pauseAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //   JoinActivity.playAll.setVisibility(View.VISIBLE);
+                // JoinActivity.pauseAll.setVisibility(View.GONE);
+                // Pause button code ...
+                for (MediaPlayer mp : JoinActivity.mediaPlayersAll) {
+                    try {
+                        mp.stop();
+                        mp.reset();
+                        mp.release();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                for (int i = 0; i <= JoinActivity.mediaPlayersAll.size() - 1; i++) {
+                    holderPlay = JoinActivity.lstViewHolder.get(i).ivPlay;
+                    holderPause = JoinActivity.lstViewHolder.get(i).ivPause;
+                    seekBar = JoinActivity.lstViewHolder.get(i).melodySlider;
+                    holderPlay.setVisibility(View.VISIBLE);
+                    holderPause.setVisibility(View.GONE);
+                    JoinActivity.playAll.setVisibility(View.VISIBLE);
+                    JoinActivity.pauseAll.setVisibility(View.GONE);
+                    seekBar.setProgress(0);
+                }
+                JoinActivity.mediaPlayersAll.clear();
+                holder.ivPlay.setEnabled(true);
+                holder.ivPause.setEnabled(true);
+                holder.melodySlider.setEnabled(true);
+                JoinActivity.ivJoinPlay.setEnabled(true);
+                JoinActivity.ivJoinPause.setEnabled(true);
+                JoinActivity.ivPlayNext.setEnabled(true);
+                JoinActivity.ivPlayPre.setEnabled(true);
+
             }
         });
 
@@ -335,6 +422,135 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
     public int getItemViewType(int position) {
         return (position == instrumentList.size()) ? R.layout.layout_button_sync : R.layout.card_melody_added;
     }
+
+    private class PrepareInstrumentsForPlayAll extends AsyncTask<String, Void, Bitmap> {
+
+        protected void onPreExecute() {
+            try {
+                try {
+                    JoinActivity.frameProgress.setVisibility(View.VISIBLE);
+                    JoinActivity.playAll.setVisibility(View.GONE);
+                    JoinActivity.pauseAll.setVisibility(View.VISIBLE);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+
+            for (int i = 0; i < InstrumentCountSize; i++) {
+                JoinActivity.mpall = new MediaPlayer();
+                JoinActivity.mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+                try {
+                    JoinActivity.mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
+                    JoinActivity.mpall.prepare();
+                    JoinActivity.mediaPlayersAll.add(JoinActivity.mpall);
+
+                    Compdurations = JoinActivity.mediaPlayersAll.get(i).getDuration();
+                    if (Compdurations > tmpduration) {
+                        tmpduration = Compdurations;
+                        MaxMpSessionID = JoinActivity.mediaPlayersAll.get(i).getAudioSessionId();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+            JoinActivity.mpall.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    if (MaxMpSessionID == mediaPlayer.getAudioSessionId()) {
+                        JoinActivity.handler.removeCallbacksAndMessages(null);
+                        for (int i = 0; i <= JoinActivity.mediaPlayersAll.size() - 1; i++) {
+                            try {
+                                holderPlay = JoinActivity.lstViewHolder.get(i).ivPlay;
+                                holderPause = JoinActivity.lstViewHolder.get(i).ivPause;
+                                seekBar = JoinActivity.lstViewHolder.get(i).melodySlider;
+                                holderPlay.setVisibility(View.VISIBLE);
+                                holderPause.setVisibility(View.GONE);
+                                JoinActivity.playAll.setVisibility(View.VISIBLE);
+                                JoinActivity.pauseAll.setVisibility(View.GONE);
+                                seekBar.setProgress(0);
+                            } catch (Throwable e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        JoinActivity.mediaPlayersAll.clear();
+                        JoinActivity.ivJoinPlay.setEnabled(true);
+                        JoinActivity.ivJoinPause.setEnabled(true);
+                        JoinActivity.ivPlayNext.setEnabled(true);
+                        JoinActivity.ivPlayPre.setEnabled(true);
+                    }
+
+                }
+            });
+
+            return null;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            JoinActivity.frameProgress.setVisibility(View.GONE);
+            for (int i = 0; i <= JoinActivity.mediaPlayersAll.size() - 1; i++) {
+                try {
+                    JoinActivity.mediaPlayersAll.get(i).start();
+
+                    final ImageView holderPlay = JoinActivity.lstViewHolder.get(i).ivPlay;
+                    final ImageView holderPause = JoinActivity.lstViewHolder.get(i).ivPause;
+
+                    holderPlay.setVisibility(View.GONE);
+                    holderPause.setVisibility(View.VISIBLE);
+                    holderPause.setEnabled(false);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+
+            }
+            RunSeekbar();
+
+        }
+
+    }
+
+    public void RunSeekbar() {
+        try {
+            for (int i = 0; i <= JoinActivity.mediaPlayersAll.size() - 1; i++) {
+                final MediaPlayer pts;
+                pts = JoinActivity.mediaPlayersAll.get(i);
+
+
+                final SeekBar seekBar = JoinActivity.lstViewHolder.get(i).melodySlider;
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            int currentPosition = pts.getCurrentPosition() / 1000;
+                            int duration = pts.getDuration() / 1000;
+                            int progress = (currentPosition * 100) / duration;
+
+                            //seekBar.setProgress((int) (((float) pts.getCurrentPosition() / pts.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
+                            seekBar.setProgress(progress);
+
+                            JoinActivity.handler.postDelayed(this, 1000);
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                };
+                JoinActivity.handler.postDelayed(runnable, 1000);
+            }
+
+
+        } catch (Throwable ex) {
+            ex.printStackTrace();
+        }
+    }
+
 
     private class InstrumentCover extends AsyncTask<String, Void, Bitmap> {
         //ImageView bmImage;

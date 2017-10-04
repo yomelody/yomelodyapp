@@ -79,6 +79,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.FOLLOWERS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.USERS_BIO;
+import static com.instamelody.instamelody.utils.Const.ServiceType.USER_CHAT_ID;
 
 /**
  * Created by Saurabh Singh on 01/09/2017
@@ -199,9 +200,6 @@ public class ProfileActivity extends AppCompatActivity {
             userId = twitterPref.getString("userId", null);
         }
 
-        /*if (bundle != null) {
-            showProfileUserId = bundle.getString("showProfileUserId");
-        }*/
         if (getIntent() != null && getIntent().hasExtra("showProfileUserId")) {
             showProfileUserId = getIntent().getStringExtra("showProfileUserId");
             AppHelper.sop("showProfileUserId======" + showProfileUserId);
@@ -215,6 +213,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         }
 
+        getChatId(userId, showProfileUserId);
 
         if (showProfileUserId != null) {
             fetchUserBio();
@@ -1426,4 +1425,64 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    private void getChatId(final String user_id, final String reciever_id) {
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, USER_CHAT_ID,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+//                        Toast.makeText(context, " Shubz" + response, Toast.LENGTH_LONG).show();
+
+                        JSONObject jsonObject;
+                        try {
+                            jsonObject = new JSONObject(response);
+                            String chat_Id = jsonObject.getString("chatID");
+                            String receiverName = jsonObject.getString("receiverName");
+
+                            if (chat_Id.equals("0")) {
+                                chat_Id = "";
+                            }
+
+                            SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                            editor.putString("chatId", chat_Id);
+                            editor.putString("receiverName", receiverName);
+                            editor.commit();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            errorMsg = "There is either no connection or it timed out.";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "ServerError";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "Network Error";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("senderID", user_id);
+                params.put("receiverID", reciever_id);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+    }
 }

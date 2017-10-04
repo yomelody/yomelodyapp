@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.instamelody.instamelody.JoinActivity"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    tools:context="com.instamelody.instamelody.JoinActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -33,16 +33,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="15dp"
-                android:layout_alignParentTop="true">
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="15dp">
 
                 <TextView
                     android:id="@+id/tvDone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:text="Done"
                     android:enabled="false"
+                    android:text="Done"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     android:textStyle="normal|bold" />
@@ -52,8 +52,8 @@
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentTop="true">
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true">
 
                 <TextView
                     android:id="@+id/appBarMainText"
@@ -71,21 +71,21 @@
                 android:id="@+id/ivSound"
                 android:layout_width="38dp"
                 android:layout_height="38dp"
-                android:layout_marginRight="8dp"
-                android:padding="8dp"
-
                 android:layout_centerVertical="true"
+                android:layout_marginRight="8dp"
+
                 android:layout_toLeftOf="@+id/rlAppBarSideButton"
+                android:padding="8dp"
                 android:src="@drawable/volume" />
 
             <ImageView
                 android:id="@+id/ivHomeButton"
                 android:layout_width="38dp"
                 android:layout_height="38dp"
-                android:padding="8dp"
                 android:layout_centerVertical="true"
                 android:layout_toEndOf="@+id/ivBackButton"
                 android:layout_toRightOf="@+id/ivBackButton"
+                android:padding="8dp"
                 android:src="@drawable/menu_dots" />
 
         </RelativeLayout>
@@ -93,6 +93,20 @@
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_join" />
+
+    <FrameLayout
+        android:id="@+id/frameProgress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/frameProg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+    </FrameLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"

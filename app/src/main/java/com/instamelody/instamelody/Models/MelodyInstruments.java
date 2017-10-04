@@ -63,13 +63,15 @@ public class MelodyInstruments {
     //End here
 
     public String getInstrumentBpm() {
-        instrumentBpm = "BPM: " + instrumentBpm;
+
+       // instrumentBpm = "BPM: " + instrumentBpm;
         return instrumentBpm;
 
     }
 
     public void setInstrumentBpm(String instrumentBpm) {
-        this.instrumentBpm = instrumentBpm;
+
+        this.instrumentBpm = "BPM: " + instrumentBpm;
     }
 
     public int getMelodyPacksId() {

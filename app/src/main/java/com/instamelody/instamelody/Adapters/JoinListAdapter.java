@@ -437,6 +437,13 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
                     }
                 }
+                if (JoinActivity.mediaPlayersAll != null) {
+                    for (int i = 0; i <= JoinActivity.mediaPlayersAll.size() - 1; i++) {
+                        JoinActivity.mediaPlayersAll.get(i).stop();
+                    }
+                    JoinActivity.mediaPlayersAll.clear();
+                    JoinActivity.lstViewHolder.clear();
+                }
                 // Toast.makeText(context, ""+posForStudio, Toast.LENGTH_SHORT).show();
                 StudioActivity.instrumentList.clear();
                 SharedPreferences.Editor editor = context.getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
@@ -444,6 +451,42 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                 editor.commit();
                 Intent intent = new Intent(v.getContext(), StudioActivity.class);
                 v.getContext().startActivity(intent);
+                StudioActivity.list.clear();
+            }
+        });
+
+        JoinActivity.ivRecordJoin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //    String position = Integer.toString();
+                if (mp != null) {
+                    mp.stop();
+                }
+                if (mRecordingThread != null) {
+                    mRecordingThread.stopRunning();
+                    mRecordingThread = null;
+                    //    mShouldContinue=true;
+                }
+                if (JoinInstrumentListAdp.mp_start != null) {
+                    for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
+                        JoinInstrumentListAdp.mp_start.get(i).stop();
+
+                    }
+                }
+                if (JoinActivity.mediaPlayersAll != null) {
+                    for (int i = 0; i <= JoinActivity.mediaPlayersAll.size() - 1; i++) {
+                        JoinActivity.mediaPlayersAll.get(i).stop();
+                    }
+                    JoinActivity.mediaPlayersAll.clear();
+                    JoinActivity.lstViewHolder.clear();
+                }
+                // Toast.makeText(context, ""+posForStudio, Toast.LENGTH_SHORT).show();
+                StudioActivity.instrumentList.clear();
+                SharedPreferences.Editor editor = context.getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
+                editor.putString("instrumentsPos", String.valueOf(posForStudio));
+                editor.commit();
+                Intent intent = new Intent(view.getContext(), StudioActivity.class);
+                view.getContext().startActivity(intent);
                 StudioActivity.list.clear();
             }
         });

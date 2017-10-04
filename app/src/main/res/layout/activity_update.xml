@@ -442,6 +442,7 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textColor="@android:color/white"
                     android:textColorLink="@color/homeBlinker"
+                    android:enabled="false"
                     android:textSize="16sp"
                     android:textStyle="normal"/>
 
@@ -509,6 +510,7 @@
                 android:visibility="visible"
                 android:background="@drawable/round_button"
                 android:text="Edit Profile"
+
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                 android:textColor="#FFFFFF" />
 

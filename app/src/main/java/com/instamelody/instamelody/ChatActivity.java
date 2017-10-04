@@ -1,6 +1,5 @@
 package com.instamelody.instamelody;
 
-import android.*;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -195,7 +194,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(READ_NOTIFICATION)) {
                     String readStatus = intent.getStringExtra("status");
-                    if(readStatus.equals("read")){
+                    if (readStatus.equals("read")) {
                         String chatId = intent.getStringExtra("chatId");
                         getChatMsgs(chatId);
                     }
@@ -298,7 +297,6 @@ public class ChatActivity extends AppCompatActivity {
 
         getChatMsgs(chatId);
 
-//        groupImageBitmap = ((BitmapDrawable) ivGroupImage.getDrawable()).getBitmap();
         etMessage = (EditText) findViewById(R.id.etMessage);
         etMessage.setHintTextColor(Color.parseColor("#7B888F"));
         inflater = LayoutInflater.from(ChatActivity.this);
@@ -440,9 +438,7 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        ivCamera.setOnClickListener(new View.OnClickListener()
-
-        {
+        ivCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 /**
