@@ -188,7 +188,7 @@ public class StudioActivity extends AppCompatActivity {
     String KEY_GENRE_ID = "id";
 
     List<String> genreList = new ArrayList<>();
-
+    String IsMicConnected;
     private int mBufferSize;
     private short[] mAudioBuffer;
     //private String mDecibelFormat;
@@ -1885,7 +1885,7 @@ public class StudioActivity extends AppCompatActivity {
         progressDialog.setMessage("Please wait...");
         progressDialog.setCancelable(false);
         progressDialog.show();
-
+        IsMicConnectet();
         VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, MixingAudio_InstrumentsAudio, new Response.Listener<NetworkResponse>() {
             @Override
             public void onResponse(NetworkResponse response) {
@@ -1932,6 +1932,7 @@ public class StudioActivity extends AppCompatActivity {
                             recyclerViewInstruments.setAdapter(adapter);
                             recyclerViewInstruments.smoothScrollToPosition(instrumentList.size());
                             adapter.notifyDataSetChanged();
+
                             ivRecord_play.setVisibility(View.INVISIBLE);
                             rlRedoButton.setVisibility(View.INVISIBLE);
                             rlMelodyButton.setVisibility(View.VISIBLE);
@@ -1959,7 +1960,9 @@ public class StudioActivity extends AppCompatActivity {
                             instrumentList.add(melodyInstruments);
                             adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
                             recyclerViewInstruments.setAdapter(adapter);
+                            recyclerViewInstruments.smoothScrollToPosition(instrumentList.size());
                             adapter.notifyDataSetChanged();
+
                             ivRecord_play.setVisibility(View.INVISIBLE);
                             rlRedoButton.setVisibility(View.INVISIBLE);
                             rlMelodyButton.setVisibility(View.VISIBLE);
@@ -2049,7 +2052,7 @@ public class StudioActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<>();
                 params.put(Mixuser_id, userId);
                 params.put(Mixpublic_flag, switchFlag);
-                params.put(MixrecordWith, "withoutMike");
+                params.put(MixrecordWith, IsMicConnected);
                 params.put(Mixgenere, selectedGenre);
                 params.put(Mixbpms, "128");
                 params.put(Mixdurations, recordingDuration);
@@ -2780,6 +2783,17 @@ public class StudioActivity extends AppCompatActivity {
                 .url(ShortUrl);
 //                .image(Uri.parse(cover));
         builder.show();
+    }
+    private void IsMicConnectet(){
+        AudioManager am1 = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        Log.i("WiredHeadsetOn = ", am1.isWiredHeadsetOn() + "");
+        if (am1.isWiredHeadsetOn() == true) {
+            IsMicConnected="withMike";
+            //Toast.makeText(getApplicationContext(), "Headset is connected", Toast.LENGTH_SHORT).show();
+        } else {
+            IsMicConnected="withoutMike";
+            //Toast.makeText(getApplicationContext(), "Headset not connected", Toast.LENGTH_SHORT).show();
+        }
     }
 }
 

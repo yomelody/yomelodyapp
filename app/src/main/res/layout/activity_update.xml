@@ -442,7 +442,6 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textColor="@android:color/white"
                     android:textColorLink="@color/homeBlinker"
-                    android:enabled="false"
                     android:textSize="16sp"
                     android:textStyle="normal"/>
 
