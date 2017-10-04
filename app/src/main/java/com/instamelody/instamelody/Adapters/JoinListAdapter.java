@@ -437,6 +437,13 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
                     }
                 }
+                if (JoinActivity.mediaPlayersAll != null) {
+                    for (int i = 0; i <= JoinActivity.mediaPlayersAll.size() - 1; i++) {
+                        JoinActivity.mediaPlayersAll.get(i).stop();
+                    }
+                    JoinActivity.mediaPlayersAll.clear();
+                    JoinActivity.lstViewHolder.clear();
+                }
                 // Toast.makeText(context, ""+posForStudio, Toast.LENGTH_SHORT).show();
                 StudioActivity.instrumentList.clear();
                 SharedPreferences.Editor editor = context.getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
@@ -465,6 +472,13 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         JoinInstrumentListAdp.mp_start.get(i).stop();
 
                     }
+                }
+                if (JoinActivity.mediaPlayersAll != null) {
+                    for (int i = 0; i <= JoinActivity.mediaPlayersAll.size() - 1; i++) {
+                        JoinActivity.mediaPlayersAll.get(i).stop();
+                    }
+                    JoinActivity.mediaPlayersAll.clear();
+                    JoinActivity.lstViewHolder.clear();
                 }
                 // Toast.makeText(context, ""+posForStudio, Toast.LENGTH_SHORT).show();
                 StudioActivity.instrumentList.clear();
