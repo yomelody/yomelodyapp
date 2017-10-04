@@ -1938,8 +1938,10 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         AudioManager am1 = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         Log.i("WiredHeadsetOn = ", am1.isWiredHeadsetOn() + "");
         if (am1.isWiredHeadsetOn() == true) {
+
             Toast.makeText(getApplicationContext(), "Headset is connected", Toast.LENGTH_SHORT).show();
         } else {
+
             Toast.makeText(getApplicationContext(), "Headset not connected", Toast.LENGTH_SHORT).show();
         }
 

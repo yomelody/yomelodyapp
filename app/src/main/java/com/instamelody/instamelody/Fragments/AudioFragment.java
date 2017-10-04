@@ -32,7 +32,6 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Models.AudioModel;
 import com.instamelody.instamelody.Models.Genres;
@@ -1055,6 +1054,7 @@ public class AudioFragment extends Fragment {
                             //recordingList.addAll(recordingListMore);
                             //rv.setAdapter(adapter);
                             adapter.notifyDataSetChanged();
+                            rv.smoothScrollToPosition(recordingList.size());
                             ClearSharedPref();
                         } catch (NullPointerException e) {
                             e.printStackTrace();
