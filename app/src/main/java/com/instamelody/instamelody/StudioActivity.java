@@ -92,6 +92,8 @@ import com.instamelody.instamelody.Models.ModelPlayAllMediaPlayer;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.utils.AppHelper;
+import com.instamelody.instamelody.utils.Const;
+import com.instamelody.instamelody.utils.NotificationUtils;
 import com.instamelody.instamelody.utils.VolleyMultipartRequest;
 import com.instamelody.instamelody.utils.VolleySingleton;
 import com.squareup.picasso.Picasso;
@@ -127,6 +129,7 @@ import io.fabric.sdk.android.Fabric;
 
 import static com.instamelody.instamelody.SignInActivity.TWITTER_CONSUMER_KEY;
 import static com.instamelody.instamelody.SignInActivity.TWITTER_CONSUMER_SECRET;
+import static com.instamelody.instamelody.app.Config.PUSH_NOTIFICATION;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ADD_RECORDINGS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
@@ -134,6 +137,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.JOINED_USERS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MixingAudio_InstrumentsAudio;
+import static com.instamelody.instamelody.utils.Const.ServiceType.TOTAL_COUNT;
 import static com.instamelody.instamelody.utils.Const.ServiceType.UPLOAD_COVER_MELODY_FILE;
 
 /**
@@ -227,7 +231,7 @@ public class StudioActivity extends AppCompatActivity {
     public static FrameLayout frameTrans, frameSync, frameProgress;
     public static ImageView ivBackButton, ivHomeButton, ivRecord, ivRecord_stop, ivRecord_play, ivRecord_pause, discover, ivSound, message, ivProfile, ivNewRecordCover;
     CircleImageView profile_image;
-    TextView artist_name, noMelodyNote;
+    TextView artist_name, noMelodyNote, message_count;
     public static RecyclerView recyclerViewInstruments;
     RecyclerView.LayoutManager layoutManager;
     RecyclerView.Adapter adapter;
@@ -262,7 +266,6 @@ public class StudioActivity extends AppCompatActivity {
     public static TextView tvInstrumentLength, tvUserName, tvInstrumentName, tvBpmRate;
     public static ImageView userProfileImage, ivInstrumentCover, playAll, pauseAll;
 
-
     public static MelodyMixing melodyMixing = new MelodyMixing();
     public static ArrayList<MixingData> list = new ArrayList<MixingData>();
 
@@ -288,6 +291,8 @@ public class StudioActivity extends AppCompatActivity {
     CallbackManager callbackManager;
     URL ShortUrl;
     String pos = "0";
+    BroadcastReceiver mRegistrationBroadcastReceiver;
+    int totalCount = 0;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -329,6 +334,7 @@ public class StudioActivity extends AppCompatActivity {
         tvBpmRate = (TextView) findViewById(R.id.tvBpmRate);
         frameProgress = (FrameLayout) findViewById(R.id.frameProgress);
         ivSound = (ImageView) findViewById(R.id.ivSound);
+        message_count = (TextView) findViewById(R.id.message_count);
 
         playAll = (ImageView) findViewById(R.id.playAll);
         pauseAll = (ImageView) findViewById(R.id.pauseAll);
@@ -352,6 +358,17 @@ public class StudioActivity extends AppCompatActivity {
         } else if (statusTwitter == 1) {
             userId = userIdTwitter;
         }
+
+        getTotalCount();
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(PUSH_NOTIFICATION)) {
+                    getTotalCount();
+                }
+            }
+        };
+
         //playAll.setVisibility(View.VISIBLE);
         rlSetCover = (RelativeLayout) findViewById(R.id.rlSetCover);
         ivNewRecordCover = (ImageView) findViewById(R.id.ivNewRecordCover);
@@ -2512,6 +2529,7 @@ public class StudioActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
         try {
             handler.removeCallbacksAndMessages(null);
             if (StudioActivity.mp_start != null) {
@@ -2620,6 +2638,69 @@ public class StudioActivity extends AppCompatActivity {
                 .url(ShortUrl);
 //                .image(Uri.parse(cover));
         builder.show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getTotalCount();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(Const.PUSH_NOTIFICATION));
+        NotificationUtils.clearNotifications(getApplicationContext());
+    }
+
+    public void getTotalCount() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, TOTAL_COUNT,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //Toast.makeText(HomeActivity.this, "" + response.toString();, Toast.LENGTH_SHORT).show();
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            String flag = jsonObject.getString("flag");
+                            if (flag.equals("success")) {
+                                String str = jsonObject.getString("newMessage");
+                                totalCount = Integer.parseInt(str);
+                                if (totalCount > 0) {
+                                    message_count.setText(str);
+                                    message_count.setVisibility(View.VISIBLE);
+                                } else {
+                                    message_count.setVisibility(View.GONE);
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            errorMsg = "There is either no connection or it timed out.";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "ServerError";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "Network Error";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                params.put("userid", userId);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
     }
 }
 

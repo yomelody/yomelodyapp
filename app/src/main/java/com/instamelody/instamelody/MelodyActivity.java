@@ -6,18 +6,22 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,6 +36,18 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
 import com.instamelody.instamelody.Fragments.MelodyPacksFragment;
 import com.instamelody.instamelody.Fragments.RecordingsFragment;
@@ -39,10 +55,21 @@ import com.instamelody.instamelody.Fragments.SubscriptionsFragment;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.utils.AppHelper;
+import com.instamelody.instamelody.utils.Const;
+import com.instamelody.instamelody.utils.NotificationUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static android.view.View.VISIBLE;
+import static com.instamelody.instamelody.app.Config.PUSH_NOTIFICATION;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
+import static com.instamelody.instamelody.utils.Const.ServiceType.TOTAL_COUNT;
 
 
 /**
@@ -65,7 +92,7 @@ public class MelodyActivity extends AppCompatActivity {
     SearchView searchView, search1;
     String searchGet;
     String strName;
-    TextView appBarMainText;
+    TextView appBarMainText, message_count;
     ProgressDialog progressDialog;
     private static RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -73,6 +100,8 @@ public class MelodyActivity extends AppCompatActivity {
     //  LinearLayout tab1,llFragSubs;
     MelodyPacksFragment mpf;
     RecordingsFragment rf;
+    BroadcastReceiver mRegistrationBroadcastReceiver;
+    int totalCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +126,16 @@ public class MelodyActivity extends AppCompatActivity {
             userId = twitterPref.getString("userId", null);
         }
 
+        getTotalCount();
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(PUSH_NOTIFICATION)) {
+                    getTotalCount();
+                }
+            }
+        };
+
         search1 = (SearchView) findViewById(R.id.searchMelody);
         btnMelodyPacks = (Button) findViewById(R.id.btnMelodyPacks);
         melodySearchButton = (Button) findViewById(R.id.melodySearchButton);
@@ -112,6 +151,7 @@ public class MelodyActivity extends AppCompatActivity {
         appBarMainText = (TextView) findViewById(R.id.appBarMainText);
         appBarMelody = (AppBarLayout) findViewById(R.id.appBarMelody);
         ivMelodyFilter = (ImageView) findViewById(R.id.ivMelodyFilter);
+        message_count = (TextView) findViewById(R.id.message_count);
         //  tab1 = (LinearLayout) findViewById(R.id.tab1);
         // llFragSubs = (LinearLayout) findViewById(R.id.llFragSubs);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewMelody);
@@ -120,15 +160,13 @@ public class MelodyActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-
-        if ((getIntent().hasExtra("OPEN_FRAGMENT_SUBSCRIPTION"))== true)
-        {
+        if ((getIntent().hasExtra("OPEN_FRAGMENT_SUBSCRIPTION")) == true) {
             btnMelodyPacks.setBackgroundColor(Color.parseColor("#E4E4E4"));
             btnRecordings.setBackgroundColor(Color.parseColor("#E4E4E4"));
             btnSubscriptions.setBackgroundColor(Color.parseColor("#FFFFFF"));
             SubscriptionsFragment subf = new SubscriptionsFragment();
             getFragmentManager().beginTransaction().replace(R.id.activity_melody, subf).commit();
-        }else {
+        } else {
             mpf = new MelodyPacksFragment();
             getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
         }
@@ -369,11 +407,11 @@ public class MelodyActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        try{
+        try {
             super.onBackPressed();
             clearSharePrefMelody();
             AppHelper.sop("onBackpress==");
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
 
@@ -641,38 +679,83 @@ public class MelodyActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-
-        /*if (MelodyCardListAdapter.mediaPlayer != null) {
-            try {
-                MelodyCardListAdapter.mediaPlayer.stop();
-                MelodyCardListAdapter.mediaPlayer.reset();
-                MelodyCardListAdapter.mediaPlayer.release();
-                try {
-                    MelodyPacksFragment mpf = new MelodyPacksFragment();
-                    getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-
-        }*/
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         AppHelper.sop("onActivityResult=of=Activity");
-        if (mpf!=null){
+        if (mpf != null) {
             mpf.onActivityResult(requestCode, resultCode, data);
         }
-        if (rf!=null){
+        if (rf != null) {
             rf.onActivityResult(requestCode, resultCode, data);
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getTotalCount();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(Const.PUSH_NOTIFICATION));
+        NotificationUtils.clearNotifications(getApplicationContext());
+    }
+
+    public void getTotalCount() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, TOTAL_COUNT,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //Toast.makeText(HomeActivity.this, "" + response.toString();, Toast.LENGTH_SHORT).show();
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            String flag = jsonObject.getString("flag");
+                            if (flag.equals("success")) {
+                                String str = jsonObject.getString("newMessage");
+                                totalCount = Integer.parseInt(str);
+                                if (totalCount > 0) {
+                                    message_count.setText(str);
+                                    message_count.setVisibility(View.VISIBLE);
+                                } else {
+                                    message_count.setVisibility(View.GONE);
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            errorMsg = "There is either no connection or it timed out.";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "ServerError";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "Network Error";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                params.put("userid", userId);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
 }

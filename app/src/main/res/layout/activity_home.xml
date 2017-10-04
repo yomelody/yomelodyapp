@@ -241,6 +241,7 @@
                             android:background="@drawable/red_circle"
                             android:gravity="center"
                             android:text=""
+                            android:textColor="#FFFFFF"
                             android:maxLines="1"
                             android:textAlignment="center"
                             android:textSize="14sp"

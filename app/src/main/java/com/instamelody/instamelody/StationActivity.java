@@ -3,12 +3,15 @@ package com.instamelody.instamelody;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,14 +35,37 @@ import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Fragments.ActivityFragment;
 import com.instamelody.instamelody.Fragments.AudioFragment;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.utils.AppHelper;
+import com.instamelody.instamelody.utils.Const;
+import com.instamelody.instamelody.utils.NotificationUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import static com.instamelody.instamelody.app.Config.PUSH_NOTIFICATION;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
+import static com.instamelody.instamelody.utils.Const.ServiceType.TOTAL_COUNT;
 
 /**
  * Created by Saurabh Singh on 1/13/2017.
@@ -49,9 +75,9 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
     Button btnActivity, btnAudio, btnCancel;
     RelativeLayout rlFragmentActivity, rlPartStation, rlSearch;
-   public static ImageView ivBackButton, ivHomeButton, discover, message, ivProfile, audio_feed, ivStationSearch, ivMelodyStation, ivFilter;
+    public static ImageView ivBackButton, ivHomeButton, discover, message, ivProfile, audio_feed, ivStationSearch, ivMelodyStation, ivFilter;
     EditText subEtFilterName, subEtFilterInstruments, subEtFilterBPM;
-
+    TextView message_count;
     TabHost host;
     private static RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -92,14 +118,14 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     private int visibleThreshold = 5;
     private int lastVisibleItem, totalItemCount;
     AudioFragment af;
+    BroadcastReceiver mRegistrationBroadcastReceiver;
+    int totalCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_station);
-
         clearSharePrefStation();
-
 
         message = (ImageView) findViewById(R.id.message);
         discover = (ImageView) findViewById(R.id.discover);
@@ -118,6 +144,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         search1 = (SearchView) findViewById(R.id.search1);
         btnCancel = (Button) findViewById(R.id.btnCancel);
         list = (ListView) findViewById(R.id.list);
+        message_count = (TextView) findViewById(R.id.message_count);
+
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         userNameLogin = loginSharedPref.getString("userName", null);
         statusNormal = loginSharedPref.getInt("status", 0);
@@ -136,6 +164,16 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         } else if (statusTwitter == 1) {
             userId = userIdTwitter;
         }
+
+        getTotalCount();
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(PUSH_NOTIFICATION)) {
+                    getTotalCount();
+                }
+            }
+        };
 
         af = new AudioFragment();
         getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
@@ -430,7 +468,6 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     }
 
 
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();
@@ -723,13 +760,12 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         editorSearchString.apply();
     }
 
-
     @Override
     protected void onPause() {
         super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
         if (RecordingsCardAdapter.mp != null) {
             try {
-
                 RecordingsCardAdapter.mp.stop();
                 RecordingsCardAdapter.mp.release();
                 try {
@@ -738,23 +774,81 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
-
             } catch (Throwable e) {
                 e.printStackTrace();
             }
-
         }
-
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         AppHelper.sop("onActivityResult=of=Activity");
-        if (af!=null){
+        if (af != null) {
             af.onActivityResult(requestCode, resultCode, data);
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getTotalCount();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(Const.PUSH_NOTIFICATION));
+        NotificationUtils.clearNotifications(getApplicationContext());
+    }
+
+    public void getTotalCount() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, TOTAL_COUNT,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //Toast.makeText(HomeActivity.this, "" + response.toString();, Toast.LENGTH_SHORT).show();
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            String flag = jsonObject.getString("flag");
+                            if (flag.equals("success")) {
+                                String str = jsonObject.getString("newMessage");
+                                totalCount = Integer.parseInt(str);
+                                if (totalCount > 0) {
+                                    message_count.setText(str);
+                                    message_count.setVisibility(View.VISIBLE);
+                                } else {
+                                    message_count.setVisibility(View.GONE);
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            errorMsg = "There is either no connection or it timed out.";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "ServerError";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "Network Error";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                params.put("userid", userId);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
 }
