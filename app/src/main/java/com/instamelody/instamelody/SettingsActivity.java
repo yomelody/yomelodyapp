@@ -388,15 +388,23 @@ public class SettingsActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
 
-                    SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
+                    SharedPreferences.Editor editor = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
                     editor.clear();
                     editor.apply();
-                    SharedPreferences.Editor tEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
+                    SharedPreferences.Editor tEditor = getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
                     tEditor.clear();
                     tEditor.apply();
-                    SharedPreferences.Editor fbeditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
+                    SharedPreferences.Editor fbeditor = getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
                     fbeditor.clear();
                     fbeditor.apply();
+
+                    SharedPreferences.Editor profileEditor1 = getSharedPreferences("ProfileUpdate", MODE_PRIVATE).edit();
+                    profileEditor1.clear();
+                    profileEditor1.apply();
+                    SharedPreferences.Editor profileImageEditor1 = getSharedPreferences("ProfileImage", MODE_PRIVATE).edit();
+                    profileImageEditor1.clear();
+                    profileImageEditor1.apply();
+
                     LoginManager.getInstance().logOut();
                     HomeActivity.SignOut.setVisibility(View.INVISIBLE);
                     HomeActivity.SignIn.setVisibility(View.VISIBLE);

@@ -241,19 +241,19 @@ public class HomeActivity extends AppCompatActivity {
         SignOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
+                SharedPreferences.Editor editor = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
                 editor.clear();
                 editor.commit();
-                SharedPreferences.Editor tEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
+                SharedPreferences.Editor tEditor = getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
                 tEditor.clear();
                 tEditor.commit();
-                SharedPreferences.Editor fbeditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
+                SharedPreferences.Editor fbeditor = getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
                 fbeditor.clear();
                 fbeditor.commit();
-                SharedPreferences.Editor profileEditor1 = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE).edit();
+                SharedPreferences.Editor profileEditor1 = getSharedPreferences("ProfileUpdate", MODE_PRIVATE).edit();
                 profileEditor1.clear();
                 profileEditor1.apply();
-                SharedPreferences.Editor profileImageEditor1 = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE).edit();
+                SharedPreferences.Editor profileImageEditor1 = getSharedPreferences("ProfileImage", MODE_PRIVATE).edit();
                 profileImageEditor1.clear();
                 profileImageEditor1.apply();
                 LoginManager.getInstance().logOut();
