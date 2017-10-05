@@ -419,6 +419,7 @@ public class ChatActivity extends AppCompatActivity {
                     sendMessage(message, userId);
                     if (chatId.equals("")) {
                         getChatId(senderId, receiverId);
+                        getChatMsgs(chatId);
                     } else {
                         getChatMsgs(chatId);
                     }
@@ -665,8 +666,8 @@ public class ChatActivity extends AppCompatActivity {
                 etGroupName.setClickable(false);
                 tvUpdate.setVisibility(View.GONE);
                 tvEdit.setVisibility(View.VISIBLE);
-                tvUserName.setText(groupName);
                 updateGroup(chatId, groupName);
+                tvUserName.setText(groupName);
                 flCover.setVisibility(View.VISIBLE);
             }
         });
@@ -1294,6 +1295,15 @@ public class ChatActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(String response) {
 
+                    JSONObject jsonObject;
+                    try {
+                        jsonObject = new JSONObject(response);
+                        if (jsonObject.getString("flag").equals("Success")) {
+                            Toast.makeText(ChatActivity.this, "Group update successful", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }, new Response.ErrorListener()
 
@@ -1352,6 +1362,7 @@ public class ChatActivity extends AppCompatActivity {
                                     result = jsonObject.getJSONObject("response");
                                     groupImage = result.getString("url");
                                     receiverName = result.getString("groupName");
+                                    Toast.makeText(ChatActivity.this, "Group update successful", Toast.LENGTH_SHORT).show();
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -1480,7 +1491,7 @@ public class ChatActivity extends AppCompatActivity {
                             if (chatIds.equals("0")) {
                                 chatIds = "";
                             }
-                            getChatMsgs(chatIds);
+                            chatId = chatIds;
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
