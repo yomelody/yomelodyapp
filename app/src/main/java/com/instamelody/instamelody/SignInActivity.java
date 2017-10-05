@@ -837,9 +837,9 @@ public class SignInActivity extends AppCompatActivity {
 
     private void openDialog() {
         LayoutInflater inflater = LayoutInflater.from(SignInActivity.this);
-        View subView = inflater.inflate(R.layout.dialog_layout, null);
+        View subView = inflater.inflate(R.layout.dialog_layout_password, null);
 
-        subEtTopicName = (EditText) subView.findViewById(R.id.dialogEtTopicName);
+        subEtTopicName = (EditText) subView.findViewById(R.id.etForgetPassword);
 
 
         AlertDialog.Builder builder = new AlertDialog.Builder(SignInActivity.this);
@@ -861,14 +861,18 @@ public class SignInActivity extends AppCompatActivity {
 
         builder.setCustomTitle(title);
 
-        builder.setPositiveButton("Get Password", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //tvInfo.setText(subEtTopicName.getText().toString());
-                forgotPassword();
+                if (checkEmailValidity()) {
+                    forgotPassword();
+                }else {
+                    tvForgetPassword.setEnabled(true);
+                    Toast.makeText(SignInActivity.this, "Required Email", Toast.LENGTH_SHORT).show();
+                }
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtTopicName.getWindowToken(), 0);
-
 
             }
         });
@@ -900,9 +904,9 @@ public class SignInActivity extends AppCompatActivity {
                             String password = jsonObject.getString("password");
                             if (flag.equals("Unsuccess")) {
                                 tvForgetPassword.setEnabled(true);
-                                Toast.makeText(SignInActivity.this, "Password not Reset Try Again", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignInActivity.this, "Unregistered Email", Toast.LENGTH_SHORT).show();
                                 tvForgetPassword.setEnabled(true);
-                            }else {
+                            } else {
                                 Toast.makeText(SignInActivity.this, "The Link has been sent to your email address.", Toast.LENGTH_SHORT).show();
                             }
                             JSONObject rspns = jsonObject.getJSONObject("response");
@@ -975,6 +979,18 @@ public class SignInActivity extends AppCompatActivity {
                     }
                 });
 
+    }
+
+    private boolean checkEmailValidity() {
+        boolean chk = true;
+        if (!isValidMail(subEtTopicName.getText().toString().trim())|| subEtTopicName.getText().toString().trim().equals("")) {
+            chk = false;
+        }
+        return chk;
+    }
+
+    private boolean isValidMail(String email) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
 }
