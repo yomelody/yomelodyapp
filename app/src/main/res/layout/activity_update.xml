@@ -36,6 +36,11 @@
         </RelativeLayout>
     </LinearLayout>
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/llTop">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -44,9 +49,10 @@
         android:layout_alignParentStart="true">
 
         <RelativeLayout
+            android:id="@+id/imageRl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/linear"
+
             android:layout_alignParentTop="true">
 
             <RelativeLayout
@@ -83,6 +89,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:layout_below="@+id/imageRl"
             android:orientation="vertical">
 
             <RelativeLayout
@@ -551,5 +558,6 @@
             </RelativeLayout>
         </LinearLayout>
     </RelativeLayout>
+    </ScrollView>
 </RelativeLayout>
 

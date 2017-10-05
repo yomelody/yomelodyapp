@@ -179,8 +179,7 @@ public class SignInActivity extends AppCompatActivity {
         tvForgetPassword = (TextView) findViewById(R.id.tvForgetPassword);
         rlSoundCloud = (RelativeLayout) findViewById(R.id.rlSoundCloud);
         SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
-        DeviceToken = fcmPref.getString("regId", null);
-//        Log.d("DeviceToken", DeviceToken);
+        DeviceToken = fcmPref.getString("regId", "");
 
 
         etEmail.addTextChangedListener(new TextWatcher() {
