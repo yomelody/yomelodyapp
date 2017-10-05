@@ -1,9 +1,12 @@
 package com.instamelody.instamelody;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -31,6 +35,11 @@ import com.instamelody.instamelody.Adapters.ContactsAdapter;
 import com.instamelody.instamelody.Models.Contacts;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.utils.AppHelper;
+import com.instamelody.instamelody.utils.Const;
+import com.instamelody.instamelody.utils.NotificationUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,6 +48,7 @@ import java.util.Map;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.CONTACT_LIST;
+import static com.instamelody.instamelody.utils.Const.ServiceType.TOTAL_COUNT;
 
 /**
  * Created by Shubhansh Jaiswal on 04/05/17.
@@ -52,15 +62,18 @@ public class ContactsActivity extends AppCompatActivity {
     ArrayList<Contacts> contactList = new ArrayList<>();
     public static Button btnCancel, btnOK;
     ImageView discover, message, profile, audio_feed, ivBackButton, ivHomeButton;
+    TextView message_count;
     String userId = "";
     public static RelativeLayout rlNoContacts;
     Activity mActivity;
+    BroadcastReceiver mRegistrationBroadcastReceiver;
+    int totalCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
-        mActivity=ContactsActivity.this;
+        mActivity = ContactsActivity.this;
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
         SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
@@ -85,7 +98,7 @@ public class ContactsActivity extends AppCompatActivity {
         profile = (ImageView) findViewById(R.id.profile);
         audio_feed = (ImageView) findViewById(R.id.audio_feed);
         rlNoContacts = (RelativeLayout) findViewById(R.id.rlNoContacts);
-
+        message_count = (TextView) findViewById(R.id.message_count);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewContacts);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
@@ -106,10 +119,10 @@ public class ContactsActivity extends AppCompatActivity {
                 editor.putString("chatId", "");
                 editor.commit();
                 String caller = "";
-                if(getIntent()!=null && getIntent().hasExtra("Previous")){
+                if (getIntent() != null && getIntent().hasExtra("Previous")) {
                     caller = getIntent().getStringExtra("Previous");
                 }
-                AppHelper.sop("caller===="+caller);
+                AppHelper.sop("caller====" + caller);
                 Intent intent;
                 if (caller.equals("chat")) {
                     intent = new Intent(mActivity, ChatActivity.class);
@@ -123,13 +136,13 @@ public class ContactsActivity extends AppCompatActivity {
                 } else if (caller.equals("discover")) {
                     intent = new Intent(mActivity, DiscoverActivity.class);
                     startActivity(intent);
-                }else if (caller.equals("studioActivity")) {
+                } else if (caller.equals("studioActivity")) {
                     /*intent = new Intent(mActivity, StudioActivity.class);
                     startActivity(intent);*/
-                } else if (caller.equals("Messenger")){
+                } else if (caller.equals("Messenger")) {
                     intent = new Intent(mActivity, MessengerActivity.class);
                     startActivity(intent);
-                }else if (caller.equals("JoinActivity")){
+                } else if (caller.equals("JoinActivity")) {
                     intent = new Intent(mActivity, JoinActivity.class);
                     startActivity(intent);
                 }
@@ -185,10 +198,10 @@ public class ContactsActivity extends AppCompatActivity {
                 editor.putString("chatId", "");
                 editor.commit();
                 String caller = "";
-                if(getIntent()!=null && getIntent().hasExtra("Previous")){
+                if (getIntent() != null && getIntent().hasExtra("Previous")) {
                     caller = getIntent().getStringExtra("Previous");
                 }
-                AppHelper.sop("caller===="+caller);
+                AppHelper.sop("caller====" + caller);
                 Intent intent;
                 if (caller.equals("chat")) {
                     intent = new Intent(mActivity, ChatActivity.class);
@@ -202,10 +215,10 @@ public class ContactsActivity extends AppCompatActivity {
                 } else if (caller.equals("discover")) {
                     intent = new Intent(mActivity, DiscoverActivity.class);
                     startActivity(intent);
-                }else if (caller.equals("studioActivity")) {
+                } else if (caller.equals("studioActivity")) {
                     /*intent = new Intent(mActivity, StudioActivity.class);
                     startActivity(intent);*/
-                } else if (caller.equals("Messenger")){
+                } else if (caller.equals("Messenger")) {
                     intent = new Intent(mActivity, MessengerActivity.class);
                     startActivity(intent);
                 }
@@ -242,10 +255,10 @@ public class ContactsActivity extends AppCompatActivity {
         editor.putString("chatId", "");
         editor.commit();
         String caller = "";
-        if(getIntent()!=null && getIntent().hasExtra("Previous")){
+        if (getIntent() != null && getIntent().hasExtra("Previous")) {
             caller = getIntent().getStringExtra("Previous");
         }
-        AppHelper.sop("caller===="+caller);
+        AppHelper.sop("caller====" + caller);
         Intent intent;
         if (caller.equals("chat")) {
             intent = new Intent(mActivity, ChatActivity.class);
@@ -259,10 +272,10 @@ public class ContactsActivity extends AppCompatActivity {
         } else if (caller.equals("discover")) {
             intent = new Intent(mActivity, DiscoverActivity.class);
             startActivity(intent);
-        }else if (caller.equals("studioActivity")) {
+        } else if (caller.equals("studioActivity")) {
             /*intent = new Intent(mActivity, StudioActivity.class);
             startActivity(intent);*/
-        } else if (caller.equals("Messenger")){
+        } else if (caller.equals("Messenger")) {
             intent = new Intent(mActivity, MessengerActivity.class);
             startActivity(intent);
         }
@@ -325,6 +338,70 @@ public class ContactsActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        getTotalCount();
         getContacts();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(Const.PUSH_NOTIFICATION));
+        NotificationUtils.clearNotifications(getApplicationContext());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+    }
+
+    public void getTotalCount() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, TOTAL_COUNT,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //Toast.makeText(HomeActivity.this, "" + response.toString();, Toast.LENGTH_SHORT).show();
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            String flag = jsonObject.getString("flag");
+                            if (flag.equals("success")) {
+                                String str = jsonObject.getString("newMessage");
+                                totalCount = Integer.parseInt(str);
+                                if (totalCount > 0) {
+                                    message_count.setText(str);
+                                    message_count.setVisibility(View.VISIBLE);
+                                } else {
+                                    message_count.setVisibility(View.GONE);
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            errorMsg = "There is either no connection or it timed out.";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "ServerError";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "Network Error";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                params.put("userid", userId);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
     }
 }
