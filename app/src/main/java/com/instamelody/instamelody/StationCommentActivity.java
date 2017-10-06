@@ -745,7 +745,8 @@ public class StationCommentActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 etComment.getText().clear();
-
+                Intent i = new Intent(StationCommentActivity.this,StationActivity.class);
+                startActivity(i);
                 InputMethodManager inputManager = (InputMethodManager)
                         getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
