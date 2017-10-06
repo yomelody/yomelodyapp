@@ -534,10 +534,18 @@ public class SignInActivity extends AppCompatActivity {
                             JSONObject jsonObject = new JSONObject(successmsg);
                             flag = jsonObject.getString("flag");
                             if (flag.equals("unsuccess")) {
-                                btnLogIn.setEnabled(true);
-                                Toast.makeText(SignInActivity.this, "Invalid Email or Password", Toast.LENGTH_SHORT).show();
-                                etEmail.setText("");
-                                etPassword.setText("");
+                                String msg = jsonObject.getString("msg");
+                                if (flag.equals("unsuccess") && msg!= null){
+                                    Toast.makeText(SignInActivity.this, ""+msg, Toast.LENGTH_SHORT).show();
+                                    btnLogIn.setEnabled(true);
+                                    etEmail.setText("");
+                                    etPassword.setText("");
+                                }else {
+                                    btnLogIn.setEnabled(true);
+                                    Toast.makeText(SignInActivity.this, "Invalid Email or Password", Toast.LENGTH_SHORT).show();
+                                    etEmail.setText("");
+                                    etPassword.setText("");
+                                }
 
                             } else {
                                 JSONObject rspns = jsonObject.getJSONObject("response");
@@ -867,7 +875,7 @@ public class SignInActivity extends AppCompatActivity {
                 //tvInfo.setText(subEtTopicName.getText().toString());
                 if (checkEmailValidity()) {
                     forgotPassword();
-                }else {
+                } else {
                     tvForgetPassword.setEnabled(true);
                     Toast.makeText(SignInActivity.this, "Required Email", Toast.LENGTH_SHORT).show();
                 }
@@ -881,13 +889,13 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
+                tvForgetPassword.setEnabled(true);
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtTopicName.getWindowToken(), 0);
             }
         });
 
         builder.show();
-
     }
 
     private void forgotPassword() {
@@ -983,7 +991,7 @@ public class SignInActivity extends AppCompatActivity {
 
     private boolean checkEmailValidity() {
         boolean chk = true;
-        if (!isValidMail(subEtTopicName.getText().toString().trim())|| subEtTopicName.getText().toString().trim().equals("")) {
+        if (!isValidMail(subEtTopicName.getText().toString().trim()) || subEtTopicName.getText().toString().trim().equals("")) {
             chk = false;
         }
         return chk;

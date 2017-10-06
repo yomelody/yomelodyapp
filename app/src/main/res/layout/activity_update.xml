@@ -319,7 +319,7 @@
                     android:visibility="gone"
                     android:layout_toLeftOf="@+id/btnClearPassUpdate"/>
 
-                <ImageView
+                <!--<ImageView
                     android:id="@+id/ivEye"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
@@ -327,7 +327,7 @@
                     android:layout_marginRight="20dp"
                     android:layout_below="@+id/errorPasswordUpdate"
                     android:layout_toLeftOf="@+id/btnClearPassUpdate"
-                    android:layout_toStartOf="@+id/btnClearPassUpdate" />
+                    android:layout_toStartOf="@+id/btnClearPassUpdate" />-->
 
                 <Button
                     android:id="@+id/btnClearPassUpdate"
