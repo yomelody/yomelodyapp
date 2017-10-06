@@ -64,6 +64,8 @@ import com.instamelody.instamelody.Adapters.RecentImagesAdapter;
 import com.instamelody.instamelody.Models.AudioDetails;
 import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.RecentImagesModel;
+import com.instamelody.instamelody.Models.RecordingsModel;
+import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Models.SharedAudios;
 import com.instamelody.instamelody.utils.AppHelper;
 import com.instamelody.instamelody.utils.ImageCompressor;
@@ -100,10 +102,12 @@ import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.CHAT;
+import static com.instamelody.instamelody.utils.Const.ServiceType.LIKESAPI;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MESSAGE_LIST;
 import static com.instamelody.instamelody.utils.Const.ServiceType.READ_STATUS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.UPDATE_GROUP;
 import static com.instamelody.instamelody.utils.Const.ServiceType.USER_CHAT_ID;
+import static com.instamelody.instamelody.utils.Const.ServiceType.sharefile;
 
 /**
  * Created by Shubhansh Jaiswal on 17/01/17.
@@ -167,12 +171,16 @@ public class ChatActivity extends AppCompatActivity {
     String sendGroupImageName = "";
     String flagFileType = "0"; // 0 = null, 1 = image file, 2 = station audio file , 3 = admin_melody audio file
     int updateGroupFlag = 0;
+    private Activity mActivity;
+    private RecordingsModel mRecordingsModel;
+
 
     @TargetApi(18)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        mActivity=ChatActivity.this;
 
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
@@ -843,13 +851,12 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public void getChatMsgs(final String chat_Id) {
-
         final StringRequest stringRequest = new StringRequest(Request.Method.POST, MESSAGE_LIST,
                 new Response.Listener<String>() {
 
                     @Override
                     public void onResponse(String response) {
-
+                        AppHelper.sop("response=="+response);
                         chatList.clear();
 //                        audioDetailsList.clear();
 //                        sharedAudioList.clear();
@@ -933,6 +940,8 @@ public class ChatActivity extends AppCompatActivity {
                                     rlNoMsg.setVisibility(View.VISIBLE);
                                     rlTxtContent.setVisibility(View.VISIBLE);
                                 }
+
+
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -978,6 +987,40 @@ public class ChatActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
     }
+
+    public void shareCountApi(final String fileType) {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, sharefile,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        AppHelper.sop("response=="+response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMsg = error.toString();
+                        Log.d("Error", errorMsg);
+                        error.printStackTrace();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("shared_by_user", userId);
+                params.put("shared_with",receiverId );
+                params.put("file_id", mRecordingsModel.getRecordingId());
+                params.put("file_type", fileType);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params=="+params+"\nURL=="+sharefile);
+                return params;
+            }
+        };
+        RequestQueue requestQueue1 = Volley.newRequestQueue(this);
+        requestQueue1.add(stringRequest);
+    }
+
 
     public void sendMessage(final String message, final String user_Id) {
 
@@ -1069,6 +1112,23 @@ public class ChatActivity extends AppCompatActivity {
 //                    Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
                     getChatMsgs(chatId);
                     flagFileType = "0";
+
+
+                    //service for comment count.
+                    if (getIntent()!=null && getIntent().hasExtra("share")){
+                        mRecordingsModel = (RecordingsModel) mActivity.getIntent().getSerializableExtra("share");
+                        AppHelper.sop("mRecordingsModel=="+mRecordingsModel);
+                        if (mRecordingsModel!=null){
+                            shareCountApi(getIntent().getStringExtra("file_type"));
+                            /*AppHelper.sop("getRecordingUrl="+mRecordingsModel.getrecordingurl());
+                            AppHelper.sop("file_type="+mActivity.getIntent().getStringExtra("file_type"));
+                            AppHelper.sop("shared_by_user="+user_Id);
+                            AppHelper.sop("receiverId="+receiverId);*/
+
+                        }
+
+                    }
+
                 }
             }, new Response.ErrorListener() {
                 @Override

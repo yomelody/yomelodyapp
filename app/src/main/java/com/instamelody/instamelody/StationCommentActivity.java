@@ -300,6 +300,8 @@ public class StationCommentActivity extends AppCompatActivity {
                                 editor.apply();
                                 Intent intent = new Intent(mActivity, MessengerActivity.class);
                                 intent.putExtra("Previous", "station");
+                                intent.putExtra("share", recording);
+                                intent.putExtra("file_type", "user_recording");
                                 startActivity(intent);
                             }
 
