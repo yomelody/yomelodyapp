@@ -1,5 +1,6 @@
 package com.instamelody.instamelody.Adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,6 +15,8 @@ import android.widget.TextView;
 import com.instamelody.instamelody.ChatActivity;
 import com.instamelody.instamelody.MessengerActivity;
 import com.instamelody.instamelody.Models.Chat;
+import com.instamelody.instamelody.Models.RecordingsModel;
+import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
 import com.squareup.picasso.Picasso;
@@ -32,10 +35,12 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
     Context context;
     String receiverId = "", chatID = "", receiverName = "", groupName = "", receiverImage = "", senderId = "", userId, groupImage = "";
     public static int totalMsgCount = 0;
+    private Activity mActivity;
 
     public MessengerAdapter(ArrayList<Chat> chatList, Context context) {
         this.chatList = chatList;
         this.context = context;
+        mActivity= (Activity) context;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -95,6 +100,12 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
                     Intent intent = new Intent(context, ChatActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.putExtra("from", "MessengerActivity");
+                    if (mActivity.getIntent()!=null && mActivity.getIntent().hasExtra("share")){
+                        RecordingsModel mRecordingsModel = (RecordingsModel) mActivity.getIntent().getSerializableExtra("share");
+                        intent.putExtra("share", mRecordingsModel);
+                        intent.putExtra("file_type", mActivity.getIntent().getStringExtra("file_type"));
+                    }
+
                     context.startActivity(intent);
                 }
             });

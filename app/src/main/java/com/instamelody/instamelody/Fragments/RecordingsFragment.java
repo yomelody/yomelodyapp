@@ -106,7 +106,7 @@ public class RecordingsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        progressDialog = new ProgressDialog(getActivity());
+        mActivity=getActivity();
         fetchGenreNames();
         SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
@@ -141,7 +141,7 @@ public class RecordingsFragment extends Fragment {
         callApi();
 
         // new DownloadFileFromURL();
-        adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
+        adapter = new RecordingsCardAdapter(mActivity, recordingList, recordingsPools);
     }
 
     private void callApi() {

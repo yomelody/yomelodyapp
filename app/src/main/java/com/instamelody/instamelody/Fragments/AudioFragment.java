@@ -211,7 +211,7 @@ public class AudioFragment extends Fragment {
         } else if (twitterPref.getString("userId", null) != null) {
             userId = twitterPref.getString("userId", null);
         }
-        adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
+        adapter = new RecordingsCardAdapter(mActivity, recordingList, recordingsPools);
         fetchGenreNames();
         callApi();
 
