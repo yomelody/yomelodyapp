@@ -115,6 +115,8 @@ public class MelodyPacksFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        progressDialog = new ProgressDialog(getActivity());
         fetchGenreNames();
         SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
@@ -140,23 +142,27 @@ public class MelodyPacksFragment extends Fragment {
             userId = twitterPref.getString("userId", null);
             //MelodyUser=userId;
         }
-        new LongOperation().execute();
 
-//        adapter = new RecordingsCardAdapter(getActivity(), recordingList, recordingsPools);
+        adapter = new MelodyCardListAdapter(melodyList, getActivity());
+        if (rv != null) {
+            rv.setAdapter(adapter);
+        }
+        if (strName == null && strSearch == null) {
+            fetchMelodyPacks();
+        } else if (strSearch != null) {
+            fetchMelodySearchData();
+        } else if (strArtist != null) {
+            fetchMelodyFilterArtist();
+        } else if (strInstruments != null && strName.equals("# of Instruments")) {
+            fetchMelodyFilterInstruments();
+        } else if (strBPM != null && strName.equals("BPM")) {
+            fetchMelodyFilterBPM();
+        } else {
+            fetchMelodyFilter();
+        }
+        //   new LongOperation().execute();
 
 
-//        SharedPreferences fromHome = getApplicationContext().getSharedPreferences("FromHomeToMelody", MODE_PRIVATE);
-//        home = fromHome.getString("click", null);
-//        try {
-//            if (home.equals("from home")) {
-//                SharedPreferences.Editor FilterPref = getActivity().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
-//                FilterPref.clear();
-//                FilterPref.apply();
-//                StudioActivity.joinRecordingId=null;
-//            }
-//        } catch (NullPointerException e) {
-//            e.printStackTrace();
-//        }
         String joinRecordingId;
         SharedPreferences fromJoin = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE);
         joinRecordingId = fromJoin.getString("instrumentsPos", null);
@@ -173,12 +179,7 @@ public class MelodyPacksFragment extends Fragment {
 
         }
 
-        RecordingsFragment rf = new RecordingsFragment();
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.melodyPackFragment, rf);
-        transaction.addToBackStack(null);
-        transaction.commit();
-        super.onCreate(savedInstanceState);
+
     }
 
 
@@ -186,17 +187,21 @@ public class MelodyPacksFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         final View view = inflater.inflate(R.layout.fragment_melody_packs, container, false);
-        mActivity=getActivity();
+        mActivity = getActivity();
         return view;
     }
 
     public void fetchGenreNames() {
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         try {
             StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            AppHelper.sop("response=="+response);
+                            AppHelper.sop("response==" + response);
                             JSONObject jsonObject, genreJson;
                             JSONArray jsonArray;
                             String titleString;
@@ -238,6 +243,10 @@ public class MelodyPacksFragment extends Fragment {
                                 host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
                                     @Override
                                     public void onTabChanged(String arg0) {
+                                        progressDialog.setTitle("Processing...");
+                                        progressDialog.setMessage("Please wait...");
+                                        progressDialog.setCancelable(false);
+                                        progressDialog.show();
                                         packName = arg0;
                                         int currentTab = host.getCurrentTab();
                                         if (currentTab == 0) {
@@ -285,13 +294,17 @@ public class MelodyPacksFragment extends Fragment {
                     Map<String, String> params = new HashMap<String, String>();
                     params.put(SAVE_MELODY, "saverecording");
                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                    AppHelper.sop("params=="+params+"\nURL=="+GENERE);
+                    AppHelper.sop("params==" + params + "\nURL==" + GENERE);
                     return params;
                 }
             };
-            stringRequest.setRetryPolicy(new DefaultRetryPolicy(0,
-                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
             RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+            int socketTimeout = 30000; // 30 seconds. You can change it
+            RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+            stringRequest.setRetryPolicy(policy);
             requestQueue.add(stringRequest);
         } catch (Throwable e) {
             e.printStackTrace();
@@ -304,7 +317,7 @@ public class MelodyPacksFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response==="+response);
+                        AppHelper.sop("response===" + response);
                         melodyList.clear();
                         instrumentList.clear();
                         JSONObject jsonObject;
@@ -322,6 +335,11 @@ public class MelodyPacksFragment extends Fragment {
                         }
                         new ParseContents(getActivity()).parseMelodyPacks(response, melodyList, instrumentList);
                         adapter.notifyDataSetChanged();
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -347,6 +365,11 @@ public class MelodyPacksFragment extends Fragment {
                             Log.d("Error", errorMsg);
                         } catch (Throwable throwable) {
                             Log.d("Fetch Melody Packs Error", throwable.toString());
+                        }
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
                         }
 
                     }
@@ -380,23 +403,32 @@ public class MelodyPacksFragment extends Fragment {
 //                if (userId != null) {
 ////                    params.put(USER_ID, userId);
 //                }
-                AppHelper.sop("params==="+params+"\nURL=="+MELODY);
+                AppHelper.sop("params===" + params + "\nURL==" + MELODY);
                 return params;
             }
 
 
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
         requestQueue.add(stringRequest);
     }
 
     public void fetchMelodyFilter() {
-
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response=="+response);
+                        AppHelper.sop("response==" + response);
 //                        Toast.makeText(getActivity(), "" + response, Toast.LENGTH_SHORT).show();
 
                         Log.d("ReturnData1", response);
@@ -404,6 +436,11 @@ public class MelodyPacksFragment extends Fragment {
                         instrumentList.clear();
                         new ParseContents(getActivity()).parseMelodyPacks(response, melodyList, instrumentList);
                         adapter.notifyDataSetChanged();
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -426,6 +463,11 @@ public class MelodyPacksFragment extends Fragment {
                         }
 //                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 }) {
             @Override
@@ -436,21 +478,30 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(FILTER_TYPE, strName);
                 params.put(FILTER, "extrafilter");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=="+params+"\nURL=="+MELODY);
+                AppHelper.sop("params==" + params + "\nURL==" + MELODY);
                 return params;
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
         requestQueue.add(stringRequest);
     }
 
     public void fetchMelodySearchData() {
-
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response=="+response);
+                        AppHelper.sop("response==" + response);
                         String successMsg = response.toString();
                         try {
                             JSONObject jsonObject = new JSONObject(successMsg);
@@ -468,6 +519,11 @@ public class MelodyPacksFragment extends Fragment {
                         instrumentList.clear();
                         new ParseContents(getActivity()).parseMelodyPacks(response, melodyList, instrumentList);
                         adapter.notifyDataSetChanged();
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -490,6 +546,11 @@ public class MelodyPacksFragment extends Fragment {
                         }
 //                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 }) {
             @Override
@@ -498,22 +559,31 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(FILE_TYPE, "admin_melody");
                 params.put(KEY_SEARCH, strSearch);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=="+params+"\nURL=="+MELODY);
+                AppHelper.sop("params==" + params + "\nURL==" + MELODY);
                 return params;
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
         requestQueue.add(stringRequest);
     }
 
     public void fetchMelodyFilterArtist() {
-
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         String rs = response.toString();
-                        AppHelper.sop("response=="+response);
+                        AppHelper.sop("response==" + response);
                         try {
                             JSONObject jsonObject = new JSONObject(rs);
                             String flag = jsonObject.getString("flag");
@@ -528,6 +598,11 @@ public class MelodyPacksFragment extends Fragment {
                         instrumentList.clear();
                         new ParseContents(getActivity()).parseMelodyPacks(response, melodyList, instrumentList);
                         adapter.notifyDataSetChanged();
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -550,6 +625,11 @@ public class MelodyPacksFragment extends Fragment {
                         }
 //                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 }) {
             @Override
@@ -562,21 +642,30 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(USER_NAME, strArtist);
                 params.put(FILTER, "extrafilter");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=="+params+"\nURL=="+MELODY);
+                AppHelper.sop("params==" + params + "\nURL==" + MELODY);
                 return params;
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
         requestQueue.add(stringRequest);
     }
 
     public void fetchMelodyFilterInstruments() {
-
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response=="+response);
+                        AppHelper.sop("response==" + response);
                         String rs = response.toString();
                         try {
                             JSONObject jsonObject = new JSONObject(rs);
@@ -592,6 +681,11 @@ public class MelodyPacksFragment extends Fragment {
                         instrumentList.clear();
                         new ParseContents(getActivity()).parseMelodyPacks(response, melodyList, instrumentList);
                         adapter.notifyDataSetChanged();
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -614,6 +708,11 @@ public class MelodyPacksFragment extends Fragment {
                         }
 //                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 }) {
             @Override
@@ -626,22 +725,31 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(COUNT, strInstruments);
                 params.put(FILTER, "extrafilter");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=="+params+"\nURL=="+MELODY);
+                AppHelper.sop("params==" + params + "\nURL==" + MELODY);
                 return params;
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
         requestQueue.add(stringRequest);
     }
 
     public void fetchMelodyFilterBPM() {
-
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         String rs = response.toString();
-                        AppHelper.sop("response=="+response);
+                        AppHelper.sop("response==" + response);
                         try {
                             JSONObject jsonObject = new JSONObject(rs);
                             String flag = jsonObject.getString("flag");
@@ -656,6 +764,11 @@ public class MelodyPacksFragment extends Fragment {
                         instrumentList.clear();
                         new ParseContents(getActivity()).parseMelodyPacks(response, melodyList, instrumentList);
                         adapter.notifyDataSetChanged();
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -678,6 +791,11 @@ public class MelodyPacksFragment extends Fragment {
                         }
 //                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 }) {
             @Override
@@ -690,11 +808,17 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(COUNT, strBPM);
                 params.put(FILTER, "extrafilter");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=="+params+"\nURL=="+MELODY);
+                AppHelper.sop("params==" + params + "\nURL==" + MELODY);
                 return params;
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
         requestQueue.add(stringRequest);
     }
 
@@ -709,7 +833,7 @@ public class MelodyPacksFragment extends Fragment {
 //                rv.setLayoutManager(lm);
                 rv.setLayoutManager(linearLayoutManager);
                 rv.setItemAnimator(new DefaultItemAnimator());
-//                rv.addOnScrollListener(recyclerViewOnScrollListener);
+                rv.addOnScrollListener(recyclerViewOnScrollListener);
                 rv.setAdapter(adapter);
                 linearLayoutManager = (LinearLayoutManager) rv.getLayoutManager();
                 return rv;
@@ -734,7 +858,7 @@ public class MelodyPacksFragment extends Fragment {
             //Toast.makeText(getActivity(), "post "+String.valueOf(post+1), Toast.LENGTH_SHORT).show();
             if (post + 1 == melodyList.size()) {
 
-                new FetchActivityDetails().execute(String.valueOf(melodyList.size() + 10), String.valueOf(instrumentList.size() + 10));
+                new FetchActivityDetails().execute(String.valueOf(melodyList.size() + 10));
 
                 //adapter.notifyDataSetChanged();
                 //linearLayoutManager.scrollToPosition(post+1);
@@ -814,7 +938,7 @@ public class MelodyPacksFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response=="+response);
+                        AppHelper.sop("response==" + response);
                         melodyList.clear();
                         instrumentList.clear();
                         JSONObject jsonObject;
@@ -890,7 +1014,7 @@ public class MelodyPacksFragment extends Fragment {
 //                if (userId != null) {
 ////                    params.put(USER_ID, userId);
 //                }
-                AppHelper.sop("params=="+params+"\nURL=="+MELODY);
+                AppHelper.sop("params==" + params + "\nURL==" + MELODY);
                 return params;
             }
 
@@ -904,7 +1028,6 @@ public class MelodyPacksFragment extends Fragment {
 
         stringRequest.setRetryPolicy(policy);
         requestQueue.add(stringRequest);
-        requestQueue.add(stringRequest);
     }
 
 
@@ -913,7 +1036,7 @@ public class MelodyPacksFragment extends Fragment {
             try {
 
                 adapter = new MelodyCardListAdapter(melodyList, getActivity());
-                if (rv!=null){
+                if (rv != null) {
                     rv.setAdapter(adapter);
                 }
 
@@ -949,7 +1072,7 @@ public class MelodyPacksFragment extends Fragment {
         protected void onPostExecute(String result) {
 
             progressDialog.dismiss();
-            AppHelper.sop("onPostExecute=melodyList=="+melodyList);
+            AppHelper.sop("onPostExecute=melodyList==" + melodyList);
         }
 
     }
@@ -957,11 +1080,11 @@ public class MelodyPacksFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        AppHelper.sop("onActivityResult==called="+"requestCode=="+requestCode+"=resultCode="+resultCode+"=data="+data);
-        if(MelodyCardListAdapter.REQUEST_MELODY_COMMENT==requestCode){
-            if (resultCode==mActivity.RESULT_OK){
+        AppHelper.sop("onActivityResult==called=" + "requestCode==" + requestCode + "=resultCode=" + resultCode + "=data=" + data);
+        if (MelodyCardListAdapter.REQUEST_MELODY_COMMENT == requestCode) {
+            if (resultCode == mActivity.RESULT_OK) {
                 new LongOperation().execute();
-                AppHelper.sop("onActivityResult==called="+"resultCode=="+resultCode);
+                AppHelper.sop("onActivityResult==called=" + "resultCode==" + resultCode);
             }
 
         }

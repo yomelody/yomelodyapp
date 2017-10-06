@@ -120,8 +120,8 @@ public class AudioFragment extends Fragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_audio, container, false);
-        mActivity=getActivity();
-       StationActivity.ivFilter.setVisibility(View.VISIBLE);
+        mActivity = getActivity();
+        StationActivity.ivFilter.setVisibility(View.VISIBLE);
         rv = (RecyclerView) view.findViewById(R.id.recyclerViewAudio);
 
         /*//setRetainInstance(true);
@@ -186,7 +186,7 @@ public class AudioFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivity=getActivity();
+        mActivity = getActivity();
         // fetchGenreNames();
         progressDialog = new ProgressDialog(getActivity());
         SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
@@ -217,8 +217,8 @@ public class AudioFragment extends Fragment {
 
     }
 
-    private void callApi(){
-        if (rv!=null){
+    private void callApi() {
+        if (rv != null) {
             rv.setAdapter(adapter);
         }
 
@@ -978,15 +978,21 @@ public class AudioFragment extends Fragment {
     private class FetchActivityDetails extends AsyncTask<String, String, String> {
         protected void onPreExecute() {
             super.onPreExecute();
+            try {
+                running = true;
 
-            running = true;
+                progressDialog = ProgressDialog.show(getActivity(), "Processing...", "Please Wait...");
+                progressDialog.setCancelable(false);
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
 
-            progressDialog = ProgressDialog.show(getActivity(), "Processing...", "Please Wait...");
-            progressDialog.setCancelable(false);
 
         }
+
         boolean running;
         ProgressDialog progressDialog;
+
         protected String doInBackground(String... params) {
 
             try {
@@ -995,11 +1001,11 @@ public class AudioFragment extends Fragment {
                 fetchRecordingsMore(Pos);
                 /*int i = 3;
                 while(running){*/
-                    try {
-                        Thread.sleep(7000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    Thread.sleep(7000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
                     /*if(i-- == 0){
                         running = false;
@@ -1013,11 +1019,13 @@ public class AudioFragment extends Fragment {
             }
             return null;
         }
+
         @Override
         protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
             //progressDialog.setMessage(String.valueOf(values[0]));
         }
+
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
 
@@ -1148,11 +1156,11 @@ public class AudioFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        AppHelper.sop("onActivityResult==called="+"requestCode=="+requestCode+"=resultCode="+resultCode+"=data="+data);
-        if(RecordingsCardAdapter.REQUEST_RECORDING_COMMENT==requestCode){
-            if (resultCode==mActivity.RESULT_OK){
+        AppHelper.sop("onActivityResult==called=" + "requestCode==" + requestCode + "=resultCode=" + resultCode + "=data=" + data);
+        if (RecordingsCardAdapter.REQUEST_RECORDING_COMMENT == requestCode) {
+            if (resultCode == mActivity.RESULT_OK) {
                 callApi();
-                AppHelper.sop("onActivityResult==called="+"resultCode=="+resultCode);
+                AppHelper.sop("onActivityResult==called=" + "resultCode==" + resultCode);
             }
 
         }
