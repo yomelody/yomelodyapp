@@ -229,7 +229,7 @@ public class StudioActivity extends AppCompatActivity {
     int statusNormal, statusFb, statusTwitter;
     String melodyName, instrumentName;
     public static Switch switchPublic;
-    public static RelativeLayout rlMelodyButton, rlRecordingButton, rlRedoButton, rlListeningButton, rlSetCover, rlPublic,rlSync;
+    public static RelativeLayout rlMelodyButton, rlRecordingButton, rlRedoButton, rlListeningButton, rlSetCover, rlPublic, rlSync;
     public static FrameLayout frameTrans, frameProgress;
     public static ImageView ivBackButton, ivHomeButton, ivRecord, ivRecord_stop, ivRecord_play, ivRecord_pause, discover, ivSound, message, ivProfile, ivNewRecordCover;
     CircleImageView profile_image;
@@ -372,7 +372,7 @@ public class StudioActivity extends AppCompatActivity {
             }
         };
 
-        //playAll.setVisibility(View.VISIBLE);
+        playAll.setVisibility(View.GONE);
         rlSetCover = (RelativeLayout) findViewById(R.id.rlSetCover);
         ivNewRecordCover = (ImageView) findViewById(R.id.ivNewRecordCover);
         chrono = (Chronometer) findViewById(R.id.chrono);
@@ -476,7 +476,10 @@ public class StudioActivity extends AppCompatActivity {
                 recyclerViewInstruments.setLayoutManager(layoutManager);
                 recyclerViewInstruments.setItemAnimator(new DefaultItemAnimator());
                 adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+
+                //recyclerViewInstruments.smoothScrollToPosition(0);
                 recyclerViewInstruments.setAdapter(adapter);
+
                 //frameTrans.setVisibility(View.VISIBLE);
                 rlSync.setVisibility(View.VISIBLE);
                 if (instrumentList.size() > 0) {
@@ -650,7 +653,11 @@ public class StudioActivity extends AppCompatActivity {
                     }
 
                     if (mpall != null) {
-                        mpall.stop();
+                        try {
+                            mpall.stop();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                         for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                             try {
                                 mediaPlayersAll.get(i).stop();
@@ -701,9 +708,7 @@ public class StudioActivity extends AppCompatActivity {
                         } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
-
                     }
-
 
                     Intent intent = new Intent(StudioActivity.this, MelodyActivity.class);
                     startActivity(intent);
@@ -728,19 +733,21 @@ public class StudioActivity extends AppCompatActivity {
                         lstViewHolder.clear();
                     }
                     if (mp_start != null) {
-
                         for (int i = 0; i <= mp_start.size() - 1; i++) {
                             try {
                                 mp_start.get(i).stop();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
-
                         }
                     }
                     mp_start.clear();
                     if (mpall != null) {
-                        mpall.stop();
+                        try {
+                            mpall.stop();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                         if (mediaPlayersAll.size() > 0) {
                             for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                                 try {
@@ -762,14 +769,10 @@ public class StudioActivity extends AppCompatActivity {
                     if (instrumentList.size() > 0) {
                         instrumentList.clear();
                     }
-                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-                    startActivity(intent);
+                    finish();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-
-
-                //finish();;
             }
         });
 
@@ -782,19 +785,21 @@ public class StudioActivity extends AppCompatActivity {
                         lstViewHolder.clear();
                     }
                     if (mp_start != null) {
-
                         for (int i = 0; i <= mp_start.size() - 1; i++) {
                             try {
                                 mp_start.get(i).stop();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
-
                         }
                     }
                     mp_start.clear();
                     if (mpall != null) {
-                        mpall.stop();
+                        try {
+                            mpall.stop();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                         if (mediaPlayersAll.size() > 0) {
                             for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                                 try {
@@ -847,7 +852,11 @@ public class StudioActivity extends AppCompatActivity {
                     }
                     mp_start.clear();
                     if (mpall != null) {
-                        mpall.stop();
+                        try {
+                            mpall.stop();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                         if (mediaPlayersAll.size() > 0) {
                             for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                                 try {
@@ -900,7 +909,11 @@ public class StudioActivity extends AppCompatActivity {
                     }
                     mp_start.clear();
                     if (mpall != null) {
-                        mpall.stop();
+                        try {
+                            mpall.stop();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                         if (mediaPlayersAll.size() > 0) {
                             for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                                 try {
@@ -952,7 +965,11 @@ public class StudioActivity extends AppCompatActivity {
                     }
                     mp_start.clear();
                     if (mpall != null) {
-                        mpall.stop();
+                        try {
+                            mpall.stop();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                         if (mediaPlayersAll.size() > 0) {
                             for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                                 try {
@@ -1004,7 +1021,11 @@ public class StudioActivity extends AppCompatActivity {
                     }
                     mp_start.clear();
                     if (mpall != null) {
-                        mpall.stop();
+                        try {
+                            mpall.stop();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                         if (mediaPlayersAll.size() > 0) {
                             for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                                 try {
@@ -1060,19 +1081,19 @@ public class StudioActivity extends AppCompatActivity {
                             }
                         }
                         mp_start.clear();
-                        if (mpall != null) {
-                            mpall.stop();
-                            if (mediaPlayersAll.size() > 0) {
-                                for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                                    try {
-                                        mediaPlayersAll.get(i).stop();
-                                    } catch (Exception ex) {
-                                        ex.printStackTrace();
-                                    }
+
+                        if (mediaPlayersAll.size() > 0) {
+                            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                                try {
+                                    mediaPlayersAll.get(i).stop();
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
                                 }
                             }
                             mediaPlayersAll.clear();
                         }
+
+
                         if (mpInst != null) {
                             try {
                                 mpInst.stop();
@@ -1080,7 +1101,7 @@ public class StudioActivity extends AppCompatActivity {
                                 ex.printStackTrace();
                             }
                         }
-                        if(instrumentList.size()>0) {
+                        if (instrumentList.size() > 0) {
                             instrumentList.clear();
                         }
                         Intent i = new Intent(getApplicationContext(), SignInActivity.class);
@@ -2094,10 +2115,52 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
 
-                error.printStackTrace();
-
-                Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
-                Log.d("error msg", error.toString());
+                String errorMsg = "";
+                if (error instanceof TimeoutError) {
+                    errorMsg = "Internet connection timed out";
+                    if (progressDialog != null) {
+                        if (progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
+                    }
+                } else if (error instanceof NoConnectionError) {
+                    errorMsg = "There is no connection";
+                    if (progressDialog != null) {
+                        if (progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
+                    }
+                } else if (error instanceof AuthFailureError) {
+                    errorMsg = "AuthFailureError";
+                    if (progressDialog != null) {
+                        if (progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
+                    }
+                } else if (error instanceof ServerError) {
+                    errorMsg = "We are facing problem in connecting to server";
+                    if (progressDialog != null) {
+                        if (progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
+                    }
+                } else if (error instanceof NetworkError) {
+                    errorMsg = "We are facing problem in connecting to network";
+                    if (progressDialog != null) {
+                        if (progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
+                    }
+                } else if (error instanceof ParseError) {
+                    errorMsg = "ParseError";
+                    if (progressDialog != null) {
+                        if (progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
+                    }
+                }
+                Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                Log.d("Error", errorMsg);
             }
         }) {
             @Override
@@ -2737,7 +2800,7 @@ public class StudioActivity extends AppCompatActivity {
                     if (StudioActivity.mp_start.get(i).isPlaying()) {
                         try {
                             StudioActivity.mp_start.get(i).stop();
-                        }catch (Exception ex){
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         }
                     }
@@ -2750,9 +2813,9 @@ public class StudioActivity extends AppCompatActivity {
                 if (mediaPlayersAll.size() > 0) {
                     for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                         if (mediaPlayersAll.get(i).isPlaying()) {
-                            try{
-                            mediaPlayersAll.get(i).stop();
-                            }catch (Exception ex){
+                            try {
+                                mediaPlayersAll.get(i).stop();
+                            } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
                         }
