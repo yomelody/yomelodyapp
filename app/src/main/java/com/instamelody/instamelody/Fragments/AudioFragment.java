@@ -959,7 +959,7 @@ public class AudioFragment extends Fragment {
             //Toast.makeText(getActivity(), "111111   >>>" + String.valueOf(post), Toast.LENGTH_SHORT).show();
             //Toast.makeText(getActivity(), String.valueOf(recordingList.size()), Toast.LENGTH_SHORT).show();
             //Toast.makeText(getActivity(), "post "+String.valueOf(post+1), Toast.LENGTH_SHORT).show();
-            if (post + 1 == recordingList.size() && recordingList.size()>3) {
+            if (post + 1 == recordingList.size()) {
                // Toast.makeText(getActivity(), "post ", Toast.LENGTH_SHORT).show();
                 new FetchActivityDetails().execute(String.valueOf(recordingList.size() + 10));
 
@@ -1054,7 +1054,6 @@ public class AudioFragment extends Fragment {
                             //recordingList.addAll(recordingListMore);
                             //rv.setAdapter(adapter);
                             adapter.notifyDataSetChanged();
-                            rv.smoothScrollToPosition(recordingList.size());
                             ClearSharedPref();
                         } catch (NullPointerException e) {
                             e.printStackTrace();
