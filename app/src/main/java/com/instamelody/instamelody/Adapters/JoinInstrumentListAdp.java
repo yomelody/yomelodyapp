@@ -380,14 +380,19 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
                 }
 
                 for (int i = 0; i <= JoinActivity.mediaPlayersAll.size() - 1; i++) {
-                    holderPlay = JoinActivity.lstViewHolder.get(i).ivPlay;
-                    holderPause = JoinActivity.lstViewHolder.get(i).ivPause;
-                    seekBar = JoinActivity.lstViewHolder.get(i).melodySlider;
-                    holderPlay.setVisibility(View.VISIBLE);
-                    holderPause.setVisibility(View.GONE);
-                    JoinActivity.playAll.setVisibility(View.VISIBLE);
-                    JoinActivity.pauseAll.setVisibility(View.GONE);
-                    seekBar.setProgress(0);
+                    try {
+                        holderPlay = JoinActivity.lstViewHolder.get(i).ivPlay;
+                        holderPause = JoinActivity.lstViewHolder.get(i).ivPause;
+                        seekBar = JoinActivity.lstViewHolder.get(i).melodySlider;
+                        holderPlay.setVisibility(View.VISIBLE);
+                        holderPause.setVisibility(View.GONE);
+                        JoinActivity.playAll.setVisibility(View.VISIBLE);
+                        JoinActivity.pauseAll.setVisibility(View.GONE);
+                        seekBar.setProgress(0);
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+
                 }
                 JoinActivity.mediaPlayersAll.clear();
                 holder.ivPlay.setEnabled(true);

@@ -246,11 +246,16 @@ public class ChatActivity extends AppCompatActivity {
         tvUserName = (TextView) findViewById(R.id.tvUserName);
         tvUserName.setText(receiverName);
 
-        if (chatType.equals("single")) {
-            rlInviteButton.setClickable(false);
-            rlInviteButton.setEnabled(false);
-            contInviteButton.setVisibility(View.GONE);
+        try {
+            if (chatType.equals("single")) {
+                rlInviteButton.setClickable(false);
+                rlInviteButton.setEnabled(false);
+                contInviteButton.setVisibility(View.GONE);
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
+
 
         SharedPreferences selectedImagePos = getApplicationContext().getSharedPreferences("selectedImagePos", MODE_PRIVATE);
         if (selectedImagePos.getString("pos", null) != null) {
@@ -928,6 +933,7 @@ public class ChatActivity extends AppCompatActivity {
 //                                        }
                                         chatList.add(i, message);
                                     }
+                                    recyclerViewChat.smoothScrollToPosition(chatList.size()-1);
                                 } else {
                                     tvRecieverName.setText(" " + receiverName);
                                     Picasso.with(ivRecieverProfilePic.getContext()).load(receiverImage).into(ivRecieverProfilePic);
