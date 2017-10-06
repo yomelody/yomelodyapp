@@ -357,7 +357,8 @@
                                                 android:layout_height="20dp"
                                                 android:layout_centerHorizontal="true"
                                                 android:layout_centerVertical="true"
-                                                android:src="@drawable/play_fill" />
+                                                android:src="@drawable/play_fill"
+                                                android:visibility="gone"/>
                                             <ImageView
                                                 android:id="@+id/pauseAll"
                                                 android:layout_width="20dp"

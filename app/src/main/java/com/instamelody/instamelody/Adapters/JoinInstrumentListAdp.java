@@ -109,9 +109,11 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
             count = getItemCount();
 
-            JoinActivity.melody_detail.setText(count + " " + "Instrumentals");
-
-
+//            JoinActivity.melody_detail.setText(count + " " + "Instrumentals");
+//
+//            if (count == 0) {
+//                Toast.makeText(context, "No Instrument", Toast.LENGTH_SHORT).show();
+//            }
             audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
             ivPause.setOnClickListener(new View.OnClickListener() {
                 @Override
