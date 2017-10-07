@@ -27,6 +27,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.instamelody.instamelody.DiscoverActivity;
 import com.instamelody.instamelody.JoinActivity;
 import com.instamelody.instamelody.MessengerActivity;
 import com.instamelody.instamelody.Models.JoinRecordingModel;
@@ -35,6 +36,7 @@ import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
+import com.instamelody.instamelody.StationActivity;
 import com.instamelody.instamelody.StationCommentActivity;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
@@ -116,6 +118,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         this.recordingsPools = recordingsPools;
         this.lazycount = recordingList.size();
         this.context = context;
+        mActivity = (Activity) context;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -299,8 +302,10 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 RecordingsModel recording = recordingList.get(getAdapterPosition());
                                 editor.putString("recID", recording.getRecordingId());
                                 editor.apply();
-                                Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
+                                Intent intent = new Intent(mActivity, MessengerActivity.class);
                                 intent.putExtra("Previous", "station");
+                                intent.putExtra("share", recordingList.get(getAdapterPosition()));
+                                intent.putExtra("file_type", "user_recording");
                                 context.startActivity(intent);
                             }
                         });
@@ -384,7 +389,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         intent.putExtra("recording_modle", recording);
                         intent.putExtra("recording_pool", recordingsPools.get(getAdapterPosition()));
 //                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        mActivity = (Activity) context;
+
                         mActivity.startActivityForResult(intent, REQUEST_RECORDING_COMMENT);
 
                         /*if(context instanceof StationActivity){
@@ -908,8 +913,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         @Override
                         public void onResponse(String response) {
                             //Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
-
-
                         }
                     },
                     new Response.ErrorListener() {

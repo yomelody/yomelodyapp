@@ -1002,6 +1002,14 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         new ParseContents(getApplicationContext()).parseJoinInstrument(response, JoinActivity.instrumentList, pos);
                         JoinActivity.adapter1 = new JoinInstrumentListAdp(JoinActivity.instrumentList, getApplicationContext());
                         JoinActivity.recyclerViewInstruments.setAdapter(JoinActivity.adapter1);
+                        if (JoinActivity.instrumentList.size() == 0) {
+                            JoinActivity.playAll.setVisibility(GONE);
+                            JoinActivity.melody_detail.setText("No" + " " + "Instrumental");
+                        } else {
+                            JoinActivity.playAll.setVisibility(VISIBLE);
+                            JoinActivity.melody_detail.setText(JoinActivity.instrumentList.size() + " " + "Instrumental");
+                        }
+
                         //   }
 
                     }

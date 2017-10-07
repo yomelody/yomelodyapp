@@ -1,5 +1,6 @@
 package com.instamelody.instamelody;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -69,11 +70,13 @@ public class MessengerActivity extends AppCompatActivity {
     String userId;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     int totalCount = 0;
+    Activity mActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messenger);
+        mActivity=MessengerActivity.this;
 
         ivNewMessage = (ImageView) findViewById(R.id.ivNewMessage);
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
@@ -125,7 +128,7 @@ public class MessengerActivity extends AppCompatActivity {
         recyclerView.setItemViewCacheSize(10);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        adapter = new MessengerAdapter(chatList, getApplicationContext());
+        adapter = new MessengerAdapter(chatList, mActivity);
         recyclerView.setAdapter(adapter);
 
         discover.setOnClickListener(new View.OnClickListener() {
@@ -139,7 +142,7 @@ public class MessengerActivity extends AppCompatActivity {
         ivNewMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
+                Intent intent = new Intent(mActivity, ContactsActivity.class);
                 intent.putExtra("Previous", "Messenger");
                 startActivity(intent);
             }
@@ -148,7 +151,7 @@ public class MessengerActivity extends AppCompatActivity {
         profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
+                Intent intent = new Intent(mActivity, ProfileActivity.class);
                 startActivity(intent);
             }
         });
@@ -158,7 +161,7 @@ public class MessengerActivity extends AppCompatActivity {
         {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), StationActivity.class);
+                Intent intent = new Intent(mActivity, StationActivity.class);
                 startActivity(intent);
             }
         });
@@ -167,7 +170,7 @@ public class MessengerActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
-                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                Intent intent = new Intent(mActivity, HomeActivity.class);
                 startActivity(intent);
             }
         });
@@ -177,7 +180,7 @@ public class MessengerActivity extends AppCompatActivity {
         {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                Intent intent = new Intent(mActivity, HomeActivity.class);
                 startActivity(intent);
             }
         });
@@ -186,7 +189,7 @@ public class MessengerActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         finish();
-        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+        Intent intent = new Intent(mActivity, HomeActivity.class);
         startActivity(intent);
     }
 

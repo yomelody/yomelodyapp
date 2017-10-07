@@ -243,7 +243,7 @@ public class ProfileActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             getApplicationContext().startActivity(intent);
         }
-        adapter = new RecordingsCardAdapter(this, recordingList, recordingsPools);
+        adapter = new RecordingsCardAdapter(ProfileActivity.this, recordingList, recordingsPools);
 
         ivToMelody.setOnClickListener(new View.OnClickListener() {
             @Override

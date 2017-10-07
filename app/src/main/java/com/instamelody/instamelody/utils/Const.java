@@ -5,7 +5,6 @@ package com.instamelody.instamelody.utils;
  */
 
 public class Const {
-
     // web services
     public class ServiceType {
         private static final String HOST_URL = "http://52.89.220.199/";
@@ -15,6 +14,7 @@ public class Const {
         public static final String GENERE = BASE_URL + "genere.php";
         public static final String MELODY = BASE_URL + "melody.php";
         public static final String LIKESAPI = BASE_URL + "likes.php";
+        public static final String sharefile = BASE_URL + "sharefile.php";
         public static final String ADD_RECORDINGS = BASE_URL + "Add_Recording.php";
         public static final String PLAY_COUNT = BASE_URL + "playcount.php";
         public static final String COMMENTS = BASE_URL + "comments.php";

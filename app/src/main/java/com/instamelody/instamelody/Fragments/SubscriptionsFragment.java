@@ -190,19 +190,6 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
     }
 
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        SharedPreferences switchFreeEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE);
-        switchFreeEditor.getBoolean("switchFree", false);
-        SharedPreferences switchStandardEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE);
-        switchStandardEditor.getBoolean("switchStandard", false);
-        SharedPreferences switchPremiumEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE);
-        switchPremiumEditor.getBoolean("switchPremium", false);
-        SharedPreferences switchProducerEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE);
-        switchProducerEditor.getBoolean("switchProducer", false);
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -230,9 +217,9 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
         userImage = (ImageView) view.findViewById(R.id.userImage);
         userProfileImage = (CircleImageView) view.findViewById(R.id.userProfileImage);
         switchFree = (Switch) view.findViewById(R.id.switchFree);
-        switchStandard = (Switch)view.findViewById(R.id.switchStandard);
-        switchPremium = (Switch)view.findViewById(R.id.switchPremium);
-        switchProducer = (Switch)view.findViewById(R.id.switchProducer);
+        switchStandard = (Switch) view.findViewById(R.id.switchStandard);
+        switchPremium = (Switch) view.findViewById(R.id.switchPremium);
+        switchProducer = (Switch) view.findViewById(R.id.switchProducer);
 
 
         if (userId != null) {
@@ -245,14 +232,14 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
 
         SharedPreferences profileEditor = getActivity().getSharedPreferences("ProfileUpdate", MODE_PRIVATE);
         SharedPreferences profileImageEditor = getActivity().getSharedPreferences("ProfileImage", MODE_PRIVATE);
-        if (profileImageEditor.getString("ProfileImage",null) != null){
+        if (profileImageEditor.getString("ProfileImage", null) != null) {
             userImage.setVisibility(View.INVISIBLE);
             userProfileImage.setVisibility(View.VISIBLE);
-            Picasso.with(getActivity()).load(profileImageEditor.getString("ProfileImage",null)).into(userProfileImage);
+            Picasso.with(getActivity()).load(profileImageEditor.getString("ProfileImage", null)).into(userProfileImage);
         }
-        if (profileEditor.getString("updateId",null) != null){
+        if (profileEditor.getString("updateId", null) != null) {
             switchFree.setChecked(true);
-            tvUserUpgrade.setText("Upgrade" + " " +profileEditor.getString("updateUserName",null)+ "!");
+            tvUserUpgrade.setText("Upgrade" + " " + profileEditor.getString("updateUserName", null) + "!");
         }
 
 
@@ -374,9 +361,9 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
 
                         for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
                             tv2[0].setText(subscriptionPackageArrayList.get(0).getCost());
-                            tv2[1].setText("$"+(subscriptionPackageArrayList.get(1).getCost()));
-                            tv2[2].setText("$"+(subscriptionPackageArrayList.get(2).getCost()));
-                            tv2[3].setText("$"+(subscriptionPackageArrayList.get(3).getCost()));
+                            tv2[1].setText("$" + (subscriptionPackageArrayList.get(1).getCost()));
+                            tv2[2].setText("$" + (subscriptionPackageArrayList.get(2).getCost()));
+                            tv2[3].setText("$" + (subscriptionPackageArrayList.get(3).getCost()));
                         }
 
                         TextView[] tv3 = new TextView[4];
@@ -395,7 +382,7 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                         switchProducer = (Switch) rootView.findViewById(R.id.switchProducer);
                         SharedPreferences profileEditor = getActivity().getSharedPreferences("ProfileUpdate", MODE_PRIVATE);
                         SharedPreferences profileImageEditor = getActivity().getSharedPreferences("ProfileImage", MODE_PRIVATE);
-                        if (userId == null && (profileEditor.getString("updateId",null) == null) ){
+                        if (userId == null && (profileEditor.getString("updateId", null) == null)) {
                             switchFree.setChecked(true);
                             switchStandard.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -420,7 +407,7 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                                     startActivity(i);
                                 }
                             });
-                        }else {
+                        } else {
                             switchFree.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -556,6 +543,23 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         requestQueue.add(stringRequest);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SharedPreferences switchFreeEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE);
+        switchFreeEditor.getBoolean("switchFree", false);
+        SharedPreferences switchStandardEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE);
+        switchStandardEditor.getBoolean("switchStandard", false);
+        SharedPreferences switchPremiumEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE);
+        switchPremiumEditor.getBoolean("switchPremium", false);
+        SharedPreferences switchProducerEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE);
+        switchProducerEditor.getBoolean("switchProducer", false);
+
+        switchStandard.setChecked(switchStandardEditor.getBoolean("switchStandard", false));
+        switchPremium.setChecked(switchPremiumEditor.getBoolean("switchPremium", false));
+        switchProducer.setChecked(switchFreeEditor.getBoolean("switchFree", false));
     }
 
     public void subscription() {
