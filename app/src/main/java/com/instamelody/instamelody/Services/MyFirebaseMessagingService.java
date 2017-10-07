@@ -120,8 +120,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     }
                 } else { // app is in background, show the notification in notification tray
                     Intent resultIntent = new Intent(getApplicationContext(), ChatActivity.class);
-                    resultIntent.putExtra("sender_name", senderName);
-                    resultIntent.putExtra("message", message);
+//                    resultIntent.putExtra("sender_name", senderName);
+//                    resultIntent.putExtra("message", message);
                     resultIntent.putExtra("chat_id", chatId);
 
                     if (TextUtils.isEmpty(fileUrl)) { // check for image attachment
