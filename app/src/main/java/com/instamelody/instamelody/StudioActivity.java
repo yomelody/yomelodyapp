@@ -1541,34 +1541,34 @@ public class StudioActivity extends AppCompatActivity {
         public void run() {
 
             //  android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
-            AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLING_RATE,
-                    AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, mBufferSize);
+            //AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLING_RATE,
+                    //AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, mBufferSize);
             try {
 
-                recorder.startRecording();
+                //recorder.startRecording();
                 Log.d("Recording issue", "SampleRate" + SAMPLING_RATE + "BufferSize" + mBufferSize + "AudioBuffer" + mAudioBuffer);
             } catch (IllegalStateException e) {
                 Log.d("Recording issue", e.toString());
             }
 
 
-            while (shouldContinue()) {
+           /* while (shouldContinue()) {
                 recorder.read(mAudioBuffer, 0, mBufferSize / 2);
                 waveform_view.updateAudioData(mAudioBuffer);
                 updateDecibelLevel();
 
             }
-
+*/
             try {
 
-                recorder.stop();
+                //recorder.stop();
 
 
             } catch (IllegalStateException e) {
                 e.printStackTrace();
             }
 
-            recorder.release();
+            //recorder.release();
         }
 
 

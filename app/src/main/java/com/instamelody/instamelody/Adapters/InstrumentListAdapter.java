@@ -586,12 +586,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                                 StudioActivity.mediaPlayersAll.get(i).setVolume(0, 0);
                             }
 
-
                         }
-
                     }
                     //}
-
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -2004,6 +2001,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
             recorder.prepare();
             recorder.start();
+
+
+
 
             isRecording = true;
         } catch (IOException e) {
