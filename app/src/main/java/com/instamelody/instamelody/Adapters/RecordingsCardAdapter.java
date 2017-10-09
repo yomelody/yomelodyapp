@@ -611,9 +611,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     int playValue = Integer.parseInt(play) + 1;
                     play = String.valueOf(playValue);
                     holder.tvViewCount.setText(play);
-
                     position = recordingList.get(listPosition).getRecordingId();
                     fetchViewCount(userId, position);
+
                     mp.prepareAsync();
                     mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
