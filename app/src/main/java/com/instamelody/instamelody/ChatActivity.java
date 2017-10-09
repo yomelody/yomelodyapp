@@ -167,6 +167,7 @@ public class ChatActivity extends AppCompatActivity {
     String senderId = "";
     String chatType = "";
     String group = "";
+    String groupName;
     String sendImageName = "";
     String sendGroupImageName = "";
     String flagFileType = "0"; // 0 = null, 1 = image file, 2 = station audio file , 3 = admin_melody audio file
@@ -181,21 +182,14 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         mActivity=ChatActivity.this;
-
-        SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-        SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
-        SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
-
-        if (loginSharedPref.getString("userId", null) != null) {
-            userId = loginSharedPref.getString("userId", null);
-            username = loginSharedPref.getString("userName", null);
-        } else if (fbPref.getString("userId", null) != null) {
-            userId = fbPref.getString("userId", null);
-            username = fbPref.getString("UserName", null);
-        } else if (twitterPref.getString("userId", null) != null) {
-            userId = twitterPref.getString("userId", null);
-            username = twitterPref.getString("userName", null);
-        }
+                                if(jBody.has("Group_name")){
+                                    groupName = jBody.getString("Group_name");
+                                    tvUserName.setText(groupName);
+                                }else{
+                                    receiverName = jBody.getString("sender_name");
+                                    tvUserName.setText(receiverName);
+                                }
+                            }
 
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -213,21 +207,21 @@ public class ChatActivity extends AppCompatActivity {
             }
         };
 
-        rlUserName = (RelativeLayout) findViewById(R.id.rlUserName);
-        rlSelectedImage = (RelativeLayout) findViewById(R.id.rlSelectedImage);
-        ivClose = (ImageView) findViewById(R.id.ivClose);
-        ivSelectedImage = (ImageView) findViewById(R.id.ivSelectedImage);
-        rlNothing = (RelativeLayout) findViewById(R.id.rlNothing);
-        rlChatPlayer = (RelativeLayout) findViewById(R.id.rlChatPlayer);
-        flSeekbar = (FrameLayout) findViewById(R.id.flSeekbar);
-        seekBarChata = (SeekBar) findViewById(R.id.seekBarChata);
-        tvNamePlayer = (TextView) findViewById(R.id.tvNamePlayer);
-        tvUserNamePlayer = (TextView) findViewById(R.id.tvUserNamePlayer);
-        tvAudioNamePlayer = (TextView) findViewById(R.id.tvAudioNamePlayer);
-        tvNumPlayer = (TextView) findViewById(R.id.tvNumPlayer);
-        rlPrevPlayer = (RelativeLayout) findViewById(R.id.rlPrevPlayer);
-        rlNextPlayer = (RelativeLayout) findViewById(R.id.rlNextPlayer);
-        ivPausePlayer = (ImageView) findViewById(R.id.ivPausePlayer);
+        SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+        SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+            username = loginSharedPref.getString("userName", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+            username = fbPref.getString("UserName", null);
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
+            username = twitterPref.getString("userName", null);
+        }
+
         ivPlayPlayer = (ImageView) findViewById(R.id.ivPlayPlayer);
         flPlayPausePlayer = (FrameLayout) findViewById(R.id.flPlayPausePlayer);
         userProfileImagePlayer = (ImageView) findViewById(R.id.userProfileImagePlayer);
@@ -251,8 +245,11 @@ public class ChatActivity extends AppCompatActivity {
         chatId = prefs.getString("chatId", null);
         chatType = prefs.getString("chatType", null);
         groupImage = prefs.getString("groupImage", null);
-        tvUserName = (TextView) findViewById(R.id.tvUserName);
-        tvUserName.setText(receiverName);
+        if((receiverName != null)){
+            if(!receiverName.equals("")){
+                tvUserName.setText(receiverName);
+            }
+        }
 
         if (chatType.equals("single")) {
             rlInviteButton.setClickable(false);
@@ -482,8 +479,6 @@ public class ChatActivity extends AppCompatActivity {
                     rlBtnPhotoLibrary.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent getIntent = new Intent(Intent.ACTION_PICK);
-                            getIntent.setType("image/*");
                             Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                             startActivityForResult(galleryIntent, PICK_GALLERY_IMAGE);
                             alertDialog.cancel();
