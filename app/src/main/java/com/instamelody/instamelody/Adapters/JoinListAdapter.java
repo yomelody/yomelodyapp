@@ -1,5 +1,6 @@
 package com.instamelody.instamelody.Adapters;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -106,7 +107,6 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     int count = 0;
     boolean playSt = false;
     public static int click = 0;
-
 
     public JoinListAdapter(ArrayList<JoinedArtists> Joined_artist, Context context) {
         this.Joined_artist = Joined_artist;
@@ -596,6 +596,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     }
 
                     JoinActivity.txtCount.setText(realPosition + 1 + " of " + getItemCount());
+                    getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, realPosition);
                     JoinedArtists join = Joined_artist.get(realPosition);
                     JoinActivity.waveform_view.setVisibility(VISIBLE);
                     if (JoinActivity.ivJoinPlay.getVisibility() == VISIBLE) {
@@ -730,6 +731,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         }
 
                         JoinActivity.txtCount.setText(count + 1 + " of " + getItemCount());
+                        getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, count);
                         JoinedArtists join = Joined_artist.get(realPosition);
                         JoinActivity.waveform_view.setVisibility(VISIBLE);
                         if (JoinActivity.ivJoinPlay.getVisibility() == VISIBLE) {
@@ -857,6 +859,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     //Toast.makeText(context, "like", Toast.LENGTH_SHORT).show();
                     //position = mpids.get(getAdapterPosition() + 1);
 
+                    JoinedArtists joinArt = Joined_artist.get(0);
 
                     String RecordingName = joinArt.getRecording_name();
                     String position = joinArt.getRecording_id();
@@ -951,6 +954,9 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         public void onResponse(String response) {
                             //Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
                             Log.d("Like status response----", response);
+                            Intent resultIntent = new Intent();
+                            resultIntent.putExtra("LIKE", "Like");
+                            //mActivity.setResult(Activity.RESULT_OK, resultIntent);
                         }
                     },
                     new Response.ErrorListener() {
@@ -993,6 +999,9 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
                         Log.d("ReturnData", response);
                         JoinActivity.instrumentList.clear();
+                        if (JoinActivity.lstViewHolder.size() > 0) {
+                            JoinActivity.lstViewHolder.clear();
+                        }
                         //     JoinActivity.listProfile.clear();
 //                        if (click_pos == 0) {
 //                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, JoinActivity.instrumentList, String.valueOf(click_pos));

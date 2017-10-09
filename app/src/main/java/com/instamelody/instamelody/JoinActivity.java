@@ -1,5 +1,6 @@
 package com.instamelody.instamelody;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -91,7 +92,6 @@ public class JoinActivity extends AppCompatActivity {
     public static ArrayList<JoinInstrumentListAdp.ViewHolder> lstViewHolder = new ArrayList<JoinInstrumentListAdp.ViewHolder>();
     public static MediaPlayer mpall;
     public static ArrayList<MediaPlayer> mediaPlayersAll = new ArrayList<MediaPlayer>();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

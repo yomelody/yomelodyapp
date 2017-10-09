@@ -58,7 +58,7 @@ public class NotificationUtils {
         final int icon = R.drawable.instamelody_logo;
 
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-       final PendingIntent resultPendingIntent = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        final PendingIntent resultPendingIntent = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext);
 
