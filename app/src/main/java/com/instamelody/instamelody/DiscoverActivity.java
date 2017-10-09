@@ -873,6 +873,7 @@ public class DiscoverActivity extends AppCompatActivity {
                         try {
                             JSONObject jsonObject = new JSONObject(rs);
                             String flag = jsonObject.getString("flag");
+
 //                            Toast.makeText(getActivity(), "" + flag, Toast.LENGTH_SHORT).show();
                         } catch (JSONException e) {
                             e.printStackTrace();

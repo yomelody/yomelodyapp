@@ -1127,6 +1127,7 @@ public class ChatActivity extends AppCompatActivity {
                             AppHelper.sop("shared_by_user="+user_Id);
                             AppHelper.sop("receiverId="+receiverId);*/
 
+
                         }
 
                     }

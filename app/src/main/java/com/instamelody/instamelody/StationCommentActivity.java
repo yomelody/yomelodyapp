@@ -303,6 +303,7 @@ public class StationCommentActivity extends AppCompatActivity {
                                 intent.putExtra("share", recording);
                                 intent.putExtra("file_type", "user_recording");
                                 startActivity(intent);
+
                             }
 
                         }

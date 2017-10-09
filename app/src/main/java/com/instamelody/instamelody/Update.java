@@ -701,6 +701,7 @@ public class Update extends AppCompatActivity {
 
         protected String doInBackground(String... params) {
             updateData();
+
             return null;
         }
 
