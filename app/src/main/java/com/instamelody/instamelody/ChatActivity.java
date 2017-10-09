@@ -1033,6 +1033,7 @@ public class ChatActivity extends AppCompatActivity {
                             String str = new String(response.data);
 //                            Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
                             getChatMsgs(chatId);
+                            
                             flagFileType = "0";
                         }
                     }, new Response.ErrorListener() {
