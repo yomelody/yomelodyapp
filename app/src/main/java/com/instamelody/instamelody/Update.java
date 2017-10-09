@@ -7,16 +7,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -39,6 +42,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.login.LoginManager;
 import com.instamelody.instamelody.utils.AppHelper;
+import com.instamelody.instamelody.utils.ImageCompressor;
 import com.instamelody.instamelody.utils.VolleyMultipartRequest;
 import com.instamelody.instamelody.utils.VolleySingleton;
 import com.squareup.picasso.Picasso;
@@ -46,6 +50,7 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -75,6 +80,9 @@ public class Update extends AppCompatActivity {
     private String FILE_TYPE = "file_type";
     private String FILE1 = "file1";
     private String USER_ID = "user_id";
+    private Uri imageToUploadUri;
+    String imageName = "";
+    Bitmap imageBitmap;
 
     EditText etuFirstName, etuLastName, etuEmailUpdate, etuUsername, etuPassWord, etuConfirmPassWord, etuPhone;
     Button buttonEditProfile, buttonUpdate, btnClearFNUpdate, btnClearLNUpdate, btnClearUserNameUpdate,
@@ -86,9 +94,9 @@ public class Update extends AppCompatActivity {
     String userIdFb, firstNameFb, lastNameFb, emailFinalFb, profilePicFb, userNameFb;
     CircleImageView userProfileImageUpdate;
     int statusNormal;
-    private Bitmap bitmap;
     private int PICK_IMAGE_REQUEST = 1;
-    private final int requestCode = 20;
+    private final int TAKE_CAMERA_PHOTO = 20;
+
     String password1;
     DatePickerDialog dpd;
     String formatedDate;
@@ -359,9 +367,13 @@ public class Update extends AppCompatActivity {
                             });
                             alertDialog.setNegativeButton("Open Camera", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    //uploadImage();
-                                    Intent photoCaptureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                    startActivityForResult(photoCaptureIntent, requestCode);
+                                    Intent chooserIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                    Date d = new Date();
+                                    CharSequence s = DateFormat.format("yyyyMMdd_hhmmss", d.getTime());
+                                    File f = new File(Environment.getExternalStorageDirectory(), "IMG_" + s.toString() + ".jpg");
+                                    chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                                    imageToUploadUri = Uri.fromFile(f);
+                                    startActivityForResult(chooserIntent, TAKE_CAMERA_PHOTO);
                                 }
                             });
                             alertDialog.show();
@@ -557,10 +569,8 @@ public class Update extends AppCompatActivity {
                     profileImageEditor.putString("ProfileImage", updateProfileImage);
                     profileImageEditor.apply();
 
-                    SharedPreferences profileImagePref = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE);
-//                    profileImagePref.getString("ProfileImage", null);
-                    if (profileImagePref.getString("ProfileImage", null) != null) {
-                        Picasso.with(Update.this).load(profileImagePref.getString("ProfileImage", null)).into(userProfileImageUpdate);
+                    if (updateProfileImage != null) {
+                        Picasso.with(Update.this).load(updateProfileImage).placeholder(getResources().getDrawable(R.drawable.loading)).error(getResources().getDrawable(R.drawable.artist)).into(userProfileImageUpdate);
                     }
 
 
@@ -593,21 +603,17 @@ public class Update extends AppCompatActivity {
                 Map<String, DataPart> params = new HashMap<>();
                 // file name could found file base or direct access from real path
                 // for now just get bitmap data from ImageView
-                params.put(FILE1, new DataPart("img.jpg", AppHelper.getFileDataFromDrawable(getBaseContext(), userProfileImageUpdate.getDrawable()), "image/jpeg"));
+                params.put(FILE1, new DataPart("img.jpg", AppHelper.getFileDataFromDrawable(getBaseContext(), imageBitmap), "image/jpeg"));
                 AppHelper.sop("getByteData=params==="+params);
                 return params;
             }
-
-
         };
         VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
     }
 
     private void showFileChooser() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST);
     }
 
     private class LongOperation extends AsyncTask<String, Void, String> {
@@ -636,9 +642,6 @@ public class Update extends AppCompatActivity {
             SharedPreferences profileEditor = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE);
             SharedPreferences profileImageEditor = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE);
             if (profileEditor.getString("updateId", null) != null) {
-                if (profileImageEditor.getString("ProfileImage", null) != null) {
-                    Picasso.with(Update.this).load(profileImageEditor.getString("ProfileImage", null)).into(userProfileImageUpdate);
-                }
                 etuFirstName.setText(profileEditor.getString("updateFirstName", null));
                 etuUsername.setText(profileEditor.getString("updateUserName", null));
                 etuLastName.setText(profileEditor.getString("updateLastName", null));
@@ -672,20 +675,38 @@ public class Update extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (this.requestCode == requestCode && resultCode == RESULT_OK) {
-            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-            userProfileImageUpdate.setImageBitmap(bitmap);
+        if (this.TAKE_CAMERA_PHOTO == requestCode && resultCode == RESULT_OK) {
+            if (imageToUploadUri != null) {
+                Uri selectedImage = imageToUploadUri;
+                imageName = imageToUploadUri.getPath();
+                getContentResolver().notifyChange(selectedImage, null);
+                ImageCompressor ic = new ImageCompressor(getApplicationContext());
+                imageBitmap = ic.compressImage(imageName);
+                if (imageBitmap != null) {
+                    userProfileImageUpdate.setImageBitmap(imageBitmap);
+                } else {
+                    Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
+            }
         }
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && null != data) {
-            Uri filePath = data.getData();
             try {
-                //Getting the Bitmap from Gallery
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
-                //Setting the Bitmap to ImageView
-                userProfileImageUpdate.setImageBitmap(bitmap);
-                AppHelper.sop("filePath==="+filePath);
-            } catch (IOException e) {
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                cursor.moveToFirst();
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String img_Decodable_Str = cursor.getString(columnIndex);
+                cursor.close();
+                ImageCompressor ic = new ImageCompressor(getApplicationContext());
+                imageBitmap = ic.compressImage(img_Decodable_Str);
+                if (imageBitmap != null) {
+                    userProfileImageUpdate.setImageBitmap(imageBitmap);
+                }
+            } catch (Throwable e) {
                 e.printStackTrace();
             }
         }
