@@ -295,6 +295,8 @@ public class StudioActivity extends AppCompatActivity {
     String pos = "0";
     BroadcastReceiver mRegistrationBroadcastReceiver;
     int totalCount = 0;
+    String IscheckMelody = null;
+    String IsHomeMeloduId=null;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -464,55 +466,142 @@ public class StudioActivity extends AppCompatActivity {
             LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
 
         } else {
+            Intent stdintent = getIntent();
 
-            //      if (!melodyPackId.equals("fromHomeActivity")) {
-            if (melodyPackId != null) {
-                fetchInstruments(melodyPackId);
-                JoinActivity.instrumentList.clear();
-                noMelodyNote.setVisibility(View.GONE);
-                recyclerViewInstruments.setVisibility(View.VISIBLE);
-                recyclerViewInstruments.setHasFixedSize(true);
-                layoutManager = new LinearLayoutManager(getApplicationContext());
-                recyclerViewInstruments.setLayoutManager(layoutManager);
-                recyclerViewInstruments.setItemAnimator(new DefaultItemAnimator());
-                adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
-
-                //recyclerViewInstruments.smoothScrollToPosition(0);
-                recyclerViewInstruments.setAdapter(adapter);
-
-                //frameTrans.setVisibility(View.VISIBLE);
-                rlSync.setVisibility(View.VISIBLE);
-                if (instrumentList.size() > 0) {
-                    rlSync.setVisibility(View.VISIBLE);
-                }
-
-
-                ArrayList<MelodyCard> arrayMelody = new ArrayList<>();
-
-                arrayMelody = MelodyCardListAdapter.returnMelodyList();
+            if (intent == null) {
+            } else {
                 try {
-//                    melodyName = arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName();
-                    try {
-                        if (arrayMelody.size() > 0) {
-                            int i = Integer.parseInt(arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName());
-                        }
-                    } catch (NumberFormatException ex) { // handle your exception
-                        //melodyName = arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName();
-                    }
-
-                } catch (IndexOutOfBoundsException e) {
+                    IscheckMelody = stdintent.getExtras().getString("IsFromSignActivity");
+                    IsHomeMeloduId=stdintent.getExtras().getString("melodyPackId");
+                } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
-
-
-                for (int i = 0; i < instrumentList.size(); i++) {
-                    MelodyInstruments instruments = instrumentList.get(i);
-                    instrumentName = instruments.getInstrumentName();
-                }
-
-                LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
-
             }
+
+
+            if (IscheckMelody == null) {
+                if (melodyPackId != null) {
+
+
+                    fetchInstruments(melodyPackId);
+                    JoinActivity.instrumentList.clear();
+                    noMelodyNote.setVisibility(View.GONE);
+                    recyclerViewInstruments.setVisibility(View.VISIBLE);
+                    recyclerViewInstruments.setHasFixedSize(true);
+                    layoutManager = new LinearLayoutManager(getApplicationContext());
+                    recyclerViewInstruments.setLayoutManager(layoutManager);
+                    recyclerViewInstruments.setItemAnimator(new DefaultItemAnimator());
+                    adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+
+                    //recyclerViewInstruments.smoothScrollToPosition(0);
+                    recyclerViewInstruments.setAdapter(adapter);
+
+                    //frameTrans.setVisibility(View.VISIBLE);
+                    rlSync.setVisibility(View.VISIBLE);
+                    if (instrumentList.size() > 0) {
+                        rlSync.setVisibility(View.VISIBLE);
+                    }
+
+
+                    ArrayList<MelodyCard> arrayMelody = new ArrayList<>();
+
+                    arrayMelody = MelodyCardListAdapter.returnMelodyList();
+                    try {
+//                    melodyName = arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName();
+                        try {
+                            if (arrayMelody.size() > 0) {
+                                int i = Integer.parseInt(arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName());
+                            }
+                        } catch (NumberFormatException ex) { // handle your exception
+                            //melodyName = arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName();
+                        }
+
+                    } catch (IndexOutOfBoundsException e) {
+                        e.printStackTrace();
+                    }
+
+
+                    for (int i = 0; i < instrumentList.size(); i++) {
+                        MelodyInstruments instruments = instrumentList.get(i);
+                        instrumentName = instruments.getInstrumentName();
+                    }
+
+                    LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
+
+
+                }
+            } else {
+                try {
+
+                    StudioActivity.playAll.setVisibility(View.VISIBLE);
+                    StudioActivity.pauseAll.setVisibility(View.GONE);
+                    StudioActivity.pauseAll.setEnabled(true);
+                    tvDone.setEnabled(true);
+                    StudioActivity.ivRecord_stop.setVisibility(View.GONE);
+                    StudioActivity.rlRecordingButton.setVisibility(View.GONE);
+                    StudioActivity.ivRecord_play.setVisibility(View.VISIBLE);
+                    StudioActivity.rlRedoButton.setVisibility(View.VISIBLE);
+                    if (IsHomeMeloduId != null) {
+
+                        fetchInstruments(IsHomeMeloduId);
+                        melodyPackId=IsHomeMeloduId;
+                        JoinActivity.instrumentList.clear();
+                        noMelodyNote.setVisibility(View.GONE);
+                        recyclerViewInstruments.setVisibility(View.VISIBLE);
+                        recyclerViewInstruments.setHasFixedSize(true);
+                        layoutManager = new LinearLayoutManager(getApplicationContext());
+                        recyclerViewInstruments.setLayoutManager(layoutManager);
+                        recyclerViewInstruments.setItemAnimator(new DefaultItemAnimator());
+                        adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+
+                        //recyclerViewInstruments.smoothScrollToPosition(0);
+                        recyclerViewInstruments.setAdapter(adapter);
+
+                        //frameTrans.setVisibility(View.VISIBLE);
+                        rlSync.setVisibility(View.VISIBLE);
+                        if (instrumentList.size() > 0) {
+                            rlSync.setVisibility(View.VISIBLE);
+                        }
+
+
+                        ArrayList<MelodyCard> arrayMelody = new ArrayList<>();
+
+                        arrayMelody = MelodyCardListAdapter.returnMelodyList();
+                        try {
+//                    melodyName = arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName();
+                            try {
+                                if (arrayMelody.size() > 0) {
+                                    int i = Integer.parseInt(arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName());
+                                }
+                            } catch (NumberFormatException ex) { // handle your exception
+                                //melodyName = arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName();
+                            }
+
+                        } catch (IndexOutOfBoundsException e) {
+                            e.printStackTrace();
+                        }
+
+
+                        for (int i = 0; i < instrumentList.size(); i++) {
+                            MelodyInstruments instruments = instrumentList.get(i);
+                            instrumentName = instruments.getInstrumentName();
+                        }
+                        IsHomeMeloduId=null;
+                        IscheckMelody=null;
+                        stdintent.removeExtra("IsFromSignActivity");
+                        stdintent.removeExtra("melodyPackId");
+                        LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
+
+
+                    }
+
+
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
         }
         String home, homeTostudio;
         SharedPreferences fromHome = getApplicationContext().getSharedPreferences("FromHomeToMelody", MODE_PRIVATE);
@@ -1065,8 +1154,8 @@ public class StudioActivity extends AppCompatActivity {
                         ivRecord.setVisibility(View.VISIBLE);
                         ivRecord.setEnabled(true);
                     } else if (userId == null) {
-                        handler.removeCallbacksAndMessages(null);
-                        if (lstViewHolder.size() > 0) {
+
+                        /*if (lstViewHolder.size() > 0) {
                             lstViewHolder.clear();
                         }
                         if (mp_start != null) {
@@ -1103,8 +1192,11 @@ public class StudioActivity extends AppCompatActivity {
                         }
                         if (instrumentList.size() > 0) {
                             instrumentList.clear();
-                        }
+                        }*/
+
                         Intent i = new Intent(getApplicationContext(), SignInActivity.class);
+                        i.putExtra("StudioBack", "ReturnStudioScreen");
+                        i.putExtra("melodyPackId",melodyPackId);
                         startActivity(i);
                         Toast.makeText(StudioActivity.this, "SignIn to Save Recording", Toast.LENGTH_SHORT).show();
                     }
@@ -1124,6 +1216,8 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    IsHomeMeloduId=null;
+                    IscheckMelody=null;
                     handler.removeCallbacksAndMessages(null);
                     ivRecord_play.setVisibility(View.INVISIBLE);
                     rlRedoButton.setVisibility(View.INVISIBLE);
@@ -1258,6 +1352,11 @@ public class StudioActivity extends AppCompatActivity {
         }
         return true;
     }
+
+   /* @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }*/
 
     private static String getDuration(File file) {
         MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
@@ -1542,7 +1641,7 @@ public class StudioActivity extends AppCompatActivity {
 
             //  android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
             //AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLING_RATE,
-                    //AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, mBufferSize);
+            //AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, mBufferSize);
             try {
 
                 //recorder.startRecording();

@@ -65,7 +65,6 @@ import com.instamelody.instamelody.Models.AudioDetails;
 import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.RecentImagesModel;
 import com.instamelody.instamelody.Models.RecordingsModel;
-import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Models.SharedAudios;
 import com.instamelody.instamelody.utils.AppHelper;
 import com.instamelody.instamelody.utils.ImageCompressor;
@@ -89,25 +88,22 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import static android.os.Environment.isExternalStorageEmulated;
 import static android.os.Environment.isExternalStorageRemovable;
-//import static com.instamelody.instamelody.Adapters.ChatAdapter.tvNum;
 import static com.instamelody.instamelody.utils.Const.PUSH_NOTIFICATION;
 import static com.instamelody.instamelody.utils.Const.READ_NOTIFICATION;
 import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.CHAT;
-import static com.instamelody.instamelody.utils.Const.ServiceType.LIKESAPI;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MESSAGE_LIST;
 import static com.instamelody.instamelody.utils.Const.ServiceType.READ_STATUS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.UPDATE_GROUP;
 import static com.instamelody.instamelody.utils.Const.ServiceType.USER_CHAT_ID;
 import static com.instamelody.instamelody.utils.Const.ServiceType.sharefile;
+
+//import static com.instamelody.instamelody.Adapters.ChatAdapter.tvNum;
 
 /**
  * Created by Shubhansh Jaiswal on 17/01/17.
@@ -284,10 +280,11 @@ public class ChatActivity extends AppCompatActivity {
         chatId = prefs.getString("chatId", null);
         chatType = prefs.getString("chatType", null);
         groupImage = prefs.getString("groupImage", null);
-        if(!receiverName.equals("")){
-            tvUserName.setText(receiverName);
+        if(receiverName != null){
+            if(!receiverName.equals("")){
+                tvUserName.setText(receiverName);
+            }
         }
-
 
 //        if (chatType.equals("single")) {
 //            rlInviteButton.setClickable(false);
