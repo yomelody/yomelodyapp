@@ -1,4 +1,3 @@
 <resources>
     <string name="library_name">Waveform</string>
-    <string name="decibel_format">%1$.1f dB</string>
 </resources>

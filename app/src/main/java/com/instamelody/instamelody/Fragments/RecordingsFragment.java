@@ -32,7 +32,6 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.RecordingsModel;
@@ -175,10 +174,7 @@ public class RecordingsFragment extends Fragment {
     }
 
     public void fetchGenreNames() {
-        progressDialog.setTitle("Processing...");
-        progressDialog.setMessage("Please wait...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+
         StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
                 new Response.Listener<String>() {
                     @Override
