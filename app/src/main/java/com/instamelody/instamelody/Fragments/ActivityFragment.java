@@ -181,7 +181,6 @@ public class ActivityFragment extends Fragment {
                                     ));
 
 
-
                                     adapter = new ActivityCardAdapter(arraylist, getActivity());
 
 

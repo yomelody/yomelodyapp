@@ -411,7 +411,6 @@ public class ProfileActivity extends AppCompatActivity {
                 ivSearchProfile.setVisibility(View.GONE);
 
 
-
                 BioFragment bioFragment = new BioFragment();
                 android.app.FragmentManager fragmentManager = getFragmentManager();
 
@@ -465,6 +464,11 @@ public class ProfileActivity extends AppCompatActivity {
         ivMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                editor.putString("senderId", userId);
+                editor.putString("receiverId", receiverId);
+                editor.putString("receiverName", Name);
+                editor.commit();
                 Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
                 startActivity(intent);
             }
@@ -514,12 +518,6 @@ public class ProfileActivity extends AppCompatActivity {
         rlMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
-                editor.putString("senderId", userId);
-                editor.putString("receiverId", receiverId);
-                editor.putString("receiverName", Name);
-                editor.putString("chatType", "single");
-                editor.commit();
                 Intent i = new Intent(ProfileActivity.this, ChatActivity.class);
                 startActivity(i);
             }

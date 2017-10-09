@@ -287,7 +287,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                     }
 
                 }
-                finish();
+                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                startActivity(intent);
             }
         });
 

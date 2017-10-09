@@ -435,7 +435,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 holder.progressDialog = new ProgressDialog(v.getContext());
                 holder.progressDialog.setMessage("Loading...");
                 holder.progressDialog.show();
-                // holder.ivPause.setVisibility(VISIBLE);
+               // holder.ivPause.setVisibility(VISIBLE);
                 position = melodyList.get(listPosition).getMelodyPackId();
                 ParseContents pc = new ParseContents(context);
                 instrumentList = pc.getInstruments();
@@ -443,38 +443,36 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     audioUrl = melody.getMelodyURL();
                 }
 
-                //      if (mediaPlayer != null) {
-                try {
-                    if (mediaPlayer.isPlaying()) {
-                        duration = 0;
-                        length = 0;
-                        mediaPlayer.stop();
-                        mediaPlayer.reset();
-                        mediaPlayer.release();
-                        // mediaPlayer = null;
-                        //holder.ivPause.setVisibility(GONE);
-                        if (lastModifiedHoled != null) {
-                            int lastPosition = lastModifiedHoled.getAdapterPosition();
-                            lastModifiedHoled.itemView.findViewById(R.id.ivPlay).setVisibility(VISIBLE);
-                            lastModifiedHoled.itemView.findViewById(R.id.ivPause).setVisibility(GONE);
-                            lastModifiedHoled.itemView.findViewById(R.id.melodySlider).setVisibility(GONE);
-                            lastModifiedHoled.itemView.findViewById(R.id.rlSeekbarTracer).setVisibility(GONE);
+          //      if (mediaPlayer != null) {
+                    try {
+                        if (mediaPlayer.isPlaying()) {
+                            mediaPlayer.stop();
+                            mediaPlayer.reset();
+                            mediaPlayer.release();
+                           // mediaPlayer = null;
+                            //holder.ivPause.setVisibility(GONE);
+                            if (lastModifiedHoled != null) {
+                                int lastPosition = lastModifiedHoled.getAdapterPosition();
+                                lastModifiedHoled.itemView.findViewById(R.id.ivPlay).setVisibility(VISIBLE);
+                                lastModifiedHoled.itemView.findViewById(R.id.ivPause).setVisibility(GONE);
+                                lastModifiedHoled.itemView.findViewById(R.id.melodySlider).setVisibility(GONE);
+                                lastModifiedHoled.itemView.findViewById(R.id.rlSeekbarTracer).setVisibility(GONE);
                            /* lastModifiedHoled.itemView.setBackgroundColor(Color.TRANSPARENT);
                             lastModifiedHoled.txtIndustry.setTextColor(context.getResources().getColor(R.color.text_color_blue));*/
-                           // notifyItemChanged(lastPosition);
-                        }
+                                notifyItemChanged(lastPosition);
+                            }
                         /*View view = null;
                         holder.ivPause.setVisibility(VISIBLE);
                         view = holder.recyclerView.getChildAt(1);
                         holder.ivPause = (ImageView) view.findViewById(R.id.ivPause);
                         holder.ivPause.setVisibility(VISIBLE);*/
+                        }
+                    } catch (Throwable e) {
+                        e.printStackTrace();
                     }
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
 
 
-                //   }
+             //   }
 
 
                 mediaPlayer = new MediaPlayer();
@@ -486,7 +484,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     e.printStackTrace();
                 }
                 mediaPlayer.prepareAsync();
-                // duration = mediaPlayer.getDuration();
+               // duration = mediaPlayer.getDuration();
                 mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(MediaPlayer mediaPlayer) {
@@ -504,7 +502,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         int playValue = Integer.parseInt(play) + 1;
                         play = String.valueOf(playValue);
                         holder.tvPlayCount.setText(play);
-                        fetchViewCount(userId, melody.getMelodyPackId());
+                        fetchViewCount(userId, position);
                         holder.primarySeekBarProgressUpdater();
                     }
                 });
@@ -524,8 +522,8 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         lastModifiedHoled.itemView.findViewById(R.id.melodySlider).setVisibility(GONE);
                         lastModifiedHoled.itemView.findViewById(R.id.rlSeekbarTracer).setVisibility(GONE);
                         holder.melodySlider.setProgress(0);
-                        duration = 0;
-                        length = 0;
+                        duration=0;
+                        length=0;
 
                     }
                 });
@@ -661,7 +659,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         requestQueue1.add(stringRequest);
     }
 
-    public void fetchViewCount(final String userId, final String melody_id) {
+    public void fetchViewCount(final String userId, final String pos) {
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, PLAY_COUNT,
                 new Response.Listener<String>() {
@@ -695,7 +693,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 Map<String, String> params = new HashMap<>();
                 params.put(USER_TYPE, "admin");
                 params.put(USERID, userId);
-                params.put(FILEID, melody_id);
+                params.put(FILEID, pos);
                 //    params.put(TYPE, "admin_melody");
                 params.put(TYPE, "melody");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
