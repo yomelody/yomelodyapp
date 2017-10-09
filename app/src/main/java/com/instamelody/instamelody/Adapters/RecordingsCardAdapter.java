@@ -495,13 +495,13 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
         RecordingsModel recording = recordingList.get(listPosition);
         lazycount = lazycount + 1;
-        int includedCount=Integer.parseInt(recordingList.get(listPosition).getJoinCount());
-        holder.tvIncludedCount.setText("Included: "+includedCount);
+        int includedCount = Integer.parseInt(recordingList.get(listPosition).getJoinCount());
+        holder.tvIncludedCount.setText("Included: " + includedCount);
 
         mpid = recording.getRecordingId();
         mpids.add(mpid);
 
-        holder.tvIncludedCount.setText("Included: "+includedCount);
+        holder.tvIncludedCount.setText("Included: " + includedCount);
         if (recordingList.get(listPosition).getJoinCount() == null) {
             totaljoincount = "(" + "0" + " of " + "1" + ")";
         } else {
@@ -600,9 +600,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     int playValue = Integer.parseInt(play) + 1;
                     play = String.valueOf(playValue);
                     holder.tvViewCount.setText(play);
-
                     position = recordingList.get(listPosition).getRecordingId();
                     fetchViewCount(userId, position);
+
                     mp.prepareAsync();
                     mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
