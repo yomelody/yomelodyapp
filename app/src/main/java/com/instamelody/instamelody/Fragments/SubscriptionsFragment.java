@@ -545,23 +545,6 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
         requestQueue.add(stringRequest);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        SharedPreferences switchFreeEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE);
-        switchFreeEditor.getBoolean("switchFree", false);
-        SharedPreferences switchStandardEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE);
-        switchStandardEditor.getBoolean("switchStandard", false);
-        SharedPreferences switchPremiumEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE);
-        switchPremiumEditor.getBoolean("switchPremium", false);
-        SharedPreferences switchProducerEditor = getActivity().getSharedPreferences("SwitchStatusFree", MODE_PRIVATE);
-        switchProducerEditor.getBoolean("switchProducer", false);
-
-        switchStandard.setChecked(switchStandardEditor.getBoolean("switchStandard", false));
-        switchPremium.setChecked(switchPremiumEditor.getBoolean("switchPremium", false));
-        switchProducer.setChecked(switchFreeEditor.getBoolean("switchFree", false));
-    }
-
     public void subscription() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, SUBSCRIPTION,
                 new Response.Listener<String>() {

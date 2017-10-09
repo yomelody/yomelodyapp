@@ -6,11 +6,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.icu.text.SimpleDateFormat;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,8 +46,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -495,13 +500,13 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
         RecordingsModel recording = recordingList.get(listPosition);
         lazycount = lazycount + 1;
-        int includedCount=Integer.parseInt(recordingList.get(listPosition).getJoinCount());
-        holder.tvIncludedCount.setText("Included: "+includedCount);
+        int includedCount = Integer.parseInt(recordingList.get(listPosition).getJoinCount());
+        holder.tvIncludedCount.setText("Included: " + includedCount);
 
         mpid = recording.getRecordingId();
         mpids.add(mpid);
 
-        holder.tvIncludedCount.setText("Included: "+includedCount);
+        holder.tvIncludedCount.setText("Included: " + includedCount);
         if (recordingList.get(listPosition).getJoinCount() == null) {
             totaljoincount = "(" + "0" + " of " + "1" + ")";
         } else {
@@ -523,8 +528,10 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         holder.tvUserName.setText(recordingList.get(listPosition).getUserName());
         holder.tvRecordingName.setText(recordingList.get(listPosition).getRecordingName());
         holder.tvRecordingGenres.setText("Genre:" + " " + recording.getGenreName());
-        holder.tvContributeLength.setText(recordingsPools.get(listPosition).getDuration());
-        holder.tvContributeDate.setText(recordingsPools.get(listPosition).getDateAdded());
+//        holder.tvContributeLength.setText(recordingsPools.get(listPosition).getDuration());
+//        holder.tvContributeDate.setText(recordingsPools.get(listPosition).getDateAdded());
+        holder.tvContributeDate.setText(recordingList.get(listPosition).getRecordingCreated());
+        holder.tvContributeLength.setText(DateUtils.formatElapsedTime(Long.parseLong(recordingsPools.get(listPosition).getDuration())));
 
         int likeStatus = recordingList.get(listPosition).getLikeStatus();
         if (likeStatus == 0) {
