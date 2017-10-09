@@ -411,6 +411,7 @@ public class ProfileActivity extends AppCompatActivity {
                 ivSearchProfile.setVisibility(View.GONE);
 
 
+
                 BioFragment bioFragment = new BioFragment();
                 android.app.FragmentManager fragmentManager = getFragmentManager();
 

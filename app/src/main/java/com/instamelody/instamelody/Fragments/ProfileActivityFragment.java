@@ -179,6 +179,7 @@ public class ProfileActivityFragment extends Fragment {
                                             c.getString("created_by_userID"),
                                             c.getString("first_user"),
                                             c.getString("second_user")
+
                                     ));
 
                                     activityAdapter = new ActivityCardAdapter(arraylist, getActivity());

@@ -313,6 +313,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 intent.putExtra("share", recordingList.get(getAdapterPosition()));
                                 intent.putExtra("file_type", "user_recording");
                                 context.startActivity(intent);
+
                             }
                         });
                         alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
