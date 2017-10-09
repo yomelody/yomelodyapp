@@ -1,7 +1,12 @@
 package com.instamelody.instamelody.Services;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -9,6 +14,9 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.instamelody.instamelody.ChatActivity;
+import com.instamelody.instamelody.HomeActivity;
+import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.utils.AppHelper;
 import com.instamelody.instamelody.utils.NotificationUtils;
 
 import org.json.JSONException;
@@ -25,6 +33,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     NotificationUtils notificationUtils;
     String flagSoundPlayedAlready = "false";
+    public static final int ID_SMALL_NOTIFICATION = 235;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -34,13 +43,34 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d("fbs", "FCM Notification Message: " + remoteMessage.getNotification());
         Log.d("fbs", "FCM Data Message: " + remoteMessage.getData());
         String chat_id = "";
-
+        AppHelper.sop("onMessageReceived==="+remoteMessage.getData().toString());
         if (remoteMessage == null)
             return;
+
 
         if (remoteMessage.getNotification() != null) { // Check if message contains a notification payload.
             Log.e("fbs", "Notification Body: " + remoteMessage.getNotification().getBody());
             handleNotification(remoteMessage.getNotification().getBody());
+
+            /*try {
+                JSONObject json = new JSONObject(remoteMessage.getData().toString());
+                if (json.has("notification_type") && (json.getString("notification_type")).equalsIgnoreCase("Activity")){
+                    // like comment and share notification case
+                    Intent intent=new Intent(getApplicationContext(), HomeActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    showSmallNotification(remoteMessage.getNotification().getTitle(),
+                            remoteMessage.getNotification().getBody(),intent);
+                }else {
+                    handleNotification(remoteMessage.getNotification().getBody());
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            catch (Exception ex){
+                ex.printStackTrace();
+            }*/
+
         }
         if (remoteMessage.getData().size() > 0) { // Check if message contains a data payload.
             Log.e("fbs", "Data Payload: " + remoteMessage.getData().toString());
@@ -62,14 +92,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
             notificationUtils.playNotificationSound();
             flagSoundPlayedAlready = "true";
+            AppHelper.sop("handleNotification=if==="+message);
+
 
         } else {
             // If the app is in background, firebase itself handles the notification
+            AppHelper.sop("handleNotification=else==="+message);
         }
     }
 
     private void handleDataMessage(JSONObject json) {
         Log.e("fbs", "push json: " + json.toString());
+        AppHelper.sop("handleDataMessage==="+json);
         try {
             JSONObject data = new JSONObject(json.toString());
             JSONObject body = data.getJSONObject("body");
@@ -150,5 +184,30 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         notificationUtils = new NotificationUtils(context);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         notificationUtils.showNotificationMessage(senderId, title, senderName, message, chatId, /*fileId,*/ intent, imageUrl);
+    }
+
+
+    public void showSmallNotification(String title, String message, Intent intent) {
+        PendingIntent resultPendingIntent =
+                PendingIntent.getActivity(this, ID_SMALL_NOTIFICATION, intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+        Notification notification;
+        notification = mBuilder.setSmallIcon(R.mipmap.instamelody_logo).setTicker(title).setWhen(0)
+                .setAutoCancel(true)
+                .setContentIntent(resultPendingIntent)
+                .setContentTitle(title)
+                .setSmallIcon(R.mipmap.instamelody_logo)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.instamelody_logo))
+                .setContentText(message)
+                .build();
+
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(ID_SMALL_NOTIFICATION, notification);
+        notificationManager.cancelAll();
     }
 }
