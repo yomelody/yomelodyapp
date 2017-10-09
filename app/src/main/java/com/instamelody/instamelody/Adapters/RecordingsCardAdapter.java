@@ -69,6 +69,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
 public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAdapter.MyViewHolder> {
 
     public static final int REQUEST_RECORDING_COMMENT = 711;
+    public static final int REQUEST_JOIN_COMMENT = 712;
     String genreName, mpid, MelodyName, profile;
     static String instrumentFile;
     public static MediaPlayer mp;
@@ -181,9 +182,15 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 @Override
                 public void onClick(View view) {
                     if (!userId.equals("") && userId != null) {
-                        String instruments, bpm, genre, recordName, userName, duration, date, plays, likes, comments, shares, melodyID;
+                        String instruments, bpm, genre, recordName, userName, duration, date, plays, likes, comments, shares, melodyID, LikeStatus;
                         RecordingsModel rm = recordingList.get(getAdapterPosition());
+                        RecordingsModel recording = recordingList.get(getAdapterPosition());
 
+                        if (ivDislikeButton.getVisibility() == VISIBLE) {
+                            LikeStatus = "1";
+                        } else {
+                            LikeStatus = "0";
+                        }
                         addedBy = rm.getAddedBy();
                         Rec_id = rm.getRecordingId();
                         userNameRec = rm.getUserName();
@@ -230,7 +237,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             record.putString("RecordingName", RecordingName);
                             record.commit();
                             Intent intent = new Intent(context, JoinActivity.class);
-                            context.startActivity(intent);
+                            mActivity.startActivityForResult(intent, REQUEST_JOIN_COMMENT);
                         } catch (Throwable e) {
                             e.printStackTrace();
                         }
@@ -561,23 +568,23 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                 if (instrumentFile != "") {
                     if (mp != null) {
-                        mHandler1.removeCallbacksAndMessages(null);
+
                         try {
+                            mHandler1.removeCallbacksAndMessages(null);
 
-
-                                try {
-                                    mp.stop();
-                                    mp.release();
-                                    mp = null;
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-                                if (lastModifiedHoled != null) {
-                                    int lastPosition = lastModifiedHoled.getAdapterPosition();
-                                    lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
-                                    lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
-                                    notifyItemChanged(lastPosition);
-                                }
+                            try {
+                                mp.stop();
+                                mp.release();
+                                mp = null;
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                            if (lastModifiedHoled != null) {
+                                int lastPosition = lastModifiedHoled.getAdapterPosition();
+                                lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
+                                lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
+                                //   notifyItemChanged(lastPosition);
+                            }
 
 
                         } catch (Throwable e) {
@@ -662,9 +669,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     // lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
                     //lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
                 }
-                try{
+                try {
                     lastModifiedHoled = holder;
-                }catch (Exception ex){
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
 
@@ -677,13 +684,10 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 holder.ivStationPlay.setVisibility(v.VISIBLE);
                 holder.ivStationPause.setVisibility(v.GONE);
                 mHandler1.removeCallbacksAndMessages(null);
-                if (mp != null) {
-                    try {
-                        mp.stop();
-                        mp.pause();
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
+                try {
+                    mp.pause();
+                } catch (Throwable e) {
+                    e.printStackTrace();
                 }
                 holder.seekBarRecordings.setProgress(0);
             }

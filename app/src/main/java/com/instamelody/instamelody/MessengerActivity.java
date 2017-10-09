@@ -169,9 +169,9 @@ public class MessengerActivity extends AppCompatActivity {
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
                 Intent intent = new Intent(mActivity, HomeActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 

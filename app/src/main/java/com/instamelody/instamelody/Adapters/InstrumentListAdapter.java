@@ -306,7 +306,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             //Handler mHandler1 = new Handler();
             try {
 
-                melodySlider.setProgress((int) (((float) mp.getCurrentPosition() / mp.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
+                melodySlider.setProgress((int) (((float) mp.getCurrentPosition() / duration) * 100));// This math construction give a percentage of "was playing"/"song length"
                 if (mp != null) {
                     Runnable notification = new Runnable() {
                         public void run() {
@@ -1076,6 +1076,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     StudioActivity.handler.removeCallbacksAndMessages(null);
                     if (holder.mp != null) {
                         try {
+                            duration = 0;
+                            length = 0;
                             holder.mp.stop();
                             holder.mp.release();
                             holder.mp = null;
@@ -1144,7 +1146,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                             @Override
                             public void onPrepared(MediaPlayer mps) {
                                 holder.progressDialog.dismiss();
+                                mps.seekTo(length);
                                 mps.start();
+                                duration = mps.getDuration();
                                 if (IsRepeat) {
                                     holder.mp.setLooping(true);
                                 } else {
@@ -1209,7 +1213,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                                 }
 
                                 holder.melodySlider.setProgress(0);
-
+                                duration = 0;
+                                length = 0;
 
                                 IsMute = false;
                                 IsSolo = false;
@@ -1241,10 +1246,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     holder.ivPlay.setVisibility(v.VISIBLE);
                     holder.ivPause.setVisibility(v.GONE);
                     StudioActivity.handler.removeCallbacksAndMessages(null);
-                    holder.melodySlider.setProgress(0);
+                   // holder.melodySlider.setProgress(0);
                     if (holder.mp != null) {
-                        holder.mp.stop();
-                        holder.mp.release();
+                        holder.mp.pause();
                     }
                     length = holder.mp.getCurrentPosition();
 
@@ -2001,8 +2005,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
             recorder.prepare();
             recorder.start();
-
-
 
 
             isRecording = true;

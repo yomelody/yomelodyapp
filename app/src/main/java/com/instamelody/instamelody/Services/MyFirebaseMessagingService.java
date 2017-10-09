@@ -1,20 +1,14 @@
 package com.instamelody.instamelody.Services;
 
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.braintreepayments.cardform.view.PaddedImageSpan;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.instamelody.instamelody.ChatActivity;
-import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.utils.NotificationUtils;
 
 import org.json.JSONException;
@@ -35,11 +29,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-
-        //String title = remoteMessage.getNotification().getTitle();
-      //  String message = remoteMessage.getNotification().getBody();
-       // String click_action = remoteMessage.getNotification().getClickAction();
-
 
         Log.d("fbs", "FCM Message Id: " + remoteMessage.getMessageId());
         Log.d("fbs", "FCM Notification Message: " + remoteMessage.getNotification());
@@ -62,13 +51,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 Log.e("fbs", "Exception: " + e.getMessage());
             }
         }
-
-    }
-
-
-    @Override
-    public void handleIntent(Intent intent) {
-        super.handleIntent(intent);
     }
 
     private void handleNotification(String message) {
@@ -94,17 +76,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             if (body.has("status")) {
                 String status = body.getString("status");
                 String chatId = body.getString("chatID");
-                String click_action=body.getString("click_action");
-                Intent intent = new Intent(click_action);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                PendingIntent pendingintent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
-                NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
-                notificationBuilder.setContentIntent(pendingintent);
-                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                notificationManager.notify(0, notificationBuilder.build());
                 Log.e("fbs", "status: " + status);
                 Log.e("fbs", "chatId: " + chatId);
-                if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) { // app is in Background, broadcast the push message
+                if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) { // app is in foreground, broadcast the push message
                     Intent pushNotification = new Intent(READ_NOTIFICATION);
                     pushNotification.putExtra("status", status);
                     pushNotification.putExtra("chatId", chatId);

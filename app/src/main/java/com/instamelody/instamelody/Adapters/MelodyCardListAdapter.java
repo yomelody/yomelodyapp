@@ -446,6 +446,8 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 //      if (mediaPlayer != null) {
                 try {
                     if (mediaPlayer.isPlaying()) {
+                        duration = 0;
+                        length = 0;
                         mediaPlayer.stop();
                         mediaPlayer.reset();
                         mediaPlayer.release();
