@@ -1640,8 +1640,8 @@ public class StudioActivity extends AppCompatActivity {
         public void run() {
 
             //  android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
-            //AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLING_RATE,
-            //AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, mBufferSize);
+            AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLING_RATE,
+            AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, mBufferSize);
             try {
 
                 recorder.startRecording();
