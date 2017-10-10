@@ -35,10 +35,10 @@ public class BioFragment extends Fragment {
 
     ImageView ivEdit;
     EditText etBio;
-    TextView textViewName,tvStation,tvDate;
+    TextView textViewName, tvStation, tvDate;
     CircleImageView userBioImage;
-    String firstName,userNameLogin,profilePicLogin,Name,userName,profilePic,fbName,fbUserName,fbId;
-    int statusNormal,statusFb,statusTwitter;
+    String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId;
+    int statusNormal, statusFb, statusTwitter;
     UserDetails userDetails;
 
     public BioFragment() {
@@ -47,35 +47,40 @@ public class BioFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);}
+        super.onCreate(savedInstanceState);
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_bio, container, false);
-        ivEdit = (ImageView)view.findViewById(R.id.ivEdit);
-        etBio = (EditText)view.findViewById(R.id.etBio);
+        ivEdit = (ImageView) view.findViewById(R.id.ivEdit);
+        etBio = (EditText) view.findViewById(R.id.etBio);
         etBio.setTag(etBio.getKeyListener());
         etBio.setKeyListener(null);
-        textViewName = (TextView)view.findViewById(R.id.textViewName);
-        tvStation = (TextView)view.findViewById(R.id.tvStation);
-        tvDate = (TextView)view.findViewById(R.id.tvDate);
+        textViewName = (TextView) view.findViewById(R.id.textViewName);
+        tvStation = (TextView) view.findViewById(R.id.tvStation);
+        tvDate = (TextView) view.findViewById(R.id.tvDate);
 
         long date = System.currentTimeMillis();
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy");
         String dateString = sdf.format(date);
-        tvDate.setText("Created:"+" "+ dateString);
+        tvDate.setText("Created:" + " " + dateString);
 
 
         ivEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //etBio.isInEditMode();
+//                etBio.isInEditMode();
                 etBio.setKeyListener((KeyListener) etBio.getTag());
+                etBio.setCursorVisible(true);
+                etBio.requestFocus();
+                int textLength = etBio.getText().length();
+                etBio.setSelection(textLength);
             }
         });
 
-        userBioImage = (CircleImageView)view.findViewById(R.id.userBioImage);
+        userBioImage = (CircleImageView) view.findViewById(R.id.userBioImage);
         userBioImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,21 +93,20 @@ public class BioFragment extends Fragment {
         if (getArguments() != null && getArguments().containsKey("user_detail")) {
             userDetails = (UserDetails) getArguments().getSerializable("user_detail");
 
-            textViewName.setText("Artist:"+" "+userDetails.getFname());
-            tvStation.setText("Station:"+" "+"@"+userDetails.getUsername());
+            textViewName.setText("Artist:" + " " + userDetails.getFname());
+            tvStation.setText("Station:" + " " + "@" + userDetails.getUsername());
 
             if (userDetails.getProfilepic() != null) {
                 userBioImage.setVisibility(View.VISIBLE);
                 Picasso.with(getActivity()).load(userDetails.getProfilepic()).into(userBioImage);
             }
-            if(!TextUtils.isEmpty(userDetails.getDiscrisption())){
+            if (!TextUtils.isEmpty(userDetails.getDiscrisption())) {
                 etBio.setText(userDetails.getDiscrisption());
                 AppHelper.sop(userDetails.getDiscrisption());
                 etBio.setEnabled(false);
             }
 
-        }
-        else {
+        } else {
             etBio.setEnabled(true);
             SharedPreferences loginSharedPref = this.getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
             firstName = loginSharedPref.getString("firstName", null);
@@ -110,9 +114,9 @@ public class BioFragment extends Fragment {
             profilePicLogin = loginSharedPref.getString("profilePic", null);
             statusNormal = loginSharedPref.getInt("status", 0);
 
-            if (statusNormal == 1){
-                textViewName.setText("Artist:"+" "+firstName);
-                tvStation.setText("Station:"+" "+"@"+userNameLogin);
+            if (statusNormal == 1) {
+                textViewName.setText("Artist:" + " " + firstName);
+                tvStation.setText("Station:" + " " + "@" + userNameLogin);
             }
 
             if (profilePicLogin != null) {
@@ -128,9 +132,9 @@ public class BioFragment extends Fragment {
             profilePic = twitterPref.getString("ProfilePic", null);
             statusTwitter = twitterPref.getInt("status", 0);
 
-            if (statusTwitter == 1){
-                textViewName.setText("Artist:"+" "+Name);
-                tvStation.setText("Station:"+" "+"@"+userName);
+            if (statusTwitter == 1) {
+                textViewName.setText("Artist:" + " " + Name);
+                tvStation.setText("Station:" + " " + "@" + userName);
             }
 
             if (profilePic != null) {
@@ -143,12 +147,12 @@ public class BioFragment extends Fragment {
             SharedPreferences fbPref = this.getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
             fbName = fbPref.getString("FbName", null);
             fbUserName = fbPref.getString("userName", null);
-            fbId = fbPref.getString("fbId",null);
+            fbId = fbPref.getString("fbId", null);
             statusFb = fbPref.getInt("status", 0);
 
-            if (statusFb == 1){
-                textViewName.setText("Artist:"+" "+fbName);
-                tvStation.setText("Station:"+" "+"@"+fbName);
+            if (statusFb == 1) {
+                textViewName.setText("Artist:" + " " + fbName);
+                tvStation.setText("Station:" + " " + "@" + fbName);
             }
 
             if (fbId != null) {
@@ -157,7 +161,6 @@ public class BioFragment extends Fragment {
                 Picasso.with(getActivity()).load("https://graph.facebook.com/" + fbId + "/picture").into(userBioImage);
             }
         }
-
 
 
         return view;
