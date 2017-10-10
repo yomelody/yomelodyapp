@@ -1,10 +1,8 @@
 package com.instamelody.instamelody.Adapters;
 
-import android.app.FragmentTransaction;
-import android.app.PendingIntent;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -13,44 +11,33 @@ import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.os.Bundle;
 import android.os.SystemClock;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.RetryPolicy;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.instamelody.instamelody.CommentsActivity;
-import com.instamelody.instamelody.Fragments.CommentJoinFragment;
 import com.instamelody.instamelody.JoinActivity;
-import com.instamelody.instamelody.JoinCommentActivity;
-import com.instamelody.instamelody.MessengerActivity;
 import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Models.JoinedUserProfile;
 import com.instamelody.instamelody.Models.MelodyInstruments;
-import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
@@ -76,7 +63,6 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.JOINED_USERS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.JOIN_DELETE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LIKESAPI;
 import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
-import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
 /**
  * Created by Macmini on 22/08/17.
@@ -121,7 +107,6 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     int count = 0;
     boolean playSt = false;
     public static int click = 0;
-
 
     public JoinListAdapter(ArrayList<JoinedArtists> Joined_artist, Context context) {
         this.Joined_artist = Joined_artist;
@@ -262,6 +247,10 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
         holder.join_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                JoinActivity.txtCount.setText(count + position + 1 + " of " + getItemCount());
+                realPosition = position;
+                String user_id = JoinActivity.listProfile.get(position).getUserId();
+                String status = JoinActivity.listProfile.get(position).getStatus();
                 if (position != 0) {
                     if (lstViewHolder.get(0).redCross.getVisibility() == VISIBLE) {
                         lstViewHolder.get(0).redCross.setVisibility(GONE);
@@ -269,15 +258,18 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     lstViewHolder.get(0).join_image.setBackgroundColor(Color.parseColor("#383838"));
                     lstViewHolder.get(0).Join_usr_name.setTextColor(Color.parseColor("#275AAB"));
                 }
+                if(position==0 && checkSt == true){
+                    String showProfileUserId = JoinActivity.addedBy;
+                    Intent intent = new Intent(v.getContext(), ProfileActivity.class);
+                    intent.putExtra("showProfileUserId", user_id);
+                    v.getContext().startActivity(intent);
+                    JoinActivity.listProfile.set(position, new JoinedUserProfile(user_id, "0"));
+                }
                 if (playSt == true) {
                     lstViewHolder.get(lastPosition).Join_usr_name.setTextColor(Color.parseColor("#275AAB"));
                     lstViewHolder.get(lastPosition).join_image.setBackgroundColor(Color.parseColor("#383838"));
                     lstViewHolder.get(lastPosition).redCross.setVisibility(GONE);
                 }
-                JoinActivity.txtCount.setText(count + position + 1 + " of " + getItemCount());
-                realPosition = position;
-                String user_id = JoinActivity.listProfile.get(position).getUserId();
-                String status = JoinActivity.listProfile.get(position).getStatus();
                 if (getItemCount() == 1) {
                     Intent intent = new Intent(v.getContext(), ProfileActivity.class);
                     intent.putExtra("showProfileUserId", user_id);
@@ -285,7 +277,6 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     JoinActivity.listProfile.set(position, new JoinedUserProfile(user_id, "0"));
                 }
                 if (user_id.equals(joinArt.getUser_id()) && status.equals("0")) {
-
                     posForStudio = position;
                     if (lastModifiedHoled != null) {
                         lastPosition = lastModifiedHoled.getAdapterPosition();
@@ -301,8 +292,6 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         } catch (Throwable e) {
                             e.printStackTrace();
                         }
-
-
                         // notifyItemChanged(lastPosition);
                     } else {
                         holder.join_image.setBackgroundColor(Color.parseColor("#656565"));
@@ -310,10 +299,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         if (userId.equals(Joined_artist.get(0).getUser_id())) {
                             holder.redCross.setVisibility(VISIBLE);
                         }
-
-
                     }
-
                     getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, position);
                     JoinInstrumentListAdp.count = MelodyInstruments.getInstrumentCount();
                     JoinActivity.listProfile.set(position, new JoinedUserProfile(user_id, "1"));
@@ -528,6 +514,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     public void onPrepared(MediaPlayer mp) {
                         progressDialog.dismiss();
                         mp.start();
+                        JoinActivity.waveform_view.setVisibility(VISIBLE);
                         JoinActivity.chrono.setBase(SystemClock.elapsedRealtime());
                         JoinActivity.chrono.start();
                         try {
@@ -611,6 +598,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     }
 
                     JoinActivity.txtCount.setText(realPosition + 1 + " of " + getItemCount());
+                    getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, realPosition);
                     JoinedArtists join = Joined_artist.get(realPosition);
                     JoinActivity.waveform_view.setVisibility(VISIBLE);
                     if (JoinActivity.ivJoinPlay.getVisibility() == VISIBLE) {
@@ -745,6 +733,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         }
 
                         JoinActivity.txtCount.setText(count + 1 + " of " + getItemCount());
+                        getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, count);
                         JoinedArtists join = Joined_artist.get(realPosition);
                         JoinActivity.waveform_view.setVisibility(VISIBLE);
                         if (JoinActivity.ivJoinPlay.getVisibility() == VISIBLE) {
@@ -872,6 +861,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     //Toast.makeText(context, "like", Toast.LENGTH_SHORT).show();
                     //position = mpids.get(getAdapterPosition() + 1);
 
+                    JoinedArtists joinArt = Joined_artist.get(0);
 
                     String RecordingName = joinArt.getRecording_name();
                     String position = joinArt.getRecording_id();
@@ -966,6 +956,9 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         public void onResponse(String response) {
                             //Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
                             Log.d("Like status response----", response);
+                            Intent resultIntent = new Intent();
+                            resultIntent.putExtra("LIKE", "Like");
+                            //mActivity.setResult(Activity.RESULT_OK, resultIntent);
                         }
                     },
                     new Response.ErrorListener() {
@@ -1008,6 +1001,9 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
                         Log.d("ReturnData", response);
                         JoinActivity.instrumentList.clear();
+                        if (JoinActivity.lstViewHolder.size() > 0) {
+                            JoinActivity.lstViewHolder.clear();
+                        }
                         //     JoinActivity.listProfile.clear();
 //                        if (click_pos == 0) {
 //                            new ParseContents(getApplicationContext()).parseJoinInstrument(response, JoinActivity.instrumentList, String.valueOf(click_pos));
@@ -1075,7 +1071,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
         @Override
         public void run() {
 
-            //  android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
+              android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
             AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLING_RATE,
                     AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, mBufferSize);
             try {

@@ -39,7 +39,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.login.LoginManager;
-import com.instamelody.instamelody.utils.AppHelper;
 import com.instamelody.instamelody.utils.NotificationUtils;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.Twitter;
@@ -607,15 +606,6 @@ public class HomeActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        AppHelper.sop("onNewIntent==="+intent);
-        if(intent!=null){
-            AppHelper.sop("onNewIntent=if="+intent.getData());
-        }
     }
 }
 

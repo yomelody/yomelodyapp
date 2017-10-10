@@ -77,7 +77,7 @@ public class StationCommentActivity extends AppCompatActivity {
     TextView tvViewCount, tvLikeCount, tvCommentCount, tvShareCount, txtJoinCount, TemptxtJoinCount;
     ImageView userProfileImage, ivRecordingCover, ivLikeButton, ivCommentButton, ivShareButton, ivDislikeButton, ivStationPre, ivStationNext;
     ImageView ivJoin, ivStationPlay, ivStationPause, ivBackButton, ivHomeButton;
-    TextView tvCancel,tvSend;
+    TextView tvCancel, tvSend;
     EditText etComment;
     SeekBar seekBarRecordings;
     RelativeLayout rlProfilePic, rlLike;
@@ -98,7 +98,7 @@ public class StationCommentActivity extends AppCompatActivity {
     MediaPlayer mp;
     String instrumentFile;
     String position;
-//    public static ArrayList<JoinRecordingModel> JoinList = new ArrayList<JoinRecordingModel>();
+    //    public static ArrayList<JoinRecordingModel> JoinList = new ArrayList<JoinRecordingModel>();
     public ArrayList<MediaPlayer> JoinMp = new ArrayList<MediaPlayer>();
 
     String USER_TYPE = "user_type";
@@ -246,7 +246,7 @@ public class StationCommentActivity extends AppCompatActivity {
                     //position = mpids.get(getAdapterPosition() + 1);
 
                     RecordingsModel recording = recordingsModel;
-                    if(recordingsModel!=null){
+                    if (recordingsModel != null) {
                         MelodyName = recording.getRecordingName();
                         position = recording.getRecordingId();
 
@@ -271,8 +271,7 @@ public class StationCommentActivity extends AppCompatActivity {
                         }
                     }
 
-                }
-                else {
+                } else {
                     Toast.makeText(mActivity, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(mActivity, SignInActivity.class);
                     startActivity(intent);
@@ -295,7 +294,7 @@ public class StationCommentActivity extends AppCompatActivity {
 
                             SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
                             RecordingsModel recording = recordingsModel;
-                            if(recording!=null){
+                            if (recording != null) {
                                 editor.putString("recID", recording.getRecordingId());
                                 editor.apply();
                                 Intent intent = new Intent(mActivity, MessengerActivity.class);
@@ -311,7 +310,7 @@ public class StationCommentActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
                             RecordingsModel recording = recordingsModel;
-                            if(recording!=null){
+                            if (recording != null) {
                                 String RecordingURL = recording.getrecordingurl();
                                 Intent shareIntent = new Intent();
                                 shareIntent.setAction(Intent.ACTION_SEND);
@@ -477,7 +476,6 @@ public class StationCommentActivity extends AppCompatActivity {
                                     }
 
 
-
                                 } catch (Throwable e) {
                                     e.printStackTrace();
                                 }
@@ -558,7 +556,7 @@ public class StationCommentActivity extends AppCompatActivity {
                     }
 
 
-                }catch (Exception ex){
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
 
@@ -667,7 +665,7 @@ public class StationCommentActivity extends AppCompatActivity {
                             }
                         }
                     }
-                }catch (Exception ex){
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
 
@@ -711,8 +709,7 @@ public class StationCommentActivity extends AppCompatActivity {
         ivHomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-                startActivity(intent);
+                finish();
             }
         });
 
@@ -745,7 +742,7 @@ public class StationCommentActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 etComment.getText().clear();
-                Intent i = new Intent(StationCommentActivity.this,StationActivity.class);
+                Intent i = new Intent(StationCommentActivity.this, StationActivity.class);
                 startActivity(i);
                 InputMethodManager inputManager = (InputMethodManager)
                         getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -757,7 +754,7 @@ public class StationCommentActivity extends AppCompatActivity {
         adapterWork();
     }
 
-    private void adapterWork(){
+    private void adapterWork() {
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager lm = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(lm);
@@ -770,7 +767,7 @@ public class StationCommentActivity extends AppCompatActivity {
         getComments();
     }
 
-    void setData(){
+    void setData() {
         String totaljoincount = "";
         if (getIntent() != null) {
             recordingsModel = (RecordingsModel) getIntent().getSerializableExtra("recording_modle");
@@ -782,16 +779,15 @@ public class StationCommentActivity extends AppCompatActivity {
             tvContributeLength.setText(recordingsPool.getDuration());
             tvContributeDate.setText(recordingsPool.getDateAdded());
 
-            if(recordingsModel.getJoinCount()==null){
-                totaljoincount = "("+"0"+" of " + "1" + ")";
-            }
-            else {
+            if (recordingsModel.getJoinCount() == null) {
+                totaljoincount = "(" + "0" + " of " + "1" + ")";
+            } else {
                 totaljoincount = CalJoinCount(Integer.parseInt(recordingsModel.getJoinCount()));
             }
 
-            if(recordingsModel.getJoinCount()!=null){
+            if (recordingsModel.getJoinCount() != null) {
                 TemptxtJoinCount.setText(recordingsModel.getJoinCount());
-            }else{
+            } else {
                 TemptxtJoinCount.setText("0");
             }
 
@@ -805,7 +801,7 @@ public class StationCommentActivity extends AppCompatActivity {
             tvViewCount.setText(String.valueOf(recordingsModel.getPlayCount()));
             tvLikeCount.setText(getIntent().getStringExtra("likes"));
             tvCommentCount.setText(String.valueOf(recordingsModel.getCommentCount()));
-            tvShareCount.setText(recordingsModel.getShareCount()+"");
+            tvShareCount.setText(recordingsModel.getShareCount() + "");
 
             String likeStatus = getIntent().getStringExtra("LikeStatus");
             if (likeStatus.equalsIgnoreCase("0")) {
@@ -813,7 +809,7 @@ public class StationCommentActivity extends AppCompatActivity {
             } else {
                 ivDislikeButton.setVisibility(VISIBLE);
             }
-            AppHelper.sop("likeStatus======"+likeStatus+"");
+            AppHelper.sop("likeStatus======" + likeStatus + "");
         }
     }
 
@@ -1035,14 +1031,14 @@ public class StationCommentActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response=="+response);
+                        AppHelper.sop("response==" + response);
                         commentList.clear();
 
 
                         new ParseContents(getApplicationContext()).parseComments(response, commentList);
                         adapter.notifyDataSetChanged();
 //                        recyclerView.smoothScrollToPosition(adapter.getItemCount());
-                        recyclerView.scrollToPosition(commentList.size()-1);
+                        recyclerView.scrollToPosition(commentList.size() - 1);
                     }
                 },
                 new Response.ErrorListener() {
@@ -1074,7 +1070,7 @@ public class StationCommentActivity extends AppCompatActivity {
                 params.put(FILE_ID, recordingsModel.getRecordingId());
                 params.put(FILE_TYPE, "user_recording");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=="+params+"\nURL=="+COMMENT_LIST);
+                AppHelper.sop("params==" + params + "\nURL==" + COMMENT_LIST);
                 return params;
             }
         };
@@ -1090,7 +1086,7 @@ public class StationCommentActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response=="+response);
+                        AppHelper.sop("response==" + response);
 
                         Intent resultIntent = new Intent();
                         resultIntent.putExtra("PARAMETER", "Like");
@@ -1134,7 +1130,7 @@ public class StationCommentActivity extends AppCompatActivity {
                 params.put(USER_ID, userId);
                 params.put(TOPIC, recordingsModel.getRecordingName());
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=="+params+"\nURL=="+COMMENTS);
+                AppHelper.sop("params==" + params + "\nURL==" + COMMENTS);
                 return params;
             }
         };
@@ -1216,8 +1212,8 @@ public class StationCommentActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mp!=null ) {
-            if(mp.isPlaying()){
+        if (mp != null) {
+            if (mp.isPlaying()) {
                 mp.stop();
             }
             mp.reset();
