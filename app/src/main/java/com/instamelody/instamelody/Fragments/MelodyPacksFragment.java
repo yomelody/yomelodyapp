@@ -833,7 +833,7 @@ public class MelodyPacksFragment extends Fragment {
 //                rv.setLayoutManager(lm);
                 rv.setLayoutManager(linearLayoutManager);
                 rv.setItemAnimator(new DefaultItemAnimator());
-//                rv.addOnScrollListener(recyclerViewOnScrollListener);
+                rv.addOnScrollListener(recyclerViewOnScrollListener);
                 rv.setAdapter(adapter);
                 linearLayoutManager = (LinearLayoutManager) rv.getLayoutManager();
                 return rv;

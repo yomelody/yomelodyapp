@@ -604,16 +604,16 @@ public class StudioActivity extends AppCompatActivity {
             Picasso.with(StudioActivity.this).load("https://graph.facebook.com/" + fbId + "/picture").into(profile_image);
         }
 
-        SharedPreferences profileEditor = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE);
-        SharedPreferences profileImageEditor = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE);
-        if (profileImageEditor.getString("ProfileImage", null) != null) {
-            ivProfile.setVisibility(View.GONE);
-            profile_image.setVisibility(View.VISIBLE);
-            Picasso.with(StudioActivity.this).load(profileImageEditor.getString("ProfileImage", null)).into(profile_image);
-        }
-        if (profileEditor.getString("updateId", null) != null) {
-            artist_name.setText("@" + profileEditor.getString("updateUserName", null));
-        }
+//        SharedPreferences profileEditor = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE);
+//        SharedPreferences profileImageEditor = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE);
+//        if (profileImageEditor.getString("ProfileImage", null) != null) {
+//            ivProfile.setVisibility(View.GONE);
+//            profile_image.setVisibility(View.VISIBLE);
+//            Picasso.with(StudioActivity.this).load(profileImageEditor.getString("ProfileImage", null)).into(profile_image);
+//        }
+//        if (profileEditor.getString("updateId", null) != null) {
+//            artist_name.setText("@" + profileEditor.getString("updateUserName", null));
+//        }
         mBufferSize = AudioRecord.getMinBufferSize(SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
 

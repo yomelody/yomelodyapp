@@ -241,8 +241,7 @@ public class ChatActivity extends AppCompatActivity {
         flCover = (FrameLayout) findViewById(R.id.flCover);
         rlInviteButton = (RelativeLayout) findViewById(R.id.rlInviteButton);
         contInviteButton = (RelativeLayout) findViewById(R.id.contInviteButton);
-<<<<<<< HEAD
-=======
+
         tvUserName = (TextView) findViewById(R.id.tvUserName);
 
         Bundle bundley = getIntent().getExtras();
@@ -277,9 +276,6 @@ public class ChatActivity extends AppCompatActivity {
             ex.printStackTrace();
         }
 
-        SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-        SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
-        SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
 
         if (loginSharedPref.getString("userId", null) != null) {
             userId = loginSharedPref.getString("userId", null);
@@ -307,7 +303,7 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         };
->>>>>>> Abhishek-Dubey
+
 
         SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
         senderId = prefs.getString("senderId", null);
@@ -318,7 +314,7 @@ public class ChatActivity extends AppCompatActivity {
         chatId = prefs.getString("chatId", null);
         chatType = prefs.getString("chatType", null);
         groupImage = prefs.getString("groupImage", null);
-<<<<<<< HEAD
+
         tvUserName = (TextView) findViewById(R.id.tvUserName);
         tvUserName.setText(receiverName);
 
@@ -327,7 +323,6 @@ public class ChatActivity extends AppCompatActivity {
             rlInviteButton.setEnabled(false);
             contInviteButton.setVisibility(View.GONE);
         }
-=======
         if(!receiverName.equals("")){
             tvUserName.setText(receiverName);
         }
@@ -338,7 +333,7 @@ public class ChatActivity extends AppCompatActivity {
 //            rlInviteButton.setEnabled(false);
 //            contInviteButton.setVisibility(View.GONE);
 //        }
->>>>>>> Abhishek-Dubey
+
 
         SharedPreferences selectedImagePos = getApplicationContext().getSharedPreferences("selectedImagePos", MODE_PRIVATE);
         if (selectedImagePos.getString("pos", null) != null) {

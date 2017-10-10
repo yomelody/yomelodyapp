@@ -162,9 +162,9 @@ public class ActivityFragment extends Fragment {
                             String flag = jsonObject.getString(KEY_FLAG);
                             String msg = jsonObject.getString(KEY_MESSAGE);
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
-                                if (msg!= null){
-                                    Toast.makeText(getActivity().getBaseContext(), ""+msg, Toast.LENGTH_SHORT).show();
-                                }
+//                                if (msg!= null){
+//                                    Toast.makeText(getActivity().getBaseContext(), ""+msg, Toast.LENGTH_SHORT).show();
+//                                }
                                 ArrayList<ActivityModel> list = new ArrayList<ActivityModel>();
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                                 JSONArray newJsonArray = new JSONArray();
