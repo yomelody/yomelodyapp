@@ -114,10 +114,6 @@
             android:label="@string/title_activity_chat"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <intent-filter>
-            <action android:name="ChatActivity" />
-            <category android:name="android.intent.category.DEFAULT" />
-        </intent-filter>
         <activity
             android:name=".ContactsActivity"
             android:configChanges="orientation"
@@ -142,10 +138,12 @@
             android:label="@string/title_activity_profile"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+
         <activity
             android:name=".CommentsActivity"
             android:label="@string/title_activity_comments"
             android:theme="@style/AppTheme" />
+
         <activity
             android:name=".JoinActivity"
             android:label="@string/title_activity_join"
@@ -154,14 +152,20 @@
             android:name=".Update"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/AppTheme"/>
 
-        <activity android:name=".PrivacyPolicy" />
+        <activity
+            android:name=".PrivacyPolicy"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"/>
+
         <activity
             android:name=".JoinCommentActivity"
             android:label="@string/title_activity_join_comment"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme">
+        </activity>
 
         <activity
             android:name="com.auth0.android.lock.LockActivity"
@@ -171,10 +175,8 @@
             android:theme="@style/MyLock.Theme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data
                     android:host="@string/com_auth0_domain"
                     android:pathPrefix="/android/$com.instamelody.instamelody/callback"

@@ -40,13 +40,16 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.auth0.android.Auth0;
 import com.auth0.android.authentication.AuthenticationException;
+import com.auth0.android.callback.BaseCallback;
 import com.auth0.android.lock.AuthenticationCallback;
 import com.auth0.android.lock.Lock;
 import com.auth0.android.lock.LockCallback;
 import com.auth0.android.lock.utils.LockException;
 import com.auth0.android.provider.AuthCallback;
 import com.auth0.android.provider.WebAuthProvider;
+import com.auth0.android.result.Authentication;
 import com.auth0.android.result.Credentials;
+import com.auth0.android.result.UserProfile;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -83,6 +86,7 @@ import io.fabric.sdk.android.Fabric;
 import retrofit2.Call;
 
 import static android.R.attr.id;
+import static android.R.attr.theme;
 import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
@@ -147,8 +151,7 @@ public class SignInActivity extends AppCompatActivity {
     private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
     private boolean pendingPublishReauthorization = false;
     ProgressDialog progressDialog;
-    String IscheckMelody=null;
-    String melodyPackId=null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,7 +181,7 @@ public class SignInActivity extends AppCompatActivity {
         SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
         DeviceToken = fcmPref.getString("regId", "");
         AppHelper.sop("DeviceToken==="+DeviceToken);
-        IscheckMelody=null;
+
 
         etEmail.addTextChangedListener(new TextWatcher() {
             @Override
@@ -575,37 +578,11 @@ public class SignInActivity extends AppCompatActivity {
                                 editor.putString("mobile", mobile);
                                 editor.putInt("status", 1);
                                 editor.commit();
-                                Intent i;
 
-
-                                final Intent intent = getIntent();
-                                if (intent == null) {
-                                }
-                                else {
-                                    try {
-                                        IscheckMelody = intent.getExtras().getString("StudioBack");
-                                        melodyPackId=intent.getExtras().getString("melodyPackId");
-                                    } catch (NullPointerException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                                if(IscheckMelody==null) {
-                                    i = new Intent(getApplicationContext(), HomeActivity.class);
-                                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    startActivity(i);
-                                }else{
-                                    i = new Intent(getApplicationContext(), StudioActivity.class);
-                                    i.putExtra("IsFromSignActivity","StudioActivity");
-                                    i.putExtra("melodyPackId",melodyPackId);
-                                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    IscheckMelody=null;
-                                    melodyPackId=null;
-                                    startActivity(i);
-
-                                }
-
+                                Intent i = new Intent(getApplicationContext(), HomeActivity.class);
+                                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(i);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

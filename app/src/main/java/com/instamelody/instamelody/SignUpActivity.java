@@ -9,13 +9,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -27,7 +25,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.format.DateFormat;
 import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -57,7 +54,6 @@ import com.android.volley.toolbox.Volley;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.instamelody.instamelody.utils.AppHelper;
 import com.instamelody.instamelody.utils.DateValidator;
-import com.instamelody.instamelody.utils.ImageCompressor;
 import com.instamelody.instamelody.utils.VolleyMultipartRequest;
 import com.instamelody.instamelody.utils.VolleySingleton;
 import com.squareup.picasso.Picasso;
@@ -66,7 +62,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -117,15 +112,12 @@ public class SignUpActivity extends AppCompatActivity {
     private String USER_ID = "user_id";
     private String KEY_IMAGE = "encodedImage";
     private Bitmap bitmap;
-    private final int TAKE_CAMERA_PHOTO = 20;
+    private final int requestCode = 20;
     private static final int PERMISSION_READ_STORAGE = 201;
     private static final int PERMISSION_CAMERA = 202;
-    String imageName = "";
-    Bitmap imageBitmap;
 
     public String profilepic2;
     String DeviceToken;
-    private Uri imageToUploadUri;
 
     String flag, id, username1, fname, lname, jemail, coverpic, followers, fans, records, dob1;
     EditText etfirstname, etlastname, etemail,
@@ -582,16 +574,16 @@ public class SignUpActivity extends AppCompatActivity {
                                                                 showFileChooser();
                                                             }
                                                         });
-
                                                         alertDialog.setNegativeButton("Open Camera", new DialogInterface.OnClickListener() {
                                                             public void onClick(DialogInterface dialog, int which) {
-                                                                Intent chooserIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                                                Date d = new Date();
-                                                                CharSequence s = DateFormat.format("yyyyMMdd_hhmmss", d.getTime());
-                                                                File f = new File(Environment.getExternalStorageDirectory(), "IMG_" + s.toString() + ".jpg");
-                                                                chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-                                                                imageToUploadUri = Uri.fromFile(f);
-                                                                startActivityForResult(chooserIntent, TAKE_CAMERA_PHOTO);
+                                                                //uploadImage();
+                                                                try {
+                                                                    Intent photoCaptureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                                                    startActivityForResult(photoCaptureIntent, requestCode);
+                                                                } catch (Throwable e) {
+                                                                    e.printStackTrace();
+                                                                }
+
                                                             }
                                                         });
                                                         alertDialog.show();
@@ -599,6 +591,8 @@ public class SignUpActivity extends AppCompatActivity {
                                                     }
                                                 }
                                             }
+
+
         );
     }
 
@@ -638,39 +632,19 @@ public class SignUpActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == TAKE_CAMERA_PHOTO && resultCode == RESULT_OK) {
-            if (imageToUploadUri != null) {
-                Uri selectedImage = imageToUploadUri;
-                imageName = imageToUploadUri.getPath();
-                getContentResolver().notifyChange(selectedImage, null);
-                ImageCompressor ic = new ImageCompressor(getApplicationContext());
-                imageBitmap = ic.compressImage(imageName);
-                if (imageBitmap != null) {
-                    userProfileImage.setImageBitmap(imageBitmap);
-                } else {
-                    Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
-                }
-            } else {
-                Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
-            }
+        if (this.requestCode == requestCode && resultCode == RESULT_OK) {
+            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+            userProfileImage.setImageBitmap(bitmap);
         }
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && null != data) {
+            Uri filePath = data.getData();
             try {
-                Uri selectedImage = data.getData();
-                String[] filePathColumn = {MediaStore.Images.Media.DATA};
-                Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-                cursor.moveToFirst();
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                String img_Decodable_Str = cursor.getString(columnIndex);
-                cursor.close();
-                ImageCompressor ic = new ImageCompressor(getApplicationContext());
-                imageBitmap = ic.compressImage(img_Decodable_Str);
-                if (imageBitmap != null) {
-                    userProfileImage.setImageBitmap(imageBitmap);
-                }
-            } catch (Throwable e) {
+                //Getting the Bitmap from Gallery
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+                //Setting the Bitmap to ImageView
+                userProfileImage.setImageBitmap(bitmap);
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -794,7 +768,7 @@ public class SignUpActivity extends AppCompatActivity {
                 Map<String, DataPart> params = new HashMap<>();
                 // file name could found file base or direct access from real path
                 // for now just get bitmap data from ImageView
-                params.put(FILE1, new DataPart("img.jpg", AppHelper.getFileDataFromDrawable(getBaseContext(), imageBitmap), "image/jpeg"));
+                params.put(FILE1, new DataPart("img.jpg", AppHelper.getFileDataFromDrawable(getBaseContext(), userProfileImage.getDrawable()), "image/jpeg"));
                 return params;
             }
         };
@@ -914,8 +888,11 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void showFileChooser() {
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST);
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+
     }
 
     private boolean isValidMail(String email) {

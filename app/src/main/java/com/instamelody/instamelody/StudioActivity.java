@@ -83,6 +83,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
+import com.google.android.gms.plus.PlusShare;
 import com.instamelody.instamelody.Adapters.InstrumentListAdapter;
 import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
 import com.instamelody.instamelody.Models.Genres;
@@ -295,8 +296,6 @@ public class StudioActivity extends AppCompatActivity {
     String pos = "0";
     BroadcastReceiver mRegistrationBroadcastReceiver;
     int totalCount = 0;
-    String IscheckMelody = null;
-    String IsHomeMeloduId=null;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -466,142 +465,55 @@ public class StudioActivity extends AppCompatActivity {
             LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
 
         } else {
-            Intent stdintent = getIntent();
 
-            if (intent == null) {
-            } else {
-                try {
-                    IscheckMelody = stdintent.getExtras().getString("IsFromSignActivity");
-                    IsHomeMeloduId=stdintent.getExtras().getString("melodyPackId");
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
-                }
-            }
+            //      if (!melodyPackId.equals("fromHomeActivity")) {
+            if (melodyPackId != null) {
+                fetchInstruments(melodyPackId);
+                JoinActivity.instrumentList.clear();
+                noMelodyNote.setVisibility(View.GONE);
+                recyclerViewInstruments.setVisibility(View.VISIBLE);
+                recyclerViewInstruments.setHasFixedSize(true);
+                layoutManager = new LinearLayoutManager(getApplicationContext());
+                recyclerViewInstruments.setLayoutManager(layoutManager);
+                recyclerViewInstruments.setItemAnimator(new DefaultItemAnimator());
+                adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
 
+                //recyclerViewInstruments.smoothScrollToPosition(0);
+                recyclerViewInstruments.setAdapter(adapter);
 
-            if (IscheckMelody == null) {
-                if (melodyPackId != null) {
-
-
-                    fetchInstruments(melodyPackId);
-                    JoinActivity.instrumentList.clear();
-                    noMelodyNote.setVisibility(View.GONE);
-                    recyclerViewInstruments.setVisibility(View.VISIBLE);
-                    recyclerViewInstruments.setHasFixedSize(true);
-                    layoutManager = new LinearLayoutManager(getApplicationContext());
-                    recyclerViewInstruments.setLayoutManager(layoutManager);
-                    recyclerViewInstruments.setItemAnimator(new DefaultItemAnimator());
-                    adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
-
-                    //recyclerViewInstruments.smoothScrollToPosition(0);
-                    recyclerViewInstruments.setAdapter(adapter);
-
-                    //frameTrans.setVisibility(View.VISIBLE);
+                //frameTrans.setVisibility(View.VISIBLE);
+                rlSync.setVisibility(View.VISIBLE);
+                if (instrumentList.size() > 0) {
                     rlSync.setVisibility(View.VISIBLE);
-                    if (instrumentList.size() > 0) {
-                        rlSync.setVisibility(View.VISIBLE);
-                    }
-
-
-                    ArrayList<MelodyCard> arrayMelody = new ArrayList<>();
-
-                    arrayMelody = MelodyCardListAdapter.returnMelodyList();
-                    try {
-//                    melodyName = arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName();
-                        try {
-                            if (arrayMelody.size() > 0) {
-                                int i = Integer.parseInt(arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName());
-                            }
-                        } catch (NumberFormatException ex) { // handle your exception
-                            //melodyName = arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName();
-                        }
-
-                    } catch (IndexOutOfBoundsException e) {
-                        e.printStackTrace();
-                    }
-
-
-                    for (int i = 0; i < instrumentList.size(); i++) {
-                        MelodyInstruments instruments = instrumentList.get(i);
-                        instrumentName = instruments.getInstrumentName();
-                    }
-
-                    LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
-
-
                 }
-            } else {
+
+
+                ArrayList<MelodyCard> arrayMelody = new ArrayList<>();
+
+                arrayMelody = MelodyCardListAdapter.returnMelodyList();
                 try {
-
-                    StudioActivity.playAll.setVisibility(View.VISIBLE);
-                    StudioActivity.pauseAll.setVisibility(View.GONE);
-                    StudioActivity.pauseAll.setEnabled(true);
-                    tvDone.setEnabled(true);
-                    StudioActivity.ivRecord_stop.setVisibility(View.GONE);
-                    StudioActivity.rlRecordingButton.setVisibility(View.GONE);
-                    StudioActivity.ivRecord_play.setVisibility(View.VISIBLE);
-                    StudioActivity.rlRedoButton.setVisibility(View.VISIBLE);
-                    if (IsHomeMeloduId != null) {
-
-                        fetchInstruments(IsHomeMeloduId);
-                        melodyPackId=IsHomeMeloduId;
-                        JoinActivity.instrumentList.clear();
-                        noMelodyNote.setVisibility(View.GONE);
-                        recyclerViewInstruments.setVisibility(View.VISIBLE);
-                        recyclerViewInstruments.setHasFixedSize(true);
-                        layoutManager = new LinearLayoutManager(getApplicationContext());
-                        recyclerViewInstruments.setLayoutManager(layoutManager);
-                        recyclerViewInstruments.setItemAnimator(new DefaultItemAnimator());
-                        adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
-
-                        //recyclerViewInstruments.smoothScrollToPosition(0);
-                        recyclerViewInstruments.setAdapter(adapter);
-
-                        //frameTrans.setVisibility(View.VISIBLE);
-                        rlSync.setVisibility(View.VISIBLE);
-                        if (instrumentList.size() > 0) {
-                            rlSync.setVisibility(View.VISIBLE);
-                        }
-
-
-                        ArrayList<MelodyCard> arrayMelody = new ArrayList<>();
-
-                        arrayMelody = MelodyCardListAdapter.returnMelodyList();
-                        try {
 //                    melodyName = arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName();
-                            try {
-                                if (arrayMelody.size() > 0) {
-                                    int i = Integer.parseInt(arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName());
-                                }
-                            } catch (NumberFormatException ex) { // handle your exception
-                                //melodyName = arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName();
-                            }
-
-                        } catch (IndexOutOfBoundsException e) {
-                            e.printStackTrace();
+                    try {
+                        if (arrayMelody.size() > 0) {
+                            int i = Integer.parseInt(arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName());
                         }
-
-
-                        for (int i = 0; i < instrumentList.size(); i++) {
-                            MelodyInstruments instruments = instrumentList.get(i);
-                            instrumentName = instruments.getInstrumentName();
-                        }
-                        IsHomeMeloduId=null;
-                        IscheckMelody=null;
-                        stdintent.removeExtra("IsFromSignActivity");
-                        stdintent.removeExtra("melodyPackId");
-                        LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
-
-
+                    } catch (NumberFormatException ex) { // handle your exception
+                        //melodyName = arrayMelody.get(Integer.parseInt(melodyPackId)).getMelodyName();
                     }
 
-
-                } catch (NullPointerException e) {
+                } catch (IndexOutOfBoundsException e) {
                     e.printStackTrace();
                 }
+
+
+                for (int i = 0; i < instrumentList.size(); i++) {
+                    MelodyInstruments instruments = instrumentList.get(i);
+                    instrumentName = instruments.getInstrumentName();
+                }
+
+                LocalBroadcastManager.getInstance(this).registerReceiver(mInstruments, new IntentFilter("fetchingInstruments"));
+
             }
-
-
         }
         String home, homeTostudio;
         SharedPreferences fromHome = getApplicationContext().getSharedPreferences("FromHomeToMelody", MODE_PRIVATE);
@@ -1154,8 +1066,8 @@ public class StudioActivity extends AppCompatActivity {
                         ivRecord.setVisibility(View.VISIBLE);
                         ivRecord.setEnabled(true);
                     } else if (userId == null) {
-
-                        /*if (lstViewHolder.size() > 0) {
+                        handler.removeCallbacksAndMessages(null);
+                        if (lstViewHolder.size() > 0) {
                             lstViewHolder.clear();
                         }
                         if (mp_start != null) {
@@ -1192,11 +1104,8 @@ public class StudioActivity extends AppCompatActivity {
                         }
                         if (instrumentList.size() > 0) {
                             instrumentList.clear();
-                        }*/
-
+                        }
                         Intent i = new Intent(getApplicationContext(), SignInActivity.class);
-                        i.putExtra("StudioBack", "ReturnStudioScreen");
-                        i.putExtra("melodyPackId",melodyPackId);
                         startActivity(i);
                         Toast.makeText(StudioActivity.this, "SignIn to Save Recording", Toast.LENGTH_SHORT).show();
                     }
@@ -1216,8 +1125,6 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    IsHomeMeloduId=null;
-                    IscheckMelody=null;
                     handler.removeCallbacksAndMessages(null);
                     ivRecord_play.setVisibility(View.INVISIBLE);
                     rlRedoButton.setVisibility(View.INVISIBLE);
@@ -1352,11 +1259,6 @@ public class StudioActivity extends AppCompatActivity {
         }
         return true;
     }
-
-   /* @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }*/
 
     private static String getDuration(File file) {
         MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
@@ -1641,7 +1543,7 @@ public class StudioActivity extends AppCompatActivity {
 
             //  android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
             AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLING_RATE,
-            AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, mBufferSize);
+                    AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, mBufferSize);
             try {
 
                 recorder.startRecording();
@@ -2184,12 +2086,21 @@ public class StudioActivity extends AppCompatActivity {
                         SharedPreferences switchFbEditor = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE);
                         int switchFbStatus = switchFbEditor.getInt("switch", 0);
 
-                        if (switchFbStatus == 1) {
+                        SharedPreferences switchFbEditorFb = getApplicationContext().getSharedPreferences("SwitchStatusFb", MODE_PRIVATE);
+                        boolean fbSwitch=switchFbEditorFb.getBoolean("switchFb", false);
+
+                        SharedPreferences switchTwitterEditor = getApplicationContext().getSharedPreferences("SwitchStatusTwitter", MODE_PRIVATE);
+                        boolean twitterSwitch=switchTwitterEditor.getBoolean("switchTwitter", false);
+
+                        SharedPreferences switchGoogleEditor = getApplicationContext().getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE);
+                        boolean googleSwitch=switchGoogleEditor.getBoolean("switchGoogle", false);
+
+                        if (fbSwitch) {
                             FbShare();
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
                             switchFbEditor1.clear();
                             switchFbEditor1.apply();
-                        } else if (switchFbStatus == 2 && switchFbStatus != 1) {
+                        } else if (twitterSwitch) {
                             TweetShare();
                             SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
                             switchFbEditor1.clear();
@@ -2942,8 +2853,18 @@ public class StudioActivity extends AppCompatActivity {
     }
 
     public void FbShare() {
-        SharedPreferences editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE);
-        String fetchThumbNailUrl = editorT.getString("thumbnailUrl", null);
+        /*SharedPreferences editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE);
+        String fetchThumbNailUrl = editorT.getString("thumbnailUrl", null);*/
+
+
+        SharedPreferences editor = getSharedPreferences("Url_recording", MODE_PRIVATE);
+        String contentUrl = editor.getString("Recording_url", "");
+
+        SharedPreferences editorT = getSharedPreferences("thumbnail_url", MODE_PRIVATE);
+        String fetchThumbNailUrl = editorT.getString("thumbnailUrl", "");
+
+        AppHelper.sop("contentUrl="+contentUrl+"\nfetchThumbNailUrl"+fetchThumbNailUrl);
+
 
         callbackManager = CallbackManager.Factory.create();
         shareDialog = new ShareDialog(this);
@@ -2972,16 +2893,16 @@ public class StudioActivity extends AppCompatActivity {
 
         if (ShareDialog.canShow(ShareLinkContent.class)) {
             ShareLinkContent linkContent = new ShareLinkContent.Builder()
-                    .setContentUrl(Uri.parse(fetchThumbNailUrl))
-//                    .setImageUrl(Uri.parse(cover))
+                    .setContentUrl(Uri.parse(contentUrl))
+//                    .setImageUrl(Uri.parse(fetchThumbNailUrl))
                     .build();
             shareDialog.show(linkContent, ShareDialog.Mode.FEED);
         }
     }
 
     public void TweetShare() {
-        SharedPreferences editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE);
-        String fetchThumbNailUrl = editorT.getString("thumbnailUrl", null);
+        SharedPreferences editorT = getSharedPreferences("thumbnail_url", MODE_PRIVATE);
+        String fetchThumbNailUrl = editorT.getString("thumbnailUrl", "");
 
         try {
             ShortUrl = new URL(fetchThumbNailUrl);
@@ -3007,6 +2928,24 @@ public class StudioActivity extends AppCompatActivity {
                 .url(ShortUrl);
 //                .image(Uri.parse(cover));
         builder.show();
+    }
+
+    public void GoogleShare(){
+
+        SharedPreferences editor = getSharedPreferences("Url_recording", MODE_PRIVATE);
+        String contentUrl = editor.getString("Recording_url", "");
+
+        SharedPreferences editorT = getSharedPreferences("thumbnail_url", MODE_PRIVATE);
+        String fetchThumbNailUrl = editorT.getString("thumbnailUrl", "");
+
+        AppHelper.sop("contentUrl="+contentUrl+"\nfetchThumbNailUrl"+fetchThumbNailUrl);
+
+        Intent shareIntent = new PlusShare.Builder(this)
+                .setType("text/plain")
+                .setText("Welcome to the Google+ platform.")
+                .setContentUrl(Uri.parse(contentUrl))
+                .getIntent();
+        startActivityForResult(shareIntent, 0);
     }
 
     private void IsMicConnectet() {
