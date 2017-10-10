@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.icu.text.SimpleDateFormat;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
@@ -17,6 +18,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,6 +58,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -777,8 +780,8 @@ public class StationCommentActivity extends AppCompatActivity {
             tvUserName.setText(recordingsModel.getUserName());
             tvRecordingName.setText(recordingsModel.getRecordingName());
             tvRecordingGenres.setText("Genre:" + " " + recordingsModel.getGenreName());
-            tvContributeLength.setText(recordingsPool.getDuration());
-            tvContributeDate.setText(recordingsPool.getDateAdded());
+            tvContributeLength.setText(DateUtils.formatElapsedTime(Long.parseLong(recordingsPool.getDuration())));
+            tvContributeDate.setText(convertDate(recordingsPool.getDateAdded()));
 
             if(recordingsModel.getJoinCount()==null){
                 totaljoincount = "("+"0"+" of " + "1" + ")";
@@ -799,7 +802,7 @@ public class StationCommentActivity extends AppCompatActivity {
             Picasso.with(this).load(recordingsModel.getUserProfilePic()).into(userProfileImage);
 
 
-            tvRecordingDate.setText(recordingsModel.getRecordingCreated());
+            tvRecordingDate.setText(convertDate(recordingsPool.getDateAdded()));
             tvViewCount.setText(String.valueOf(recordingsModel.getPlayCount()));
             tvLikeCount.setText(getIntent().getStringExtra("likes"));
             tvCommentCount.setText(String.valueOf(recordingsModel.getCommentCount()));
@@ -1209,6 +1212,18 @@ public class StationCommentActivity extends AppCompatActivity {
             return val;
         }
 
+    }
+
+    private String convertDate(String date) {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yy-MM-dd hh:mm:ss");
+            Date d = format.parse(date);
+            SimpleDateFormat serverFormat = new SimpleDateFormat("MM/dd/yy");
+            return serverFormat.format(d);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     @Override

@@ -59,6 +59,7 @@ public class ActivityFragment extends Fragment {
     String USER_ID = "user_id";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";
+    String KEY_MESSAGE = "message";
     String id = "id", userId = "";
     ProgressDialog progressDialog;
     private static ArrayList<ActivityModel> arraylist;
@@ -158,7 +159,12 @@ public class ActivityFragment extends Fragment {
 
                         try {
                             jsonObject = new JSONObject(response);
+                            String flag = jsonObject.getString(KEY_FLAG);
+                            String msg = jsonObject.getString(KEY_MESSAGE);
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
+                                if (msg!= null){
+                                    Toast.makeText(getActivity().getBaseContext(), ""+msg, Toast.LENGTH_SHORT).show();
+                                }
                                 ArrayList<ActivityModel> list = new ArrayList<ActivityModel>();
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                                 JSONArray newJsonArray = new JSONArray();

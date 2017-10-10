@@ -530,7 +530,8 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         holder.tvRecordingGenres.setText("Genre:" + " " + recording.getGenreName());
 //        holder.tvContributeLength.setText(recordingsPools.get(listPosition).getDuration());
 //        holder.tvContributeDate.setText(recordingsPools.get(listPosition).getDateAdded());
-        holder.tvContributeDate.setText(recordingList.get(listPosition).getRecordingCreated());
+//        holder.tvContributeDate.setText(recordingList.get(listPosition).getRecordingCreated());
+        holder.tvContributeDate.setText(convertDate(recordingList.get(listPosition).getRecordingCreated()));
         holder.tvContributeLength.setText(DateUtils.formatElapsedTime(Long.parseLong(recordingsPools.get(listPosition).getDuration())));
 
         int likeStatus = recordingList.get(listPosition).getLikeStatus();
@@ -540,7 +541,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             holder.ivDislikeButton.setVisibility(VISIBLE);
         }
 
-        holder.tvRecordingDate.setText(recordingList.get(listPosition).getRecordingCreated());
+        holder.tvRecordingDate.setText(convertDate(recordingList.get(listPosition).getRecordingCreated()));
         holder.tvViewCount.setText(String.valueOf(recordingList.get(listPosition).getPlayCount()));
         holder.tvLikeCount.setText(String.valueOf(recordingList.get(listPosition).getLikeCount()));
         holder.tvCommentCount.setText(String.valueOf(recordingList.get(listPosition).getCommentCount()));
@@ -1107,6 +1108,18 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             mp.release();
             mp = null;
         }
+    }
+
+    private String convertDate(String date) {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd");
+            Date d = format.parse(date);
+            SimpleDateFormat serverFormat = new SimpleDateFormat("MM/dd/yy");
+            return serverFormat.format(d);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
 }
