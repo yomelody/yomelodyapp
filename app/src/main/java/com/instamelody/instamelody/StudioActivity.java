@@ -296,6 +296,8 @@ public class StudioActivity extends AppCompatActivity {
     String pos = "0";
     BroadcastReceiver mRegistrationBroadcastReceiver;
     int totalCount = 0;
+    private boolean fbSwitch, twitterSwitch, googleSwitch;
+
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -2087,30 +2089,20 @@ public class StudioActivity extends AppCompatActivity {
                         int switchFbStatus = switchFbEditor.getInt("switch", 0);
 
                         SharedPreferences switchFbEditorFb = getApplicationContext().getSharedPreferences("SwitchStatusFb", MODE_PRIVATE);
-                        boolean fbSwitch=switchFbEditorFb.getBoolean("switchFb", false);
+                        fbSwitch=switchFbEditorFb.getBoolean("switchFb", false);
 
                         SharedPreferences switchTwitterEditor = getApplicationContext().getSharedPreferences("SwitchStatusTwitter", MODE_PRIVATE);
-                        boolean twitterSwitch=switchTwitterEditor.getBoolean("switchTwitter", false);
+                        twitterSwitch=switchTwitterEditor.getBoolean("switchTwitter", false);
 
                         SharedPreferences switchGoogleEditor = getApplicationContext().getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE);
-                        boolean googleSwitch=switchGoogleEditor.getBoolean("switchGoogle", false);
+                        googleSwitch=switchGoogleEditor.getBoolean("switchGoogle", false);
 
                         if (fbSwitch) {
                             FbShare();
-                            SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
-                            switchFbEditor1.clear();
-                            switchFbEditor1.apply();
                         } else if (twitterSwitch) {
                             TweetShare();
-                            SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
-                            switchFbEditor1.clear();
-                            switchFbEditor1.apply();
-                        } else if (switchFbStatus == 3) {
-                            FbShare();
-                            TweetShare();
-                            SharedPreferences.Editor switchFbEditor1 = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE).edit();
-                            switchFbEditor1.clear();
-                            switchFbEditor1.apply();
+                        } else if (googleSwitch) {
+                            GoogleShare();
                         }
 
 
@@ -2550,7 +2542,6 @@ public class StudioActivity extends AppCompatActivity {
                 mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mp.setDataSource(instrumentList.get(i).getInstrumentFile());
                 mps.add(mp);
-
             }
 
             for (MediaPlayer mp : mps) {
