@@ -170,8 +170,6 @@ public class MessengerActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
-                Intent intent = new Intent(mActivity, HomeActivity.class);
-                startActivity(intent);
             }
         });
 

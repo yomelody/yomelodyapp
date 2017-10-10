@@ -98,7 +98,7 @@ public class Update extends AppCompatActivity {
     String passwordNil = "";
     int day, month, year;
     int userIdUpdate = 0;
-    String finalDate="";
+    String finalDate = "";
     public static ProgressDialog progressDialog;
     Activity mActivity;
 
@@ -193,7 +193,7 @@ public class Update extends AppCompatActivity {
             etuUsername.setText(profileEditor.getString("updateUserName", null));
             etuPhone.setText(profileEditor.getString("updateMobile", null));
             tvDobUpdate.setText(profileEditor.getString("updateDOB", null));
-            finalDate=profileEditor.getString("updateDOB",null);
+            finalDate = profileEditor.getString("updateDOB", null);
             if (profileImageEditor.getString("ProfileImage", null) != null) {
                 Picasso.with(Update.this).load(profileImageEditor.getString("ProfileImage", null)).into(userProfileImageUpdate);
             }
@@ -215,10 +215,9 @@ public class Update extends AppCompatActivity {
             etuUsername.setClickable(false);
             etuUsername.setCursorVisible(false);
             etuUsername.setFocusableInTouchMode(false);
-            etuEmailUpdate.setClickable(true);
-            etuEmailUpdate.setClickable(true);
-            etuEmailUpdate.setCursorVisible(true);
-            etuEmailUpdate.setFocusableInTouchMode(true);
+            etuEmailUpdate.setClickable(false);
+            etuEmailUpdate.setCursorVisible(false);
+            etuEmailUpdate.setFocusableInTouchMode(false);
             SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
             String fbId = fbPref.getString("fbId", null);
             Picasso.with(Update.this).load("https://graph.facebook.com/" + fbId + "/picture").into(userProfileImageUpdate);
@@ -227,9 +226,9 @@ public class Update extends AppCompatActivity {
             etuLastName.setText(lastNameTwitter);
             etuEmailUpdate.setText(emailFinalTwitter);
             etuUsername.setText(userNameTwitter);
-            etuEmailUpdate.setClickable(true);
-            etuEmailUpdate.setCursorVisible(true);
-            etuEmailUpdate.setFocusableInTouchMode(true);
+            etuEmailUpdate.setClickable(false);
+            etuEmailUpdate.setCursorVisible(false);
+            etuEmailUpdate.setFocusableInTouchMode(false);
             etuFirstName.setClickable(false);
             etuFirstName.setCursorVisible(false);
             etuFirstName.setFocusableInTouchMode(false);
@@ -239,10 +238,6 @@ public class Update extends AppCompatActivity {
             etuUsername.setClickable(false);
             etuUsername.setCursorVisible(false);
             etuUsername.setFocusableInTouchMode(false);
-            etuEmailUpdate.setClickable(true);
-            etuEmailUpdate.setClickable(true);
-            etuEmailUpdate.setCursorVisible(true);
-            etuEmailUpdate.setFocusableInTouchMode(true);
             SharedPreferences twitterPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
             String profilePic1 = twitterPref.getString("profilePic", null);
             Picasso.with(Update.this).load(profilePic1).into(userProfileImageUpdate);
@@ -345,7 +340,7 @@ public class Update extends AppCompatActivity {
 
                 etuFirstName.setEnabled(true);
                 etuLastName.setEnabled(true);
-                etuUsername.setEnabled(true);
+                etuUsername.setEnabled(false);
                 etuPassWord.setEnabled(true);
                 etuConfirmPassWord.setEnabled(true);
                 etuPhone.setEnabled(true);
@@ -456,7 +451,7 @@ public class Update extends AppCompatActivity {
             }
         } else {
             finalDate = tvDobUpdate.getText().toString().trim();
-            AppHelper.sop("else=finalDate=="+tvDobUpdate.getText().toString().trim());
+            AppHelper.sop("else=finalDate==" + tvDobUpdate.getText().toString().trim());
         }
         final String phone = etuPhone.getText().toString().trim();
         final String usertype = "USER";
@@ -470,7 +465,7 @@ public class Update extends AppCompatActivity {
 
                         String successmsg = response.toString();
 //                        Toast.makeText(Update.this, "Login to Proceed", Toast.LENGTH_SHORT).show();
-                        AppHelper.sop("response==="+response);
+                        AppHelper.sop("response===" + response);
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
                             String flag = jsonObject.getString("flag");
@@ -584,7 +579,7 @@ public class Update extends AppCompatActivity {
                 params.put(KEY_DOB, finalDate);
                 params.put(KEY_PHONE, phone);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params==="+params+"\nURL===="+UPDATEPROFILE);
+                AppHelper.sop("params===" + params + "\nURL====" + UPDATEPROFILE);
                 return params;
             }
 
@@ -600,7 +595,7 @@ public class Update extends AppCompatActivity {
 
                 String resultResponse = new String(response.data);
 //                Toast.makeText(getApplicationContext(), "Profile Picture Updated", Toast.LENGTH_SHORT).show();
-                AppHelper.sop("resultResponse=="+resultResponse);
+                AppHelper.sop("resultResponse==" + resultResponse);
                 try {
                     JSONObject jsonObject = new JSONObject(resultResponse);
                     String flag = jsonObject.getString("flag");
@@ -654,7 +649,7 @@ public class Update extends AppCompatActivity {
                 params.put(USER_ID, userId);
                 params.put(FILE_TYPE, String.valueOf(1));
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params==="+params+"\nURL==="+UPLOAD_FILE);
+                AppHelper.sop("params===" + params + "\nURL===" + UPLOAD_FILE);
                 return params;
             }
 

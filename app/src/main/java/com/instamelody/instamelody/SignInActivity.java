@@ -180,7 +180,6 @@ public class SignInActivity extends AppCompatActivity {
         rlSoundCloud = (RelativeLayout) findViewById(R.id.rlSoundCloud);
         SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
         DeviceToken = fcmPref.getString("regId", "");
-        AppHelper.sop("DeviceToken==="+DeviceToken);
 
 
         etEmail.addTextChangedListener(new TextWatcher() {

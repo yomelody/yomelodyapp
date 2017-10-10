@@ -241,6 +241,73 @@ public class ChatActivity extends AppCompatActivity {
         flCover = (FrameLayout) findViewById(R.id.flCover);
         rlInviteButton = (RelativeLayout) findViewById(R.id.rlInviteButton);
         contInviteButton = (RelativeLayout) findViewById(R.id.contInviteButton);
+<<<<<<< HEAD
+=======
+        tvUserName = (TextView) findViewById(R.id.tvUserName);
+
+        Bundle bundley = getIntent().getExtras();
+        try {
+            if (bundley != null) {
+                if (!bundley.get("body").equals(null)) {
+                    String body = bundley.get("body").toString();
+                    if (!body.equals("") && !body.equals(null)) {
+                        try {
+                            JSONObject jBody = new JSONObject(body);
+                            if (jBody.has("chat_id")) {
+                                chatId = jBody.getString("chat_id");
+                                getChatMsgs(chatId);
+                            }
+                            if (jBody.has("sender_name")) {
+                                receiverName = jBody.getString("sender_name");
+                                tvUserName.setText(receiverName);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                else if(!bundley.get("chat_id").equals(null)){
+                    String message = bundley.getString("chat_id");
+                    if (message != null) {
+                        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+
+        SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+        SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+            username = loginSharedPref.getString("userName", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+            username = fbPref.getString("UserName", null);
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
+            username = twitterPref.getString("userName", null);
+        }
+
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(READ_NOTIFICATION)) {
+                    String readStatus = intent.getStringExtra("status");
+                    if (readStatus.equals("read")) {
+                        String chatId = intent.getStringExtra("chatId");
+                        getChatMsgs(chatId);
+                    }
+                } else if (intent.getAction().equals(PUSH_NOTIFICATION)) {
+                    String chatId = intent.getStringExtra("chatId");
+                    getChatMsgs(chatId);
+                }
+            }
+        };
+>>>>>>> Abhishek-Dubey
 
         SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
         senderId = prefs.getString("senderId", null);
@@ -251,6 +318,7 @@ public class ChatActivity extends AppCompatActivity {
         chatId = prefs.getString("chatId", null);
         chatType = prefs.getString("chatType", null);
         groupImage = prefs.getString("groupImage", null);
+<<<<<<< HEAD
         tvUserName = (TextView) findViewById(R.id.tvUserName);
         tvUserName.setText(receiverName);
 
@@ -259,6 +327,18 @@ public class ChatActivity extends AppCompatActivity {
             rlInviteButton.setEnabled(false);
             contInviteButton.setVisibility(View.GONE);
         }
+=======
+        if(!receiverName.equals("")){
+            tvUserName.setText(receiverName);
+        }
+
+
+//        if (chatType.equals("single")) {
+//            rlInviteButton.setClickable(false);
+//            rlInviteButton.setEnabled(false);
+//            contInviteButton.setVisibility(View.GONE);
+//        }
+>>>>>>> Abhishek-Dubey
 
         SharedPreferences selectedImagePos = getApplicationContext().getSharedPreferences("selectedImagePos", MODE_PRIVATE);
         if (selectedImagePos.getString("pos", null) != null) {

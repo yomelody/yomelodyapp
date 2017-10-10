@@ -107,7 +107,6 @@ public class RecordingsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mActivity=getActivity();
-        progressDialog = new ProgressDialog(mActivity);
         fetchGenreNames();
         SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);

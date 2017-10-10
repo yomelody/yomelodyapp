@@ -64,7 +64,6 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
     String senderID = "";
     String recieverId = "";
     String recId = "";
-    String tmpRecId = "";
     String recieverName = "";
     String recieverImage = "";
     int Count = 0;
@@ -149,11 +148,9 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                             ContactsActivity.btnOK.setVisibility(View.VISIBLE);
                             SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                             if (Count > 1) {
-                                recieverName = "New Group";
-                                editor.putString("receiverName", recieverName);
+//                                recieverName = "New Group";
+//                                editor.putString("receiverName", recieverName);
                                 editor.putString("chatType", "group");
-                                tmpRecId = userId + "," + recId;
-                                editor.putString("tmpRecId", tmpRecId);
                             } else {
                                 editor.putString("chatType", "single");
                             }
@@ -199,10 +196,8 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                     SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                     editor.putString("senderId", senderID);
                     editor.putString("receiverId", recId);
-                    editor.putString("receiverName", recieverName);
+//                    editor.putString("receiverName", recieverName);
                     editor.putString("receiverImage", recieverImage);
-                    tmpRecId = userId + "," + recId;
-                    editor.putString("tmpRecId", tmpRecId);
                     editor.commit();
                 }
             });
@@ -253,8 +248,16 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
                         try {
                             jsonObject = new JSONObject(response);
                             String chat_Id = jsonObject.getString("chatID");
-                            String receiverName = jsonObject.getString("receiverName");
+
+                            String receiverName;
                             String group_pick = "";
+
+                            if (jsonObject.has("receiverName")) {
+                                receiverName = jsonObject.getString("receiverName");
+                            } else {
+                                receiverName = "New Group";
+                            }
+
                             if (jsonObject.has("group_pick")) {
                                 group_pick = jsonObject.getString("group_pick");
                             }

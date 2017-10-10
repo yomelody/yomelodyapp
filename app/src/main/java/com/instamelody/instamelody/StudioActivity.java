@@ -210,7 +210,6 @@ public class StudioActivity extends AppCompatActivity {
     RadioButton radioButton;
     public static TextView mDecibelView;
     public static com.instamelody.instamelody.utils.WaveformView waveform_view;
-    public static RecordingThread mRecordingThread;
     public static MediaRecorder recorder;
     private final int requestCode = 20;
     public static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
@@ -615,7 +614,6 @@ public class StudioActivity extends AppCompatActivity {
         if (profileEditor.getString("updateId", null) != null) {
             artist_name.setText("@" + profileEditor.getString("updateUserName", null));
         }
-        mRecordingThread = new RecordingThread();
         mBufferSize = AudioRecord.getMinBufferSize(SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
 
@@ -678,10 +676,14 @@ public class StudioActivity extends AppCompatActivity {
                         }
                     }
 
-                    if (mRecordingThread != null) {
-                        mRecordingThread.stopRunning();
+                    try {
+                        if (InstrumentListAdapter.mRecordingThread != null) {
+                            InstrumentListAdapter.mRecordingThread.stopRunning();
+                            InstrumentListAdapter.mRecordingThread = null;
+                        }
+                    } catch (Throwable e) {
+                        e.printStackTrace();
                     }
-
                     if (isRecording) {
                         ivRecord.setEnabled(false);
                         handler.removeCallbacksAndMessages(null);
@@ -721,6 +723,13 @@ public class StudioActivity extends AppCompatActivity {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
+                try {
+                    if (InstrumentListAdapter.recorder != null) {
+                        InstrumentListAdapter.recorder.stop();
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
 
             }
         });
@@ -728,9 +737,7 @@ public class StudioActivity extends AppCompatActivity {
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 try {
-
                     handler.removeCallbacksAndMessages(null);
                     if (lstViewHolder.size() > 0) {
                         lstViewHolder.clear();
@@ -772,10 +779,26 @@ public class StudioActivity extends AppCompatActivity {
                     if (instrumentList.size() > 0) {
                         instrumentList.clear();
                     }
-                    finish();
+
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
+                try {
+                    if (InstrumentListAdapter.mRecordingThread != null) {
+                        InstrumentListAdapter.mRecordingThread.stopRunning();
+                        InstrumentListAdapter.mRecordingThread = null;
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+                try {
+                    if (InstrumentListAdapter.recorder != null) {
+                        InstrumentListAdapter.recorder.stop();
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+                finish();
             }
         });
 
@@ -829,6 +852,22 @@ public class StudioActivity extends AppCompatActivity {
                     startActivity(intent);
                 } catch (Exception ex) {
                     ex.printStackTrace();
+                }
+
+                try {
+                    if (InstrumentListAdapter.mRecordingThread != null) {
+                        InstrumentListAdapter.mRecordingThread.stopRunning();
+                        InstrumentListAdapter.mRecordingThread = null;
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+                try {
+                    if (InstrumentListAdapter.recorder != null) {
+                        InstrumentListAdapter.recorder.stop();
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
                 }
 
             }
@@ -887,6 +926,21 @@ public class StudioActivity extends AppCompatActivity {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
+                try {
+                    if (InstrumentListAdapter.mRecordingThread != null) {
+                        InstrumentListAdapter.mRecordingThread.stopRunning();
+                        InstrumentListAdapter.mRecordingThread = null;
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+                try {
+                    if (InstrumentListAdapter.recorder != null) {
+                        InstrumentListAdapter.recorder.stop();
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
 
             }
         });
@@ -942,6 +996,22 @@ public class StudioActivity extends AppCompatActivity {
                     startActivity(intent);
                 } catch (Exception ex) {
                     ex.printStackTrace();
+                }
+
+                try {
+                    if (InstrumentListAdapter.mRecordingThread != null) {
+                        InstrumentListAdapter.mRecordingThread.stopRunning();
+                        InstrumentListAdapter.mRecordingThread = null;
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+                try {
+                    if (InstrumentListAdapter.recorder != null) {
+                        InstrumentListAdapter.recorder.stop();
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
                 }
 
             }
@@ -1000,6 +1070,22 @@ public class StudioActivity extends AppCompatActivity {
                     ex.printStackTrace();
                 }
 
+                try {
+                    if (InstrumentListAdapter.mRecordingThread != null) {
+                        InstrumentListAdapter.mRecordingThread.stopRunning();
+                        InstrumentListAdapter.mRecordingThread = null;
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+                try {
+                    if (InstrumentListAdapter.recorder != null) {
+                        InstrumentListAdapter.recorder.stop();
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+
             }
         });
 
@@ -1054,6 +1140,22 @@ public class StudioActivity extends AppCompatActivity {
                     startActivity(i);
                 } catch (Exception ex) {
                     ex.printStackTrace();
+                }
+
+                try {
+                    if (InstrumentListAdapter.mRecordingThread != null) {
+                        InstrumentListAdapter.mRecordingThread.stopRunning();
+                        InstrumentListAdapter.mRecordingThread = null;
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+                try {
+                    if (InstrumentListAdapter.recorder != null) {
+                        InstrumentListAdapter.recorder.stop();
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
                 }
 
             }
@@ -1118,6 +1220,21 @@ public class StudioActivity extends AppCompatActivity {
 //                else if (melodyPackId == null) {
 //                    Toast.makeText(StudioActivity.this, "Add Melody Packs to save recording", Toast.LENGTH_SHORT).show();
 //                }
+                try {
+                    if (InstrumentListAdapter.mRecordingThread != null) {
+                        InstrumentListAdapter.mRecordingThread.stopRunning();
+                        InstrumentListAdapter.mRecordingThread = null;
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+                try {
+                    if (InstrumentListAdapter.recorder != null) {
+                        InstrumentListAdapter.recorder.stop();
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
 
             }
         });
@@ -1140,6 +1257,21 @@ public class StudioActivity extends AppCompatActivity {
                     StudioActivity.this.recreate();
                 } catch (Exception ex) {
                     ex.printStackTrace();
+                }
+                try {
+                    if (InstrumentListAdapter.mRecordingThread != null) {
+                        InstrumentListAdapter.mRecordingThread.stopRunning();
+                        InstrumentListAdapter.mRecordingThread = null;
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+                try {
+                    if (InstrumentListAdapter.recorder != null) {
+                        InstrumentListAdapter.recorder.stop();
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
                 }
 
 
@@ -1171,6 +1303,21 @@ public class StudioActivity extends AppCompatActivity {
                     startActivity(intent);
                 } catch (Exception ex) {
                     ex.printStackTrace();
+                }
+                try {
+                    if (InstrumentListAdapter.mRecordingThread != null) {
+                        InstrumentListAdapter.mRecordingThread.stopRunning();
+                        InstrumentListAdapter.mRecordingThread = null;
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+                try {
+                    if (InstrumentListAdapter.recorder != null) {
+                        InstrumentListAdapter.recorder.stop();
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
                 }
 
             }
@@ -1536,75 +1683,6 @@ public class StudioActivity extends AppCompatActivity {
         }
     }
 
-
-    public class RecordingThread extends Thread {
-
-
-        @Override
-        public void run() {
-
-            //  android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
-            AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLING_RATE,
-                    AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, mBufferSize);
-            try {
-
-                recorder.startRecording();
-                Log.d("Recording issue", "SampleRate" + SAMPLING_RATE + "BufferSize" + mBufferSize + "AudioBuffer" + mAudioBuffer);
-            } catch (IllegalStateException e) {
-                Log.d("Recording issue", e.toString());
-            }
-
-
-            while (shouldContinue()) {
-                recorder.read(mAudioBuffer, 0, mBufferSize / 2);
-                waveform_view.updateAudioData(mAudioBuffer);
-                updateDecibelLevel();
-
-            }
-
-            try {
-
-                recorder.stop();
-
-
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            }
-
-            recorder.release();
-        }
-
-
-        public synchronized boolean shouldContinue() {
-            return mShouldContinue;
-        }
-
-        public synchronized void stopRunning() {
-            mShouldContinue = false;
-        }
-
-
-        public void updateDecibelLevel() {
-
-            double sum = 0;
-
-            for (short rawSample : mAudioBuffer) {
-                double sample = rawSample / 32768.0;
-                sum += sample * sample;
-            }
-
-            double rms = Math.sqrt(sum / mAudioBuffer.length);
-            final double db = 20 * Math.log10(rms);
-
-            // Update the text view on the main thread.
-            mDecibelView.post(new Runnable() {
-                @Override
-                public void run() {
-                    // mDecibelView.setText(String.format(mDecibelFormat, db));
-                }
-            });
-        }
-    }
 
     public void recordAudio() {
         AudioManager am1 = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -2828,6 +2906,21 @@ public class StudioActivity extends AppCompatActivity {
                 StudioActivity.mpInst.stop();
             }
 
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        try {
+            if (InstrumentListAdapter.mRecordingThread != null) {
+                InstrumentListAdapter.mRecordingThread.stopRunning();
+                InstrumentListAdapter.mRecordingThread = null;
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        try {
+            if (InstrumentListAdapter.recorder != null) {
+                InstrumentListAdapter.recorder.stop();
+            }
         } catch (Throwable e) {
             e.printStackTrace();
         }
