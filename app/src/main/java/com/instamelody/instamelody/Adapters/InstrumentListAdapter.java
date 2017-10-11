@@ -392,7 +392,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         StudioActivity.playAll.setVisibility(View.VISIBLE);
         instrumentFile = instruments.getInstrumentFile();
         instrument_url_count.add(instrumentFile);
-        Log.d("Instruments size", "" + instrumentFile);
+//        Log.d("Instruments size", "" + instrumentFile);
         audioValue = instruments.getAudioType();
 
         holder.rlivDeleteMelody.setOnClickListener(new View.OnClickListener() {
@@ -1714,7 +1714,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
                     InstrumentCountSize = instrumentList.size();
                     for (int i = 0; i < InstrumentCountSize; i++) {
-                        Log.d("Instrument url----------------:", "" + instrumentList.get(i).getInstrumentFile());
+//                        Log.d("Instrument url----------------:", "" + instrumentList.get(i).getInstrumentFile());
                         StudioActivity.mpall = new MediaPlayer();
                         StudioActivity.mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
                         StudioActivity.mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
@@ -1865,7 +1865,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     Compdurations = 0;
                     MaxMpSessionID = 0;
                     for (int i = 0; i < InstrumentCountSize; i++) {
-                        Log.d("Instrument url----------------:", "" + instrumentList.get(i).getInstrumentFile());
+//                        Log.d("Instrument url----------------:", "" + instrumentList.get(i).getInstrumentFile());
                         StudioActivity.mpall = new MediaPlayer();
                         StudioActivity.mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
                         StudioActivity.mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
@@ -1984,7 +1984,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
     public void recordAudio() {
         AudioManager am1 = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-        Log.i("WiredHeadsetOn = ", am1.isWiredHeadsetOn() + "");
+//        Log.i("WiredHeadsetOn = ", am1.isWiredHeadsetOn() + "");
         if (am1.isWiredHeadsetOn() == true) {
 
             Toast.makeText(getApplicationContext(), "Headset is connected", Toast.LENGTH_SHORT).show();

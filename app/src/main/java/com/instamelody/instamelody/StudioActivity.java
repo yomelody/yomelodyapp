@@ -103,6 +103,7 @@ import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
+import com.twitter.sdk.android.tweetcomposer.TweetUploadService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -297,6 +298,9 @@ public class StudioActivity extends AppCompatActivity {
     BroadcastReceiver mRegistrationBroadcastReceiver;
     int totalCount = 0;
     private boolean fbSwitch, twitterSwitch, googleSwitch;
+    private BroadcastReceiver mReceiver;
+    private IntentFilter intentFilter;
+    private String thumbnailUrl="";
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -1248,6 +1252,47 @@ public class StudioActivity extends AppCompatActivity {
         String rate = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
         String size = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
         Log.d("Buffer Size & sample rate", "Size :" + size + " & Rate: " + rate);
+
+
+        intentFilter = new IntentFilter();
+        intentFilter.addAction("com.twitter.sdk.android.tweetcomposer.UPLOAD_SUCCESS");
+        intentFilter.addAction("com.twitter.sdk.android.tweetcomposer.UPLOAD_FAILURE");
+        intentFilter.addAction("com.twitter.sdk.android.tweetcomposer.TWEET_COMPOSE_CANCEL");
+
+        mReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (TweetUploadService.UPLOAD_SUCCESS.equals(intent.getAction())) {
+                    // success
+                    if (googleSwitch) {
+                        GoogleShare();
+                    }
+//                    final Long tweetId = intentExtras.getLong(TweetUploadService.EXTRA_TWEET_ID);
+                } else if (TweetUploadService.UPLOAD_FAILURE.equals(intent.getAction())) {
+                    // failure
+                    if (googleSwitch) {
+                        GoogleShare();
+                    }
+//                    final Intent retryIntent = intentExtras.getParcelable(TweetUploadService.EXTRA_RETRY_INTENT);
+                } /*else if (TweetUploadService.TWEET_COMPOSE_CANCEL.equals(intent.getAction())) {
+                    // cancel
+                }*/
+            }
+        };
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(mReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(mReceiver);
     }
 
     private boolean StopMediaPlayer(MediaPlayer mp) {
@@ -2017,7 +2062,7 @@ public class StudioActivity extends AppCompatActivity {
                             switchPublic.setChecked(false);
                             switchFlag = "0";
                             frameProgress.refreshDrawableState();
-
+                            thumbnailUrl=r1.getJSONObject("melody_data").getString("thumbnail_url");
 //                            SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
 //                            FilterPref.remove("instrumentsPos");
 //                            FilterPref.apply();
@@ -2105,13 +2150,12 @@ public class StudioActivity extends AppCompatActivity {
                             GoogleShare();
                         }
 
-
                     }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Log.d("return message", resultResponse);
+//                Log.d("return message", resultResponse);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -2854,7 +2898,7 @@ public class StudioActivity extends AppCompatActivity {
         SharedPreferences editorT = getSharedPreferences("thumbnail_url", MODE_PRIVATE);
         String fetchThumbNailUrl = editorT.getString("thumbnailUrl", "");
 
-        AppHelper.sop("contentUrl="+contentUrl+"\nfetchThumbNailUrl"+fetchThumbNailUrl);
+        AppHelper.sop("thumbnailUrl=="+thumbnailUrl);
 
 
         callbackManager = CallbackManager.Factory.create();
@@ -2864,27 +2908,42 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Sharer.Result result) {
                 Toast.makeText(StudioActivity.this, "Recording Uploaded", Toast.LENGTH_SHORT).show();
-                SharedPreferences.Editor editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE).edit();
+                /*SharedPreferences.Editor editorT = getSharedPreferences("thumbnail_url", MODE_PRIVATE).edit();
                 editorT.clear();
-                editorT.apply();
+                editorT.apply();*/
+
+                if (twitterSwitch) {
+                    TweetShare();
+                } else if (googleSwitch) {
+                    GoogleShare();
+                }
+
             }
 
             @Override
             public void onCancel() {
-
                 Toast.makeText(StudioActivity.this, "Recording not Uploaded", Toast.LENGTH_SHORT).show();
+                if (twitterSwitch) {
+                    TweetShare();
+                } else if (googleSwitch) {
+                    GoogleShare();
+                }
             }
 
             @Override
             public void onError(FacebookException error) {
-
+                if (twitterSwitch) {
+                    TweetShare();
+                } else if (googleSwitch) {
+                    GoogleShare();
+                }
             }
 
         });
 
         if (ShareDialog.canShow(ShareLinkContent.class)) {
             ShareLinkContent linkContent = new ShareLinkContent.Builder()
-                    .setContentUrl(Uri.parse(contentUrl))
+                    .setContentUrl(Uri.parse(thumbnailUrl))
 //                    .setImageUrl(Uri.parse(fetchThumbNailUrl))
                     .build();
             shareDialog.show(linkContent, ShareDialog.Mode.FEED);
@@ -2896,7 +2955,7 @@ public class StudioActivity extends AppCompatActivity {
         String fetchThumbNailUrl = editorT.getString("thumbnailUrl", "");
 
         try {
-            ShortUrl = new URL(fetchThumbNailUrl);
+            ShortUrl = new URL(thumbnailUrl);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -2934,7 +2993,7 @@ public class StudioActivity extends AppCompatActivity {
         Intent shareIntent = new PlusShare.Builder(this)
                 .setType("text/plain")
                 .setText("Welcome to the Google+ platform.")
-                .setContentUrl(Uri.parse(contentUrl))
+                .setContentUrl(Uri.parse(thumbnailUrl))
                 .getIntent();
         startActivityForResult(shareIntent, 0);
     }
