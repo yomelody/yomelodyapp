@@ -35,7 +35,7 @@ public class BioFragment extends Fragment {
 
     ImageView ivEdit;
     EditText etBio;
-    TextView textViewName, tvStation, tvDate;
+    TextView textViewName, tvStation, tvDate,tvEdit;
     CircleImageView userBioImage;
     String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId;
     int statusNormal, statusFb, statusTwitter;
@@ -61,6 +61,7 @@ public class BioFragment extends Fragment {
         textViewName = (TextView) view.findViewById(R.id.textViewName);
         tvStation = (TextView) view.findViewById(R.id.tvStation);
         tvDate = (TextView) view.findViewById(R.id.tvDate);
+        tvEdit=(TextView)view.findViewById(R.id.tvEdit);
 
         long date = System.currentTimeMillis();
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy");
@@ -72,6 +73,16 @@ public class BioFragment extends Fragment {
             @Override
             public void onClick(View v) {
 //                etBio.isInEditMode();
+                etBio.setKeyListener((KeyListener) etBio.getTag());
+                etBio.setCursorVisible(true);
+                etBio.requestFocus();
+                int textLength = etBio.getText().length();
+                etBio.setSelection(textLength);
+            }
+        });
+        tvEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 etBio.setKeyListener((KeyListener) etBio.getTag());
                 etBio.setCursorVisible(true);
                 etBio.requestFocus();

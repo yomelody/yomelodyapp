@@ -301,7 +301,6 @@ public class StudioActivity extends AppCompatActivity {
     private IntentFilter intentFilter;
     private String thumbnailUrl="";
 
-
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -691,7 +690,7 @@ public class StudioActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                     if (isRecording) {
-                        ivRecord.setEnabled(false);
+                       // ivRecord.setEnabled(false);
                         handler.removeCallbacksAndMessages(null);
 
                         if (recorder != null) {
@@ -2105,12 +2104,12 @@ public class StudioActivity extends AppCompatActivity {
                     JSONObject r1 = response1.getJSONObject("response");
 
                     if (msgflag.equals("Melody created")) {
-                        JSONObject MelodyResponseDetails = r1.getJSONObject("melody_data");
+                         MelodyResponseDetails = r1.getJSONObject("melody_data");
                         melodyurl = "http://52.89.220.199/api/" + MelodyResponseDetails.getString("melodyurl");
                         //urlRecording = r1.getString("melody");
                     } else {
-                        JSONObject RecordingResponseDetails = r1.getJSONObject("melody_data");
-                        melodyurl = "http://52.89.220.199/api/" + RecordingResponseDetails.getString("melodyurl");
+                        MelodyResponseDetails = r1.getJSONObject("melody_data");
+                        melodyurl = "http://52.89.220.199/api/" + MelodyResponseDetails.getString("melodyurl");
                         // urlRecording = r1.getString("recording");
                     }
 
@@ -2118,13 +2117,13 @@ public class StudioActivity extends AppCompatActivity {
                         if (msgflag.equals("Melody created")) {
                             tvDone.setEnabled(false);
                             MelodyInstruments melodyInstruments = new MelodyInstruments();
-                            melodyInstruments.setInstrumentName(packName);
-                            melodyInstruments.setInstrumentBpm(bpm);
+                            melodyInstruments.setInstrumentName(MelodyResponseDetails.getString("packname"));
+                            melodyInstruments.setInstrumentBpm(MelodyResponseDetails.getString("bpm"));
                             melodyInstruments.setInstrumentFile("Blank");
-                            melodyInstruments.setInstrumentLength(melodyRecDuration);
+                            melodyInstruments.setInstrumentLength(MelodyResponseDetails.getString("duration"));
                             melodyInstruments.setUserProfilePic(recPic);
                             melodyInstruments.setInstrumentCover("#00FDFE");
-                            melodyInstruments.setInstrumentCreated(addDate);
+                            melodyInstruments.setInstrumentCreated(MelodyResponseDetails.getString("add_date"));
                             melodyInstruments.setUserName(userName);
                             melodyInstruments.setInstrumentFile(melodyurl);
                             instrumentList.add(melodyInstruments);
@@ -2148,13 +2147,13 @@ public class StudioActivity extends AppCompatActivity {
                         } else {
                             tvDone.setEnabled(false);
                             MelodyInstruments melodyInstruments = new MelodyInstruments();
-                            melodyInstruments.setInstrumentName(packName);
-                            melodyInstruments.setInstrumentBpm(bpm);
+                            melodyInstruments.setInstrumentName(MelodyResponseDetails.getString("packname"));
+                            melodyInstruments.setInstrumentBpm(MelodyResponseDetails.getString("bpm"));
                             melodyInstruments.setInstrumentFile("Blank");
-                            melodyInstruments.setInstrumentLength(melodyRecDuration);
+                            melodyInstruments.setInstrumentLength(MelodyResponseDetails.getString("duration"));
                             melodyInstruments.setUserProfilePic(recPic);
                             melodyInstruments.setInstrumentCover("#00FDFE");
-                            melodyInstruments.setInstrumentCreated(addDate);
+                            melodyInstruments.setInstrumentCreated(MelodyResponseDetails.getString("add_date"));
                             melodyInstruments.setUserName(userName);
                             melodyInstruments.setInstrumentFile(melodyurl);
                             instrumentList.add(melodyInstruments);
@@ -2213,13 +2212,13 @@ public class StudioActivity extends AppCompatActivity {
                         int switchFbStatus = switchFbEditor.getInt("switch", 0);
 
                         SharedPreferences switchFbEditorFb = getApplicationContext().getSharedPreferences("SwitchStatusFb", MODE_PRIVATE);
-                        fbSwitch=switchFbEditorFb.getBoolean("switchFb", false);
+                        fbSwitch = switchFbEditorFb.getBoolean("switchFb", false);
 
                         SharedPreferences switchTwitterEditor = getApplicationContext().getSharedPreferences("SwitchStatusTwitter", MODE_PRIVATE);
-                        twitterSwitch=switchTwitterEditor.getBoolean("switchTwitter", false);
+                        twitterSwitch = switchTwitterEditor.getBoolean("switchTwitter", false);
 
                         SharedPreferences switchGoogleEditor = getApplicationContext().getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE);
-                        googleSwitch=switchGoogleEditor.getBoolean("switchGoogle", false);
+                        googleSwitch = switchGoogleEditor.getBoolean("switchGoogle", false);
 
                         AppHelper.sop("fbSwitch="+fbSwitch+"=twitterSwitch="+twitterSwitch+"=googleSwitch"+googleSwitch);
 
@@ -3085,7 +3084,7 @@ public class StudioActivity extends AppCompatActivity {
         builder.show();
     }
 
-    public void GoogleShare(){
+    public void GoogleShare() {
 
         SharedPreferences editor = getSharedPreferences("Url_recording", MODE_PRIVATE);
         String contentUrl = editor.getString("Recording_url", "");
@@ -3093,7 +3092,7 @@ public class StudioActivity extends AppCompatActivity {
         SharedPreferences editorT = getSharedPreferences("thumbnail_url", MODE_PRIVATE);
         String fetchThumbNailUrl = editorT.getString("thumbnailUrl", "");
 
-        AppHelper.sop("contentUrl="+contentUrl+"\nfetchThumbNailUrl"+fetchThumbNailUrl);
+        AppHelper.sop("contentUrl=" + contentUrl + "\nfetchThumbNailUrl" + fetchThumbNailUrl);
 
         Intent shareIntent = new PlusShare.Builder(this)
                 .setType("text/plain")

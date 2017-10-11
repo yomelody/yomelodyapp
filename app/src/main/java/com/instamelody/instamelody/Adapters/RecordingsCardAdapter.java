@@ -474,7 +474,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         private void primarySeekBarProgressUpdater() {
             mHandler1 = new Handler();
             try {
-                duration1 = mp.getDuration();
                 seekBarRecordings.setProgress((int) (((float) mp.getCurrentPosition() / duration1) * 100));// This math construction give a percentage of "was playing"/"song length"
                 if (mp.isPlaying()) {
                     Runnable notification = new Runnable() {
@@ -575,31 +574,39 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 Integer s = listPosition + 1;
 
                 if (instrumentFile != "") {
-                    if (mp != null) {
-
-                        try {
-                            mHandler1.removeCallbacksAndMessages(null);
+                    try {
+                        if (mp.isPlaying()) {
 
                             try {
-                                mp.stop();
-                                mp.release();
-                                mp = null;
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                            if (lastModifiedHoled != null) {
-                                int lastPosition = lastModifiedHoled.getAdapterPosition();
-                                lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
-                                lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
-                                //   notifyItemChanged(lastPosition);
-                            }
+                                mHandler1.removeCallbacksAndMessages(null);
+
+                                try {
+                                    mp.stop();
+                                    mp.release();
+                                    mp = null;
+                                    duration1 = 0;
+                                    length = 0;
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                                if (lastModifiedHoled != null) {
+                                    int lastPosition = lastModifiedHoled.getAdapterPosition();
+                                    lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
+                                    lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
+
+                                    //   notifyItemChanged(lastPosition);
+                                }
 
 
-                        } catch (Throwable e) {
-                            e.printStackTrace();
+                            } catch (Throwable e) {
+                                e.printStackTrace();
+                            }
+
                         }
-
+                    } catch (Throwable e) {
+                        e.printStackTrace();
                     }
+
                     if (holder.ivStationPause.getVisibility() == VISIBLE) {
                         try {
                             lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
@@ -636,8 +643,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             holder.progressDialog.dismiss();
                             lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(GONE);
                             lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(VISIBLE);
+                            mp.seekTo(length);
                             mp.start();
-
+                            duration1 = mp.getDuration();
                             holder.primarySeekBarProgressUpdater();
 
                         }
@@ -664,6 +672,8 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             mHandler1.removeCallbacksAndMessages(null);
                             holder.progressDialog.dismiss();
                             holder.seekBarRecordings.setProgress(0);
+                            length = 0;
+                            duration1 = 0;
                             holder.ivStationPause.setVisibility(GONE);
                             holder.ivStationPlay.setVisibility(VISIBLE);
 
@@ -698,7 +708,8 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
-                holder.seekBarRecordings.setProgress(0);
+                length = mp.getCurrentPosition();
+                //holder.seekBarRecordings.setProgress(0);
             }
         });
 

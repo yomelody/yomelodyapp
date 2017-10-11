@@ -1082,17 +1082,22 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     instruments_url.add(instrumentFile);
                     instrumentFile = instruments.getInstrumentFile();
                     StudioActivity.handler.removeCallbacksAndMessages(null);
-                    if (holder.mp != null) {
-                        try {
-                            duration = 0;
-                            length = 0;
-                            holder.mp.stop();
-                            holder.mp.release();
-                            holder.mp = null;
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
+//                    try {
+//                        if (holder.mp !=null || holder.mp.isPlaying()) {
+//                            try {
+//                                duration = 0;
+//                                length = 0;
+//                                holder.mp.stop();
+//                                holder.mp.release();
+//                                holder.mp = null;
+//                            } catch (Exception ex) {
+//                                ex.printStackTrace();
+//                            }
+//                        }
+//
+//                    } catch (Throwable e) {
+//                        e.printStackTrace();
+//                    }
 
                     for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
 
@@ -1101,6 +1106,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                                 try {
                                     StudioActivity.mp_start.get(i).stop();
                                     StudioActivity.mp_start.get(i).release();
+//                                    length = 0;
+//                                    duration = 0;
                                 } catch (Exception ex) {
                                     ex.printStackTrace();
                                 }
@@ -1121,6 +1128,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                             final TextView txtMutes = StudioActivity.lstViewHolder.get(i).TxtMuteViewHolder;
                             final TextView txtSolos = StudioActivity.lstViewHolder.get(i).TxtSoloViewHolder;
                             final RelativeLayout RlsRepets = StudioActivity.lstViewHolder.get(i).TempRlRepeats;
+//                            duration = 0;
+//                            length = 0;
                             seekBar.setProgress(0);
                             holderPlay.setVisibility(View.VISIBLE);
                             holderPause.setVisibility(View.GONE);
@@ -1255,17 +1264,16 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     holder.ivPause.setVisibility(v.GONE);
                     StudioActivity.handler.removeCallbacksAndMessages(null);
                     // holder.melodySlider.setProgress(0);
-                    if (holder.mp != null) {
-                        holder.mp.pause();
-                    }
-                    length = holder.mp.getCurrentPosition();
+//                    if (holder.mp != null) {
+//                        holder.mp.pause();
+//                    }
+
 
                     for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
                         try {
 
                             if (StudioActivity.mp_start.get(i) != null) {
-                                StudioActivity.mp_start.get(i).stop();
-                                StudioActivity.mp_start.get(i).release();
+                                StudioActivity.mp_start.get(i).pause();
                             }
 
                         } catch (Exception ex) {
@@ -1273,6 +1281,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                         }
 
                     }
+                    length = holder.mp.getCurrentPosition();
                     for (int i = 0; i <= StudioActivity.lstViewHolder.size() - 1; i++) {
 
                         if (i != holder.getAdapterPosition()) {
@@ -1378,7 +1387,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
                     StudioActivity.handler.removeCallbacksAndMessages(null);
                     if (isRecording) {
-                        StudioActivity.ivRecord.setEnabled(false);
+                     //   StudioActivity.ivRecord.setEnabled(false);
 
                         if (recorder != null) {
                             try {
