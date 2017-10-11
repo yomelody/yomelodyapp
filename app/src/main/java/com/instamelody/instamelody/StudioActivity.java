@@ -225,7 +225,7 @@ public class StudioActivity extends AppCompatActivity {
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";//JSONArray
 
-    public static String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, melodyPackId, joinRecordingId, instrumentCount, haveJoinid;
+    public static String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, melodyPackId, joinRecordingId, instrumentCount;
     String selectedGenre;
     int statusNormal, statusFb, statusTwitter;
     String melodyName, instrumentName;
@@ -378,6 +378,8 @@ public class StudioActivity extends AppCompatActivity {
             }
         };
 
+        TweeterSharingWork();
+
         playAll.setVisibility(View.GONE);
         rlSetCover = (RelativeLayout) findViewById(R.id.rlSetCover);
         ivNewRecordCover = (ImageView) findViewById(R.id.ivNewRecordCover);
@@ -413,14 +415,14 @@ public class StudioActivity extends AppCompatActivity {
 
 
         final Intent intent = getIntent();
-        if (intent == null) {
+        if (intent != null) {
+            try {
+                melodyPackId = intent.getExtras().getString("clickPosition");
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
         }
-        try {
-            melodyPackId = intent.getExtras().getString("clickPosition");
-            haveJoinid = intent.getExtras().getString("haveJoinId");
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
+
 
 
 //        joinRecordingId = intent.getExtras().getString("clickPositionJoin");
@@ -1401,6 +1403,10 @@ public class StudioActivity extends AppCompatActivity {
         Log.d("Buffer Size & sample rate", "Size :" + size + " & Rate: " + rate);
 
 
+
+    }
+
+    void TweeterSharingWork(){
         intentFilter = new IntentFilter();
         intentFilter.addAction("com.twitter.sdk.android.tweetcomposer.UPLOAD_SUCCESS");
         intentFilter.addAction("com.twitter.sdk.android.tweetcomposer.UPLOAD_FAILURE");
@@ -1415,31 +1421,25 @@ public class StudioActivity extends AppCompatActivity {
                     if (googleSwitch) {
                         GoogleShare();
                     }
+                    AppHelper.sop("TweetUploadService.UPLOAD_SUCCESS..");
 //                    final Long tweetId = intentExtras.getLong(TweetUploadService.EXTRA_TWEET_ID);
                 } else if (TweetUploadService.UPLOAD_FAILURE.equals(intent.getAction())) {
                     // failure
                     if (googleSwitch) {
                         GoogleShare();
                     }
+                    AppHelper.sop("TweetUploadService.UPLOAD_FAILURE..");
 //                    final Intent retryIntent = intentExtras.getParcelable(TweetUploadService.EXTRA_RETRY_INTENT);
                 } /*else if (TweetUploadService.TWEET_COMPOSE_CANCEL.equals(intent.getAction())) {
                     // cancel
                 }*/
+                if (googleSwitch) {
+                    GoogleShare();
+                }
+                AppHelper.sop("TweetUploadService.BroadcastReceiver..");
             }
         };
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         registerReceiver(mReceiver, intentFilter);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        unregisterReceiver(mReceiver);
     }
 
     private boolean StopMediaPlayer(MediaPlayer mp) {
@@ -2140,7 +2140,7 @@ public class StudioActivity extends AppCompatActivity {
                             switchPublic.setChecked(false);
                             switchFlag = "0";
                             frameProgress.refreshDrawableState();
-                            thumbnailUrl=r1.getJSONObject("melody_data").getString("thumbnail_url");
+
 //                            SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
 //                            FilterPref.remove("instrumentsPos");
 //                            FilterPref.apply();
@@ -2195,6 +2195,7 @@ public class StudioActivity extends AppCompatActivity {
                                 progressDialog.dismiss();
                             }
                         }
+                        thumbnailUrl=r1.getJSONObject("melody_data").getString("thumbnail_url");
 
                         SharedPreferences.Editor recEditor = getApplication().getSharedPreferences("Recording_MelodyDataResponse", MODE_PRIVATE).edit();
                         recEditor.clear();
@@ -2219,6 +2220,8 @@ public class StudioActivity extends AppCompatActivity {
 
                         SharedPreferences switchGoogleEditor = getApplicationContext().getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE);
                         googleSwitch=switchGoogleEditor.getBoolean("switchGoogle", false);
+
+                        AppHelper.sop("fbSwitch="+fbSwitch+"=twitterSwitch="+twitterSwitch+"=googleSwitch"+googleSwitch);
 
                         if (fbSwitch) {
                             FbShare();
@@ -2729,6 +2732,11 @@ public class StudioActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+        else {
+            if (callbackManager!=null){
+                callbackManager.onActivityResult(requestCode, resultCode, data);
+            }
+        }
     }
 
     @Override
@@ -2837,7 +2845,7 @@ public class StudioActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        unregisterReceiver(mReceiver);
         super.onDestroy();
     }
 
@@ -2933,6 +2941,7 @@ public class StudioActivity extends AppCompatActivity {
             if (mpall != null) {
 
                 mpall.stop();
+
                 if (mediaPlayersAll.size() > 0) {
                     for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                         if (mediaPlayersAll.get(i).isPlaying()) {
@@ -2993,7 +3002,7 @@ public class StudioActivity extends AppCompatActivity {
 
         AppHelper.sop("thumbnailUrl=="+thumbnailUrl);
 
-
+//        FacebookSdk.sdkInitialize(this);
         callbackManager = CallbackManager.Factory.create();
         shareDialog = new ShareDialog(this);
         // this part is optional
@@ -3004,6 +3013,7 @@ public class StudioActivity extends AppCompatActivity {
                 /*SharedPreferences.Editor editorT = getSharedPreferences("thumbnail_url", MODE_PRIVATE).edit();
                 editorT.clear();
                 editorT.apply();*/
+                AppHelper.sop("FacebookCallback==onSuccess");
 
                 if (twitterSwitch) {
                     TweetShare();
@@ -3016,6 +3026,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onCancel() {
                 Toast.makeText(StudioActivity.this, "Recording not Uploaded", Toast.LENGTH_SHORT).show();
+                AppHelper.sop("FacebookCallback==onCancel");
                 if (twitterSwitch) {
                     TweetShare();
                 } else if (googleSwitch) {
@@ -3025,6 +3036,7 @@ public class StudioActivity extends AppCompatActivity {
 
             @Override
             public void onError(FacebookException error) {
+                AppHelper.sop("FacebookCallback==onError");
                 if (twitterSwitch) {
                     TweetShare();
                 } else if (googleSwitch) {
