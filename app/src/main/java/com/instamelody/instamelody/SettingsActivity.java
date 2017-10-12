@@ -279,19 +279,34 @@ public class SettingsActivity extends AppCompatActivity {
 
                     SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
                     editor.clear();
-                    editor.apply();
+                    editor.commit();
                     SharedPreferences.Editor tEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
                     tEditor.clear();
-                    tEditor.apply();
+                    tEditor.commit();
                     SharedPreferences.Editor fbeditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
                     fbeditor.clear();
-                    fbeditor.apply();
+                    fbeditor.commit();
                     SharedPreferences.Editor profileEditor = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE).edit();
                     profileEditor.clear();
-                    profileEditor.apply();
+                    profileEditor.commit();
                     SharedPreferences.Editor profileImageEditor = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE).edit();
                     profileImageEditor.clear();
-                    profileImageEditor.apply();
+                    profileImageEditor.commit();
+
+
+
+                    SharedPreferences.Editor SwitchStatusFb = getSharedPreferences("SwitchStatusFb", MODE_PRIVATE).edit();
+                    SwitchStatusFb.clear();
+                    SwitchStatusFb.commit();
+
+                    SharedPreferences.Editor SwitchStatusTwitter = getSharedPreferences("SwitchStatusTwitter", MODE_PRIVATE).edit();
+                    SwitchStatusTwitter.clear();
+                    SwitchStatusTwitter.commit();
+
+                    SharedPreferences.Editor SwitchStatusGoogle = getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE).edit();
+                    SwitchStatusGoogle.clear();
+                    SwitchStatusGoogle.commit();
+
                     LoginManager.getInstance().logOut();
                     HomeActivity.SignOut.setVisibility(View.INVISIBLE);
                     HomeActivity.SignIn.setVisibility(View.VISIBLE);

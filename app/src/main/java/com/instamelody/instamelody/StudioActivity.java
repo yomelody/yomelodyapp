@@ -2,6 +2,7 @@ package com.instamelody.instamelody;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -102,6 +103,8 @@ import com.instamelody.instamelody.utils.VolleySingleton;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.tweetcomposer.ComposerActivity;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 import com.twitter.sdk.android.tweetcomposer.TweetUploadService;
 
@@ -300,12 +303,18 @@ public class StudioActivity extends AppCompatActivity {
     private BroadcastReceiver mReceiver;
     private IntentFilter intentFilter;
     private String thumbnailUrl="";
+    private JSONObject MelodyResponseDetails;
+    private Activity mActivity;
+    final int REQUEST_GOOGLE_SHARE = 117;
+
+
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_studio);
+        mActivity=StudioActivity.this;
         progressDialog = new ProgressDialog(StudioActivity.this);
 //        instruments_count = InstrumentListAdapter.instruments_url;
 //        Log.d("abc", "" + instruments_count.size());
@@ -1417,24 +1426,24 @@ public class StudioActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 if (TweetUploadService.UPLOAD_SUCCESS.equals(intent.getAction())) {
                     // success
-                    if (googleSwitch) {
+                    /*if (googleSwitch) {
                         GoogleShare();
-                    }
+                    }*/
                     AppHelper.sop("TweetUploadService.UPLOAD_SUCCESS..");
 //                    final Long tweetId = intentExtras.getLong(TweetUploadService.EXTRA_TWEET_ID);
                 } else if (TweetUploadService.UPLOAD_FAILURE.equals(intent.getAction())) {
                     // failure
-                    if (googleSwitch) {
+                    /*if (googleSwitch) {
                         GoogleShare();
-                    }
+                    }*/
                     AppHelper.sop("TweetUploadService.UPLOAD_FAILURE..");
 //                    final Intent retryIntent = intentExtras.getParcelable(TweetUploadService.EXTRA_RETRY_INTENT);
                 } /*else if (TweetUploadService.TWEET_COMPOSE_CANCEL.equals(intent.getAction())) {
                     // cancel
                 }*/
-                if (googleSwitch) {
+                /*if (googleSwitch) {
                     GoogleShare();
-                }
+                }*/
                 AppHelper.sop("TweetUploadService.BroadcastReceiver..");
             }
         };
@@ -2224,10 +2233,10 @@ public class StudioActivity extends AppCompatActivity {
 
                         if (fbSwitch) {
                             FbShare();
-                        } else if (twitterSwitch) {
-                            TweetShare();
                         } else if (googleSwitch) {
                             GoogleShare();
+                        } else if (twitterSwitch) {
+                            TweetShare();
                         }
 
                     }
@@ -2719,7 +2728,7 @@ public class StudioActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        AppHelper.sop("requestCode="+requestCode+"=resultCode="+resultCode+"=data="+data);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && null != data) {
             Uri filePath = data.getData();
             try {
@@ -2730,6 +2739,12 @@ public class StudioActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+        else if (requestCode==REQUEST_GOOGLE_SHARE){
+            if (twitterSwitch){
+                TweetShare();
+            }
+
         }
         else {
             if (callbackManager!=null){
@@ -2989,15 +3004,6 @@ public class StudioActivity extends AppCompatActivity {
     }
 
     public void FbShare() {
-        /*SharedPreferences editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE);
-        String fetchThumbNailUrl = editorT.getString("thumbnailUrl", null);*/
-
-
-        SharedPreferences editor = getSharedPreferences("Url_recording", MODE_PRIVATE);
-        String contentUrl = editor.getString("Recording_url", "");
-
-        SharedPreferences editorT = getSharedPreferences("thumbnail_url", MODE_PRIVATE);
-        String fetchThumbNailUrl = editorT.getString("thumbnailUrl", "");
 
         AppHelper.sop("thumbnailUrl=="+thumbnailUrl);
 
@@ -3013,33 +3019,34 @@ public class StudioActivity extends AppCompatActivity {
                 editorT.clear();
                 editorT.apply();*/
                 AppHelper.sop("FacebookCallback==onSuccess");
-
-                if (twitterSwitch) {
-                    TweetShare();
-                } else if (googleSwitch) {
+                if (googleSwitch) {
                     GoogleShare();
                 }
-
+                else if (twitterSwitch) {
+                    TweetShare();
+                }
             }
 
             @Override
             public void onCancel() {
                 Toast.makeText(StudioActivity.this, "Recording not Uploaded", Toast.LENGTH_SHORT).show();
                 AppHelper.sop("FacebookCallback==onCancel");
-                if (twitterSwitch) {
-                    TweetShare();
-                } else if (googleSwitch) {
+                if (googleSwitch) {
                     GoogleShare();
+                }
+                else if (twitterSwitch) {
+                    TweetShare();
                 }
             }
 
             @Override
             public void onError(FacebookException error) {
                 AppHelper.sop("FacebookCallback==onError");
-                if (twitterSwitch) {
-                    TweetShare();
-                } else if (googleSwitch) {
+                if (googleSwitch) {
                     GoogleShare();
+                }
+                else if (twitterSwitch) {
+                    TweetShare();
                 }
             }
 
@@ -3055,33 +3062,32 @@ public class StudioActivity extends AppCompatActivity {
     }
 
     public void TweetShare() {
-        SharedPreferences editorT = getSharedPreferences("thumbnail_url", MODE_PRIVATE);
-        String fetchThumbNailUrl = editorT.getString("thumbnailUrl", "");
 
         try {
-            ShortUrl = new URL(thumbnailUrl);
+            AppHelper.sop("TweetShare call!!");
+            /*TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
+            Fabric.with(this, new TwitterCore(authConfig), new TweetComposer());*/
+
+            TweetComposer.Builder builder = new TweetComposer.Builder(this)
+                    .text("Audio Url")
+                    .url(new URL(thumbnailUrl));
+//                .image(Uri.parse(cover));
+            builder.show();
+
+
+        /*TwitterSession session = TwitterCore.getInstance().getSessionManager()
+                .getActiveSession();
+        Intent intent = new ComposerActivity.Builder(mActivity)
+                .session(session)
+                .card(ShortUrl)
+                .text("Welcome to Twitter")
+                .hashtags("#twitter")
+                .createIntent();
+        startActivityForResult(intent,107) ;*/
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-
-        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
-        Fabric.with(this, new TwitterCore(authConfig), new TweetComposer());
-
-        /*Bundle bundle = getIntent().getExtras().getBundle(SHARE_DATA);
-        String description = bundle.getString(SHARE_DESCRIPTION);
-        String title = bundle.getString(SHARE_TITLE);
-        String picture = bundle.getString(SHARE_PICTURE_LINK);
-        String link = bundle.getString(SHARE_LINK);*/
-
-        TweetComposer.Builder builder = null;
-
-
-        builder = new TweetComposer.Builder(this)
-//                    .text(title + "" + description)
-                .text("Audio Url")
-                .url(ShortUrl);
-//                .image(Uri.parse(cover));
-        builder.show();
     }
 
     public void GoogleShare() {
@@ -3099,7 +3105,7 @@ public class StudioActivity extends AppCompatActivity {
                 .setText("Welcome to the Google+ platform.")
                 .setContentUrl(Uri.parse(thumbnailUrl))
                 .getIntent();
-        startActivityForResult(shareIntent, 0);
+        startActivityForResult(shareIntent, REQUEST_GOOGLE_SHARE);
     }
 
     private void IsMicConnectet() {

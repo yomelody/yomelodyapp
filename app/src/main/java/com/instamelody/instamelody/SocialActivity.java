@@ -131,7 +131,7 @@ public class SocialActivity extends AppCompatActivity {
         SharedPreferences loginSharedPref1 = this.getSharedPreferences("Url_recording", MODE_PRIVATE);
         fetchRecordingUrl = loginSharedPref1.getString("Recording_url", null);
         SharedPreferences editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE);
-        fetchThumbNailUrl = editorT.getString("thumbnailUrl", null);
+        fetchThumbNailUrl = editorT.getString("thumbnailUrl", "");
         plus_one_button = (PlusOneButton) findViewById(R.id.plus_one_button);
         tvDone = (TextView) findViewById(R.id.tvDone);
         tvFirstNameSocial = (TextView) findViewById(R.id.tvFirstNameSocial);
@@ -290,33 +290,12 @@ public class SocialActivity extends AppCompatActivity {
         switchGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fetchThumbNailUrl == null) {
-                    Toast.makeText(SocialActivity.this, "Do recordings to Share", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
-                    intent.putExtra("clickPosition", "fromSocialActivity");
-                    startActivity(intent);
-                    switchGoogle.setEnabled(false);
-                } else {
-                    /*plus_one_button.setVisibility(View.VISIBLE);
-                    plus_one_button.setEnabled(true);
-                    plus_one_button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent shareIntent = new PlusShare.Builder(SocialActivity.this)
-                                    .setType("text/plain")
-                                    .setText("Welcome to the Google+ platform.")
-                                    .setContentUrl(Uri.parse(fetchThumbNailUrl))
-                                    .getIntent();
-                            startActivityForResult(shareIntent, 0);
-                        }
-                    });*/
-                }
                 if (switchGoogle.isChecked()) {
-                    SharedPreferences.Editor switchGoogleEditor = getApplicationContext().getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE).edit();
+                    SharedPreferences.Editor switchGoogleEditor = getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE).edit();
                     switchGoogleEditor.putBoolean("switchGoogle", true);
                     switchGoogleEditor.apply();
                 } else {
-                    SharedPreferences.Editor switchGoogleEditor = getApplicationContext().getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE).edit();
+                    SharedPreferences.Editor switchGoogleEditor = getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE).edit();
                     switchGoogleEditor.putBoolean("switchGoogle", false);
                     switchGoogleEditor.apply();
                 }

@@ -338,6 +338,16 @@ public class StationCommentActivity extends AppCompatActivity {
             }
         });
 
+        rlProfilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (recordingsModel!=null){
+                    Intent intent = new Intent(mActivity, ProfileActivity.class);
+                    intent.putExtra("showProfileUserId", recordingsModel.getAddedBy());
+                    startActivity(intent);
+                }
+            }
+        });
 
         ivStationPlay.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -252,10 +252,24 @@ public class HomeActivity extends AppCompatActivity {
                 fbeditor.commit();
                 SharedPreferences.Editor profileEditor1 = getSharedPreferences("ProfileUpdate", MODE_PRIVATE).edit();
                 profileEditor1.clear();
-                profileEditor1.apply();
+                profileEditor1.commit();
                 SharedPreferences.Editor profileImageEditor1 = getSharedPreferences("ProfileImage", MODE_PRIVATE).edit();
                 profileImageEditor1.clear();
-                profileImageEditor1.apply();
+                profileImageEditor1.commit();
+
+
+                SharedPreferences.Editor SwitchStatusFb = getSharedPreferences("SwitchStatusFb", MODE_PRIVATE).edit();
+                SwitchStatusFb.clear();
+                SwitchStatusFb.commit();
+
+                SharedPreferences.Editor SwitchStatusTwitter = getSharedPreferences("SwitchStatusTwitter", MODE_PRIVATE).edit();
+                SwitchStatusTwitter.clear();
+                SwitchStatusTwitter.commit();
+
+                SharedPreferences.Editor SwitchStatusGoogle = getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE).edit();
+                SwitchStatusGoogle.clear();
+                SwitchStatusGoogle.commit();
+
                 LoginManager.getInstance().logOut();
                 SignOut.setVisibility(View.INVISIBLE);
                 SignIn.setVisibility(View.VISIBLE);
