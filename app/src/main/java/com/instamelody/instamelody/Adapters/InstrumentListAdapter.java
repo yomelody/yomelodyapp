@@ -1846,7 +1846,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 StudioActivity.playAll.setVisibility(View.GONE);
                 StudioActivity.pauseAll.setVisibility(View.VISIBLE);
                 StudioActivity.ivRecord.setEnabled(false);
-                StudioActivity.waveform_view.setVisibility(View.VISIBLE);
+                //StudioActivity.waveform_view.setVisibility(View.VISIBLE);
                 //StudioActivity.frameProgress.setVisibility(View.GONE);
                 StudioActivity.frameProgress.setVisibility(View.GONE);
                 for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
