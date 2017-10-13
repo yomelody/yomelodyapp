@@ -306,11 +306,11 @@ public class StudioActivity extends AppCompatActivity {
     private boolean fbSwitch, twitterSwitch, googleSwitch;
     private BroadcastReceiver mReceiver;
     private IntentFilter intentFilter;
-    private String thumbnailUrl="";
+    private String thumbnailUrl = "";
     private JSONObject MelodyResponseDetails;
     private Activity mActivity;
     final int REQUEST_GOOGLE_SHARE = 117;
-    int totalCount = 0,Compdurations = 0, tmpduration = 0, MaxMpSessionID;
+    int totalCount = 0, Compdurations = 0, tmpduration = 0, MaxMpSessionID;
     String IscheckMelody = null;
     String IsHomeMeloduId = null;
 
@@ -321,13 +321,14 @@ public class StudioActivity extends AppCompatActivity {
     public static AudioDataReceivedListener mListener;
     public static VisualizerView mVisualizerView;
     public static Visualizer mVisualizer;
+    public static boolean IsRepeat = false;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_studio);
-        mActivity=StudioActivity.this;
+        mActivity = StudioActivity.this;
         progressDialog = new ProgressDialog(StudioActivity.this);
         rlBase = (RelativeLayout) findViewById(R.id.rlBase);
         frameprog = (ProgressBar) findViewById(R.id.frameProg);
@@ -569,7 +570,7 @@ public class StudioActivity extends AppCompatActivity {
                     StudioActivity.ivRecord_play.setVisibility(View.VISIBLE);
                     StudioActivity.rlRedoButton.setVisibility(View.VISIBLE);
                     if (IsHomeMeloduId != null) {
-
+                        rlPublic.setVisibility(View.VISIBLE);
                         fetchInstruments(IsHomeMeloduId);
                         melodyPackId = IsHomeMeloduId;
                         JoinActivity.instrumentList.clear();
@@ -755,6 +756,7 @@ public class StudioActivity extends AppCompatActivity {
                         for (int i = 0; i <= mp_start.size() - 1; i++) {
                             try {
                                 mp_start.get(i).stop();
+                                mp_start.get(i).release();
                             } catch (IllegalStateException e) {
                                 e.printStackTrace();
                             }
@@ -764,12 +766,14 @@ public class StudioActivity extends AppCompatActivity {
                     if (mpall != null) {
                         try {
                             mpall.stop();
+                            mpall = null;
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
                         for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                             try {
                                 mediaPlayersAll.get(i).stop();
+                                mediaPlayersAll.get(i).release();
                             } catch (IllegalStateException e) {
                                 e.printStackTrace();
                             }
@@ -779,6 +783,7 @@ public class StudioActivity extends AppCompatActivity {
                     if (mpInst != null) {
                         try {
                             mpInst.stop();
+                            mpInst = null;
                         } catch (IllegalStateException e) {
                             e.printStackTrace();
                         }
@@ -788,15 +793,6 @@ public class StudioActivity extends AppCompatActivity {
                     if (isRecording) {
                         //ivRecord.setEnabled(false);
                         handler.removeCallbacksAndMessages(null);
-
-                        if (recorder != null) {
-                            try {
-                                recorder.stop();
-
-                            } catch (RuntimeException ex) {
-                                //Ignore
-                            }
-                        }
                         try {
                             recorder.release();
                             recorder = null;
@@ -835,7 +831,7 @@ public class StudioActivity extends AppCompatActivity {
                 try {
 
                     handler.removeCallbacksAndMessages(null);
-                    if(mVisualizer!=null) {
+                    if (mVisualizer != null) {
                         mVisualizer.release();
                     }
                     if (lstViewHolder.size() > 0) {
@@ -889,7 +885,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    if(mVisualizer!=null) {
+                    if (mVisualizer != null) {
                         mVisualizer.release();
                     }
                     handler.removeCallbacksAndMessages(null);
@@ -947,7 +943,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    if(mVisualizer!=null) {
+                    if (mVisualizer != null) {
                         mVisualizer.release();
                     }
                     handler.removeCallbacksAndMessages(null);
@@ -1007,7 +1003,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    if(mVisualizer!=null) {
+                    if (mVisualizer != null) {
                         mVisualizer.release();
                     }
                     handler.removeCallbacksAndMessages(null);
@@ -1066,7 +1062,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    if(mVisualizer!=null) {
+                    if (mVisualizer != null) {
                         mVisualizer.release();
                     }
                     handler.removeCallbacksAndMessages(null);
@@ -1125,7 +1121,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    if(mVisualizer!=null) {
+                    if (mVisualizer != null) {
                         mVisualizer.release();
                     }
                     handler.removeCallbacksAndMessages(null);
@@ -1396,7 +1392,7 @@ public class StudioActivity extends AppCompatActivity {
                         Toast.makeText(StudioActivity.this, "Task not running.", Toast.LENGTH_SHORT).show();
                     }
 
-                    if(mVisualizer!=null) {
+                    if (mVisualizer != null) {
                         mVisualizer.release();
                     }
 
@@ -1541,17 +1537,19 @@ public class StudioActivity extends AppCompatActivity {
                     rlRedoButton.setVisibility(View.VISIBLE);
 
                     try {
-                        if(mVisualizer!=null) {
+                        if (mVisualizer != null) {
                             mVisualizer.release();
                         }
 
                         if (mediaPlayer != null) {
                             mediaPlayer.stop();
                             mediaPlayer.release();
+                            mediaPlayer=null;
                         }
                         if (mpall != null) {
                             mpall.stop();
                             mpall.release();
+                            mpall=null;
                             for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                                 mediaPlayersAll.get(i).stop();
                                 mediaPlayersAll.get(i).release();
@@ -1590,7 +1588,7 @@ public class StudioActivity extends AppCompatActivity {
 
     }
 
-    void TweeterSharingWork(){
+    void TweeterSharingWork() {
         intentFilter = new IntentFilter();
         intentFilter.addAction("com.twitter.sdk.android.tweetcomposer.UPLOAD_SUCCESS");
         intentFilter.addAction("com.twitter.sdk.android.tweetcomposer.UPLOAD_FAILURE");
@@ -2274,7 +2272,7 @@ public class StudioActivity extends AppCompatActivity {
                                 progressDialog.dismiss();
                             }
                         }
-                        thumbnailUrl=r1.getJSONObject("melody_data").getString("thumbnail_url");
+                        thumbnailUrl = r1.getJSONObject("melody_data").getString("thumbnail_url");
 
                         SharedPreferences.Editor recEditor = getApplication().getSharedPreferences("Recording_MelodyDataResponse", MODE_PRIVATE).edit();
                         recEditor.clear();
@@ -2300,7 +2298,7 @@ public class StudioActivity extends AppCompatActivity {
                         SharedPreferences switchGoogleEditor = getApplicationContext().getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE);
                         googleSwitch = switchGoogleEditor.getBoolean("switchGoogle", false);
 
-                        AppHelper.sop("fbSwitch="+fbSwitch+"=twitterSwitch="+twitterSwitch+"=googleSwitch"+googleSwitch);
+                        AppHelper.sop("fbSwitch=" + fbSwitch + "=twitterSwitch=" + twitterSwitch + "=googleSwitch" + googleSwitch);
 
                         if (fbSwitch) {
                             FbShare();
@@ -2800,7 +2798,7 @@ public class StudioActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        AppHelper.sop("requestCode="+requestCode+"=resultCode="+resultCode+"=data="+data);
+        AppHelper.sop("requestCode=" + requestCode + "=resultCode=" + resultCode + "=data=" + data);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && null != data) {
             Uri filePath = data.getData();
             try {
@@ -2811,15 +2809,13 @@ public class StudioActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        else if (requestCode==REQUEST_GOOGLE_SHARE){
-            if (twitterSwitch){
+        } else if (requestCode == REQUEST_GOOGLE_SHARE) {
+            if (twitterSwitch) {
                 TweetShare();
             }
 
-        }
-        else {
-            if (callbackManager!=null){
+        } else {
+            if (callbackManager != null) {
                 callbackManager.onActivityResult(requestCode, resultCode, data);
             }
         }
@@ -2829,10 +2825,17 @@ public class StudioActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         try {
+            if (mVisualizer != null) {
+                mVisualizer.release();
+            }
             if (StudioActivity.mp_start != null) {
 
                 for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
-                    StudioActivity.mp_start.get(i).stop();
+                    try {
+                        StudioActivity.mp_start.get(i).stop();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
 
                 }
             }
@@ -2840,12 +2843,20 @@ public class StudioActivity extends AppCompatActivity {
                 mpall.stop();
                 if (mediaPlayersAll.size() > 0) {
                     for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                        mediaPlayersAll.get(i).stop();
+                        try {
+                            mediaPlayersAll.get(i).stop();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 }
             }
             if (StudioActivity.mpInst != null) {
-                StudioActivity.mpInst.stop();
+                try {
+                    StudioActivity.mpInst.stop();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
             Intent i = new Intent(this, HomeActivity.class);
             startActivity(i);
@@ -3011,11 +3022,11 @@ public class StudioActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
         try {
             handler.removeCallbacksAndMessages(null);
-            if (isFinishing()) {
-                if(mVisualizer!=null) {
-                    mVisualizer.release();
-                }
+
+            if (mVisualizer != null) {
+                mVisualizer.release();
             }
+
             if (StudioActivity.mp_start != null) {
 
                 for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
@@ -3066,7 +3077,7 @@ public class StudioActivity extends AppCompatActivity {
 
     public void FbShare() {
 
-        AppHelper.sop("thumbnailUrl=="+thumbnailUrl);
+        AppHelper.sop("thumbnailUrl==" + thumbnailUrl);
 
 //        FacebookSdk.sdkInitialize(this);
         callbackManager = CallbackManager.Factory.create();
@@ -3082,8 +3093,7 @@ public class StudioActivity extends AppCompatActivity {
                 AppHelper.sop("FacebookCallback==onSuccess");
                 if (googleSwitch) {
                     GoogleShare();
-                }
-                else if (twitterSwitch) {
+                } else if (twitterSwitch) {
                     TweetShare();
                 }
             }
@@ -3094,8 +3104,7 @@ public class StudioActivity extends AppCompatActivity {
                 AppHelper.sop("FacebookCallback==onCancel");
                 if (googleSwitch) {
                     GoogleShare();
-                }
-                else if (twitterSwitch) {
+                } else if (twitterSwitch) {
                     TweetShare();
                 }
             }
@@ -3105,8 +3114,7 @@ public class StudioActivity extends AppCompatActivity {
                 AppHelper.sop("FacebookCallback==onError");
                 if (googleSwitch) {
                     GoogleShare();
-                }
-                else if (twitterSwitch) {
+                } else if (twitterSwitch) {
                     TweetShare();
                 }
             }

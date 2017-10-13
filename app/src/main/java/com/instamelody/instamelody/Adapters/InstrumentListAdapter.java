@@ -85,7 +85,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     String fbName, fbUserName, fbId;
     String instrumentName, melodyName;
     int rvLength;
-    boolean IsRepeat = false, IsMute = false, IsSolo = false;
+    boolean IsMute = false, IsSolo = false;
     int Compdurations = 0, tmpduration = 0, MaxMpSessionID;
     SoundPool mSoundPool;
     public static ArrayList<String> instruments_url = new ArrayList<String>();
@@ -427,14 +427,17 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 try {
                     if (holder.mp != null) {
                         holder.mp.stop();
+                        holder.mp=null;
                     }
                     if (StudioActivity.mpInst != null) {
                         StudioActivity.mpInst.stop();
+                        StudioActivity.mpInst=null;
                     }
 
                     for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
                         if (i == holder.getAdapterPosition()) {
                             StudioActivity.mediaPlayersAll.get(i).stop();
+                            StudioActivity.mediaPlayersAll.get(i).release();
                         }
                     }
 
@@ -1043,12 +1046,14 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     if (StudioActivity.mpall != null) {
                         StudioActivity.mpall.stop();
                         StudioActivity.mpall.release();
+                        StudioActivity.mpall=null;
                     }
 
                     StudioActivity.handler.removeCallbacksAndMessages(null);
                     if (StudioActivity.mpInst != null) {
                         StudioActivity.mpInst.stop();
                         StudioActivity.mpInst.release();
+                        StudioActivity.mpInst=null;
                     }
 
                     for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
@@ -1168,7 +1173,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                                 holder.progressDialog.dismiss();
                                 initAudio(mps);
                                 mps.start();
-                                if (IsRepeat) {
+                                if (StudioActivity.IsRepeat) {
                                     holder.mp.setLooping(true);
                                 } else {
                                     holder.mp.setLooping(false);
@@ -1271,6 +1276,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     if (holder.mp != null) {
                         holder.mp.stop();
                         holder.mp.release();
+                        holder.mp=null;
                     }
                     length = holder.mp.getCurrentPosition();
 
@@ -1319,10 +1325,10 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             @Override
             public void onClick(View v) {
                 try {
-                    if (IsRepeat == false) {
+                    if (StudioActivity.IsRepeat == false) {
                         //ArrayList arrayList=new ArrayList();
                         ArRepeate.add(holder.getAdapterPosition(), 1);
-                        IsRepeat = true;
+                        StudioActivity.IsRepeat = true;
                         holder.rlrepeat.setBackgroundColor(Color.GRAY);
                         if (holder.mp != null) {
                             if (holder.mp.isLooping() == false) {
@@ -1331,8 +1337,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                                 holder.mp.setLooping(false);
                             }
                         }
-                    } else if (IsRepeat == true) {
-                        IsRepeat = false;
+                    } else if (StudioActivity.IsRepeat == true) {
+                        StudioActivity.IsRepeat = false;
                         holder.rlrepeat.setBackgroundColor(Color.TRANSPARENT);
                         if (holder.mp != null) {
                             if (holder.mp.isLooping() == false) {
@@ -1870,9 +1876,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     } catch (Exception e) {
 
                     }
-                    if (IsRepeat == true) {
+                    if (StudioActivity.IsRepeat == true) {
                         StudioActivity.mediaPlayersAll.get(i).setLooping(true);
-                    } else if (IsRepeat == false) {
+                    } else if (StudioActivity.IsRepeat == false) {
                         StudioActivity.mediaPlayersAll.get(i).setLooping(false);
                     }
                     final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
@@ -2141,13 +2147,12 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         // setupVisualizerFxAndUI because we likely want to have more,
         // non-Visualizer related code
         // in this callback.
-        mpst
-                .setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+        /*mpst.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     public void onCompletion(MediaPlayer mediaPlayer) {
                         StudioActivity.mVisualizer.setEnabled(false);
                     }
-                });
-        //mpst.start();
+                });*/
+
 
     }
 
