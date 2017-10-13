@@ -1,120 +1,326 @@
 package com.instamelody.instamelody.utils;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.Picture;
+import android.graphics.Rect;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
+import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.view.SurfaceView;
+import android.view.View;
+
+import com.newventuresoftware.waveform.utils.AudioUtils;
+import com.newventuresoftware.waveform.utils.SamplingUtils;
+import com.newventuresoftware.waveform.utils.TextUtils;
 
 import java.util.LinkedList;
 
 /**
- * Created by Saurabh Singh on 2/24/2017.
+ * TODO: document your custom view class.
  */
+public class WaveformView extends View {
+    public static final int MODE_RECORDING = 1;
+    public static final int MODE_PLAYBACK = 2;
 
-public class WaveformView extends SurfaceView {
-
-
-    // The number of buffer frames to keep around (for a nice fade-out visualization).
     private static final int HISTORY_SIZE = 6;
 
-    // To make quieter sounds still show up well on the display, we use +/- 8192 as the amplitude
-    // that reaches the top/bottom of the view instead of +/- 32767. Any samples that have
-    // magnitude higher than this limit will simply be clipped during drawing.
-    private static final float MAX_AMPLITUDE_TO_DRAW = 8192.0f;
+    private TextPaint mTextPaint;
+    private Paint mStrokePaint, mFillPaint, mMarkerPaint;
 
-    // The queue that will hold historical audio data.
-    private final LinkedList<short[]> mAudioData;
+    // Used in draw
+    private int brightness;
+    private Rect drawRect;
 
-    private final Paint mPaint;
+    private int width, height;
+    private float xStep, centerY;
+    private int mMode, mAudioLength, mMarkerPosition, mSampleRate, mChannels;
+    private short[] mSamples;
+    private LinkedList<float[]> mHistoricalData;
+    private Picture mCachedWaveform;
+    private Bitmap mCachedWaveformBitmap;
+    private int colorDelta = 255 / (HISTORY_SIZE + 1);
+    private boolean showTextAxis = true;
 
     public WaveformView(Context context) {
-        this(context, null, 0);
+        super(context);
+        init(context, null, 0);
     }
 
     public WaveformView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        super(context, attrs);
+        init(context, attrs, 0);
     }
 
     public WaveformView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-
-        mAudioData = new LinkedList<short[]>();
-
-        mPaint = new Paint();
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setColor(Color.WHITE);
-        mPaint.setStrokeWidth(0);
-        mPaint.setAntiAlias(true);
+        init(context, attrs, defStyle);
     }
 
-    public synchronized void updateAudioData(short[] buffer) {
-        short[] newBuffer;
+    private void init(Context context, AttributeSet attrs, int defStyle) {
+        // Load attributes
+        final TypedArray a = getContext().obtainStyledAttributes(
+                attrs, com.newventuresoftware.waveform.R.styleable.WaveformView, defStyle, 0);
 
-        // We want to keep a small amount of history in the view to provide a nice fading effect.
-        // We use a linked list that we treat as a queue for this.
-        if (mAudioData.size() == HISTORY_SIZE) {
-            newBuffer = mAudioData.removeFirst();
-            System.arraycopy(buffer, 0, newBuffer, 0, buffer.length);
-        } else {
-            newBuffer = buffer.clone();
+        mMode = a.getInt(com.newventuresoftware.waveform.R.styleable.WaveformView_mode, MODE_PLAYBACK);
+
+        float strokeThickness = a.getFloat(com.newventuresoftware.waveform.R.styleable.WaveformView_waveformStrokeThickness, 1f);
+        int mStrokeColor = a.getColor(com.newventuresoftware.waveform.R.styleable.WaveformView_waveformColor,
+                ContextCompat.getColor(context, com.newventuresoftware.waveform.R.color.default_waveform));
+        int mFillColor = a.getColor(com.newventuresoftware.waveform.R.styleable.WaveformView_waveformFillColor,
+                ContextCompat.getColor(context, com.newventuresoftware.waveform.R.color.default_waveformFill));
+        int mMarkerColor = a.getColor(com.newventuresoftware.waveform.R.styleable.WaveformView_playbackIndicatorColor,
+                ContextCompat.getColor(context, com.newventuresoftware.waveform.R.color.default_playback_indicator));
+        int mTextColor = a.getColor(com.newventuresoftware.waveform.R.styleable.WaveformView_timecodeColor,
+                ContextCompat.getColor(context, com.newventuresoftware.waveform.R.color.default_timecode));
+
+        a.recycle();
+
+        mTextPaint = new TextPaint();
+        mTextPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
+        mTextPaint.setTextAlign(Paint.Align.CENTER);
+                mTextPaint.setColor(mTextColor);
+        mTextPaint.setTextSize(TextUtils.getFontSize(getContext(),
+                android.R.attr.textAppearanceSmall));
+
+        mStrokePaint = new Paint();
+        mStrokePaint.setColor(mStrokeColor);
+        mStrokePaint.setStyle(Paint.Style.STROKE);
+        mStrokePaint.setStrokeWidth(strokeThickness);
+        mStrokePaint.setAntiAlias(true);
+
+        mFillPaint = new Paint();
+        mFillPaint.setStyle(Paint.Style.FILL);
+        mFillPaint.setAntiAlias(true);
+        mFillPaint.setColor(mFillColor);
+
+        mMarkerPaint = new Paint();
+        mMarkerPaint.setStyle(Paint.Style.STROKE);
+        mMarkerPaint.setStrokeWidth(0);
+        mMarkerPaint.setAntiAlias(true);
+        mMarkerPaint.setColor(mMarkerColor);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+
+        width = getMeasuredWidth();
+        height = getMeasuredHeight();
+        xStep = width / (mAudioLength * 1.0f);
+        centerY = height / 2f;
+        drawRect = new Rect(0, 0, width, height);
+
+        if (mHistoricalData != null) {
+            mHistoricalData.clear();
         }
-
-        mAudioData.addLast(newBuffer);
-
-        // Update the display.
-        Canvas canvas = getHolder().lockCanvas();
-        if (canvas != null) {
-            drawWaveform(canvas);
-            getHolder().unlockCanvasAndPost(canvas);
+        if (mMode == MODE_PLAYBACK) {
+            createPlaybackWaveform();
         }
     }
 
-    /**
-     * Repaints the view's surface.
-     *
-     * @param canvas the {@link Canvas} object on which to draw
-     */
-    private void drawWaveform(Canvas canvas) {
-        // Clear the screen each time because SurfaceView won't do this for us.
-//      give color here #saurabhTask
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
 
-        canvas.drawColor(Color.BLACK);
+        LinkedList<float[]> temp = mHistoricalData;
+        if (mMode == MODE_RECORDING && temp != null) {
+            brightness = colorDelta;
+            for (float[] p : temp) {
+                mStrokePaint.setAlpha(brightness);
+                canvas.drawLines(p, mStrokePaint);
+                brightness += colorDelta;
+            }
+        } else if (mMode == MODE_PLAYBACK) {
+            if (mCachedWaveform != null) {
+                canvas.drawPicture(mCachedWaveform);
+            } else if (mCachedWaveformBitmap != null) {
+                canvas.drawBitmap(mCachedWaveformBitmap, null, drawRect, null);
+            }
+            if (mMarkerPosition > -1 && mMarkerPosition < mAudioLength)
+                canvas.drawLine(xStep * mMarkerPosition, 0, xStep * mMarkerPosition, height, mMarkerPaint);
+        }
+    }
 
-        float width = getWidth();
-        float height = getHeight();
-        float centerY = height / 2;
+    public int getMode() {
+        return mMode;
+    }
 
-        // We draw the history from oldest to newest so that the older audio data is further back
-        // and darker than the most recent data.
-        int colorDelta = 255 / (HISTORY_SIZE + 1);
-        int brightness = colorDelta;
+    public void setMode(int mMode) {
+        mMode = mMode;
+    }
 
-        for (short[] buffer : mAudioData) {
-//            mPaint.setColor(Color.argb(brightness, 128, 255, 192));
-            mPaint.setColor(Color.argb(brightness, 194, 194, 194));
+    public short[] getSamples() {
+        return mSamples;
+    }
 
-            float lastX = -1;
-            float lastY = -1;
+    public void setSamples(short[] samples) {
+        mSamples = samples;
+        calculateAudioLength();
+        onSamplesChanged();
+    }
 
-            // For efficiency, we don't draw all of the samples in the buffer, but only the ones
-            // that align with pixel boundaries.
-            for (int x = 0; x < width; x++) {
-                int index = (int) ((x / width) * buffer.length);
-                short sample = buffer[index];
-                float y = (sample / MAX_AMPLITUDE_TO_DRAW) * centerY + centerY;
+    public int getMarkerPosition() {
+        return mMarkerPosition;
+    }
 
-                if (lastX != -1) {
-                    canvas.drawLine(lastX, lastY, x, y, mPaint);
-                }
+    public void setMarkerPosition(int markerPosition) {
+        mMarkerPosition = markerPosition;
+        postInvalidate();
+    }
 
-                lastX = x;
-                lastY = y;
+    public int getAudioLength() {
+        return mAudioLength;
+    }
+
+    public int getSampleRate() {
+        return mSampleRate;
+    }
+
+    public void setSampleRate(int sampleRate) {
+        mSampleRate = sampleRate;
+        calculateAudioLength();
+    }
+
+    public int getChannels() {
+        return mChannels;
+    }
+
+    public void setChannels(int channels) {
+        mChannels = channels;
+        calculateAudioLength();
+    }
+
+    public boolean showTextAxis() {
+         return showTextAxis;
+    }
+
+    public void setShowTextAxis(boolean showTextAxis) {
+        this.showTextAxis = showTextAxis;
+    }
+
+    private void calculateAudioLength() {
+        if (mSamples == null || mSampleRate == 0 || mChannels == 0)
+            return;
+
+        mAudioLength = AudioUtils.calculateAudioLength(mSamples.length, mSampleRate, mChannels);
+    }
+
+    private void onSamplesChanged() {
+        if (mMode == MODE_RECORDING) {
+            if (mHistoricalData == null)
+                mHistoricalData = new LinkedList<>();
+            LinkedList<float[]> temp = new LinkedList<>(mHistoricalData);
+
+            // For efficiency, we are reusing the array of points.
+            float[] waveformPoints;
+            if (temp.size() == HISTORY_SIZE) {
+                waveformPoints = temp.removeFirst();
+            } else {
+                waveformPoints = new float[width * 4];
             }
 
-            brightness += colorDelta;
+            drawRecordingWaveform(mSamples, waveformPoints);
+            temp.addLast(waveformPoints);
+            mHistoricalData = temp;
+            postInvalidate();
+        } else if (mMode == MODE_PLAYBACK) {
+            mMarkerPosition = -1;
+            xStep = width / (mAudioLength * 1.0f);
+            createPlaybackWaveform();
+        }
+    }
+
+    void drawRecordingWaveform(short[] buffer, float[] waveformPoints) {
+        float lastX = -1;
+        float lastY = -1;
+        int pointIndex = 0;
+        float max = Short.MAX_VALUE;
+
+        // For efficiency, we don't draw all of the samples in the buffer, but only the ones
+        // that align with pixel boundaries.
+        for (int x = 0; x < width; x++) {
+            int index = (int) (((x * 1.0f) / width) * buffer.length);
+            short sample = buffer[index];
+            float y = centerY - ((sample / max) * centerY);
+
+            if (lastX != -1) {
+                waveformPoints[pointIndex++] = lastX;
+                waveformPoints[pointIndex++] = lastY;
+                waveformPoints[pointIndex++] = x;
+                waveformPoints[pointIndex++] = y;
+            }
+
+            lastX = x;
+            lastY = y;
+        }
+    }
+
+    Path drawPlaybackWaveform(int width, int height, short[] buffer) {
+        Path waveformPath = new Path();
+        float centerY = height / 2f;
+        float max = Short.MAX_VALUE;
+
+        short[][] extremes = SamplingUtils.getExtremes(buffer, width);
+
+
+        waveformPath.moveTo(0, centerY);
+
+        // draw maximums
+        for (int x = 0; x < width; x++) {
+            short sample = extremes[x][0];
+            float y = centerY - ((sample / max) * centerY);
+            waveformPath.lineTo(x, y);
+        }
+
+        // draw minimums
+        for (int x = width - 1; x >= 0; x--) {
+            short sample = extremes[x][1];
+            float y = centerY - ((sample / max) * centerY);
+            waveformPath.lineTo(x, y);
+        }
+
+        waveformPath.close();
+
+        return waveformPath;
+    }
+
+    private void createPlaybackWaveform() {
+        if (width <= 0 || height <= 0 || mSamples == null)
+            return;
+
+        Canvas cacheCanvas;
+        if (Build.VERSION.SDK_INT >= 23 && isHardwareAccelerated()) {
+            mCachedWaveform = new Picture();
+            cacheCanvas = mCachedWaveform.beginRecording(width, height);
+        } else {
+            mCachedWaveformBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            cacheCanvas = new Canvas(mCachedWaveformBitmap);
+        }
+
+        Path mWaveform = drawPlaybackWaveform(width, height, mSamples);
+        cacheCanvas.drawPath(mWaveform, mFillPaint);
+        cacheCanvas.drawPath(mWaveform, mStrokePaint);
+        drawAxis(cacheCanvas, width);
+
+        if (mCachedWaveform != null)
+            mCachedWaveform.endRecording();
+    }
+
+    private void drawAxis(Canvas canvas, int width) {
+        if (!showTextAxis) return;
+        int seconds = mAudioLength / 1000;
+        float xStep = width / (mAudioLength / 1000f);
+        float textHeight = mTextPaint.getTextSize();
+        float textWidth = mTextPaint.measureText("10.00");
+        int secondStep = (int)(textWidth * seconds * 2) / width;
+        secondStep = Math.max(secondStep, 1);
+        for (float i = 0; i <= seconds; i += secondStep) {
+            canvas.drawText(String.format("%.2f", i), i * xStep, textHeight, mTextPaint);
         }
     }
 }
-
