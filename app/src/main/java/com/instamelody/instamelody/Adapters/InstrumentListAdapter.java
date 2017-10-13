@@ -156,6 +156,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     boolean IsPlaySoloAll = false, IsPlayMuteAll = false;
     ArrayList ArRepeate = new ArrayList();
     private RecordingThread mRecordingThread;
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         ImageView userProfileImage, ivInstrumentCover, ivPlay, ivPause, ivRepeatMelody;
@@ -177,7 +178,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
         CardView card_melody;
         AudioManager audioManager;
-
 
 
         public MyViewHolder(View itemView) {
@@ -982,7 +982,11 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             @Override
             public void onClick(View v) {
                 try {
-                    StudioActivity.mVisualizer.release();
+
+                    if (StudioActivity.mVisualizer != null) {
+                        StudioActivity.mVisualizer.release();
+                    }
+
                     StudioActivity.recyclerViewInstruments.smoothScrollToPosition(instrumentList.size());
                     if (StudioActivity.mediaPlayersAll.size() > 0) {
                         StudioActivity.mediaPlayersAll.clear();
@@ -1027,7 +1031,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             @Override
             public void onClick(View v) {
                 try {
-                    StudioActivity.mVisualizer.release();
+                    if (StudioActivity.mVisualizer != null) {
+                        StudioActivity.mVisualizer.release();
+                    }
                     IsPlaySoloAll = false;
                     IsPlayMuteAll = false;
                     StudioActivity.pauseAll.setVisibility(View.GONE);
@@ -1084,7 +1090,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             @Override
             public void onClick(View v) {
                 try {
-                    StudioActivity.mVisualizer.release();
+                    if (StudioActivity.mVisualizer != null) {
+                        StudioActivity.mVisualizer.release();
+                    }
                     instruments_url.add(instrumentFile);
                     instrumentFile = instruments.getInstrumentFile();
                     StudioActivity.handler.removeCallbacksAndMessages(null);
@@ -1253,7 +1261,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             @Override
             public void onClick(View v) {
                 try {
-                    StudioActivity.mVisualizer.release();
+                    if (StudioActivity.mVisualizer != null) {
+                        StudioActivity.mVisualizer.release();
+                    }
                     holder.ivPlay.setVisibility(v.VISIBLE);
                     holder.ivPause.setVisibility(v.GONE);
                     StudioActivity.handler.removeCallbacksAndMessages(null);
@@ -1464,7 +1474,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             }
 
         });*/
-
 
 
         Intent i = new Intent("fetchingInstruments");
@@ -1740,7 +1749,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     }*/
 
 
-
     private class PrepareInstrumentsForPlayAll extends AsyncTask<String, Void, Bitmap> {
 
         protected void onPreExecute() {
@@ -1918,8 +1926,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             recorder.start();
 
 
-
-
             isRecording = true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -2031,8 +2037,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     }
 
 
-
-
     public Class<ByteArrayPool> MediaExtractor() {
         File file = new File(audioFilePath);
         int size = (int) file.length();
@@ -2110,6 +2114,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         }
         return instlen;
     }
+
     public static short[] bytesToShort(byte[] bytes) {
         //return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getShort();
         ByteBuffer bb = ByteBuffer.wrap(bytes);
@@ -2121,6 +2126,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         return shorts;
 
     }
+
     public void initAudio(MediaPlayer mpst) {
         //setVolumeControlStream(AudioManager.STREAM_MUSIC);
         //mMediaPlayer = mpst;

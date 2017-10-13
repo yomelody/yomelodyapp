@@ -835,7 +835,9 @@ public class StudioActivity extends AppCompatActivity {
                 try {
 
                     handler.removeCallbacksAndMessages(null);
-                    mVisualizer.release();
+                    if(mVisualizer!=null) {
+                        mVisualizer.release();
+                    }
                     if (lstViewHolder.size() > 0) {
                         lstViewHolder.clear();
                     }
@@ -887,7 +889,9 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    mVisualizer.release();
+                    if(mVisualizer!=null) {
+                        mVisualizer.release();
+                    }
                     handler.removeCallbacksAndMessages(null);
                     if (lstViewHolder.size() > 0) {
                         lstViewHolder.clear();
@@ -943,7 +947,9 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    mVisualizer.release();
+                    if(mVisualizer!=null) {
+                        mVisualizer.release();
+                    }
                     handler.removeCallbacksAndMessages(null);
                     if (lstViewHolder.size() > 0) {
                         lstViewHolder.clear();
@@ -1001,7 +1007,9 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    mVisualizer.release();
+                    if(mVisualizer!=null) {
+                        mVisualizer.release();
+                    }
                     handler.removeCallbacksAndMessages(null);
                     if (lstViewHolder.size() > 0) {
                         lstViewHolder.clear();
@@ -1058,7 +1066,9 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    mVisualizer.release();
+                    if(mVisualizer!=null) {
+                        mVisualizer.release();
+                    }
                     handler.removeCallbacksAndMessages(null);
                     if (lstViewHolder.size() > 0) {
                         lstViewHolder.clear();
@@ -1115,7 +1125,9 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    mVisualizer.release();
+                    if(mVisualizer!=null) {
+                        mVisualizer.release();
+                    }
                     handler.removeCallbacksAndMessages(null);
                     if (lstViewHolder.size() > 0) {
                         lstViewHolder.clear();
@@ -1384,7 +1396,9 @@ public class StudioActivity extends AppCompatActivity {
                         Toast.makeText(StudioActivity.this, "Task not running.", Toast.LENGTH_SHORT).show();
                     }
 
-                    mVisualizer.release();
+                    if(mVisualizer!=null) {
+                        mVisualizer.release();
+                    }
 
                     InstrumentCountSize = 0;
                     playAll.setVisibility(View.VISIBLE);
@@ -1527,7 +1541,9 @@ public class StudioActivity extends AppCompatActivity {
                     rlRedoButton.setVisibility(View.VISIBLE);
 
                     try {
-                        mVisualizer.release();
+                        if(mVisualizer!=null) {
+                            mVisualizer.release();
+                        }
 
                         if (mediaPlayer != null) {
                             mediaPlayer.stop();
@@ -2996,7 +3012,9 @@ public class StudioActivity extends AppCompatActivity {
         try {
             handler.removeCallbacksAndMessages(null);
             if (isFinishing()) {
-                mVisualizer.release();
+                if(mVisualizer!=null) {
+                    mVisualizer.release();
+                }
             }
             if (StudioActivity.mp_start != null) {
 
