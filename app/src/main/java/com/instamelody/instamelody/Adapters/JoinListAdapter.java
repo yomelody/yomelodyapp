@@ -1,10 +1,7 @@
 package com.instamelody.instamelody.Adapters;
 
-import android.app.FragmentTransaction;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -13,44 +10,33 @@ import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.os.Bundle;
 import android.os.SystemClock;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.RetryPolicy;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.instamelody.instamelody.CommentsActivity;
-import com.instamelody.instamelody.Fragments.CommentJoinFragment;
 import com.instamelody.instamelody.JoinActivity;
-import com.instamelody.instamelody.JoinCommentActivity;
-import com.instamelody.instamelody.MessengerActivity;
 import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Models.JoinedUserProfile;
 import com.instamelody.instamelody.Models.MelodyInstruments;
-import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
@@ -76,7 +62,6 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.JOINED_USERS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.JOIN_DELETE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.LIKESAPI;
 import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
-import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
 /**
  * Created by Macmini on 22/08/17.
@@ -1088,7 +1073,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
             while (shouldContinue()) {
                 recorder.read(mAudioBuffer, 0, mBufferSize / 2);
-                JoinActivity.waveform_view.updateAudioData(mAudioBuffer);
+                //JoinActivity.waveform_view.updateAudioData(mAudioBuffer);
                 updateDecibelLevel();
             }
 
