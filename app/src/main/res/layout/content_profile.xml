@@ -254,7 +254,7 @@
         <RelativeLayout
             android:id="@+id/rlSearch"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="35dp"
             android:background="#E4E4E4">
 
             <Button
@@ -262,7 +262,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="#FFFFFF"
-                android:padding="10dp"
+                android:gravity="center"
                 android:text="Audio"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                 android:textColor="#495C67" />
@@ -275,7 +275,7 @@
                 android:layout_toEndOf="@+id/btnAudio"
                 android:layout_toRightOf="@+id/btnAudio"
                 android:background="#E4E4E4"
-                android:padding="10dp"
+                android:gravity="center"
                 android:text="Activity"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                 android:textColor="#495C67" />
@@ -288,7 +288,7 @@
                 android:layout_toEndOf="@id/btnActivity"
                 android:layout_toRightOf="@id/btnActivity"
                 android:background="#E4E4E4"
-                android:padding="10dp"
+                android:gravity="center"
                 android:text="Bio"
                 android:textColor="#495C67" />
 

@@ -1,48 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fragment_bio"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginBottom="45dp"
     android:layout_marginTop="234dp"
     android:orientation="vertical"
-    android:weightSum="1">
+   android:fillViewport="true">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.81">
+        android:layout_height="match_parent"
+        android:background="#fffcfc">
 
-        <EditText
-            android:id="@+id/etBio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/Description"
-            android:layout_below="@+id/textView11"
-            android:paddingLeft="12dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+        <LinearLayout
+            android:id="@+id/aboutview"
+            android:layout_width="match_parent"
+            android:layout_height="34dp">
 
-        <TextView
-            android:id="@+id/textView11"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Description:"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textColor="#415560"
-            android:textSize="18dp"
-            android:paddingLeft="12dp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            <TextView
+                android:id="@+id/tvAbout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="12dp"
+                android:layout_weight="1"
+                android:text="About"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="#415560"
+                android:textSize="18dp" />
+
+            <TextView
+                android:id="@+id/tvEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Edit"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="#6195C7"
+                android:textSize="18dp" />
+
+            <ImageView
+                android:id="@+id/ivEdit"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_above="@+id/textViewName"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="13dp"
+                android:src="@drawable/edit" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_below="@+id/aboutview"
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="0dp"
+            android:background="@color/black" />
+
+        <!--<EditText-->
+            <!--android:id="@+id/etBio"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentLeft="true"-->
+            <!--android:layout_alignParentStart="true"-->
+            <!--android:layout_below="@+id/textView11"-->
+            <!--android:paddingLeft="12dp"-->
+            <!--android:text="@string/Description" />-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/relativeLayout2"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:id="@+id/textView11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+
+                android:paddingLeft="12dp"
+                android:text="Description:"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="#415560"
+                android:textSize="18dp" />
+            <TextView
+                android:id="@+id/etBio"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/textView11"
+                android:layout_marginTop="15dp"
+                android:textSize="17dp"
+                android:paddingLeft="12dp"
+                android:textColor="@color/grey"
+                android:text="@string/Description" />
+
+        </RelativeLayout>
+
 
         <RelativeLayout
             android:id="@+id/relativeLayout2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true">
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true">
 
 
             <de.hdodenhof.circleimageview.CircleImageView
@@ -99,46 +170,7 @@
                 android:textColor="#415560"
                 android:textSize="18dp" />
 
-            <ImageView
-                android:id="@+id/ivEdit"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@drawable/edit"
-                android:layout_above="@+id/textViewName"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginRight="13dp"
-                android:layout_marginEnd="13dp" />
 
-            <TextView
-                android:id="@+id/tvEdit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Edit"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                android:textColor="#6195C7"
-                android:textSize="18dp"
-                android:layout_marginTop="11dp"
-                android:layout_alignParentTop="true"
-                android:layout_toLeftOf="@+id/ivEdit"
-                android:layout_toStartOf="@+id/ivEdit"
-                android:layout_marginRight="14dp"
-                android:layout_marginEnd="14dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="12dp"
-                android:text="About"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                android:textColor="#415560"
-                android:textSize="18dp"
-                android:id="@+id/textView7"
-                android:layout_marginStart="12dp"
-                android:layout_alignBaseline="@+id/textView6"
-                android:layout_alignBottom="@+id/textView6"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
         </RelativeLayout>
     </RelativeLayout>
-</LinearLayout>
+</ScrollView>

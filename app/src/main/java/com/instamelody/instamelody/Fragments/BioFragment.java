@@ -34,10 +34,10 @@ import static android.content.Context.MODE_PRIVATE;
 public class BioFragment extends Fragment {
 
     ImageView ivEdit;
-    EditText etBio;
+ //   EditText etBio;
     TextView textViewName, tvStation, tvDate,tvEdit;
     CircleImageView userBioImage;
-    String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId;
+    String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, userId;
     int statusNormal, statusFb, statusTwitter;
     UserDetails userDetails;
 
@@ -55,123 +55,30 @@ public class BioFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_bio, container, false);
         ivEdit = (ImageView) view.findViewById(R.id.ivEdit);
-        etBio = (EditText) view.findViewById(R.id.etBio);
-        etBio.setTag(etBio.getKeyListener());
-        etBio.setKeyListener(null);
+//        etBio = (EditText) view.findViewById(R.id.etBio);
+//        etBio.setTag(etBio.getKeyListener());
+  //      etBio.setKeyListener(null);
         textViewName = (TextView) view.findViewById(R.id.textViewName);
         tvStation = (TextView) view.findViewById(R.id.tvStation);
         tvDate = (TextView) view.findViewById(R.id.tvDate);
         tvEdit=(TextView)view.findViewById(R.id.tvEdit);
 
+        SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+        SharedPreferences twitterPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
+        }
+
         long date = System.currentTimeMillis();
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy");
         String dateString = sdf.format(date);
         tvDate.setText("Created:" + " " + dateString);
-
-
-        ivEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                etBio.isInEditMode();
-                etBio.setKeyListener((KeyListener) etBio.getTag());
-                etBio.setCursorVisible(true);
-                etBio.requestFocus();
-                int textLength = etBio.getText().length();
-                etBio.setSelection(textLength);
-            }
-        });
-        tvEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                etBio.setKeyListener((KeyListener) etBio.getTag());
-                etBio.setCursorVisible(true);
-                etBio.requestFocus();
-                int textLength = etBio.getText().length();
-                etBio.setSelection(textLength);
-            }
-        });
-
-        userBioImage = (CircleImageView) view.findViewById(R.id.userBioImage);
-        userBioImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity(), ProfileActivity.class);
-                startActivity(i);
-            }
-        });
-
-
-        if (getArguments() != null && getArguments().containsKey("user_detail")) {
-            userDetails = (UserDetails) getArguments().getSerializable("user_detail");
-
-            textViewName.setText("Artist:" + " " + userDetails.getFname());
-            tvStation.setText("Station:" + " " + "@" + userDetails.getUsername());
-
-            if (userDetails.getProfilepic() != null) {
-                userBioImage.setVisibility(View.VISIBLE);
-                Picasso.with(getActivity()).load(userDetails.getProfilepic()).into(userBioImage);
-            }
-            if (!TextUtils.isEmpty(userDetails.getDiscrisption())) {
-                etBio.setText(userDetails.getDiscrisption());
-                AppHelper.sop(userDetails.getDiscrisption());
-                etBio.setEnabled(false);
-            }
-
-        } else {
-            etBio.setEnabled(true);
-            SharedPreferences loginSharedPref = this.getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-            firstName = loginSharedPref.getString("firstName", null);
-            userNameLogin = loginSharedPref.getString("userName", null);
-            profilePicLogin = loginSharedPref.getString("profilePic", null);
-            statusNormal = loginSharedPref.getInt("status", 0);
-
-            if (statusNormal == 1) {
-                textViewName.setText("Artist:" + " " + firstName);
-                tvStation.setText("Station:" + " " + "@" + userNameLogin);
-            }
-
-            if (profilePicLogin != null) {
-                // ivProfile.setVisibility(View.GONE);
-                userBioImage.setVisibility(View.VISIBLE);
-                Picasso.with(getActivity()).load(profilePicLogin).into(userBioImage);
-            }
-
-
-            SharedPreferences twitterPref = this.getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
-            Name = twitterPref.getString("Name", null);
-            userName = twitterPref.getString("userName", null);
-            profilePic = twitterPref.getString("ProfilePic", null);
-            statusTwitter = twitterPref.getInt("status", 0);
-
-            if (statusTwitter == 1) {
-                textViewName.setText("Artist:" + " " + Name);
-                tvStation.setText("Station:" + " " + "@" + userName);
-            }
-
-            if (profilePic != null) {
-                // ivProfile.setVisibility(View.GONE);
-                userBioImage.setVisibility(View.VISIBLE);
-                Picasso.with(getActivity()).load(profilePic).into(userBioImage);
-            }
-
-
-            SharedPreferences fbPref = this.getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
-            fbName = fbPref.getString("FbName", null);
-            fbUserName = fbPref.getString("userName", null);
-            fbId = fbPref.getString("fbId", null);
-            statusFb = fbPref.getInt("status", 0);
-
-            if (statusFb == 1) {
-                textViewName.setText("Artist:" + " " + fbName);
-                tvStation.setText("Station:" + " " + "@" + fbName);
-            }
-
-            if (fbId != null) {
-                //ivProfile.setVisibility(View.GONE);
-                userBioImage.setVisibility(View.VISIBLE);
-                Picasso.with(getActivity()).load("https://graph.facebook.com/" + fbId + "/picture").into(userBioImage);
-            }
-        }
 
 
         return view;

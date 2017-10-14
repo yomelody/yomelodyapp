@@ -448,6 +448,7 @@ public class StudioActivity extends AppCompatActivity {
             recordTask.setContext(this);
         }
 
+//        joinRecordingId = intent.getExtras().getString("clickPositionJoin");
         SharedPreferences filterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE);
         joinRecordingId = filterPref.getString("instrumentsPos", null);
 
@@ -791,7 +792,7 @@ public class StudioActivity extends AppCompatActivity {
 
 
                     if (isRecording) {
-                        //ivRecord.setEnabled(false);
+                        // ivRecord.setEnabled(false);
                         handler.removeCallbacksAndMessages(null);
                         try {
                             recorder.release();
