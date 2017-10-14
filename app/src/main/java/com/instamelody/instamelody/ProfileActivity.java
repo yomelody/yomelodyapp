@@ -690,7 +690,9 @@ public class ProfileActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(KEY, PASSED);
                 params.put(USER_ID, showProfileUserId);
-                params.put(MY_ID, userId);
+                if (userId != null) {
+                    params.put(MY_ID, userId);
+                }
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 AppHelper.sop("Param===" + params + "\nURL====" + USERS_BIO);
                 return params;

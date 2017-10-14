@@ -299,7 +299,8 @@ public class StudioActivity extends AppCompatActivity {
     private boolean fbSwitch, twitterSwitch, googleSwitch;
     private BroadcastReceiver mReceiver;
     private IntentFilter intentFilter;
-    private String thumbnailUrl="";
+    private String thumbnailUrl = "";
+    JSONObject MelodyResponseDetails;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -421,7 +422,6 @@ public class StudioActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-
 
 
 //        joinRecordingId = intent.getExtras().getString("clickPositionJoin");
@@ -690,7 +690,7 @@ public class StudioActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                     if (isRecording) {
-                       // ivRecord.setEnabled(false);
+                        // ivRecord.setEnabled(false);
                         handler.removeCallbacksAndMessages(null);
 
                         if (recorder != null) {
@@ -1402,10 +1402,9 @@ public class StudioActivity extends AppCompatActivity {
         Log.d("Buffer Size & sample rate", "Size :" + size + " & Rate: " + rate);
 
 
-
     }
 
-    void TweeterSharingWork(){
+    void TweeterSharingWork() {
         intentFilter = new IntentFilter();
         intentFilter.addAction("com.twitter.sdk.android.tweetcomposer.UPLOAD_SUCCESS");
         intentFilter.addAction("com.twitter.sdk.android.tweetcomposer.UPLOAD_FAILURE");
@@ -2104,7 +2103,7 @@ public class StudioActivity extends AppCompatActivity {
                     JSONObject r1 = response1.getJSONObject("response");
 
                     if (msgflag.equals("Melody created")) {
-                         MelodyResponseDetails = r1.getJSONObject("melody_data");
+                        MelodyResponseDetails = r1.getJSONObject("melody_data");
                         melodyurl = "http://52.89.220.199/api/" + MelodyResponseDetails.getString("melodyurl");
                         //urlRecording = r1.getString("melody");
                     } else {
@@ -2194,7 +2193,7 @@ public class StudioActivity extends AppCompatActivity {
                                 progressDialog.dismiss();
                             }
                         }
-                        thumbnailUrl=r1.getJSONObject("melody_data").getString("thumbnail_url");
+                        thumbnailUrl = r1.getJSONObject("melody_data").getString("thumbnail_url");
 
                         SharedPreferences.Editor recEditor = getApplication().getSharedPreferences("Recording_MelodyDataResponse", MODE_PRIVATE).edit();
                         recEditor.clear();
@@ -2220,7 +2219,7 @@ public class StudioActivity extends AppCompatActivity {
                         SharedPreferences switchGoogleEditor = getApplicationContext().getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE);
                         googleSwitch = switchGoogleEditor.getBoolean("switchGoogle", false);
 
-                        AppHelper.sop("fbSwitch="+fbSwitch+"=twitterSwitch="+twitterSwitch+"=googleSwitch"+googleSwitch);
+                        AppHelper.sop("fbSwitch=" + fbSwitch + "=twitterSwitch=" + twitterSwitch + "=googleSwitch" + googleSwitch);
 
                         if (fbSwitch) {
                             FbShare();
@@ -2730,9 +2729,8 @@ public class StudioActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        else {
-            if (callbackManager!=null){
+        } else {
+            if (callbackManager != null) {
                 callbackManager.onActivityResult(requestCode, resultCode, data);
             }
         }
@@ -2999,7 +2997,7 @@ public class StudioActivity extends AppCompatActivity {
         SharedPreferences editorT = getSharedPreferences("thumbnail_url", MODE_PRIVATE);
         String fetchThumbNailUrl = editorT.getString("thumbnailUrl", "");
 
-        AppHelper.sop("thumbnailUrl=="+thumbnailUrl);
+        AppHelper.sop("thumbnailUrl==" + thumbnailUrl);
 
 //        FacebookSdk.sdkInitialize(this);
         callbackManager = CallbackManager.Factory.create();

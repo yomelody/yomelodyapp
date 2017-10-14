@@ -64,8 +64,6 @@ import com.instamelody.instamelody.Adapters.RecentImagesAdapter;
 import com.instamelody.instamelody.Models.AudioDetails;
 import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.RecentImagesModel;
-import com.instamelody.instamelody.Models.RecordingsModel;
-import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Models.SharedAudios;
 import com.instamelody.instamelody.utils.AppHelper;
 import com.instamelody.instamelody.utils.ImageCompressor;
@@ -102,12 +100,10 @@ import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.CHAT;
-import static com.instamelody.instamelody.utils.Const.ServiceType.LIKESAPI;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MESSAGE_LIST;
 import static com.instamelody.instamelody.utils.Const.ServiceType.READ_STATUS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.UPDATE_GROUP;
 import static com.instamelody.instamelody.utils.Const.ServiceType.USER_CHAT_ID;
-import static com.instamelody.instamelody.utils.Const.ServiceType.sharefile;
 
 /**
  * Created by Shubhansh Jaiswal on 17/01/17.
@@ -171,16 +167,12 @@ public class ChatActivity extends AppCompatActivity {
     String sendGroupImageName = "";
     String flagFileType = "0"; // 0 = null, 1 = image file, 2 = station audio file , 3 = admin_melody audio file
     int updateGroupFlag = 0;
-    private Activity mActivity;
-    private RecordingsModel mRecordingsModel;
-
 
     @TargetApi(18)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        mActivity=ChatActivity.this;
 
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
@@ -242,69 +234,6 @@ public class ChatActivity extends AppCompatActivity {
         rlInviteButton = (RelativeLayout) findViewById(R.id.rlInviteButton);
         contInviteButton = (RelativeLayout) findViewById(R.id.contInviteButton);
 
-        tvUserName = (TextView) findViewById(R.id.tvUserName);
-
-        Bundle bundley = getIntent().getExtras();
-        try {
-            if (bundley != null) {
-                if (!bundley.get("body").equals(null)) {
-                    String body = bundley.get("body").toString();
-                    if (!body.equals("") && !body.equals(null)) {
-                        try {
-                            JSONObject jBody = new JSONObject(body);
-                            if (jBody.has("chat_id")) {
-                                chatId = jBody.getString("chat_id");
-                                getChatMsgs(chatId);
-                            }
-                            if (jBody.has("sender_name")) {
-                                receiverName = jBody.getString("sender_name");
-                                tvUserName.setText(receiverName);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                else if(!bundley.get("chat_id").equals(null)){
-                    String message = bundley.getString("chat_id");
-                    if (message != null) {
-                        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        }catch(Exception ex){
-            ex.printStackTrace();
-        }
-
-
-        if (loginSharedPref.getString("userId", null) != null) {
-            userId = loginSharedPref.getString("userId", null);
-            username = loginSharedPref.getString("userName", null);
-        } else if (fbPref.getString("userId", null) != null) {
-            userId = fbPref.getString("userId", null);
-            username = fbPref.getString("UserName", null);
-        } else if (twitterPref.getString("userId", null) != null) {
-            userId = twitterPref.getString("userId", null);
-            username = twitterPref.getString("userName", null);
-        }
-
-        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals(READ_NOTIFICATION)) {
-                    String readStatus = intent.getStringExtra("status");
-                    if (readStatus.equals("read")) {
-                        String chatId = intent.getStringExtra("chatId");
-                        getChatMsgs(chatId);
-                    }
-                } else if (intent.getAction().equals(PUSH_NOTIFICATION)) {
-                    String chatId = intent.getStringExtra("chatId");
-                    getChatMsgs(chatId);
-                }
-            }
-        };
-
-
         SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
         senderId = prefs.getString("senderId", null);
         receiverId = prefs.getString("receiverId", null);
@@ -314,25 +243,18 @@ public class ChatActivity extends AppCompatActivity {
         chatId = prefs.getString("chatId", null);
         chatType = prefs.getString("chatType", null);
         groupImage = prefs.getString("groupImage", null);
-
         tvUserName = (TextView) findViewById(R.id.tvUserName);
         tvUserName.setText(receiverName);
 
-        if (chatType.equals("single")) {
-            rlInviteButton.setClickable(false);
-            rlInviteButton.setEnabled(false);
-            contInviteButton.setVisibility(View.GONE);
+        try {
+            if (chatType.equals("single")) {
+                rlInviteButton.setClickable(false);
+                rlInviteButton.setEnabled(false);
+                contInviteButton.setVisibility(View.GONE);
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
-        if(!receiverName.equals("")){
-            tvUserName.setText(receiverName);
-        }
-
-
-//        if (chatType.equals("single")) {
-//            rlInviteButton.setClickable(false);
-//            rlInviteButton.setEnabled(false);
-//            contInviteButton.setVisibility(View.GONE);
-//        }
 
 
         SharedPreferences selectedImagePos = getApplicationContext().getSharedPreferences("selectedImagePos", MODE_PRIVATE);
@@ -927,12 +849,13 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public void getChatMsgs(final String chat_Id) {
+
         final StringRequest stringRequest = new StringRequest(Request.Method.POST, MESSAGE_LIST,
                 new Response.Listener<String>() {
 
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response=="+response);
+
                         chatList.clear();
 //                        audioDetailsList.clear();
 //                        sharedAudioList.clear();
@@ -1010,14 +933,13 @@ public class ChatActivity extends AppCompatActivity {
 //                                        }
                                         chatList.add(i, message);
                                     }
+                                    recyclerViewChat.smoothScrollToPosition(chatList.size()-1);
                                 } else {
                                     tvRecieverName.setText(" " + receiverName);
                                     Picasso.with(ivRecieverProfilePic.getContext()).load(receiverImage).into(ivRecieverProfilePic);
                                     rlNoMsg.setVisibility(View.VISIBLE);
                                     rlTxtContent.setVisibility(View.VISIBLE);
                                 }
-
-
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -1063,40 +985,6 @@ public class ChatActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
     }
-
-    public void shareCountApi(final String fileType) {
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, sharefile,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        AppHelper.sop("response=="+response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        String errorMsg = error.toString();
-                        Log.d("Error", errorMsg);
-                        error.printStackTrace();
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("shared_by_user", userId);
-                params.put("shared_with",receiverId );
-                params.put("file_id", mRecordingsModel.getRecordingId());
-                params.put("file_type", fileType);
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=="+params+"\nURL=="+sharefile);
-                return params;
-            }
-        };
-        RequestQueue requestQueue1 = Volley.newRequestQueue(this);
-        requestQueue1.add(stringRequest);
-    }
-
 
     public void sendMessage(final String message, final String user_Id) {
 
@@ -1188,23 +1076,6 @@ public class ChatActivity extends AppCompatActivity {
 //                    Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
                     getChatMsgs(chatId);
                     flagFileType = "0";
-
-
-                    //service for comment count.
-                    if (getIntent()!=null && getIntent().hasExtra("share")){
-                        mRecordingsModel = (RecordingsModel) mActivity.getIntent().getSerializableExtra("share");
-                        AppHelper.sop("mRecordingsModel=="+mRecordingsModel);
-                        if (mRecordingsModel!=null){
-                            shareCountApi(getIntent().getStringExtra("file_type"));
-                            /*AppHelper.sop("getRecordingUrl="+mRecordingsModel.getrecordingurl());
-                            AppHelper.sop("file_type="+mActivity.getIntent().getStringExtra("file_type"));
-                            AppHelper.sop("shared_by_user="+user_Id);
-                            AppHelper.sop("receiverId="+receiverId);*/
-
-                        }
-
-                    }
-
                 }
             }, new Response.ErrorListener() {
                 @Override
