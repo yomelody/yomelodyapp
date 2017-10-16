@@ -3467,7 +3467,7 @@ public class StudioActivity extends AppCompatActivity {
         }
         //File wavFile = new File(getFilesDir(), "recording_" + System.currentTimeMillis() / 1000 + ".wav");
         File wavFile = new File(audioFilePath);
-        Toast.makeText(this, wavFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
+    //    Toast.makeText(this, wavFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
         recordTask.execute(wavFile);
     }
 
@@ -3731,11 +3731,11 @@ public class StudioActivity extends AppCompatActivity {
                     // Display final recording stats
                     double size = (long) results[0] / 1000000.00;
                     long time = (long) results[1] / 1000;
-                    Toast.makeText(ctx, String.format(Locale.getDefault(), "%.2f MB / %d seconds",
-                            size, time), Toast.LENGTH_LONG).show();
+//                    Toast.makeText(ctx, String.format(Locale.getDefault(), "%.2f MB / %d seconds",
+//                            size, time), Toast.LENGTH_LONG).show();
                 } else {
                     // Error
-                    Toast.makeText(ctx, throwable.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                  //  Toast.makeText(ctx, throwable.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         }

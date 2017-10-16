@@ -109,7 +109,7 @@ public class StationCommentActivity extends AppCompatActivity {
     String FILEID = "fileid";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";
-    int duration1;
+    int duration1,length;
 
     ArrayList<Comments> commentList = new ArrayList<>();
     private CommentsAdapter adapter;
@@ -419,7 +419,9 @@ public class StationCommentActivity extends AppCompatActivity {
                             progressDialog.dismiss();
 //                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(GONE);
 //                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(VISIBLE);
+                            mp.seekTo(length);
                             mp.start();
+                            duration1=mp.getDuration();
                             primarySeekBarProgressUpdater();
 
                         }
@@ -460,10 +462,11 @@ public class StationCommentActivity extends AppCompatActivity {
                 ivStationPlay.setVisibility(v.VISIBLE);
                 ivStationPause.setVisibility(v.GONE);
                 if (mp != null) {
-                    mp.stop();
+
                     mp.pause();
+                    length=mp.getCurrentPosition();
                 }
-                seekBarRecordings.setProgress(0);
+               // seekBarRecordings.setProgress(0);
             }
         });
 
@@ -989,7 +992,7 @@ public class StationCommentActivity extends AppCompatActivity {
     private void primarySeekBarProgressUpdater() {
         Handler mHandler1 = new Handler();
         try {
-            duration1 = mp.getDuration();
+        ///    duration1 = mp.getDuration();
             seekBarRecordings.setProgress((int) (((float) mp.getCurrentPosition() / duration1) * 100));// This math construction give a percentage of "was playing"/"song length"
             if (mp.isPlaying()) {
                 Runnable notification = new Runnable() {
