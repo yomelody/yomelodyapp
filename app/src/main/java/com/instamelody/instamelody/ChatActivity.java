@@ -34,6 +34,7 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -64,6 +65,7 @@ import com.instamelody.instamelody.Adapters.RecentImagesAdapter;
 import com.instamelody.instamelody.Models.AudioDetails;
 import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.RecentImagesModel;
+import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.SharedAudios;
 import com.instamelody.instamelody.utils.AppHelper;
 import com.instamelody.instamelody.utils.ImageCompressor;
@@ -104,6 +106,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.MESSAGE_LIST;
 import static com.instamelody.instamelody.utils.Const.ServiceType.READ_STATUS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.UPDATE_GROUP;
 import static com.instamelody.instamelody.utils.Const.ServiceType.USER_CHAT_ID;
+import static com.instamelody.instamelody.utils.Const.ServiceType.sharefile;
 
 /**
  * Created by Shubhansh Jaiswal on 17/01/17.
@@ -167,17 +170,19 @@ public class ChatActivity extends AppCompatActivity {
     String sendGroupImageName = "";
     String flagFileType = "0"; // 0 = null, 1 = image file, 2 = station audio file , 3 = admin_melody audio file
     int updateGroupFlag = 0;
+    RecordingsModel mRecordingsModel;
+    Activity mActivity;
+    String sender_name = "";
 
     @TargetApi(18)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-
+        mActivity = ChatActivity.this;
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
         SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
-
         if (loginSharedPref.getString("userId", null) != null) {
             userId = loginSharedPref.getString("userId", null);
             username = loginSharedPref.getString("userName", null);
@@ -188,19 +193,29 @@ public class ChatActivity extends AppCompatActivity {
             userId = twitterPref.getString("userId", null);
             username = twitterPref.getString("userName", null);
         }
-
+        SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
+        senderId = prefs.getString("senderId", null);
+        receiverId = prefs.getString("receiverId", null);
+        RemoveNullValue();
+        receiverName = prefs.getString("receiverName", null);
+        receiverImage = prefs.getString("receiverImage", null);
+        chatId = prefs.getString("chatId", null);
+        chatType = prefs.getString("chatType", null);
+        groupImage = prefs.getString("groupImage", null);
+        tvUserName = (TextView) findViewById(R.id.tvUserName);
+        tvUserName.setText(receiverName);
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals(READ_NOTIFICATION)) {
-                    String readStatus = intent.getStringExtra("status");
-                    if (readStatus.equals("read")) {
-                        String chatId = intent.getStringExtra("chatId");
-                        getChatMsgs(chatId);
+                if (intent.getAction().equals(PUSH_NOTIFICATION)) {
+                    String chatId_new = intent.getStringExtra("chatId");
+                    sender_name = intent.getStringExtra("sender_name");
+                    // Toast.makeText(context, "Brod :"+chatId_new + "Old :"+chatId , Toast.LENGTH_SHORT).show();
+                    if (chatId_new.equals(chatId)) {
+                        tvUserName.setText(sender_name);
+                        getChatMsgs(chatId_new);
                     }
-                } else if (intent.getAction().equals(PUSH_NOTIFICATION)) {
-                    String chatId = intent.getStringExtra("chatId");
-                    getChatMsgs(chatId);
+
                 }
             }
         };
@@ -234,17 +249,6 @@ public class ChatActivity extends AppCompatActivity {
         rlInviteButton = (RelativeLayout) findViewById(R.id.rlInviteButton);
         contInviteButton = (RelativeLayout) findViewById(R.id.contInviteButton);
 
-        SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
-        senderId = prefs.getString("senderId", null);
-        receiverId = prefs.getString("receiverId", null);
-        RemoveNullValue();
-        receiverName = prefs.getString("receiverName", null);
-        receiverImage = prefs.getString("receiverImage", null);
-        chatId = prefs.getString("chatId", null);
-        chatType = prefs.getString("chatType", null);
-        groupImage = prefs.getString("groupImage", null);
-        tvUserName = (TextView) findViewById(R.id.tvUserName);
-        tvUserName.setText(receiverName);
 
         try {
             if (chatType.equals("single")) {
@@ -292,7 +296,8 @@ public class ChatActivity extends AppCompatActivity {
         if (bundle != null) {
             String message = bundle.getString("chat_id");
             if (message != null) {
-                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+                getChatMsgs(message);
+                //    Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -301,7 +306,10 @@ public class ChatActivity extends AppCompatActivity {
         packType = packPref.getString("PackType", null);
 
         getChatMsgs(chatId);
-
+        if (rlChatPlayer.getVisibility() == View.VISIBLE) {
+            flSeekbar.setVisibility(View.GONE);
+            rlChatPlayer.setVisibility(View.GONE);
+        }
         etMessage = (EditText) findViewById(R.id.etMessage);
         etMessage.setHintTextColor(Color.parseColor("#7B888F"));
         inflater = LayoutInflater.from(ChatActivity.this);
@@ -326,6 +334,25 @@ public class ChatActivity extends AppCompatActivity {
         recyclerViewChat.setItemAnimator(new DefaultItemAnimator());
         cAdapter = new ChatAdapter(getApplicationContext(), chatList/*, audioDetailsList, sharedAudioList*/);
         recyclerViewChat.setAdapter(cAdapter);
+        recyclerViewChat.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (rlChatPlayer.getVisibility() == View.VISIBLE) {
+                    try {
+                        rlChatPlayer.setVisibility(View.GONE);
+                        flSeekbar.setVisibility(View.GONE);
+                        if (ChatAdapter.mp != null) {
+                            ChatAdapter.mp.stop();
+                            ChatAdapter.mp.release();
+                        }
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                }
+                return false;
+            }
+        });
 
         SharedPreferences token = this.getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
         deviceToken = token.getString("regId", null);
@@ -368,12 +395,12 @@ public class ChatActivity extends AppCompatActivity {
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
-                editor.putString("receiverId", "");
-                editor.putString("receiverName", "");
-                editor.putString("receiverImage", "");
-                editor.putString("chatId", "");
-                editor.commit();
+//                SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+//                editor.putString("receiverId", "");
+//                editor.putString("receiverName", "");
+//                editor.putString("receiverImage", "");
+//                editor.putString("chatId", "");
+//                editor.commit();
                 finish();
             }
         });
@@ -861,6 +888,19 @@ public class ChatActivity extends AppCompatActivity {
 //                        sharedAudioList.clear();
 
                         String usrId = userId;
+                        if (rlChatPlayer.getVisibility() == View.VISIBLE) {
+                            try {
+                                rlChatPlayer.setVisibility(View.GONE);
+                                flSeekbar.setVisibility(View.GONE);
+                                if (ChatAdapter.mp != null) {
+                                    ChatAdapter.mp.stop();
+                                    ChatAdapter.mp.release();
+                                }
+                            } catch (Throwable e) {
+                                e.printStackTrace();
+                            }
+
+                        }
 
                         cAdapter.notifyDataSetChanged();
                         JSONObject jsonObject;
@@ -933,7 +973,7 @@ public class ChatActivity extends AppCompatActivity {
 //                                        }
                                         chatList.add(i, message);
                                     }
-                                    recyclerViewChat.smoothScrollToPosition(chatList.size()-1);
+                                    recyclerViewChat.smoothScrollToPosition(chatList.size() - 1);
                                 } else {
                                     tvRecieverName.setText(" " + receiverName);
                                     Picasso.with(ivRecieverProfilePic.getContext()).load(receiverImage).into(ivRecieverProfilePic);
@@ -1076,6 +1116,20 @@ public class ChatActivity extends AppCompatActivity {
 //                    Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
                     getChatMsgs(chatId);
                     flagFileType = "0";
+                    //service for comment count.
+                    if (getIntent() != null && getIntent().hasExtra("share")) {
+                        mRecordingsModel = (RecordingsModel) mActivity.getIntent().getSerializableExtra("share");
+                        AppHelper.sop("mRecordingsModel==" + mRecordingsModel);
+                        if (mRecordingsModel != null) {
+                            shareCountApi(getIntent().getStringExtra("file_type"));
+                            /*AppHelper.sop("getRecordingUrl="+mRecordingsModel.getrecordingurl());
+                            AppHelper.sop("file_type="+mActivity.getIntent().getStringExtra("file_type"));
+                            AppHelper.sop("shared_by_user="+user_Id);
+                            AppHelper.sop("receiverId="+receiverId);*/
+
+                        }
+
+                    }
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -1421,6 +1475,39 @@ public class ChatActivity extends AppCompatActivity {
             };
             VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
         }
+    }
+
+    public void shareCountApi(final String fileType) {
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, sharefile,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        AppHelper.sop("response==" + response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMsg = error.toString();
+                        Log.d("Error", errorMsg);
+                        error.printStackTrace();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("shared_by_user", userId);
+                params.put("shared_with", receiverId);
+                params.put("file_id", mRecordingsModel.getRecordingId());
+                params.put("file_type", fileType);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params==" + params + "\nURL==" + sharefile);
+                return params;
+            }
+        };
+        RequestQueue requestQueue1 = Volley.newRequestQueue(this);
+        requestQueue1.add(stringRequest);
     }
 
     public void readStatus(final String msgIds, final String chatIds) {

@@ -55,7 +55,7 @@ public class NotificationUtils {
             return;
 
         // notification icon
-        final int icon = R.drawable.instamelody_logo;
+        final int icon = R.mipmap.instamelody_logo;
 
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         final PendingIntent resultPendingIntent = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -98,7 +98,7 @@ public class NotificationUtils {
                 .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), icon))
                 .setContentText(message)
                 .build();
-
+        mBuilder.setContentIntent(resultPendingIntent);
         NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(NOTIFICATION_ID, notification);
     }
@@ -119,6 +119,7 @@ public class NotificationUtils {
                 .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), icon))
                 .setContentText(message)
                 .build();
+        mBuilder.setContentIntent(resultPendingIntent);
 
         NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(NOTIFICATION_ID_BIG_IMAGE, notification);

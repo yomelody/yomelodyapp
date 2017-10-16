@@ -541,8 +541,14 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 //        holder.tvContributeLength.setText(recordingsPools.get(listPosition).getDuration());
 //        holder.tvContributeDate.setText(recordingsPools.get(listPosition).getDateAdded());
 //        holder.tvContributeDate.setText(recordingList.get(listPosition).getRecordingCreated());
-        holder.tvContributeDate.setText(convertDate(recordingList.get(listPosition).getRecordingCreated()));
-        holder.tvContributeLength.setText(DateUtils.formatElapsedTime(Long.parseLong(recordingsPools.get(listPosition).getDuration())));
+        try {
+            holder.tvContributeDate.setText(convertDate(recordingList.get(listPosition).getRecordingCreated()));
+            holder.tvContributeLength.setText(DateUtils.formatElapsedTime(Long.parseLong(recordingsPools.get(listPosition).getDuration())));
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
+
 
         int likeStatus = recordingList.get(listPosition).getLikeStatus();
         if (likeStatus == 0) {
@@ -550,8 +556,12 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         } else {
             holder.ivDislikeButton.setVisibility(VISIBLE);
         }
+        try {
+            holder.tvRecordingDate.setText(convertDate(recordingList.get(listPosition).getRecordingCreated()));
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
 
-        holder.tvRecordingDate.setText(convertDate(recordingList.get(listPosition).getRecordingCreated()));
         holder.tvViewCount.setText(String.valueOf(recordingList.get(listPosition).getPlayCount()));
         holder.tvLikeCount.setText(String.valueOf(recordingList.get(listPosition).getLikeCount()));
         holder.tvCommentCount.setText(String.valueOf(recordingList.get(listPosition).getCommentCount()));
@@ -1184,15 +1194,17 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     }
 
     private String convertDate(String date) {
+        SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd");
+        SimpleDateFormat serverFormat = new SimpleDateFormat("MM/dd/yy");
+        Date d = null;
         try {
-            SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd");
-            Date d = format.parse(date);
-            SimpleDateFormat serverFormat = new SimpleDateFormat("MM/dd/yy");
-            return serverFormat.format(d);
-        } catch (Exception e) {
+            d = format.parse(date);
+        } catch (ParseException e) {
             e.printStackTrace();
         }
-        return "";
+        ;
+
+        return serverFormat.format(d);
     }
 
 }

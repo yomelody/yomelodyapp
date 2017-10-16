@@ -381,6 +381,21 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                     }
                 }
             });
+            ivPausePlayer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ivPausePlayer.setVisibility(View.GONE);
+                    ivPlayPlayer.setVisibility(View.VISIBLE);
+                    if (mp != null) {
+                        try {
+                            mp.stop();
+                            mp.release();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            });
 
             ivPrev.setOnClickListener(new View.OnClickListener() {
                 @Override

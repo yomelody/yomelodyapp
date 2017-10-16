@@ -1060,7 +1060,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
         @Override
         public void run() {
 
-            //  android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
+              android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
             AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLING_RATE,
                     AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, mBufferSize);
             try {
@@ -1073,7 +1073,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
             while (shouldContinue()) {
                 recorder.read(mAudioBuffer, 0, mBufferSize / 2);
-                //JoinActivity.waveform_view.updateAudioData(mAudioBuffer);
+             //   JoinActivity.waveform_view.updateAudioData(mAudioBuffer);
                 updateDecibelLevel();
             }
 
