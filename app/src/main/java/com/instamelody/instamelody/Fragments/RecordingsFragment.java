@@ -108,7 +108,7 @@ public class RecordingsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mActivity=getActivity();
         progressDialog=new ProgressDialog(mActivity);
-        fetchGenreNames();
+
         SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
         SharedPreferences searchPref = getActivity().getSharedPreferences("SearchPref", MODE_PRIVATE);
@@ -138,7 +138,7 @@ public class RecordingsFragment extends Fragment {
         } else if (statusTwitter == 1) {
             userId = userIdTwitter;
         }
-
+        fetchGenreNames();
         callApi();
 
         // new DownloadFileFromURL();

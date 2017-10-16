@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,7 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonObject;
 import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Models.Genres;
@@ -43,6 +45,7 @@ import com.instamelody.instamelody.Models.UserMelodyCard;
 import com.instamelody.instamelody.Models.UserMelodyPlay;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.SignInActivity;
 import com.instamelody.instamelody.StudioActivity;
 import com.instamelody.instamelody.utils.AppHelper;
 
@@ -80,6 +83,7 @@ public class MelodyPacksFragment extends Fragment {
     String KEY = "key";
     String GENRE = "genere";
     String genreString = "1";
+    String limit = "limit";
 
     String USER_ID = "users_id";
     String USERS_ID = "users_id";
@@ -111,13 +115,21 @@ public class MelodyPacksFragment extends Fragment {
     int post = 0;
     Activity mActivity;
     RecyclerView rv;
+    private final int count=10;
+    private boolean isLoading=false;
+    private boolean isLastPage=false;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        progressDialog = new ProgressDialog(getActivity());
-        fetchGenreNames();
+        mActivity=getActivity();
+        progressDialog = new ProgressDialog(mActivity);
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+
+
         SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
         SharedPreferences searchPref = getActivity().getSharedPreferences("SearchPref", MODE_PRIVATE);
@@ -142,24 +154,12 @@ public class MelodyPacksFragment extends Fragment {
             userId = twitterPref.getString("userId", null);
             //MelodyUser=userId;
         }
-
+        fetchGenreNames();
         adapter = new MelodyCardListAdapter(melodyList, getActivity());
         if (rv != null) {
             rv.setAdapter(adapter);
         }
-        if (strName == null && strSearch == null) {
-            fetchMelodyPacks();
-        } else if (strSearch != null) {
-            fetchMelodySearchData();
-        } else if (strArtist != null) {
-            fetchMelodyFilterArtist();
-        } else if (strInstruments != null && strName.equals("# of Instruments")) {
-            fetchMelodyFilterInstruments();
-        } else if (strBPM != null && strName.equals("BPM")) {
-            fetchMelodyFilterBPM();
-        } else {
-            fetchMelodyFilter();
-        }
+        getDataApi();
         //   new LongOperation().execute();
 
 
@@ -182,6 +182,22 @@ public class MelodyPacksFragment extends Fragment {
 
     }
 
+    void getDataApi(){
+        if (strName == null && strSearch == null) {
+            fetchMelodyPacks();
+        } else if (strSearch != null) {
+            fetchMelodySearchData();
+        } else if (strArtist != null) {
+            fetchMelodyFilterArtist();
+        } else if (strInstruments != null && strName.equals("# of Instruments")) {
+            fetchMelodyFilterInstruments();
+        } else if (strBPM != null && strName.equals("BPM")) {
+            fetchMelodyFilterBPM();
+        } else {
+            fetchMelodyFilter();
+        }
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -192,9 +208,7 @@ public class MelodyPacksFragment extends Fragment {
     }
 
     public void fetchGenreNames() {
-        progressDialog.setTitle("Processing...");
-        progressDialog.setMessage("Please wait...");
-        progressDialog.setCancelable(false);
+
         progressDialog.show();
         try {
             StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
@@ -243,18 +257,32 @@ public class MelodyPacksFragment extends Fragment {
                                 host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
                                     @Override
                                     public void onTabChanged(String arg0) {
-                                        progressDialog.setTitle("Processing...");
-                                        progressDialog.setMessage("Please wait...");
-                                        progressDialog.setCancelable(false);
-                                        progressDialog.show();
                                         packName = arg0;
                                         int currentTab = host.getCurrentTab();
+                                        AppHelper.sop("Tab=change="+arg0+"=currentTab="+currentTab);
                                         if (currentTab == 0) {
                                             packId = "";
                                         } else {
                                             packId = (genresArrayList.get(currentTab)).getId();
                                         }
-                                        fetchMelodyPacks();
+
+                                        if (currentTab==6){
+                                            if (TextUtils.isEmpty(userId)){
+                                                Toast.makeText(mActivity, "Log in to see your melody.", Toast.LENGTH_SHORT).show();
+                                                Intent intent = new Intent(mActivity, SignInActivity.class);
+                                                startActivity(intent);
+                                            }
+                                            else {
+                                                melodyList.clear();
+                                                instrumentList.clear();
+                                                fetchMelodyPacks();
+                                            }
+                                        }
+                                        else {
+                                            melodyList.clear();
+                                            instrumentList.clear();
+                                            fetchMelodyPacks();
+                                        }
                                     }
                                 });
                             } catch (NullPointerException e) {
@@ -313,22 +341,30 @@ public class MelodyPacksFragment extends Fragment {
     }
 
     public void fetchMelodyPacks() {
+        progressDialog.show();
         final StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response===" + response);
-                        melodyList.clear();
-                        instrumentList.clear();
+                        AppHelper.sop("response=fetchMelodyPacks==" + response);
+                        if (melodyList.size()<=0){
+                            melodyList.clear();
+                            instrumentList.clear();
+                        }
+
                         JSONObject jsonObject;
                         try {
                             jsonObject = new JSONObject(response);
                             if (jsonObject.getString(KEY_FLAG).equals("unsuccess")) {
                                 String str = jsonObject.getString(KEY_MSG);
-                                if (str.equals("No pack found")) {
+//                                if (str.equals("No pack found")) {
                                     str = "Sorry, no " + packName + " melody available.";
-                                    Toast.makeText(getActivity(), str, Toast.LENGTH_SHORT).show();
-                                }
+                                    Toast.makeText(getActivity(), "No Record Found.", Toast.LENGTH_SHORT).show();
+                                    isLastPage=true;
+//                                }
+                            }
+                            else {
+                                isLastPage=false;
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -340,12 +376,14 @@ public class MelodyPacksFragment extends Fragment {
                                 progressDialog.dismiss();
                             }
                         }
+                        isLoading=false;
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                        isLoading=false;
+                        isLastPage=false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -380,17 +418,20 @@ public class MelodyPacksFragment extends Fragment {
                 if (packId.equals("7") && userId != null) {
                     params.put(USER_ID, userId);
                     params.put(FILE_TYPE, "user_melody");
+                    params.put(limit, melodyList.size()+"");
                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
 
                 } else if (userId != null) {
                     params.put(users_id, userId);
                     params.put(GENRE, packId);
                     params.put(FILE_TYPE, "admin_melody");
+                    params.put(limit, melodyList.size()+"");
                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
 
                 } else {
                     params.put(GENRE, packId);
                     params.put(FILE_TYPE, "admin_melody");
+                    params.put(limit, melodyList.size()+"");
                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
 
                 }
@@ -403,7 +444,7 @@ public class MelodyPacksFragment extends Fragment {
 //                if (userId != null) {
 ////                    params.put(USER_ID, userId);
 //                }
-                AppHelper.sop("params===" + params + "\nURL==" + MELODY);
+                AppHelper.sop("params=fetchMelodyPacks==" + params + "\nURL==" + MELODY);
                 return params;
             }
 
@@ -420,9 +461,7 @@ public class MelodyPacksFragment extends Fragment {
     }
 
     public void fetchMelodyFilter() {
-        progressDialog.setTitle("Processing...");
-        progressDialog.setMessage("Please wait...");
-        progressDialog.setCancelable(false);
+
         progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
                 new Response.Listener<String>() {
@@ -432,8 +471,25 @@ public class MelodyPacksFragment extends Fragment {
 //                        Toast.makeText(getActivity(), "" + response, Toast.LENGTH_SHORT).show();
 
                         Log.d("ReturnData1", response);
-                        melodyList.clear();
-                        instrumentList.clear();
+                        if (melodyList.size()<=0){
+                            melodyList.clear();
+                            instrumentList.clear();
+                        }
+                        JSONObject jsonObject;
+                        try {
+                            jsonObject = new JSONObject(response);
+                            if (jsonObject.getString(KEY_FLAG).equals("unsuccess")) {
+
+                                Toast.makeText(getActivity(), "No Record Found.", Toast.LENGTH_SHORT).show();
+                                isLastPage = true;
+
+                            } else {
+                                isLastPage = false;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
                         new ParseContents(getActivity()).parseMelodyPacks(response, melodyList, instrumentList);
                         adapter.notifyDataSetChanged();
                         if (progressDialog != null) {
@@ -441,12 +497,14 @@ public class MelodyPacksFragment extends Fragment {
                                 progressDialog.dismiss();
                             }
                         }
+                        isLoading=false;
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                        isLoading=false;
+                        isLastPage=false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -477,6 +535,7 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(FILE_TYPE, "admin_melody");
                 params.put(FILTER_TYPE, strName);
                 params.put(FILTER, "extrafilter");
+                params.put(limit, melodyList.size()+"");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 AppHelper.sop("params==" + params + "\nURL==" + MELODY);
                 return params;
@@ -493,30 +552,36 @@ public class MelodyPacksFragment extends Fragment {
     }
 
     public void fetchMelodySearchData() {
-        progressDialog.setTitle("Processing...");
-        progressDialog.setMessage("Please wait...");
-        progressDialog.setCancelable(false);
+
         progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response==" + response);
+                        AppHelper.sop("response=search=" + response);
                         String successMsg = response.toString();
                         try {
                             JSONObject jsonObject = new JSONObject(successMsg);
                             String flag = jsonObject.getString("flag");
-                            String msg = jsonObject.getString("msg");
+
                             if (flag.equals("unsuccess")) {
+                                String msg = jsonObject.getString("msg");
                                 Toast.makeText(getActivity(), "" + msg, Toast.LENGTH_SHORT).show();
+                                isLastPage=true;
+                            }
+                            else {
+                                isLastPage=false;
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 //                        Toast.makeText(getActivity(), "" + response, Toast.LENGTH_SHORT).show();
-                        melodyList.clear();
-                        instrumentList.clear();
+                        if (melodyList.size()<=0){
+                            melodyList.clear();
+                            instrumentList.clear();
+                        }
+
                         new ParseContents(getActivity()).parseMelodyPacks(response, melodyList, instrumentList);
                         adapter.notifyDataSetChanged();
                         if (progressDialog != null) {
@@ -524,12 +589,14 @@ public class MelodyPacksFragment extends Fragment {
                                 progressDialog.dismiss();
                             }
                         }
+                        isLoading=false;
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                        isLoading=false;
+                        isLastPage=false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -558,8 +625,9 @@ public class MelodyPacksFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(FILE_TYPE, "admin_melody");
                 params.put(KEY_SEARCH, strSearch);
+                params.put(limit, melodyList.size()+"");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params==" + params + "\nURL==" + MELODY);
+                AppHelper.sop("params=search=" + params + "\nURL==" + MELODY);
                 return params;
             }
         };
@@ -574,28 +642,35 @@ public class MelodyPacksFragment extends Fragment {
     }
 
     public void fetchMelodyFilterArtist() {
-        progressDialog.setTitle("Processing...");
-        progressDialog.setMessage("Please wait...");
-        progressDialog.setCancelable(false);
+
         progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         String rs = response.toString();
-                        AppHelper.sop("response==" + response);
+                        AppHelper.sop("response=artist=" + response);
                         try {
                             JSONObject jsonObject = new JSONObject(rs);
                             String flag = jsonObject.getString("flag");
-//                            Toast.makeText(getActivity(), "" + flag, Toast.LENGTH_SHORT).show();
+                            if (flag.equals("unsuccess")) {
+                                Toast.makeText(getActivity(), "" + "No Record Found.", Toast.LENGTH_SHORT).show();
+                                isLastPage=true;
+                            }
+                            else {
+                                isLastPage=false;
+                            }
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
 //                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
+                        if (melodyList.size()<=0){
+                            melodyList.clear();
+                            instrumentList.clear();
+                        }
 
-                        melodyList.clear();
-                        instrumentList.clear();
                         new ParseContents(getActivity()).parseMelodyPacks(response, melodyList, instrumentList);
                         adapter.notifyDataSetChanged();
                         if (progressDialog != null) {
@@ -603,12 +678,14 @@ public class MelodyPacksFragment extends Fragment {
                                 progressDialog.dismiss();
                             }
                         }
+                        isLoading=false;
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                        isLoading=false;
+                        isLastPage=false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -641,8 +718,9 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(FILTER_TYPE, strName);
                 params.put(USER_NAME, strArtist);
                 params.put(FILTER, "extrafilter");
+                params.put(limit, melodyList.size()+"");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params==" + params + "\nURL==" + MELODY);
+                AppHelper.sop("params=artist=" + params + "\nURL==" + MELODY);
                 return params;
             }
         };
@@ -657,28 +735,35 @@ public class MelodyPacksFragment extends Fragment {
     }
 
     public void fetchMelodyFilterInstruments() {
-        progressDialog.setTitle("Processing...");
-        progressDialog.setMessage("Please wait...");
-        progressDialog.setCancelable(false);
         progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response==" + response);
+                        AppHelper.sop("response=instru=" + response);
                         String rs = response.toString();
                         try {
                             JSONObject jsonObject = new JSONObject(rs);
                             String flag = jsonObject.getString("flag");
 //                            Toast.makeText(getActivity(), "" + flag, Toast.LENGTH_SHORT).show();
+
+                            if (flag.equals("unsuccess")) {
+                                Toast.makeText(getActivity(), "" + "No Record Found.", Toast.LENGTH_SHORT).show();
+                                isLastPage=true;
+                            }
+                            else {
+                                isLastPage=false;
+                            }
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
 //                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
-
-                        melodyList.clear();
-                        instrumentList.clear();
+                        if (melodyList.size()<=0){
+                            melodyList.clear();
+                            instrumentList.clear();
+                        }
                         new ParseContents(getActivity()).parseMelodyPacks(response, melodyList, instrumentList);
                         adapter.notifyDataSetChanged();
                         if (progressDialog != null) {
@@ -686,12 +771,14 @@ public class MelodyPacksFragment extends Fragment {
                                 progressDialog.dismiss();
                             }
                         }
+                        isLoading=false;
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                        isLoading=false;
+                        isLastPage=false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -724,8 +811,9 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(FILTER_TYPE, "Instruments");
                 params.put(COUNT, strInstruments);
                 params.put(FILTER, "extrafilter");
+                params.put(limit, melodyList.size()+"");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params==" + params + "\nURL==" + MELODY);
+                AppHelper.sop("params=instru=" + params + "\nURL==" + MELODY);
                 return params;
             }
         };
@@ -740,28 +828,35 @@ public class MelodyPacksFragment extends Fragment {
     }
 
     public void fetchMelodyFilterBPM() {
-        progressDialog.setTitle("Processing...");
-        progressDialog.setMessage("Please wait...");
-        progressDialog.setCancelable(false);
+
         progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         String rs = response.toString();
-                        AppHelper.sop("response==" + response);
+                        AppHelper.sop("response=BPM=" + response);
                         try {
                             JSONObject jsonObject = new JSONObject(rs);
                             String flag = jsonObject.getString("flag");
 //                            Toast.makeText(getActivity(), "" + flag, Toast.LENGTH_SHORT).show();
+                            if (flag.equals("unsuccess")) {
+                                Toast.makeText(getActivity(), "" + "No Record Found.", Toast.LENGTH_SHORT).show();
+                                isLastPage=true;
+                            }
+                            else {
+                                isLastPage=false;
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
 //                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
+                        if (melodyList.size()<=0){
+                            melodyList.clear();
+                            instrumentList.clear();
+                        }
 
-                        melodyList.clear();
-                        instrumentList.clear();
                         new ParseContents(getActivity()).parseMelodyPacks(response, melodyList, instrumentList);
                         adapter.notifyDataSetChanged();
                         if (progressDialog != null) {
@@ -769,12 +864,14 @@ public class MelodyPacksFragment extends Fragment {
                                 progressDialog.dismiss();
                             }
                         }
+                        isLoading=false;
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                        isLoading=false;
+                        isLastPage=false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -807,8 +904,9 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(FILTER_TYPE, strName);
                 params.put(COUNT, strBPM);
                 params.put(FILTER, "extrafilter");
+                params.put(limit, melodyList.size()+"");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params==" + params + "\nURL==" + MELODY);
+                AppHelper.sop("params=BPM=" + params + "\nURL==" + MELODY);
                 return params;
             }
         };
@@ -833,15 +931,45 @@ public class MelodyPacksFragment extends Fragment {
 //                rv.setLayoutManager(lm);
                 rv.setLayoutManager(linearLayoutManager);
                 rv.setItemAnimator(new DefaultItemAnimator());
-                rv.addOnScrollListener(recyclerViewOnScrollListener);
+//                rv.addOnScrollListener(recyclerViewOnScrollListener);
                 rv.setAdapter(adapter);
                 linearLayoutManager = (LinearLayoutManager) rv.getLayoutManager();
+
+
+                rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                        super.onScrollStateChanged(recyclerView, newState);
+                    }
+
+                    @Override
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                        super.onScrolled(recyclerView, dx, dy);
+                        int visibleItemCount = linearLayoutManager.getChildCount();
+                        int totalItemCount = linearLayoutManager.getItemCount();
+                        int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
+//                        AppHelper.sop("onScrolled==visibleItemCount"+visibleItemCount+"=totalItemCount="+
+//                                totalItemCount+ "=firstVisibleItemPosition="+firstVisibleItemPosition);
+                        if (!isLoading && !isLastPage) {
+//                            AppHelper.sop("isLoading==isLastPage");
+
+                            if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount &&
+                                    firstVisibleItemPosition >= 0 && totalItemCount >= count) {
+                                isLoading=true;
+                                if(AppHelper.checkNetworkConnection(mActivity)){
+                                    getDataApi();
+                                }
+                            }
+                        }
+                    }
+                });
+
                 return rv;
             }
         };
     }
 
-    private RecyclerView.OnScrollListener recyclerViewOnScrollListener = new RecyclerView.OnScrollListener() {
+    /*private RecyclerView.OnScrollListener recyclerViewOnScrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
@@ -870,9 +998,9 @@ public class MelodyPacksFragment extends Fragment {
 
 
         }
-    };
+    };*/
 
-    private class FetchActivityDetails extends AsyncTask<String, String, String> {
+    /*private class FetchActivityDetails extends AsyncTask<String, String, String> {
         protected void onPreExecute() {
             super.onPreExecute();
 
@@ -892,17 +1020,17 @@ public class MelodyPacksFragment extends Fragment {
 
                 final int Pos = Integer.parseInt(params[0]);
                 fetchMelodyPacksMore(Pos);
-                /*int i = 3;
-                while(running){*/
+                *//*int i = 3;
+                while(running){*//*
                 try {
                     Thread.sleep(7000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
 
-                    /*if(i-- == 0){
+                    *//*if(i-- == 0){
                         running = false;
-                    }*/
+                    }*//*
 
                 //}
                 return null;
@@ -930,10 +1058,10 @@ public class MelodyPacksFragment extends Fragment {
 
 
         }
-    }
+    }*/
 
 
-    public void fetchMelodyPacksMore(final int position) {
+    /*public void fetchMelodyPacksMore(final int position) {
         final StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
                 new Response.Listener<String>() {
                     @Override
@@ -1028,10 +1156,10 @@ public class MelodyPacksFragment extends Fragment {
 
         stringRequest.setRetryPolicy(policy);
         requestQueue.add(stringRequest);
-    }
+    }*/
 
 
-    private class LongOperation extends AsyncTask<String, Void, String> {
+   /* private class LongOperation extends AsyncTask<String, Void, String> {
         protected void onPreExecute() {
             try {
 
@@ -1075,7 +1203,7 @@ public class MelodyPacksFragment extends Fragment {
             AppHelper.sop("onPostExecute=melodyList==" + melodyList);
         }
 
-    }
+    }*/
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -1083,7 +1211,8 @@ public class MelodyPacksFragment extends Fragment {
         AppHelper.sop("onActivityResult==called=" + "requestCode==" + requestCode + "=resultCode=" + resultCode + "=data=" + data);
         if (MelodyCardListAdapter.REQUEST_MELODY_COMMENT == requestCode) {
             if (resultCode == mActivity.RESULT_OK) {
-                new LongOperation().execute();
+//                new LongOperation().execute();
+                getDataApi();
                 AppHelper.sop("onActivityResult==called=" + "resultCode==" + resultCode);
             }
 
