@@ -277,6 +277,7 @@ public class MelodyActivity extends AppCompatActivity {
                     getFragmentManager().beginTransaction().replace(R.id.activity_melody, rf).commit();
 
                 }
+                search1.setQuery("",false);
                 return false;
             }
 
