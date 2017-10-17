@@ -6,12 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
-import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.media.SoundPool;
@@ -34,9 +32,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.toolbox.ByteArrayPool;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.MixingData;
@@ -48,11 +44,7 @@ import com.instamelody.instamelody.utils.RecordingThread;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -62,9 +54,7 @@ import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.facebook.FacebookSdk.getApplicationContext;
-import static com.instamelody.instamelody.StudioActivity.bytes;
-import static com.instamelody.instamelody.StudioActivity.formateMilliSeccond;
-import static com.instamelody.instamelody.StudioActivity.isRecording;
+import static com.instamelody.instamelody.StudioActivity.PlayAllmediaPlayersAll;
 import static com.instamelody.instamelody.StudioActivity.rlBase;
 
 /**
@@ -154,6 +144,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     }
 
     boolean IsPlaySoloAll = false, IsPlayMuteAll = false;
+    boolean TempIsPlaySoloAll = false, TempIsPlayMuteAll = false,AllSolo=false;
     ArrayList ArRepeate = new ArrayList();
     private RecordingThread mRecordingThread;
 
@@ -427,11 +418,11 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 try {
                     if (holder.mp != null) {
                         holder.mp.stop();
-                        holder.mp=null;
+                        holder.mp = null;
                     }
                     if (StudioActivity.mpInst != null) {
                         StudioActivity.mpInst.stop();
-                        StudioActivity.mpInst=null;
+                        StudioActivity.mpInst = null;
                     }
 
                     for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
@@ -566,7 +557,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     //StudioActivity.mediaPlayersAll
                     //StudioActivity.PlayAllModel.add(i,new ModelPlayAllMediaPlayer(false,false,false,StudioActivity.mpall));
                     if (StudioActivity.PlayAllModel.size() > 0) {
-                        IsPlaySoloAll = true;
+                        //IsPlaySoloAll = true;
                         for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
                             IsPlaySoloAll = StudioActivity.PlayAllModel.get(i).isSolo();
                             IsPlayMuteAll = StudioActivity.PlayAllModel.get(i).isMute();
@@ -583,20 +574,33 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                                     StudioActivity.PlayAllModel.get(i).setMute(false);
                                     holder.tvSButton.setBackgroundColor(Color.TRANSPARENT);
                                     holder.tvMButton.setBackgroundColor(Color.TRANSPARENT);
-                                    StudioActivity.mediaPlayersAll.get(i).setVolume(1, 1);
+
+                                    for (int j = 0; j <= StudioActivity.mediaPlayersAll.size() - 1; j++) {
+                                        TempIsPlaySoloAll = StudioActivity.PlayAllModel.get(j).isSolo();
+
+                                        if (TempIsPlaySoloAll == true && j != holder.getAdapterPosition()) {
+                                            StudioActivity.mediaPlayersAll.get(j).setVolume(1, 1);
+                                            StudioActivity.PlayAllModel.get(j).setSolo(true);
+
+                                        } else {
+                                            StudioActivity.mediaPlayersAll.get(j).setVolume(0, 0);
+                                            StudioActivity.PlayAllModel.get(j).setSolo(false);
+                                            AllSolo=true;
+                                        }
+
+                                    }
+                                    if(AllSolo==true){
+                                        for (int j = 0; j <= StudioActivity.mediaPlayersAll.size() - 1; j++) {
+                                            StudioActivity.mediaPlayersAll.get(j).setVolume(1, 1);
+                                            StudioActivity.PlayAllModel.get(j).setSolo(false);
+                                            AllSolo=false;
+                                        }
+                                    }
+
+
+
                                 }
 
-                                /*if (IsPlaySoloAll == false) {
-                                    StudioActivity.PlayAllModel.get(i).setSolo(true);
-                                    holder.tvSButton.setBackgroundColor(Color.GRAY);
-                                    StudioActivity.mediaPlayersAll.get(i).setVolume(1, 1);
-                                } else if (IsPlaySoloAll == true) {
-                                    StudioActivity.PlayAllModel.get(i).setSolo(false);
-                                    holder.tvSButton.setBackgroundColor(Color.TRANSPARENT);
-                                    if (IsPlayMuteAll == true) {
-                                        StudioActivity.mediaPlayersAll.get(i).setVolume(0, 0);
-                                    }
-                                }*/
                             } else if (IsPlaySoloAll == false) {
                                 StudioActivity.mediaPlayersAll.get(i).setVolume(0, 0);
                             }
@@ -605,7 +609,10 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     }
                     //}
 
-                } catch (Exception ex) {
+                } catch (
+                        Exception ex)
+
+                {
                     ex.printStackTrace();
                 }
 
@@ -614,7 +621,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         });
 
 
-        holder.rlFX.setOnClickListener(new View.OnClickListener() {
+        holder.rlFX.setOnClickListener(new View.OnClickListener()
+
+        {
             @Override
             public void onClick(View v) {
                 try {
@@ -644,7 +653,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             }
         });
 
-        holder.rlEQ.setOnClickListener(new View.OnClickListener() {
+        holder.rlEQ.setOnClickListener(new View.OnClickListener()
+
+        {
             @Override
             public void onClick(View v) {
                 try {
@@ -678,7 +689,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         });
 
 
-        holder.tvDoneFxEq.setOnClickListener(new View.OnClickListener() {
+        holder.tvDoneFxEq.setOnClickListener(new View.OnClickListener()
+
+        {
             @Override
             public void onClick(View v) {
                 try {
@@ -698,7 +711,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             }
         });
 
-        holder.volumeSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        holder.volumeSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+
+        {
             @Override
             public void onStopTrackingTouch(SeekBar arg0) {
                 // TODO Auto-generated method stub
@@ -735,7 +750,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             }
 
         });
-        holder.sbBase.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        holder.sbBase.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+
+        {
             @Override
             public void onStopTrackingTouch(SeekBar arg0) {
                 // TODO Auto-generated method stub
@@ -779,7 +796,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
             }
         });
-        holder.sbTreble.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        holder.sbTreble.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+
+        {
             @Override
             public void onStopTrackingTouch(SeekBar arg0) {
                 // TODO Auto-generated method stub
@@ -814,7 +833,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             }
         });
 
-        holder.sbPan.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        holder.sbPan.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+
+        {
             @Override
             public void onStopTrackingTouch(SeekBar arg0) {
                 // TODO Auto-generated method stub
@@ -863,7 +884,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
             }
         });
-        holder.sbCompression.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        holder.sbCompression.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+
+        {
             @Override
             public void onStopTrackingTouch(SeekBar arg0) {
                 // TODO Auto-generated method stub
@@ -892,7 +915,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
             }
         });
-        holder.sbDelay.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        holder.sbDelay.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+
+        {
             @Override
             public void onStopTrackingTouch(SeekBar arg0) {
                 // TODO Auto-generated method stub
@@ -921,7 +946,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
             }
         });
-        holder.sbReverb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        holder.sbReverb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+
+        {
             @Override
             public void onStopTrackingTouch(SeekBar arg0) {
                 // TODO Auto-generated method stub
@@ -951,7 +978,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             }
         });
 
-        holder.sbTempo.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        holder.sbTempo.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+
+        {
             @Override
             public void onStopTrackingTouch(SeekBar arg0) {
                 // TODO Auto-generated method stub
@@ -981,7 +1010,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             }
         });
 
-        StudioActivity.playAll.setOnClickListener(new View.OnClickListener() {
+        StudioActivity.playAll.setOnClickListener(new View.OnClickListener()
+        {
             @Override
             public void onClick(View v) {
                 try {
@@ -992,12 +1022,16 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
                     StudioActivity.recyclerViewInstruments.smoothScrollToPosition(instrumentList.size());
                     if (StudioActivity.mediaPlayersAll.size() > 0) {
-                        StudioActivity.mediaPlayersAll.clear();
+                        //StudioActivity.mediaPlayersAll.clear();
                     }
                     if (StudioActivity.PlayAllModel.size() > 0) {
                         StudioActivity.PlayAllModel.clear();
                     }
-                    StudioActivity.handler.removeCallbacksAndMessages(null);
+                    try {
+                        StudioActivity.handler.removeCallbacksAndMessages(null);
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                     for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
                         try {
                             if (StudioActivity.mp_start.get(i) != null) {
@@ -1014,23 +1048,14 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     IsPlayMuteAll = false;
                     new PrepareInstrumentsForPlayAll().execute();
                     StudioActivity.ivRecord.setEnabled(false);
-                    /*if(Mall!=null) {
-                        Mall.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                            @Override
-                            public void onCompletion(MediaPlayer mp) {
-                                StudioActivity.ivRecord.setEnabled(true);
-                                StudioActivity.playAll.setVisibility(View.VISIBLE);
-                                StudioActivity.pauseAll.setVisibility(View.GONE);
-                                InstrumentCountSize = 0;
-                            }
-                        });
-                    }*/
+
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }
         });
-        StudioActivity.pauseAll.setOnClickListener(new View.OnClickListener() {
+        StudioActivity.pauseAll.setOnClickListener(new View.OnClickListener()
+        {
             @Override
             public void onClick(View v) {
                 try {
@@ -1046,24 +1071,21 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     if (StudioActivity.mpall != null) {
                         StudioActivity.mpall.stop();
                         StudioActivity.mpall.release();
-                        StudioActivity.mpall=null;
+                        StudioActivity.mpall = null;
                     }
 
-                    StudioActivity.handler.removeCallbacksAndMessages(null);
+                    try {
+                        StudioActivity.handler.removeCallbacksAndMessages(null);
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                     if (StudioActivity.mpInst != null) {
                         StudioActivity.mpInst.stop();
                         StudioActivity.mpInst.release();
-                        StudioActivity.mpInst=null;
+                        StudioActivity.mpInst = null;
                     }
 
-                    for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
-                       /* final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                        final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
-                        final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
-                        seekBar.setProgress(0);
-                        holderPlay.setVisibility(View.VISIBLE);
-                        holderPause.setVisibility(View.GONE);
-                        holderPause.setEnabled(true);*/
+                    for (int i = 0; i <= StudioActivity.PlayAllmediaPlayersAll.size() - 1; i++) {
                         final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
                         final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
                         final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
@@ -1077,8 +1099,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                         txtSolos.setBackgroundColor(Color.TRANSPARENT);
                         RlsRepets.setBackgroundColor(Color.TRANSPARENT);
                         try {
-                            StudioActivity.mediaPlayersAll.get(i).stop();
-                            StudioActivity.mediaPlayersAll.get(i).release();
+                            StudioActivity.PlayAllmediaPlayersAll.get(i).stop();
+                            StudioActivity.PlayAllmediaPlayersAll.get(i).release();
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -1091,7 +1113,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 }
             }
         });
-        holder.ivPlay.setOnClickListener(new View.OnClickListener() {
+        holder.ivPlay.setOnClickListener(new View.OnClickListener()
+
+        {
             @Override
             public void onClick(View v) {
                 try {
@@ -1100,7 +1124,11 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     }
                     instruments_url.add(instrumentFile);
                     instrumentFile = instruments.getInstrumentFile();
-                    StudioActivity.handler.removeCallbacksAndMessages(null);
+                    try {
+                        StudioActivity.handler.removeCallbacksAndMessages(null);
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                     if (holder.mp != null) {
                         try {
                             holder.mp.stop();
@@ -1117,7 +1145,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                             if (StudioActivity.mp_start.get(i) != null) {
                                 try {
                                     StudioActivity.mp_start.get(i).stop();
-                                    StudioActivity.mp_start.get(i).release();
                                 } catch (Exception ex) {
                                     ex.printStackTrace();
                                 }
@@ -1262,7 +1289,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             }
         });
 
-        holder.ivPause.setOnClickListener(new View.OnClickListener() {
+        holder.ivPause.setOnClickListener(new View.OnClickListener()
+
+        {
             @Override
             public void onClick(View v) {
                 try {
@@ -1271,12 +1300,16 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     }
                     holder.ivPlay.setVisibility(v.VISIBLE);
                     holder.ivPause.setVisibility(v.GONE);
-                    StudioActivity.handler.removeCallbacksAndMessages(null);
+                    try {
+                        StudioActivity.handler.removeCallbacksAndMessages(null);
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                     holder.melodySlider.setProgress(0);
                     if (holder.mp != null) {
                         holder.mp.stop();
                         holder.mp.release();
-                        holder.mp=null;
+                        holder.mp = null;
                     }
                     length = holder.mp.getCurrentPosition();
 
@@ -1321,7 +1354,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             }
         });
 
-        holder.rlrepeat.setOnClickListener(new View.OnClickListener() {
+        holder.rlrepeat.setOnClickListener(new View.OnClickListener()
+
+        {
             @Override
             public void onClick(View v) {
                 try {
@@ -1357,134 +1392,12 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         });
 
 
-        /*StudioActivity.ivRecord.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    StudioActivity.recyclerViewInstruments.smoothScrollToPosition(instrumentList.size());
-
-                    new PrepareInstruments().execute();
-
-
-                } catch (IllegalStateException e) {
-                    e.printStackTrace();
-                }
-            }
-
-
-        });*/
-
-        /*StudioActivity.ivRecord_stop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    InstrumentCountSize = 0;
-                    StudioActivity.playAll.setVisibility(View.VISIBLE);
-                    StudioActivity.pauseAll.setVisibility(View.GONE);
-                    StudioActivity.pauseAll.setEnabled(true);
-
-                    StudioActivity.ivRecord_stop.setVisibility(View.GONE);
-                    StudioActivity.rlRecordingButton.setVisibility(View.GONE);
-                    StudioActivity.ivRecord_play.setVisibility(View.VISIBLE);
-                    StudioActivity.rlRedoButton.setVisibility(View.VISIBLE);
-                    if (StudioActivity.joinRecordingId != null) {
-                        StudioActivity.tvPublic.setVisibility(View.GONE);
-                        StudioActivity.switchPublic.setVisibility(View.GONE);
-                    } else {
-                        StudioActivity.tvPublic.setVisibility(View.VISIBLE);
-                        StudioActivity.switchPublic.setVisibility(View.VISIBLE);
-                    }
-
-                    StudioActivity.frameProgress.setVisibility(View.GONE);
-                    //StudioActivity.frameprog.setVisibility(View.GONE);
-
-                    mRecordingThread.stopRecording();
-
-                    StudioActivity.handler.removeCallbacksAndMessages(null);
-                    if (isRecording) {
-
-
-
-
-                    } else {
-                        try {
-                            StudioActivity.rlRecordingButton.setEnabled(true);
-                        } catch (NullPointerException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-
-                    try {
-                        if (StudioActivity.mpall != null) {
-                            StudioActivity.mpall.stop();
-                            for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
-
-                               *//* final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                                final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
-                                final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
-                                seekBar.setProgress(0);
-                                holderPlay.setVisibility(View.VISIBLE);
-                                holderPause.setVisibility(View.GONE);*//*
-                                final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                                final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
-                                final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
-                                final TextView txtMutes = StudioActivity.lstViewHolder.get(i).TxtMuteViewHolder;
-                                final TextView txtSolos = StudioActivity.lstViewHolder.get(i).TxtSoloViewHolder;
-                                final RelativeLayout RlsRepets = StudioActivity.lstViewHolder.get(i).TempRlRepeats;
-                                seekBar.setProgress(0);
-                                holderPlay.setVisibility(View.VISIBLE);
-                                holderPause.setVisibility(View.GONE);
-                                txtMutes.setBackgroundColor(Color.TRANSPARENT);
-                                txtSolos.setBackgroundColor(Color.TRANSPARENT);
-                                RlsRepets.setBackgroundColor(Color.TRANSPARENT);
-                                holderPause.setEnabled(true);
-                                try {
-                                    StudioActivity.mediaPlayersAll.get(i).stop();
-                                    StudioActivity.mediaPlayersAll.get(i).release();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-
-                            }
-
-                        }
-                        StudioActivity.tvDone.setEnabled(true);
-                        StudioActivity.chrono.stop();
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                    }
-
-                    try {
-                        InputStream inputStream =
-                                getApplicationContext().getContentResolver().openInputStream(Uri.fromFile(new File(audioFilePath)));
-                        StudioActivity.soundBytes = new byte[inputStream.available()];
-                        StudioActivity.soundBytes = toByteArray(inputStream);
-                        inputStream.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    try {
-                        StudioActivity.recordingDuration = getDuration(new File(audioFilePath));
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                    StudioActivity.stop_rec_time = SystemClock.elapsedRealtime() - StudioActivity.chrono.getBase();
-                    StudioActivity.time_stop = formateMilliSeccond(StudioActivity.stop_rec_time);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-
-            }
-
-        });*/
-
 
         Intent i = new Intent("fetchingInstruments");
         i.putStringArrayListExtra("instruments", instrument_url_count);
-        LocalBroadcastManager.getInstance(context).sendBroadcast(i);
+        LocalBroadcastManager.getInstance(context).
+
+                sendBroadcast(i);
 
     }
 
@@ -1504,256 +1417,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         return (position == instrumentList.size()) ? R.layout.layout_button_sync : R.layout.card_melody_added;
     }
 
-    private class InstrumentCover extends AsyncTask<String, Void, Bitmap> {
-        //ImageView bmImage;
-
-        public InstrumentCover() {
-            //StudioActivity.ivInstrumentCover = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            StudioActivity.ivInstrumentCover.setImageBitmap(result);
-        }
-    }
-
-    private class UserProfileCover extends AsyncTask<String, Void, Bitmap> {
-        //ImageView bmImage;
-
-        public UserProfileCover() {
-            //StudioActivity.ivInstrumentCover = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            StudioActivity.userProfileImage.setImageBitmap(result);
-        }
-    }
-
-    private static String getDuration(File file) {
-        MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-        mediaMetadataRetriever.setDataSource(file.getAbsolutePath());
-        String durationStr = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-        return formateMilliSeccond(Long.parseLong(durationStr));
-    }
-
-    private void LoadInstrumentData(int listPosition) {
-        try {
-
-            PositionId = String.valueOf(listPosition);
-            final MelodyInstruments instruments = instrumentList.get(listPosition);
-            if (StudioActivity.list.size() == 0) {
-                StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
-            } else {
-                StudioActivity.list.indexOf(listPosition);
-                boolean IsAvailable = false;
-                for (int i = 0; i <= StudioActivity.list.size(); i++) {
-                    int pos = Integer.parseInt(StudioActivity.list.get(i).positionId);
-                    if (pos == listPosition) {
-                        IsAvailable = true;
-                    }
-                }
-                if (IsAvailable) {
-                    StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /*private class PrepareInstruments extends AsyncTask<String, Void, Bitmap> {
-
-        protected void onPreExecute() {
-            try {
-                try {
-
-                    for (int i = 0; i <= StudioActivity.lstViewHolder.size() - 1; i++) {
-                        try {
-                            final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                            final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
-                            final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
-                            holderPlay.setVisibility(View.VISIBLE);
-                            holderPause.setVisibility(View.GONE);
-                            seekBar.setProgress(0);
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                    StudioActivity.frameProgress.setVisibility(View.VISIBLE);
-                    if (StudioActivity.PlayAllModel.size() > 0) {
-                        StudioActivity.PlayAllModel.clear();
-                    }
-                    if (StudioActivity.mediaPlayersAll.size() > 0) {
-                        StudioActivity.mediaPlayersAll.clear();
-                    }
-                    StudioActivity.handler.removeCallbacksAndMessages(null);
-
-                    for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
-                        try {
-
-                            if (StudioActivity.mp_start.get(i) != null) {
-                                StudioActivity.mp_start.get(i).stop();
-                                StudioActivity.mp_start.get(i).release();
-                            }
-
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-
-                    }
-
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-
-            try {
-                if (InstrumentCountSize == 0) {
-                    tmpduration = 0;
-                    Compdurations = 0;
-                    MaxMpSessionID = 0;
-                    //InstrumentCountSize = MelodyInstruments.getInstrumentCount();
-
-                    InstrumentCountSize = instrumentList.size();
-                    for (int i = 0; i < InstrumentCountSize; i++) {
-                        Log.d("Instrument url----------------:", "" + instrumentList.get(i).getInstrumentFile());
-                        StudioActivity.mpall = new MediaPlayer();
-                        StudioActivity.mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                        StudioActivity.mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
-                        try {
-
-                            StudioActivity.mpall.prepare();
-
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                        StudioActivity.mediaPlayersAll.add(StudioActivity.mpall);
-                        StudioActivity.PlayAllModel.add(i, new ModelPlayAllMediaPlayer(false, false, false, StudioActivity.mpall));
-
-                        Compdurations = StudioActivity.mediaPlayersAll.get(i).getDuration();
-                        if (Compdurations > tmpduration) {
-                            tmpduration = Compdurations;
-                            MaxMpSessionID = StudioActivity.mediaPlayersAll.get(i).getAudioSessionId();
-                        }
-                    }
-
-
-                    StudioActivity.mpall.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-
-                            if (MaxMpSessionID == mp.getAudioSessionId()) {
-                                StudioActivity.handler.removeCallbacksAndMessages(null);
-                                for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
-
-                                    final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                                    final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
-                                    final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
-                                    final TextView txtMutes = StudioActivity.lstViewHolder.get(i).TxtMuteViewHolder;
-                                    final TextView txtSolos = StudioActivity.lstViewHolder.get(i).TxtSoloViewHolder;
-                                    final RelativeLayout RlsRepets = StudioActivity.lstViewHolder.get(i).TempRlRepeats;
-                                    seekBar.setProgress(0);
-                                    holderPlay.setVisibility(View.VISIBLE);
-                                    holderPause.setVisibility(View.GONE);
-                                    txtMutes.setBackgroundColor(Color.TRANSPARENT);
-                                    txtSolos.setBackgroundColor(Color.TRANSPARENT);
-                                    RlsRepets.setBackgroundColor(Color.TRANSPARENT);
-                                    holderPause.setEnabled(true);
-                                    StudioActivity.playAll.setVisibility(View.VISIBLE);
-                                    StudioActivity.pauseAll.setVisibility(View.GONE);
-                                    //StudioActivity.mediaPlayersAll.get(i).stop();
-                                }
-                            }
-
-                            //}
-                        }
-                    });
-                }
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            try {
-                StudioActivity.playAll.setVisibility(View.GONE);
-                StudioActivity.ivRecord.setVisibility(View.GONE);
-                StudioActivity.rlMelodyButton.setVisibility(View.GONE);
-                StudioActivity.ivRecord_stop.setVisibility(View.VISIBLE);
-                StudioActivity.rlRecordingButton.setVisibility(View.VISIBLE);
-                StudioActivity.pauseAll.setVisibility(View.VISIBLE);
-                StudioActivity.pauseAll.setEnabled(false);
-                for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
-                    final MediaPlayer pts;
-
-                    pts = StudioActivity.mediaPlayersAll.get(i);
-                    try {
-                        pts.start();
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                    if (IsRepeat == true) {
-                        pts.setLooping(true);
-                    } else if (IsRepeat == false) {
-                        pts.setLooping(false);
-                    }
-                    StudioActivity.waveform_view.setVisibility(View.VISIBLE);
-
-                    StudioActivity.waveform_view.setEnabled(true);
-                    final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                    final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
-
-                    holderPlay.setVisibility(View.GONE);
-                    holderPause.setVisibility(View.VISIBLE);
-                    holderPause.setEnabled(false);
-
-                }
-                StudioActivity.frameProgress.setVisibility(View.GONE);
-                //recordAudio();
-                RunSeekbar();
-
-
-                StudioActivity.chrono.setBase(SystemClock.elapsedRealtime());
-                StudioActivity.chrono.start();
-
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            }
-        }
-    }*/
-
 
     private class PrepareInstrumentsForPlayAll extends AsyncTask<String, Void, Bitmap> {
 
@@ -1772,6 +1435,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                         ex.printStackTrace();
                     }
                 }
+                if(PlayAllmediaPlayersAll.size()>0){
+                    PlayAllmediaPlayersAll.clear();
+                }
                 StudioActivity.frameProgress.setVisibility(View.VISIBLE);
                 StudioActivity.ivRecord.setEnabled(false);
 
@@ -1783,6 +1449,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         protected Bitmap doInBackground(String... urls) {
 
             try {
+                InstrumentCountSize=0;
                 if (InstrumentCountSize == 0) {
                     InstrumentCountSize = instrumentList.size();
                     tmpduration = 0;
@@ -1799,13 +1466,15 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
-                        StudioActivity.mediaPlayersAll.add(StudioActivity.mpall);
+                        if(StudioActivity.PlayAllmediaPlayersAll.size()==0) {
+                            StudioActivity.PlayAllmediaPlayersAll.add(StudioActivity.mpall);
+                        }
                         StudioActivity.PlayAllModel.add(i, new ModelPlayAllMediaPlayer(false, false, false, StudioActivity.mpall));
 
-                        Compdurations = StudioActivity.mediaPlayersAll.get(i).getDuration();
+                        Compdurations = StudioActivity.PlayAllmediaPlayersAll.get(i).getDuration();
                         if (Compdurations > tmpduration) {
                             tmpduration = Compdurations;
-                            MaxMpSessionID = StudioActivity.mediaPlayersAll.get(i).getAudioSessionId();
+                            MaxMpSessionID = StudioActivity.PlayAllmediaPlayersAll.get(i).getAudioSessionId();
                         }
 
                     }
@@ -1813,8 +1482,12 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                         @Override
                         public void onCompletion(MediaPlayer mp) {
                             if (MaxMpSessionID == mp.getAudioSessionId()) {
-                                StudioActivity.handler.removeCallbacksAndMessages(null);
-                                for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
+                                try {
+                                    StudioActivity.handler.removeCallbacksAndMessages(null);
+                                }catch (Exception ex){
+                                    ex.printStackTrace();
+                                }
+                                for (int i = 0; i <= StudioActivity.PlayAllmediaPlayersAll.size() - 1; i++) {
 
 
                                     final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
@@ -1836,8 +1509,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                                     StudioActivity.ivRecord.setEnabled(true);
                                     InstrumentCountSize = 0;
                                     try {
-                                        StudioActivity.mediaPlayersAll.get(i).stop();
-                                        StudioActivity.mediaPlayersAll.get(i).release();
+                                        StudioActivity.PlayAllmediaPlayersAll.get(i).stop();
+                                        //StudioActivity.mediaPlayersAll.get(i).release();
                                     } catch (Exception ex) {
                                         ex.printStackTrace();
                                     }
@@ -1863,11 +1536,11 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 //StudioActivity.waveform_view.setVisibility(View.VISIBLE);
                 //StudioActivity.frameProgress.setVisibility(View.GONE);
                 StudioActivity.frameProgress.setVisibility(View.GONE);
-                for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
+                for (int i = 0; i <= StudioActivity.PlayAllmediaPlayersAll.size() - 1; i++) {
 
                     try {
-                        initAudio(StudioActivity.mediaPlayersAll.get(i));
-                        StudioActivity.mediaPlayersAll.get(i).start();
+                        initAudio(StudioActivity.PlayAllmediaPlayersAll.get(i));
+                        StudioActivity.PlayAllmediaPlayersAll.get(i).start();
 
                     } catch (IllegalArgumentException e) {
 
@@ -1877,9 +1550,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
                     }
                     if (StudioActivity.IsRepeat == true) {
-                        StudioActivity.mediaPlayersAll.get(i).setLooping(true);
+                        StudioActivity.PlayAllmediaPlayersAll.get(i).setLooping(true);
                     } else if (StudioActivity.IsRepeat == false) {
-                        StudioActivity.mediaPlayersAll.get(i).setLooping(false);
+                        StudioActivity.PlayAllmediaPlayersAll.get(i).setLooping(false);
                     }
                     final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
                     final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
@@ -1888,19 +1561,10 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     holderPause.setVisibility(View.VISIBLE);
                     holderPause.setEnabled(false);
                 }
-               /* Mall.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-
-                        StudioActivity.ivRecord.setEnabled(true);
-                        StudioActivity.playAll.setVisibility(View.VISIBLE);
-                        StudioActivity.pauseAll.setVisibility(View.GONE);
-                        InstrumentCountSize = 0;
-                    }
-                });*/
 
 
-                RunSeekbar();
+
+                PlayallRunSeekbar();
 
             } catch (IllegalStateException e) {
                 e.printStackTrace();
@@ -1908,74 +1572,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         }
     }
 
-    public void recordAudio() {
-        AudioManager am1 = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-        Log.i("WiredHeadsetOn = ", am1.isWiredHeadsetOn() + "");
-        if (am1.isWiredHeadsetOn() == true) {
-
-            Toast.makeText(getApplicationContext(), "Headset is connected", Toast.LENGTH_SHORT).show();
-        } else {
-
-            Toast.makeText(getApplicationContext(), "Headset not connected", Toast.LENGTH_SHORT).show();
-        }
-
-
-        try {
-
-            recorder = new MediaRecorder();
-            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-            recorder.setOutputFile(audioFilePath);
-            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-
-            recorder.prepare();
-            recorder.start();
-
-
-            isRecording = true;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private class PrepareIndividualMediaPlayer extends AsyncTask<MediaPlayer, Void, Bitmap> {
-
-        protected void onPreExecute() {
-            try {
-                try {
-
-                    StudioActivity.frameProgress.setVisibility(View.VISIBLE);
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
-
-        protected Bitmap doInBackground(MediaPlayer... urls) {
-
-            try {
-                MediaPlayer mediaPlayer = new MediaPlayer();
-                mediaPlayer.prepare();
-
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            try {
-                StudioActivity.frameProgress.setVisibility(View.GONE);
-
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     public void RunSeekbar() {
 
@@ -1984,6 +1580,39 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 final MediaPlayer pts;
                 //final SeekBar seekBarf;
                 pts = StudioActivity.mediaPlayersAll.get(i);
+
+                final SeekBar seekBarf = StudioActivity.lstViewHolder.get(i).seekBar;
+
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            int currentPosition = pts.getCurrentPosition() / 1000;
+                            int duration = pts.getDuration() / 1000;
+                            int progress = (currentPosition * 100) / duration;
+                            //seekBar.setProgress((int) (((float) pts.getCurrentPosition() / pts.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
+                            seekBarf.setProgress(progress);
+                            StudioActivity.handler.postDelayed(this, 1000);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                };
+                StudioActivity.handler.postDelayed(runnable, 1000);
+            }
+
+
+        } catch (Throwable ex) {
+            ex.printStackTrace();
+        }
+    }
+    public void PlayallRunSeekbar() {
+
+        try {
+            for (int i = 0; i <= StudioActivity.PlayAllmediaPlayersAll.size() - 1; i++) {
+                final MediaPlayer pts;
+                //final SeekBar seekBarf;
+                pts = StudioActivity.PlayAllmediaPlayersAll.get(i);
 
                 final SeekBar seekBarf = StudioActivity.lstViewHolder.get(i).seekBar;
 
@@ -2040,25 +1669,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             ex.printStackTrace();
         }
         return PrgVal;
-    }
-
-
-    public Class<ByteArrayPool> MediaExtractor() {
-        File file = new File(audioFilePath);
-        int size = (int) file.length();
-        bytes = new byte[size];
-        try {
-            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
-            buf.read(bytes, 0, bytes.length);
-            buf.close();
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return ByteArrayPool.class;
     }
 
     public static void setBassBoost(BassBoost bassBoost, int percent) {
@@ -2147,12 +1757,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         // setupVisualizerFxAndUI because we likely want to have more,
         // non-Visualizer related code
         // in this callback.
-        /*mpst.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    public void onCompletion(MediaPlayer mediaPlayer) {
-                        StudioActivity.mVisualizer.setEnabled(false);
-                    }
-                });*/
-
 
     }
 

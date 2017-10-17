@@ -10,6 +10,7 @@ import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.media.audiofx.Visualizer;
 import android.os.SystemClock;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -94,7 +95,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     final int SAMPLING_RATE = 44100;
     private int mBufferSize;
     private short[] mAudioBuffer;
-    public static RecordingThread mRecordingThread;
+    //public static RecordingThread mRecordingThread;
     public static boolean mShouldContinue = true;
     public static View rootview;
     int lastPosition;
@@ -106,7 +107,6 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     int count = 0;
     boolean playSt = false;
     public static int click = 0;
-
 
     public JoinListAdapter(ArrayList<JoinedArtists> Joined_artist, Context context) {
         this.Joined_artist = Joined_artist;
@@ -130,7 +130,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
             SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
             SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
             SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
-            mRecordingThread = new RecordingThread();
+
             JoinActivity.tvIncluded.setText("Included : " + getItemCount());
             mBufferSize = AudioRecord.getMinBufferSize(SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO,
                     AudioFormat.ENCODING_PCM_16BIT);
@@ -199,7 +199,11 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
         }
         JoinedArtists join = Joined_artist.get(0);
         holder.Join_usr_name.setText(joinArt.getJoined_usr_name());
-        Picasso.with(holder.join_image.getContext()).load(joinArt.getJoined_image()).into(holder.join_image);
+        try {
+            Picasso.with(holder.join_image.getContext()).load(joinArt.getJoined_image()).into(holder.join_image);
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
         try {
 
             JoinActivity.play_count.setText(join.getPlay_counts());
@@ -411,10 +415,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                 if (mp != null) {
                     mp.stop();
                 }
-                if (mRecordingThread != null) {
-                    mRecordingThread.stopRunning();
-                    mRecordingThread = null;
-                    //    mShouldContinue=true;
+                if(JoinActivity.mVisualizer!=null){
+                    JoinActivity.mVisualizer.release();
                 }
                 if (JoinInstrumentListAdp.mp_start != null) {
                     for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
@@ -447,10 +449,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                 if (mp != null) {
                     mp.stop();
                 }
-                if (mRecordingThread != null) {
-                    mRecordingThread.stopRunning();
-                    mRecordingThread = null;
-                    //    mShouldContinue=true;
+                if(JoinActivity.mVisualizer!=null){
+                    JoinActivity.mVisualizer.release();
                 }
                 if (JoinInstrumentListAdp.mp_start != null) {
                     for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
@@ -515,7 +515,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         mp.start();
                         JoinActivity.chrono.setBase(SystemClock.elapsedRealtime());
                         JoinActivity.chrono.start();
-                        try {
+                        initAudio(mp);
+                        /*try {
                             if (mRecordingThread == null) {
                                 mShouldContinue = true;
                                 mRecordingThread = new RecordingThread();
@@ -534,7 +535,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                             }
                         } catch (NullPointerException e) {
                             e.printStackTrace();
-                        }
+                        }*/
 
 
                     }
@@ -550,10 +551,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     @Override
                     public void onCompletion(MediaPlayer mp) {
                         JoinActivity.chrono.stop();
-                        if (mRecordingThread != null) {
-                            mRecordingThread.stopRunning();
-                            mRecordingThread = null;
-                            //    mShouldContinue=true;
+                        if(JoinActivity.mVisualizer!=null){
+                            JoinActivity.mVisualizer.release();
                         }
                         JoinActivity.ivJoinPlay.setVisibility(VISIBLE);
                         JoinActivity.ivJoinPause.setVisibility(GONE);
@@ -578,9 +577,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                 } else {
                     JoinActivity.ivPlayPre.setEnabled(true);
                     try {
-                        if (mRecordingThread != null) {
-                            mRecordingThread.stopRunning();
-                            mRecordingThread = null;
+                        if(JoinActivity.mVisualizer!=null){
+                            JoinActivity.mVisualizer.release();
                         }
                     } catch (NullPointerException e) {
                         e.printStackTrace();
@@ -608,12 +606,12 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
                     if (mp != null) {
                         try {
-                            if (mp.isPlaying()) {
+
                                 mp.stop();
                                 mp.release();
                                 mp = null;
 
-                            }
+
                         } catch (Throwable e) {
                             e.printStackTrace();
                         }
@@ -644,26 +642,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                             mp.start();
                             JoinActivity.chrono.setBase(SystemClock.elapsedRealtime());
                             JoinActivity.chrono.start();
-                            try {
-                                if (mRecordingThread == null) {
-                                    mShouldContinue = true;
-                                    mRecordingThread = new RecordingThread();
-                                    mRecordingThread.start();
-                                } else if (!mRecordingThread.isAlive()) {
-                                    try {
-                                        mShouldContinue = true;
-                                        mRecordingThread = new RecordingThread();
-                                        mRecordingThread.start();
-                                    } catch (Throwable e) {
-                                        e.printStackTrace();
-                                    }
-
-                                } else {
-                                    mRecordingThread.stopRunning();
-                                }
-                            } catch (NullPointerException e) {
-                                e.printStackTrace();
-                            }
+                            initAudio(mp);
 
 
                         }
@@ -679,16 +658,19 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         @Override
                         public void onCompletion(MediaPlayer mp) {
                             JoinActivity.chrono.stop();
-                            if (mRecordingThread != null) {
-                                mRecordingThread.stopRunning();
-                                mRecordingThread = null;
-                                //    mShouldContinue=true;
+                            if(JoinActivity.mVisualizer!=null){
+                                JoinActivity.mVisualizer.release();
                             }
                             JoinActivity.ivJoinPlay.setVisibility(VISIBLE);
                             JoinActivity.ivJoinPause.setVisibility(GONE);
-
-
                             progressDialog.dismiss();
+                            try{
+                                mp.stop();
+                                mp.release();
+                                mp = null;
+                            }catch (Exception ex){
+                                ex.printStackTrace();
+                            }
                         }
                     });
                 }
@@ -721,9 +703,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         count = realPosition;
                         JoinActivity.ivPlayNext.setEnabled(true);
                         try {
-                            if (mRecordingThread != null) {
-                                mRecordingThread.stopRunning();
-                                mRecordingThread = null;
+                            if(JoinActivity.mVisualizer!=null){
+                                JoinActivity.mVisualizer.release();
                             }
                         } catch (NullPointerException e) {
                             e.printStackTrace();
@@ -743,12 +724,12 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
                         if (mp != null) {
                             try {
-                                if (mp.isPlaying()) {
+
                                     mp.stop();
                                     mp.release();
                                     mp = null;
 
-                                }
+
                             } catch (Throwable e) {
                                 e.printStackTrace();
                             }
@@ -779,26 +760,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                 mp.start();
                                 JoinActivity.chrono.setBase(SystemClock.elapsedRealtime());
                                 JoinActivity.chrono.start();
-                                try {
-                                    if (mRecordingThread == null) {
-                                        mShouldContinue = true;
-                                        mRecordingThread = new RecordingThread();
-                                        mRecordingThread.start();
-                                    } else if (!mRecordingThread.isAlive()) {
-                                        try {
-                                            mShouldContinue = true;
-                                            mRecordingThread = new RecordingThread();
-                                            mRecordingThread.start();
-                                        } catch (Throwable e) {
-                                            e.printStackTrace();
-                                        }
-
-                                    } else {
-                                        mRecordingThread.stopRunning();
-                                    }
-                                } catch (NullPointerException e) {
-                                    e.printStackTrace();
-                                }
+                                initAudio(mp);
 
 
                             }
@@ -814,14 +776,20 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                             @Override
                             public void onCompletion(MediaPlayer mp) {
                                 JoinActivity.chrono.stop();
-                                if (mRecordingThread != null) {
-                                    mRecordingThread.stopRunning();
-                                    mRecordingThread = null;
-                                    //    mShouldContinue=true;
+                                if(JoinActivity.mVisualizer!=null){
+                                    JoinActivity.mVisualizer.release();
                                 }
                                 JoinActivity.ivJoinPlay.setVisibility(VISIBLE);
                                 JoinActivity.ivJoinPause.setVisibility(GONE);
                                 progressDialog.dismiss();
+                                try{
+                                    mp.stop();
+                                    mp.release();
+                                    mp = null;
+                                }catch (Exception ex){
+                                    ex.printStackTrace();
+                                }
+
                             }
                         });
 
@@ -840,10 +808,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
             public void onClick(View v) {
                 JoinActivity.ivJoinPlay.setVisibility(v.VISIBLE);
                 JoinActivity.ivJoinPause.setVisibility(v.GONE);
-                if (mRecordingThread != null) {
-                    mRecordingThread.stopRunning();
-                    mRecordingThread = null;
-                    //    mShouldContinue=true;
+                if(JoinActivity.mVisualizer!=null){
+                    JoinActivity.mVisualizer.release();
                 }
                 mp.pause();
                 JoinActivity.chrono.stop();
@@ -1114,5 +1080,45 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                 // mDecibelView.setText(String.format(mDecibelFormat, db));
             }
         });
+    }
+    public void initAudio(MediaPlayer mpst) {
+        //setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        //mMediaPlayer = mpst;
+
+        setupVisualizerFxAndUI(mpst);
+        // Make sure the visualizer is enabled only when you actually want to
+        // receive data, and
+        // when it makes sense to receive data.
+        JoinActivity.mVisualizer.setEnabled(true);
+        // When the stream ends, we don't need to collect any more data. We
+        // don't do this in
+        // setupVisualizerFxAndUI because we likely want to have more,
+        // non-Visualizer related code
+        // in this callback.
+       /* mpst.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    public void onCompletion(MediaPlayer mediaPlayer) {
+                        mVisualizer.setEnabled(false);
+                    }
+                });*/
+        //mpst.start();
+
+    }
+
+    private void setupVisualizerFxAndUI(MediaPlayer mpvis) {
+
+        // Create the Visualizer object and attach it to our media player.
+        JoinActivity.mVisualizer = new Visualizer(mpvis.getAudioSessionId());
+        JoinActivity.mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+        JoinActivity.mVisualizer.setDataCaptureListener(
+                new Visualizer.OnDataCaptureListener() {
+                    public void onWaveFormDataCapture(Visualizer visualizer,
+                                                      byte[] bytes, int samplingRate) {
+                        JoinActivity.mVisualizerView.updateVisualizer(bytes);
+                    }
+
+                    public void onFftDataCapture(Visualizer visualizer,
+                                                 byte[] bytes, int samplingRate) {
+                    }
+                }, Visualizer.getMaxCaptureRate() / 2, true, false);
     }
 }
