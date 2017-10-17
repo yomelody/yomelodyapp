@@ -126,7 +126,7 @@ public class ProfileActivity extends AppCompatActivity {
     ImageView ivFollow, ivUnfollow;
     CircleImageView userProfileImageInProf;
     TextView tvNameInProf, tvUserNameInProf, tv_records, tv_fans, tv_following, message_count;
-    String Name, userName, profilePic, coverPic, followStatus, receiverId;
+    String Name, userName, profilePic, coverPic, followStatus, receiverId, chat_id;
     String userId, showProfileUserId;
     String strName, strSearch, strArtist, strInstruments, strBPM;
     String artistName, Instruments, BPM;
@@ -521,6 +521,7 @@ public class ProfileActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                 editor.putString("senderId", userId);
                 editor.putString("receiverId", receiverId);
+                editor.putString("chatId" ,chat_id);
                 editor.putString("receiverName", Name);
                 editor.putString("chatType", "single");
                 editor.commit();
@@ -623,6 +624,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                                     userDetails.setId(userJson.getString("id"));
                                     receiverId = userJson.getString("id");
+                                    chat_id = userJson.getString("chat_id");
                                     userDetails.setUsername(userJson.getString("username"));
                                     userDetails.setFname(userJson.getString("fname"));
                                     userDetails.setLname(userJson.getString("lname"));

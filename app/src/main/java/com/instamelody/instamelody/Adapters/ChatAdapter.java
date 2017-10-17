@@ -206,7 +206,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(final MyViewHolder holder, int position) {
+    public void onBindViewHolder(final MyViewHolder holder, final int position) {
         final int itemType = getItemViewType(position);
 
         holder.setIsRecyclable(false);
@@ -299,11 +299,20 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             holder.ivPlay.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    holder.progressDialog = new ProgressDialog(view.getContext());
+                    holder.progressDialog.setMessage("Loading...");
+                    holder.progressDialog.setCancelable(false);
+                    holder.progressDialog.show();
                     String rid = message.getFileId();
                     fetchPlayJoinAudio(rid);
+                    //This is only for testing Abhishek Dubey
 
+                    ivPrev.setEnabled(false);
+                    ivNext.setEnabled(false);
+
+                    Log.d("Shared audio URL :-------", "" + sharedAudioList.get(0).getRecordingUrl());
                     try {
-                        if (parentRec != null) {
+                        if (sharedAudioList.get(0).getRecordingUrl() != null) {
                             rlNothing.setVisibility(View.VISIBLE);
                             rlChatPlayer.setVisibility(View.VISIBLE);
                             flSeekbar.setVisibility(View.VISIBLE);
@@ -321,17 +330,14 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                     ex.printStackTrace();
                                 }
                             }
-                            holder.progressDialog = new ProgressDialog(view.getContext());
-                            holder.progressDialog.setMessage("Loading...");
-                            holder.progressDialog.setCancelable(false);
-                            holder.progressDialog.show();
+
                             mp = new MediaPlayer();
                             try {
                                 mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
                             } catch (NullPointerException e) {
                                 e.printStackTrace();
                             }
-                            mp.setDataSource(parentRec);
+                            mp.setDataSource(sharedAudioList.get(0).getRecordingUrl());
                             mp.prepareAsync();
 
                             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -379,6 +385,12 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                         holder.progressDialog.dismiss();
                         ex.printStackTrace();
                     }
+                }
+            });
+            ivPlayPlayer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    holder.ivPlay.performClick();
                 }
             });
             ivPausePlayer.setOnClickListener(new View.OnClickListener() {
@@ -609,8 +621,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             holder.ivSettings.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(context, JoinActivity.class);
-                    context.startActivity(intent);
+                    try {
+                        Intent intent = new Intent(context, JoinActivity.class);
+                        context.startActivity(intent);
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+
                 }
             });
 

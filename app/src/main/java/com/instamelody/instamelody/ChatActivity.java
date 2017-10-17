@@ -48,6 +48,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
@@ -55,6 +56,7 @@ import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
@@ -291,15 +293,6 @@ public class ChatActivity extends AppCompatActivity {
             }
         }
 
-        Bundle bundle = getIntent().getExtras();
-
-        if (bundle != null) {
-            String message = bundle.getString("chat_id");
-            if (message != null) {
-                getChatMsgs(message);
-                //    Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-            }
-        }
 
         SharedPreferences packPref = getSharedPreferences("PackData", MODE_PRIVATE);
         packId = packPref.getString("PackId", null);
@@ -395,12 +388,21 @@ public class ChatActivity extends AppCompatActivity {
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
-//                editor.putString("receiverId", "");
-//                editor.putString("receiverName", "");
-//                editor.putString("receiverImage", "");
-//                editor.putString("chatId", "");
-//                editor.commit();
+                SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                editor.putString("receiverId", "");
+                editor.putString("receiverName", "");
+                editor.putString("receiverImage", "");
+                editor.putString("chatId", "");
+                editor.commit();
+                try {
+                    if (ChatAdapter.mp != null) {
+                        ChatAdapter.mp.stop();
+                        ChatAdapter.mp.reset();
+                        ChatAdapter.mp.release();
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
                 finish();
             }
         });
@@ -416,6 +418,15 @@ public class ChatActivity extends AppCompatActivity {
                 editor.putString("receiverImage", "");
                 editor.putString("chatId", "");
                 editor.commit();
+                try {
+                    if (ChatAdapter.mp != null) {
+                        ChatAdapter.mp.stop();
+                        ChatAdapter.mp.reset();
+                        ChatAdapter.mp.release();
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
             }
@@ -431,6 +442,15 @@ public class ChatActivity extends AppCompatActivity {
                 editor.putString("chatId", "");
                 editor.putString("purpose", "invite");
                 editor.commit();
+                try {
+                    if (ChatAdapter.mp != null) {
+                        ChatAdapter.mp.stop();
+                        ChatAdapter.mp.reset();
+                        ChatAdapter.mp.release();
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
                 Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
                 intent.putExtra("Previous", "Chat");
                 startActivity(intent);
@@ -449,12 +469,7 @@ public class ChatActivity extends AppCompatActivity {
                     ivJoin.setVisibility(View.VISIBLE);
                     tvSend.setVisibility(View.GONE);
                     sendMessage(message, userId);
-                    if (chatId.equals("")) {
-                        getChatId(senderId, receiverId);
-                        getChatMsgs(chatId);
-                    } else {
-                        getChatMsgs(chatId);
-                    }
+
                     InputMethodManager inputManager = (InputMethodManager)
                             getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
@@ -872,6 +887,16 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        try {
+            if (ChatAdapter.mp != null) {
+                ChatAdapter.mp.stop();
+                ChatAdapter.mp.reset();
+                ChatAdapter.mp.release();
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
     }
 
@@ -1035,7 +1060,14 @@ public class ChatActivity extends AppCompatActivity {
                         public void onResponse(NetworkResponse response) {
                             String str = new String(response.data);
 //                            Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
-                            getChatMsgs(chatId);
+                            try {
+                                JSONObject json = new JSONObject(str);
+                                JSONObject jsonMsg = json.getJSONObject("usermsg");
+                                String chat_id = jsonMsg.getString("chat_id");
+                                getChatMsgs(chat_id);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                             flagFileType = "0";
                         }
                     }, new Response.ErrorListener() {
@@ -1107,14 +1139,33 @@ public class ChatActivity extends AppCompatActivity {
                     return params;
                 }
             };
-            VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
+            RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+
+            int socketTimeout = 60000; // 30 seconds. You can change it
+            RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+            multipartRequest.setRetryPolicy(policy);
+
+            requestQueue.add(multipartRequest);
+            //     VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
         } else {
             StringRequest stringRequest = new StringRequest(Request.Method.POST, CHAT, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
                     String str = response;
 //                    Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
-                    getChatMsgs(chatId);
+                    try {
+                        JSONObject json = new JSONObject(response);
+                        JSONObject jsonMsg = json.getJSONObject("usermsg");
+                        String chat_id = jsonMsg.getString("chat_id");
+                        getChatMsgs(chat_id);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
                     flagFileType = "0";
                     //service for comment count.
                     if (getIntent() != null && getIntent().hasExtra("share")) {

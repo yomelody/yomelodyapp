@@ -1545,12 +1545,12 @@ public class StudioActivity extends AppCompatActivity {
                         if (mediaPlayer != null) {
                             mediaPlayer.stop();
                             mediaPlayer.release();
-                            mediaPlayer=null;
+                            mediaPlayer = null;
                         }
                         if (mpall != null) {
                             mpall.stop();
                             mpall.release();
-                            mpall=null;
+                            mpall = null;
                             for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                                 mediaPlayersAll.get(i).stop();
                                 mediaPlayersAll.get(i).release();
@@ -2312,6 +2312,11 @@ public class StudioActivity extends AppCompatActivity {
                     }
 
                 } catch (JSONException e) {
+                    if (progressDialog != null) {
+                        if (progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
+                    }
                     e.printStackTrace();
                 }
 //                Log.d("return message", resultResponse);
@@ -3467,7 +3472,7 @@ public class StudioActivity extends AppCompatActivity {
         }
         //File wavFile = new File(getFilesDir(), "recording_" + System.currentTimeMillis() / 1000 + ".wav");
         File wavFile = new File(audioFilePath);
-    //    Toast.makeText(this, wavFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
+        //    Toast.makeText(this, wavFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
         recordTask.execute(wavFile);
     }
 
@@ -3735,7 +3740,7 @@ public class StudioActivity extends AppCompatActivity {
 //                            size, time), Toast.LENGTH_LONG).show();
                 } else {
                     // Error
-                  //  Toast.makeText(ctx, throwable.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                    //  Toast.makeText(ctx, throwable.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         }
