@@ -1,10 +1,10 @@
 package com.instamelody.instamelody;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
+import android.media.audiofx.Visualizer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -13,13 +13,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Chronometer;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
@@ -33,15 +31,14 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.instamelody.instamelody.Adapters.InstrumentListAdapter;
 import com.instamelody.instamelody.Adapters.JoinInstrumentListAdp;
 import com.instamelody.instamelody.Adapters.JoinListAdapter;
 import com.instamelody.instamelody.Fragments.CommentJoinFragment;
 import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Models.JoinedUserProfile;
 import com.instamelody.instamelody.Models.MelodyInstruments;
-import com.instamelody.instamelody.Models.ModelPlayAllMediaPlayer;
 import com.instamelody.instamelody.Parse.ParseContents;
+import com.instamelody.instamelody.utils.VisualizerView;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -92,6 +89,9 @@ public class JoinActivity extends AppCompatActivity {
     public static ArrayList<JoinInstrumentListAdp.ViewHolder> lstViewHolder = new ArrayList<JoinInstrumentListAdp.ViewHolder>();
     public static MediaPlayer mpall;
     public static ArrayList<MediaPlayer> mediaPlayersAll = new ArrayList<MediaPlayer>();
+    public static VisualizerView mVisualizerView;
+    public static Visualizer mVisualizer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,6 +112,7 @@ public class JoinActivity extends AppCompatActivity {
         playAll = (ImageView) findViewById(R.id.playAll);
         pauseAll = (ImageView) findViewById(R.id.pauseAll);
         waveform_view = (com.instamelody.instamelody.utils.WaveformView) findViewById(R.id.waveform_view);
+        mVisualizerView = (VisualizerView) findViewById(R.id.myvisualizerview);
         mDecibelView = (TextView) findViewById(R.id.decibel_view);
         play_count = (TextView) findViewById(R.id.tvPlayCount);
         tvLikeCount = (TextView) findViewById(R.id.tvLikeCount);
@@ -201,10 +202,8 @@ public class JoinActivity extends AppCompatActivity {
                 if (JoinListAdapter.mp != null) {
                     JoinListAdapter.mp.stop();
                 }
-                if (JoinListAdapter.mRecordingThread != null) {
-                    JoinListAdapter.mRecordingThread.stopRunning();
-                    JoinListAdapter.mRecordingThread = null;
-                    //    mShouldContinue=true;
+                if(mVisualizer!=null){
+                    mVisualizer.release();
                 }
                 if (JoinInstrumentListAdp.mp_start != null) {
                     for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
@@ -228,10 +227,8 @@ public class JoinActivity extends AppCompatActivity {
                 if (JoinListAdapter.mp != null) {
                     JoinListAdapter.mp.stop();
                 }
-                if (JoinListAdapter.mRecordingThread != null) {
-                    JoinListAdapter.mRecordingThread.stopRunning();
-                    JoinListAdapter.mRecordingThread = null;
-                    //    mShouldContinue=true;
+                if(mVisualizer!=null){
+                    mVisualizer.release();
                 }
                 if (JoinInstrumentListAdp.mp_start != null) {
                     for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
@@ -259,10 +256,8 @@ public class JoinActivity extends AppCompatActivity {
                 if (JoinListAdapter.mp != null) {
                     JoinListAdapter.mp.stop();
                 }
-                if (JoinListAdapter.mRecordingThread != null) {
-                    JoinListAdapter.mRecordingThread.stopRunning();
-                    JoinListAdapter.mRecordingThread = null;
-                    //    mShouldContinue=true;
+                if(mVisualizer!=null){
+                    mVisualizer.release();
                 }
                 if (JoinInstrumentListAdp.mp_start != null) {
                     for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
@@ -309,171 +304,7 @@ public class JoinActivity extends AppCompatActivity {
 
     }
 
-    public void getJoined_Local() {
-        String response = "{\n" +
-                "  \"flag\": \"success\",\n" +
-                "  \"response\": [\n" +
-                "    {\n" +
-                "      \"user_id\": \"36\",\n" +
-                "      \"user_name\": \"@Shubh\",\n" +
-                "      \"profile_pic\": \"http://52.89.220.199/api//uploads/profilepics/1500662364427d14012-saara-original-imaehsyjr7ptj9yj.jpeg\",\n" +
-                "      \"joined_artists\": \"15\",\n" +
-                "      \"recording_id\": \"5\",\n" +
-                "      \"recording_name\": \"Crazy Life\",\n" +
-                "      \"recording_url\": \"http://52.89.220.199/api//uploads/profilepics/1500662364427d14012-saara-origiimaehsyjr7ptj9yj.jpeg\",\n" +
-                "      \"recording_cover\": \"http://52.89.220.199/api//uploads/profilepics/1500662364427d14012-saara-origiimaehsyjyj.jpeg\",\n" +
-                "      \"recording_duration\": \"152\",\n" +
-                "      \"recording_date\": \"2017-07-21 19:14:53\",\n" +
-                "      \"like_status\": \"0\",\n" +
-                "      \"play_counts\": \"0\",\n" +
-                "      \"like_counts\": \"1\",\n" +
-                "      \"share_counts\": \"0\",\n" +
-                "      \"comment_counts\": \"0\",\n" +
-                "      \"instruments\": [\n" +
-                "        {\n" +
-                "          \"instrument_id\": \"21\",\n" +
-                "          \"instruments_name\": \"ring\",\n" +
-                "          \"instruments_type\": \"admin\",\n" +
-                "          \"melodypackid\": \"22\",\n" +
-                "          \"bpm\": \"160000\",\n" +
-                "          \"file_size\": \"884572\",\n" +
-                "          \"instrument_url\": \"http://52.89.220.199/api/uploads/pics/1500664493Main_Phir_Bhi_Tumko_Chahunga_Ringtone.mp3\",\n" +
-                "          \"duration\": \"39\",\n" +
-                "          \"uploadeddate\": \"2017-07-21 19:14:53\",\n" +
-                "          \"profilepic\": \"http://52.89.220.199/api/uploads/profilepics/1500664493rahul_gandhi_760_1487948971_749x421.jpeg\",\n" +
-                "          \"coverpic\": \"http://52.89.220.199/api/uploads/coverpics/1500664493rahul_gandhi_760_1487948971_749x421.jpeg\",\n" +
-                "          \"username\": \"@Shubh\"\n" +
-                "        },\n" +
-                "        {\n" +
-                "          \"instrument_id\": \"20\",\n" +
-                "          \"instruments_name\": \"gdfgf\",\n" +
-                "          \"instruments_type\": \"admin\",\n" +
-                "          \"melodypackid\": \"22\",\n" +
-                "          \"bpm\": \"320000\",\n" +
-                "          \"file_size\": \"0\",\n" +
-                "          \"instrument_url\": \"http://52.89.220.199/api/uploads/pics/1500493233Big_Blood_-_04_-_El_Debarge.mp3\",\n" +
-                "          \"duration\": \"25\",\n" +
-                "          \"uploadeddate\": \"2017-07-20 18:17:05\",\n" +
-                "          \"profilepic\": \"http://52.89.220.199/api/uploads/profilepics/1500493233EMDS-stacked.png\",\n" +
-                "          \"coverpic\": \"http://52.89.220.199/api/uploads/coverpics/1500574625Hydras.jpg\",\n" +
-                "          \"username\": \"@Shubh\"\n" +
-                "        }\n" +
-                "      ]\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"user_id\": \"36\",\n" +
-                "      \"user_name\": \"@Shubh\",\n" +
-                "      \"profile_pic\": \"http://52.89.220.199/api//uploads/profilepics/1500662364427d14012-saara-original-imaehsyjr7ptj9yj.jpeg\",\n" +
-                "      \"joined_artists\": \"15\",\n" +
-                "      \"recording_id\": \"5\",\n" +
-                "      \"recording_name\": \"Crazy Life\",\n" +
-                "      \"recording_url\": \"http://52.89.220.199/api//uploads/profilepics/1500662364427d14012-saara-origiimaehsyjr7ptj9yj.jpeg\",\n" +
-                "      \"recording_cover\": \"http://52.89.220.199/api//uploads/profilepics/1500662364427d14012-saara-origiimaehsyjyj.jpeg\",\n" +
-                "      \"recording_duration\": \"152\",\n" +
-                "      \"recording_date\": \"2017-07-21 19:14:53\",\n" +
-                "      \"like_status\": \"0\",\n" +
-                "      \"play_counts\": \"0\",\n" +
-                "      \"like_counts\": \"1\",\n" +
-                "      \"share_counts\": \"0\",\n" +
-                "      \"comment_counts\": \"0\",\n" +
-                "      \"instruments\": [\n" +
-                "        {\n" +
-                "          \"instrument_id\": \"21\",\n" +
-                "          \"instruments_name\": \"ring\",\n" +
-                "          \"instruments_type\": \"admin\",\n" +
-                "          \"melodypackid\": \"22\",\n" +
-                "          \"bpm\": \"160000\",\n" +
-                "          \"file_size\": \"884572\",\n" +
-                "          \"instrument_url\": \"http://52.89.220.199/api/uploads/pics/1500664493Main_Phir_Bhi_Tumko_Chahunga_Ringtone.mp3\",\n" +
-                "          \"duration\": \"39\",\n" +
-                "          \"uploadeddate\": \"2017-07-21 19:14:53\",\n" +
-                "          \"profilepic\": \"http://52.89.220.199/api/uploads/profilepics/1500664493rahul_gandhi_760_1487948971_749x421.jpeg\",\n" +
-                "          \"coverpic\": \"http://52.89.220.199/api/uploads/coverpics/1500664493rahul_gandhi_760_1487948971_749x421.jpeg\",\n" +
-                "          \"username\": \"@Shubh\"\n" +
-                "        },\n" +
-                "        {\n" +
-                "          \"instrument_id\": \"20\",\n" +
-                "          \"instruments_name\": \"gdfgf\",\n" +
-                "          \"instruments_type\": \"admin\",\n" +
-                "          \"melodypackid\": \"22\",\n" +
-                "          \"bpm\": \"320000\",\n" +
-                "          \"file_size\": \"0\",\n" +
-                "          \"instrument_url\": \"http://52.89.220.199/api/uploads/pics/1500493233Big_Blood_-_04_-_El_Debarge.mp3\",\n" +
-                "          \"duration\": \"25\",\n" +
-                "          \"uploadeddate\": \"2017-07-20 18:17:05\",\n" +
-                "          \"profilepic\": \"http://52.89.220.199/api/uploads/profilepics/1500493233EMDS-stacked.png\",\n" +
-                "          \"coverpic\": \"http://52.89.220.199/api/uploads/coverpics/1500574625Hydras.jpg\",\n" +
-                "          \"username\": \"@Shubh\"\n" +
-                "        }\n" +
-                "      ]\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"user_id\": \"36\",\n" +
-                "      \"user_name\": \"@Shubh\",\n" +
-                "      \"profile_pic\": \"http://52.89.220.199/api//uploads/profilepics/1500662364427d14012-saara-original-imaehsyjr7ptj9yj.jpeg\",\n" +
-                "      \"joined_artists\": \"15\",\n" +
-                "      \"recording_id\": \"5\",\n" +
-                "      \"recording_name\": \"Crazy Life\",\n" +
-                "      \"recording_url\": \"http://52.89.220.199/api//uploads/profilepics/1500662364427d14012-saara-origiimaehsyjr7ptj9yj.jpeg\",\n" +
-                "      \"recording_cover\": \"http://52.89.220.199/api//uploads/profilepics/1500662364427d14012-saara-origiimaehsyjyj.jpeg\",\n" +
-                "      \"recording_duration\": \"152\",\n" +
-                "      \"recording_date\": \"2017-07-21 19:14:53\",\n" +
-                "      \"like_status\": \"0\",\n" +
-                "      \"play_counts\": \"0\",\n" +
-                "      \"like_counts\": \"1\",\n" +
-                "      \"share_counts\": \"0\",\n" +
-                "      \"comment_counts\": \"0\",\n" +
-                "      \"instruments\": [\n" +
-                "        {\n" +
-                "          \"instrument_id\": \"21\",\n" +
-                "          \"instruments_name\": \"ring\",\n" +
-                "          \"instruments_type\": \"admin\",\n" +
-                "          \"melodypackid\": \"22\",\n" +
-                "          \"bpm\": \"160000\",\n" +
-                "          \"file_size\": \"884572\",\n" +
-                "          \"instrument_url\": \"http://52.89.220.199/api/uploads/pics/1500664493Main_Phir_Bhi_Tumko_Chahunga_Ringtone.mp3\",\n" +
-                "          \"duration\": \"39\",\n" +
-                "          \"uploadeddate\": \"2017-07-21 19:14:53\",\n" +
-                "          \"profilepic\": \"http://52.89.220.199/api/uploads/profilepics/1500664493rahul_gandhi_760_1487948971_749x421.jpeg\",\n" +
-                "          \"coverpic\": \"http://52.89.220.199/api/uploads/coverpics/1500664493rahul_gandhi_760_1487948971_749x421.jpeg\",\n" +
-                "          \"username\": \"@Shubh\"\n" +
-                "        },\n" +
-                "        {\n" +
-                "          \"instrument_id\": \"20\",\n" +
-                "          \"instruments_name\": \"gdfgf\",\n" +
-                "          \"instruments_type\": \"admin\",\n" +
-                "          \"melodypackid\": \"22\",\n" +
-                "          \"bpm\": \"320000\",\n" +
-                "          \"file_size\": \"0\",\n" +
-                "          \"instrument_url\": \"http://52.89.220.199/api/uploads/pics/1500493233Big_Blood_-_04_-_El_Debarge.mp3\",\n" +
-                "          \"duration\": \"25\",\n" +
-                "          \"uploadeddate\": \"2017-07-20 18:17:05\",\n" +
-                "          \"profilepic\": \"http://52.89.220.199/api/uploads/profilepics/1500493233EMDS-stacked.png\",\n" +
-                "          \"coverpic\": \"http://52.89.220.199/api/uploads/coverpics/1500574625Hydras.jpg\",\n" +
-                "          \"username\": \"@Shubh\"\n" +
-                "        }\n" +
-                "      ]\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}\n";
-        Joined_artist.clear();
-        instrumentList.clear();
-        new ParseContents(getApplicationContext()).parseJoin(response, Joined_artist);
-        adapter = new JoinListAdapter(Joined_artist, getApplicationContext());
-        recyclerView.setAdapter(adapter);
-        Intent intent = getIntent();
-//        if (pos.equals("0")) {
-//            new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, pos);
-//            adapter1 = new JoinInstrumentListAdp(instrumentList, getApplicationContext());
-//            recyclerViewInstruments.setAdapter(adapter1);
-//        } else {
-//            pos = intent.getExtras().getString("Value");
-//            new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, pos);
-//            adapter1 = new JoinInstrumentListAdp(instrumentList, getApplicationContext());
-//            recyclerViewInstruments.setAdapter(adapter1);
-//        }
 
-    }
 
 
     public void getJoined_users(final String addedBy, final String RecId) {
@@ -557,10 +388,8 @@ public class JoinActivity extends AppCompatActivity {
         if (JoinListAdapter.mp != null) {
             JoinListAdapter.mp.stop();
         }
-        if (JoinListAdapter.mRecordingThread != null) {
-            JoinListAdapter.mRecordingThread.stopRunning();
-            JoinListAdapter.mRecordingThread = null;
-            //    mShouldContinue=true;
+        if(mVisualizer!=null){
+            mVisualizer.release();
         }
 
         if (JoinInstrumentListAdp.mp_start != null) {
@@ -585,10 +414,8 @@ public class JoinActivity extends AppCompatActivity {
         if (JoinListAdapter.mp != null) {
             JoinListAdapter.mp.stop();
         }
-        if (JoinListAdapter.mRecordingThread != null) {
-            JoinListAdapter.mRecordingThread.stopRunning();
-            JoinListAdapter.mRecordingThread = null;
-            //    mShouldContinue=true;
+        if(mVisualizer!=null){
+            mVisualizer.release();
         }
 
         if (JoinInstrumentListAdp.mp_start != null) {

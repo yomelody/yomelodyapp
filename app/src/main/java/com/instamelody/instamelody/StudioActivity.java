@@ -133,7 +133,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -170,6 +169,8 @@ public class StudioActivity extends AppCompatActivity {
     String packName, addedByUser, coverPick, recGenre, bpm, likeCount, shareCount, commentCount, playCount, melodyUrl, audioFileType, audioFileSize, addDate,
             melodyRecDuration, Public;
     MediaPlayer pts;
+    MediaPlayer MpRec;
+    AudioManager audioManager;
     final int MY_PERMISSIONS_REQUEST_MICROPHONE = 200;
     final int MY_PERMISSIONS_REQUEST_STORAGE = 201;
     private static final int SAMPLING_RATE = 44100;
@@ -223,7 +224,7 @@ public class StudioActivity extends AppCompatActivity {
     private final int requestCode = 20;
     public static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     public static boolean isRecording = false;
-    public static MediaPlayer mediaPlayer;
+    public static MediaPlayer mediaPlayer=null;
     public static String audioFilePath;
     private static String instrumentFilePath;
     public static ArrayList<InstrumentListAdapter.ViewHolder> lstViewHolder = new ArrayList<InstrumentListAdapter.ViewHolder>();
@@ -248,6 +249,7 @@ public class StudioActivity extends AppCompatActivity {
     RecyclerView.Adapter adapter;
     public static ProgressDialog progressDialog, pDialog;
     public static ProgressBar frameprog;
+
     // LongOperation myTask = null;
 
     // public static MediaPlayer mpInst;
@@ -280,7 +282,7 @@ public class StudioActivity extends AppCompatActivity {
     public static MelodyMixing melodyMixing = new MelodyMixing();
     public static ArrayList<MixingData> list = new ArrayList<MixingData>();
 
-    public static MediaPlayer mpInst;
+    public static MediaPlayer mpInst=null;
     String Mixrecording = "recording";
     String MixisMelody = "isMelody";
     String Mixtopic_name = "topic_name";
@@ -293,8 +295,9 @@ public class StudioActivity extends AppCompatActivity {
     String Mixvocalsound = "vocalsound";
     String MixCommand = "command";
     String MixparentRecordingID = "parentRecordingID";
-    public static MediaPlayer mpall;
+    public static MediaPlayer mpall=null;
     public static ArrayList<MediaPlayer> mediaPlayersAll = new ArrayList<MediaPlayer>();
+    public static ArrayList<MediaPlayer> PlayAllmediaPlayersAll = new ArrayList<MediaPlayer>();
     public static ArrayList<ModelPlayAllMediaPlayer> PlayAllModel = new ArrayList<>();
     public static List<MediaPlayer> mp_start = new ArrayList<MediaPlayer>();
     public static final Handler handler = new Handler();
@@ -322,6 +325,9 @@ public class StudioActivity extends AppCompatActivity {
     public static VisualizerView mVisualizerView;
     public static Visualizer mVisualizer;
     public static boolean IsRepeat = false;
+    Dialog alertDialog = null;
+    public static double BPM;
+    int RecmaxVolume=1,MelmaxVolume=1;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -732,7 +738,7 @@ public class StudioActivity extends AppCompatActivity {
 
         audioFilePath =
                 Environment.getExternalStorageDirectory().getAbsolutePath()
-                        + "/InstaMelody.mp3";
+                        + "/InstaMelody.wav";
 
         rlInviteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -747,10 +753,23 @@ public class StudioActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
 
-                    handler.removeCallbacksAndMessages(null);
+                    try {
+                        handler.removeCallbacksAndMessages(null);
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
 
                     if (lstViewHolder.size() > 0) {
                         lstViewHolder.clear();
+                    }
+                    if(mediaPlayer!=null){
+                        try {
+                            mediaPlayer.stop();
+                            mediaPlayer.release();
+                            mediaPlayer = null;
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
                     }
                     if (mp_start.size() > 0) {
                         for (int i = 0; i <= mp_start.size() - 1; i++) {
@@ -788,11 +807,24 @@ public class StudioActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
-
+                    if (PlayAllmediaPlayersAll.size() > 0) {
+                        for (int i = 0; i <= PlayAllmediaPlayersAll.size() - 1; i++) {
+                            try {
+                                PlayAllmediaPlayersAll.get(i).stop();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    }
+                    PlayAllmediaPlayersAll.clear();
 
                     if (isRecording) {
                         //ivRecord.setEnabled(false);
-                        handler.removeCallbacksAndMessages(null);
+                        try {
+                            handler.removeCallbacksAndMessages(null);
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
                         try {
                             recorder.release();
                             recorder = null;
@@ -827,15 +859,27 @@ public class StudioActivity extends AppCompatActivity {
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 try {
 
-                    handler.removeCallbacksAndMessages(null);
+                    try {
+                        handler.removeCallbacksAndMessages(null);
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                     if (mVisualizer != null) {
                         mVisualizer.release();
                     }
                     if (lstViewHolder.size() > 0) {
                         lstViewHolder.clear();
+                    }
+                    if(mediaPlayer!=null){
+                        try {
+                            mediaPlayer.stop();
+                            mediaPlayer.release();
+                            mediaPlayer = null;
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
                     }
                     if (mp_start != null) {
                         for (int i = 0; i <= mp_start.size() - 1; i++) {
@@ -864,6 +908,16 @@ public class StudioActivity extends AppCompatActivity {
                         }
                         mediaPlayersAll.clear();
                     }
+                    if (PlayAllmediaPlayersAll.size() > 0) {
+                        for (int i = 0; i <= PlayAllmediaPlayersAll.size() - 1; i++) {
+                            try {
+                                PlayAllmediaPlayersAll.get(i).stop();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    }
+                    PlayAllmediaPlayersAll.clear();
                     if (mpInst != null) {
                         try {
                             mpInst.stop();
@@ -888,9 +942,22 @@ public class StudioActivity extends AppCompatActivity {
                     if (mVisualizer != null) {
                         mVisualizer.release();
                     }
-                    handler.removeCallbacksAndMessages(null);
+                    try {
+                        handler.removeCallbacksAndMessages(null);
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                     if (lstViewHolder.size() > 0) {
                         lstViewHolder.clear();
+                    }
+                    if(mediaPlayer!=null){
+                        try {
+                            mediaPlayer.stop();
+                            mediaPlayer.release();
+                            mediaPlayer = null;
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
                     }
                     if (mp_start != null) {
                         for (int i = 0; i <= mp_start.size() - 1; i++) {
@@ -919,6 +986,16 @@ public class StudioActivity extends AppCompatActivity {
                         }
                         mediaPlayersAll.clear();
                     }
+                    if (PlayAllmediaPlayersAll.size() > 0) {
+                        for (int i = 0; i <= PlayAllmediaPlayersAll.size() - 1; i++) {
+                            try {
+                                PlayAllmediaPlayersAll.get(i).stop();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    }
+                    PlayAllmediaPlayersAll.clear();
                     if (mpInst != null) {
                         try {
                             mpInst.stop();
@@ -946,9 +1023,22 @@ public class StudioActivity extends AppCompatActivity {
                     if (mVisualizer != null) {
                         mVisualizer.release();
                     }
-                    handler.removeCallbacksAndMessages(null);
+                    try {
+                        handler.removeCallbacksAndMessages(null);
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                     if (lstViewHolder.size() > 0) {
                         lstViewHolder.clear();
+                    }
+                    if(mediaPlayer!=null){
+                        try {
+                            mediaPlayer.stop();
+                            mediaPlayer.release();
+                            mediaPlayer = null;
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
                     }
                     if (mp_start != null) {
 
@@ -979,6 +1069,16 @@ public class StudioActivity extends AppCompatActivity {
                         }
                         mediaPlayersAll.clear();
                     }
+                    if (PlayAllmediaPlayersAll.size() > 0) {
+                        for (int i = 0; i <= PlayAllmediaPlayersAll.size() - 1; i++) {
+                            try {
+                                PlayAllmediaPlayersAll.get(i).stop();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    }
+                    PlayAllmediaPlayersAll.clear();
                     if (mpInst != null) {
                         try {
                             mpInst.stop();
@@ -1006,9 +1106,22 @@ public class StudioActivity extends AppCompatActivity {
                     if (mVisualizer != null) {
                         mVisualizer.release();
                     }
-                    handler.removeCallbacksAndMessages(null);
+                    try {
+                        handler.removeCallbacksAndMessages(null);
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                     if (lstViewHolder.size() > 0) {
                         lstViewHolder.clear();
+                    }
+                    if(mediaPlayer!=null){
+                        try {
+                            mediaPlayer.stop();
+                            mediaPlayer.release();
+                            mediaPlayer = null;
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
                     }
                     if (mp_start != null) {
 
@@ -1039,6 +1152,16 @@ public class StudioActivity extends AppCompatActivity {
                         }
                         mediaPlayersAll.clear();
                     }
+                    if (PlayAllmediaPlayersAll.size() > 0) {
+                        for (int i = 0; i <= PlayAllmediaPlayersAll.size() - 1; i++) {
+                            try {
+                                PlayAllmediaPlayersAll.get(i).stop();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    }
+                    PlayAllmediaPlayersAll.clear();
                     if (mpInst != null) {
                         try {
                             mpInst.stop();
@@ -1065,9 +1188,22 @@ public class StudioActivity extends AppCompatActivity {
                     if (mVisualizer != null) {
                         mVisualizer.release();
                     }
-                    handler.removeCallbacksAndMessages(null);
+                    try {
+                        handler.removeCallbacksAndMessages(null);
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                     if (lstViewHolder.size() > 0) {
                         lstViewHolder.clear();
+                    }
+                    if(mediaPlayer!=null){
+                        try {
+                            mediaPlayer.stop();
+                            mediaPlayer.release();
+                            mediaPlayer = null;
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
                     }
                     if (mp_start != null) {
 
@@ -1098,6 +1234,16 @@ public class StudioActivity extends AppCompatActivity {
                         }
                         mediaPlayersAll.clear();
                     }
+                    if (PlayAllmediaPlayersAll.size() > 0) {
+                        for (int i = 0; i <= PlayAllmediaPlayersAll.size() - 1; i++) {
+                            try {
+                                PlayAllmediaPlayersAll.get(i).stop();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    }
+                    PlayAllmediaPlayersAll.clear();
                     if (mpInst != null) {
                         try {
                             mpInst.stop();
@@ -1124,9 +1270,22 @@ public class StudioActivity extends AppCompatActivity {
                     if (mVisualizer != null) {
                         mVisualizer.release();
                     }
-                    handler.removeCallbacksAndMessages(null);
+                    try {
+                        handler.removeCallbacksAndMessages(null);
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                     if (lstViewHolder.size() > 0) {
                         lstViewHolder.clear();
+                    }
+                    if(mediaPlayer!=null){
+                        try {
+                            mediaPlayer.stop();
+                            mediaPlayer.release();
+                            mediaPlayer = null;
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
                     }
                     if (mp_start != null) {
 
@@ -1157,6 +1316,16 @@ public class StudioActivity extends AppCompatActivity {
                         }
                         mediaPlayersAll.clear();
                     }
+                    if (PlayAllmediaPlayersAll.size() > 0) {
+                        for (int i = 0; i <= PlayAllmediaPlayersAll.size() - 1; i++) {
+                            try {
+                                PlayAllmediaPlayersAll.get(i).stop();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    }
+                    PlayAllmediaPlayersAll.clear();
                     if (mpInst != null) {
                         try {
                             mpInst.stop();
@@ -1186,44 +1355,6 @@ public class StudioActivity extends AppCompatActivity {
                         ivRecord.setEnabled(true);
                     } else if (userId == null) {
 
-                        /*if (lstViewHolder.size() > 0) {
-                            lstViewHolder.clear();
-                        }
-                        if (mp_start != null) {
-
-                            for (int i = 0; i <= mp_start.size() - 1; i++) {
-                                try {
-                                    mp_start.get(i).stop();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-
-                            }
-                        }
-                        mp_start.clear();
-
-                        if (mediaPlayersAll.size() > 0) {
-                            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                                try {
-                                    mediaPlayersAll.get(i).stop();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-                            }
-                            mediaPlayersAll.clear();
-                        }
-
-
-                        if (mpInst != null) {
-                            try {
-                                mpInst.stop();
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                        }
-                        if (instrumentList.size() > 0) {
-                            instrumentList.clear();
-                        }*/
 
                         Intent i = new Intent(getApplicationContext(), SignInActivity.class);
                         i.putExtra("StudioBack", "ReturnStudioScreen");
@@ -1247,9 +1378,16 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    if (mVisualizer != null) {
+                        mVisualizer.release();
+                    }
                     IsHomeMeloduId = null;
                     IscheckMelody = null;
-                    handler.removeCallbacksAndMessages(null);
+                    try {
+                        handler.removeCallbacksAndMessages(null);
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                     ivRecord_play.setVisibility(View.INVISIBLE);
                     rlRedoButton.setVisibility(View.INVISIBLE);
                     ivRecord.setVisibility(View.VISIBLE);
@@ -1334,6 +1472,8 @@ public class StudioActivity extends AppCompatActivity {
                     alertDialog.setPositiveButton("Sign In", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             Intent i = new Intent(getApplicationContext(), SignInActivity.class);
+                            i.putExtra("StudioBack", "ReturnStudioScreen");
+                            i.putExtra("melodyPackId", melodyPackId);
                             startActivity(i);
                         }
                     });
@@ -1354,16 +1494,99 @@ public class StudioActivity extends AppCompatActivity {
 
                 LayoutInflater mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 View customView = mInflater.inflate(R.layout.view_master_vol, null, false);
-                final Dialog alertDialog = new Dialog(StudioActivity.this);
+
+                alertDialog = new Dialog(StudioActivity.this);
                 alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 alertDialog.setContentView(customView);
+                ImageView closeMasterVol = (ImageView) alertDialog.findViewById(R.id.closeMasterVol);
+                com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar RecSeekbar = (com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar) alertDialog.findViewById(R.id.sbRec);
+                com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar MelSeekbar = (com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar) alertDialog.findViewById(R.id.sbMelody);
+
+                audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+                //set max progress according to volume
+                //RecSeekbar.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+                MelSeekbar.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+                //get current volume
+               // RecSeekbar.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+                MelSeekbar.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+                //Set the seek bar progress to 1
+                //RecSeekbar.setKeyProgressIncrement(1);
+                MelSeekbar.setKeyProgressIncrement(1);
+                //get max volume
+                //RecmaxVolume=RecSeekbar.getMax();
+                MelmaxVolume=MelSeekbar.getMax();
+
+
+
                 alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 WindowManager.LayoutParams wmlp = alertDialog.getWindow().getAttributes();
                 wmlp.width = WindowManager.LayoutParams.MATCH_PARENT;
                 wmlp.height = WindowManager.LayoutParams.MATCH_PARENT;
                 alertDialog.show();
+
+                closeMasterVol.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        alertDialog.dismiss();
+                    }
+                });
+                RecSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+                        float volume = (float) (1 - (Math.log(100 - progress) / Math.log(100)));
+                        if(mediaPlayer!=null) {
+                            mediaPlayer.setVolume(volume, volume);
+                        }
+
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+
+                    }
+                });
+                MelSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        //Toast.makeText(StudioActivity.this, "Melody", Toast.LENGTH_SHORT).show();
+                        float volume = (float) (1 - (Math.log(100 - progress) / Math.log(100)));
+                        /*if(mediaPlayersAll.size()>0) {
+                            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+
+                                pts = new MediaPlayer();
+                                // Create the Visualizer object and attach it to our media player.
+                                pts = mediaPlayersAll.get(i);
+                                try {
+                                    pts.setVolume(volume,volume);
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+
+                            }
+                        }*/
+                        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+
+                    }
+                });
+
             }
         });
+
 
         ivRecord.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1377,8 +1600,6 @@ public class StudioActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-
-
         });
 
         ivRecord_stop.setOnClickListener(new View.OnClickListener() {
@@ -1416,7 +1637,11 @@ public class StudioActivity extends AppCompatActivity {
                     frameProgress.setVisibility(View.GONE);
 
 
-                    handler.removeCallbacksAndMessages(null);
+                    try {
+                        handler.removeCallbacksAndMessages(null);
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                     if (isRecording) {
 
 
@@ -1431,7 +1656,7 @@ public class StudioActivity extends AppCompatActivity {
 
                     try {
                         if (mpall != null) {
-                            mpall.stop();
+                            //mpall.stop();
                             for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
 
                                 final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
@@ -1449,7 +1674,7 @@ public class StudioActivity extends AppCompatActivity {
                                 holderPause.setEnabled(true);
                                 try {
                                     mediaPlayersAll.get(i).stop();
-                                    mediaPlayersAll.get(i).release();
+                                    //mediaPlayersAll.get(i).release();
                                 } catch (Exception ex) {
                                     ex.printStackTrace();
                                 }
@@ -1492,6 +1717,9 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    if (mVisualizer != null) {
+                        mVisualizer.release();
+                    }
                     // Toast.makeText(StudioActivity.this, "play", Toast.LENGTH_SHORT).show();
                     ivRecord_play.setVisibility(View.GONE);
                     rlRedoButton.setVisibility(View.GONE);
@@ -1499,6 +1727,7 @@ public class StudioActivity extends AppCompatActivity {
                     rlListeningButton.setVisibility(View.VISIBLE);
                     mShouldContinue = true;
                     try {
+                        //new PrepareInstrumentsForRecord().execute();
                         playAurdio();
 
                     } catch (IOException e) {
@@ -1511,12 +1740,30 @@ public class StudioActivity extends AppCompatActivity {
                     StudioActivity.mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mp) {
-                            mediaPlayer.stop();
+                            if (mVisualizer != null) {
+                                mVisualizer.release();
+                            }
+                            try {
+                                mediaPlayer.stop();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
                             chrono.stop();
                             ivRecord_pause.setVisibility(View.INVISIBLE);
                             rlListeningButton.setVisibility(View.INVISIBLE);
                             ivRecord_play.setVisibility(View.VISIBLE);
                             rlRedoButton.setVisibility(View.VISIBLE);
+                            if(mediaPlayersAll.size()>0) {
+                                for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                                    try {
+                                        mediaPlayersAll.get(i).stop();
+                                        //mediaPlayersAll.get(i).release();
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
+
+                                }
+                            }
 
                         }
                     });
@@ -1543,16 +1790,25 @@ public class StudioActivity extends AppCompatActivity {
 
                         if (mediaPlayer != null) {
                             mediaPlayer.stop();
-                            mediaPlayer.release();
-                            mediaPlayer=null;
+                            mediaPlayer = null;
                         }
                         if (mpall != null) {
-                            mpall.stop();
-                            mpall.release();
-                            mpall=null;
-                            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                            //mpall.stop();
+                            //mpall.release();
+                            //mpall = null;
+                            /*for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                                 mediaPlayersAll.get(i).stop();
                                 mediaPlayersAll.get(i).release();
+                            }*/
+                        }
+                        if(mediaPlayersAll.size()>0) {
+                            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                                try {
+                                    mediaPlayersAll.get(i).stop();
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+
                             }
                         }
                         chrono.stop();
@@ -1568,14 +1824,28 @@ public class StudioActivity extends AppCompatActivity {
         });
 
         // To get preferred buffer size and sampling rate.
-        AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
-        String rate = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
-        String size = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
-        Log.d("Buffer Size & sample rate", "Size :" + size + " & Rate: " + rate);
+        //AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
+        //String rate = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
+        //String size = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
+        //Log.d("Buffer Size & sample rate", "Size :" + size + " & Rate: " + rate);
     }
 
     public void playAurdio() throws IOException {
         try {
+            if(mediaPlayersAll.size()>0) {
+
+                for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                    mediaPlayersAll.get(i).prepare();
+                    try {
+                        mediaPlayersAll.get(i).start();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+                }
+            }
+
+
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(audioFilePath);
             mediaPlayer.prepare();
@@ -2252,7 +2522,11 @@ public class StudioActivity extends AppCompatActivity {
 //                            FilterPref.apply();
 //                            Toast.makeText(StudioActivity.this, "Saved as Recording", Toast.LENGTH_SHORT).show();
                         }
-                        handler.removeCallbacksAndMessages(null);
+                        try {
+                            handler.removeCallbacksAndMessages(null);
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
                         if (StudioActivity.lstViewHolder.size() > 0) {
                             StudioActivity.lstViewHolder.clear();
                         }
@@ -2374,7 +2648,7 @@ public class StudioActivity extends AppCompatActivity {
                 params.put(Mixpublic_flag, switchFlag);
                 params.put(MixrecordWith, IsMicConnected);
                 params.put(Mixgenere, selectedGenre);
-                params.put(Mixbpms, "128");
+                params.put(Mixbpms, String.valueOf(BPM));
                 params.put(Mixdurations, recordingDuration);
                 params.put(MixCommand, "SaveRecord");
                 if (joinRecordingId != null) {
@@ -3021,11 +3295,17 @@ public class StudioActivity extends AppCompatActivity {
         super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
         try {
-            handler.removeCallbacksAndMessages(null);
+            try {
+                handler.removeCallbacksAndMessages(null);
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
 
             if (mVisualizer != null) {
                 mVisualizer.release();
             }
+
+
 
             if (StudioActivity.mp_start != null) {
 
@@ -3280,7 +3560,11 @@ public class StudioActivity extends AppCompatActivity {
                     if (mediaPlayersAll.size() > 0) {
                         mediaPlayersAll.clear();
                     }
-                    handler.removeCallbacksAndMessages(null);
+                    try {
+                        handler.removeCallbacksAndMessages(null);
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
 
                     for (int i = 0; i <= mp_start.size() - 1; i++) {
                         try {
@@ -3341,7 +3625,11 @@ public class StudioActivity extends AppCompatActivity {
                         public void onCompletion(MediaPlayer mp) {
 
                             if (MaxMpSessionID == mp.getAudioSessionId()) {
-                                StudioActivity.handler.removeCallbacksAndMessages(null);
+                                try {
+                                    handler.removeCallbacksAndMessages(null);
+                                }catch (Exception ex){
+                                    ex.printStackTrace();
+                                }
                                 for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
 
                                     final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
@@ -3436,6 +3724,87 @@ public class StudioActivity extends AppCompatActivity {
         }
     }
 
+    private class PrepareInstrumentsForRecord extends AsyncTask<String, Void, Bitmap> {
+
+        protected void onPreExecute() {
+            try {
+                try {
+
+                    InstrumentCountSize = 0;
+                    frameProgress.setVisibility(View.VISIBLE);
+                    if (mediaPlayersAll.size() > 0) {
+                        mediaPlayersAll.clear();
+                    }
+                    try {
+                        handler.removeCallbacksAndMessages(null);
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
+
+
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+
+            try {
+                if (InstrumentCountSize == 0) {
+                    tmpduration = 0;
+                    Compdurations = 0;
+                    MaxMpSessionID = 0;
+
+                    InstrumentCountSize = instrumentList.size();
+                    for (int i = 0; i < InstrumentCountSize; i++) {
+                        Log.d("Instrument url----------------:", "" + instrumentList.get(i).getInstrumentFile());
+                        mpall = new MediaPlayer();
+                        mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                        mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
+                        try {
+
+                            mpall.prepare();
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        mediaPlayersAll.add(StudioActivity.mpall);
+
+                    }
+
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            try {
+                frameProgress.setVisibility(View.GONE);
+                for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+
+                    pts = new MediaPlayer();
+                    // Create the Visualizer object and attach it to our media player.
+                    pts = mediaPlayersAll.get(i);
+                    try {
+                        pts.start();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+                }
+
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
@@ -3466,7 +3835,7 @@ public class StudioActivity extends AppCompatActivity {
         }
         //File wavFile = new File(getFilesDir(), "recording_" + System.currentTimeMillis() / 1000 + ".wav");
         File wavFile = new File(audioFilePath);
-        Toast.makeText(this, wavFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
+        // Toast.makeText(this, wavFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
         recordTask.execute(wavFile);
     }
 
@@ -3547,6 +3916,7 @@ public class StudioActivity extends AppCompatActivity {
                         total += read;
                     }
                 }
+
             } catch (IOException ex) {
                 return new Object[]{ex};
             } finally {
@@ -3665,6 +4035,11 @@ public class StudioActivity extends AppCompatActivity {
                     'd', 'a', 't', 'a', // Subchunk2ID
                     0, 0, 0, 0, // Subchunk2Size (must be updated later)
             });
+            try {
+                BPM = (bitDepth * sampleRate * channels)/60;
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
 
         /**
@@ -3723,18 +4098,17 @@ public class StudioActivity extends AppCompatActivity {
                 throwable = (Throwable) results[0];
                 Log.e(RecordWaveTask.class.getSimpleName(), throwable.getMessage(), throwable);
             }
-            waveform_view.setSamples(bytesToShort(buffer));
+            //waveform_view.setSamples(bytesToShort(buffer));
             // If we're attached to an activity
             if (ctx != null) {
                 if (throwable == null) {
                     // Display final recording stats
                     double size = (long) results[0] / 1000000.00;
                     long time = (long) results[1] / 1000;
-                    Toast.makeText(ctx, String.format(Locale.getDefault(), "%.2f MB / %d seconds",
-                            size, time), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(ctx, String.format(Locale.getDefault(), "%.2f MB / %d seconds", size, time), Toast.LENGTH_LONG).show();
                 } else {
                     // Error
-                    Toast.makeText(ctx, throwable.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                    // Toast.makeText(ctx, throwable.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -3755,12 +4129,11 @@ public class StudioActivity extends AppCompatActivity {
         // setupVisualizerFxAndUI because we likely want to have more,
         // non-Visualizer related code
         // in this callback.
-        mpst
-                .setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+       /* mpst.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     public void onCompletion(MediaPlayer mediaPlayer) {
                         mVisualizer.setEnabled(false);
                     }
-                });
+                });*/
         //mpst.start();
 
     }
