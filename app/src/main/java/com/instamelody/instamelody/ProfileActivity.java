@@ -150,6 +150,7 @@ public class ProfileActivity extends AppCompatActivity {
     private boolean isLoading=false;
     private boolean isLastPage=false;
     private String msgUnsuccess="No record found.";
+    public static final int PROFILE_TO_MESSANGER = 105;
 
 
     @Override
@@ -157,6 +158,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         mActivity=ProfileActivity.this;
+        progressDialog = new ProgressDialog(ProfileActivity.this);
         sharePrefClearProfile();
 
         SharedPreferences filterPref = this.getSharedPreferences("FilterPref", MODE_PRIVATE);
@@ -532,12 +534,14 @@ public class ProfileActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                 editor.putString("senderId", userId);
                 editor.putString("receiverId", receiverId);
-                editor.putString("chatId" ,chat_id);
+                editor.putString("chatId", chat_id);
                 editor.putString("receiverName", Name);
                 editor.putString("chatType", "single");
                 editor.commit();
                 Intent i = new Intent(ProfileActivity.this, ChatActivity.class);
-                startActivity(i);
+                i.putExtra("clickFromProfile", "click");
+                startActivityForResult(i, PROFILE_TO_MESSANGER);
+                //  startActivity(i);
             }
         });
     }
@@ -559,7 +563,10 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void fetchUserBio() {
-
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, USERS_BIO,
                 new Response.Listener<String>() {
                     @Override
@@ -670,9 +677,19 @@ public class ProfileActivity extends AppCompatActivity {
 //                                        MyObject obj = gson.fromJson(json, MyObject.class);
 //                                    }
                                 }
+                                if (progressDialog != null) {
+                                    if (progressDialog.isShowing()) {
+                                        progressDialog.dismiss();
+                                    }
+                                }
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            if (progressDialog != null) {
+                                if (progressDialog.isShowing()) {
+                                    progressDialog.dismiss();
+                                }
+                            }
                         }
 
                     }
@@ -697,6 +714,11 @@ public class ProfileActivity extends AppCompatActivity {
                         }
                         Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 }) {
             @Override
@@ -1604,6 +1626,9 @@ public class ProfileActivity extends AppCompatActivity {
                 callApi();
             }
         }
+        if (requestCode == PROFILE_TO_MESSANGER) {
+            fetchUserBio();
+        }
     }
 
     private void getChatId(final String user_id, final String reciever_id) {
@@ -1729,4 +1754,5 @@ public class ProfileActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
     }
+
 }

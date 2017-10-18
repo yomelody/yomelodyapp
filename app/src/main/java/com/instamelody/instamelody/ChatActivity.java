@@ -122,7 +122,7 @@ public class ChatActivity extends AppCompatActivity {
     public static FrameLayout flSeekbar;
     public static SeekBar seekBarChata;
     public static FrameLayout flPlayPausePlayer;
-
+    ArrayList<Message> MessageList = new ArrayList<Message>();
     FrameLayout flCover;
     ImageView ivClose, ivJoin;
     EditText etMessage, etGroupName;
@@ -388,12 +388,24 @@ public class ChatActivity extends AppCompatActivity {
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
-                editor.putString("receiverId", "");
-                editor.putString("receiverName", "");
-                editor.putString("receiverImage", "");
-                editor.putString("chatId", "");
-                editor.commit();
+                Intent it = getIntent();
+                if (it != null) {
+                    String clickFromProfile = it.getExtras().getString("clickFromProfile");
+                    if (clickFromProfile != null) {
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("From profile screen", "Comming from");
+                        setResult(Activity.RESULT_OK, resultIntent);
+                        Log.d("From profile screen", "Comming from");
+                    }
+                } else {
+                    SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                    editor.putString("receiverId", "");
+                    editor.putString("receiverName", "");
+                    editor.putString("receiverImage", "");
+                    editor.putString("chatId", "");
+                    editor.commit();
+                }
+
                 try {
                     if (ChatAdapter.mp != null) {
                         ChatAdapter.mp.stop();
@@ -907,7 +919,13 @@ public class ChatActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(String response) {
-
+                        try {
+                            if (ChatAdapter.sharedAudioList.size() > 0) {
+                                ChatAdapter.sharedAudioList.clear();
+                            }
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                        }
                         chatList.clear();
 //                        audioDetailsList.clear();
 //                        sharedAudioList.clear();
@@ -952,50 +970,9 @@ public class ChatActivity extends AppCompatActivity {
                                         if (!chatJson.get("Audioshared").equals(null) && !chatJson.get("Audioshared").equals("")) {
                                             message.setAudioDetails(chatJson.getJSONArray("Audioshared"));
                                         }
-
-//                                        if (!chatJson.get("Audioshared").equals(null) && !chatJson.get("Audioshared").equals("")) {
-//                                            audiosDetailsArray = chatJson.getJSONArray("Audioshared");
-//                                            if (audiosDetailsArray.length() > 0) {
-//                                                for (int j = 0; j < audiosDetailsArray.length(); j++) {
-//                                                    AudioDetails audioDetails = new AudioDetails();
-//                                                    JSONObject detailsJson = audiosDetailsArray.getJSONObject(j);
-//                                                    audioDetails.setRecordingId(detailsJson.getString("recording_id"));
-//                                                    audioDetails.setAddedBy(detailsJson.getString("added_by"));
-//                                                    audioDetails.setRecordingTopic(detailsJson.getString("recording_topic"));
-//                                                    audioDetails.setName(detailsJson.getString("name"));
-//                                                    audioDetails.setUserName(detailsJson.getString("user_name"));
-//
-//                                                    if (!detailsJson.get("recordings").equals(null)) {
-//                                                        sharedAudiosArray = detailsJson.getJSONArray("recordings");
-//                                                        if (audiosDetailsArray.length() > 0) {
-//                                                            for (int k = 0; k < sharedAudiosArray.length(); k++) {
-//                                                                SharedAudios sharedAudios = new SharedAudios();
-//                                                                JSONObject audioJson = sharedAudiosArray.getJSONObject(k);
-//                                                                sharedAudios.setAddedById(audioJson.getString("added_by_id"));
-//                                                                sharedAudios.setUserName(audioJson.getString("user_name"));
-//                                                                sharedAudios.setName(audioJson.getString("name"));
-//                                                                sharedAudios.setProfileUrl(audioJson.getString("profile_url"));
-//                                                                sharedAudios.setDateAdded(audioJson.getString("date_added"));
-//                                                                sharedAudios.setDuration(audioJson.getString("duration"));
-//                                                                sharedAudios.setRecordingUrl(audioJson.getString("recording_url"));
-//                                                                sharedAudioList.add(sharedAudios);
-//                                                            }
-//                                                        }
-//                                                    }
-//                                                    audioDetailsList.add(audioDetails);
-//                                                }
-//                                            }
-//                                        }
-
                                         if (chatJson.getString("isread").equals("0") && (!chatJson.getString("senderID").equals(usrId))) {
                                             readStatus(chatJson.getString("id"), chatJson.getString("chatID"));
                                         }
-
-//                                        if (i == (resultArray.length() - 1)) {
-//                                            if (chatJson.getString("isread").equals("0") && (!chatJson.getString("senderID").equals(usrId))) {
-//                                                readStatus(chatJson.getString("id"), chatJson.getString("chatID"));
-//                                            }
-//                                        }
                                         chatList.add(i, message);
                                     }
                                     recyclerViewChat.smoothScrollToPosition(chatList.size() - 1);
