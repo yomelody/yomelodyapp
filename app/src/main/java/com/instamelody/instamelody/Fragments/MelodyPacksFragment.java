@@ -115,6 +115,7 @@ public class MelodyPacksFragment extends Fragment {
     int post = 0;
     Activity mActivity;
     RecyclerView rv;
+    private String msgUnsuccess="No record found.";
     private final int count=10;
     private boolean isLoading=false;
     private boolean isLastPage=false;
@@ -359,7 +360,7 @@ public class MelodyPacksFragment extends Fragment {
                                 String str = jsonObject.getString(KEY_MSG);
 //                                if (str.equals("No pack found")) {
                                     str = "Sorry, no " + packName + " melody available.";
-                                    Toast.makeText(getActivity(), "No Record Found.", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), msgUnsuccess, Toast.LENGTH_SHORT).show();
                                     isLastPage=true;
 //                                }
                             }
@@ -480,7 +481,7 @@ public class MelodyPacksFragment extends Fragment {
                             jsonObject = new JSONObject(response);
                             if (jsonObject.getString(KEY_FLAG).equals("unsuccess")) {
 
-                                Toast.makeText(getActivity(), "No Record Found.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), msgUnsuccess, Toast.LENGTH_SHORT).show();
                                 isLastPage = true;
 
                             } else {
@@ -654,7 +655,7 @@ public class MelodyPacksFragment extends Fragment {
                             JSONObject jsonObject = new JSONObject(rs);
                             String flag = jsonObject.getString("flag");
                             if (flag.equals("unsuccess")) {
-                                Toast.makeText(getActivity(), "" + "No Record Found.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), msgUnsuccess, Toast.LENGTH_SHORT).show();
                                 isLastPage=true;
                             }
                             else {
@@ -748,7 +749,7 @@ public class MelodyPacksFragment extends Fragment {
 //                            Toast.makeText(getActivity(), "" + flag, Toast.LENGTH_SHORT).show();
 
                             if (flag.equals("unsuccess")) {
-                                Toast.makeText(getActivity(), "" + "No Record Found.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), msgUnsuccess, Toast.LENGTH_SHORT).show();
                                 isLastPage=true;
                             }
                             else {
@@ -841,7 +842,7 @@ public class MelodyPacksFragment extends Fragment {
                             String flag = jsonObject.getString("flag");
 //                            Toast.makeText(getActivity(), "" + flag, Toast.LENGTH_SHORT).show();
                             if (flag.equals("unsuccess")) {
-                                Toast.makeText(getActivity(), "" + "No Record Found.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), msgUnsuccess, Toast.LENGTH_SHORT).show();
                                 isLastPage=true;
                             }
                             else {
@@ -1211,7 +1212,8 @@ public class MelodyPacksFragment extends Fragment {
         AppHelper.sop("onActivityResult==called=" + "requestCode==" + requestCode + "=resultCode=" + resultCode + "=data=" + data);
         if (MelodyCardListAdapter.REQUEST_MELODY_COMMENT == requestCode) {
             if (resultCode == mActivity.RESULT_OK) {
-//                new LongOperation().execute();
+                melodyList.clear();
+                instrumentList.clear();
                 getDataApi();
                 AppHelper.sop("onActivityResult==called=" + "resultCode==" + resultCode);
             }
