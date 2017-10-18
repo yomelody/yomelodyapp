@@ -106,7 +106,8 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        System.gc();
+        System.gc();
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
 //        Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_home);
@@ -206,16 +207,16 @@ public class HomeActivity extends AppCompatActivity {
 
         SharedPreferences profileEditor = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE);
         SharedPreferences profileImageEditor = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE);
-        if (profileImageEditor.getString("ProfileImage",null) != null){
+        if (profileImageEditor.getString("ProfileImage", null) != null) {
             ivProfile.setVisibility(View.GONE);
             userProfileImage.setVisibility(View.VISIBLE);
-            Picasso.with(HomeActivity.this).load(profileImageEditor.getString("ProfileImage",null)).into(userProfileImage);
+            Picasso.with(HomeActivity.this).load(profileImageEditor.getString("ProfileImage", null)).into(userProfileImage);
         }
-        if (profileEditor.getString("updateId",null) != null){
+        if (profileEditor.getString("updateId", null) != null) {
             SignOut.setVisibility(View.VISIBLE);
             SignIn.setVisibility(View.INVISIBLE);
-            tvFirstName.setText(profileEditor.getString("updateFirstName", null) + " "+profileEditor.getString("updateLastName",null));
-            tvUserName.setText("@" +profileEditor.getString("updateUserName",null));
+            tvFirstName.setText(profileEditor.getString("updateFirstName", null) + " " + profileEditor.getString("updateLastName", null));
+            tvUserName.setText("@" + profileEditor.getString("updateUserName", null));
         }
 
 

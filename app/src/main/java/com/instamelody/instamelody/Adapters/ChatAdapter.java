@@ -68,7 +68,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     private ArrayList<Message> chatList = new ArrayList<>();
     //    private ArrayList<AudioDetails> audioDetailsList = new ArrayList<>();
     //    private ArrayList<SharedAudios> sharedAudioList = new ArrayList<>();
-    ArrayList<SharedAudios> sharedAudioList = new ArrayList<>();
+    public static ArrayList<SharedAudios> sharedAudioList = new ArrayList<>();
     public static ArrayList<JoinRecordingModel> JoinList = new ArrayList<JoinRecordingModel>();
     public ArrayList<MediaPlayer> JoinMp = new ArrayList<MediaPlayer>();
 
@@ -227,38 +227,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                 holder.ivTick.setVisibility(View.VISIBLE);
             }
 
-            JSONArray audiosDetailsArray = message.getAudioDetails();
-            if (audiosDetailsArray != null && audiosDetailsArray.length() > 0) {
-                for (int j = 0; j < audiosDetailsArray.length(); j++) {
-                    try {
-                        JSONObject detailsJson = audiosDetailsArray.getJSONObject(j);
-                        holder.tvMelodyName.setText(detailsJson.getString("recording_topic"));
-                        String s = "@" + detailsJson.getString("user_name");
-                        holder.tvUserName.setText(s);
-                        if (!detailsJson.get("recordings").equals(null) && !detailsJson.get("recordings").equals("")) {
-                            JSONArray sharedAudiosArray = detailsJson.getJSONArray("recordings");
-
-                            if (sharedAudiosArray.length() > 0) {
-                                for (int k = 0; k < sharedAudiosArray.length(); k++) {
-                                    SharedAudios sharedAudios = new SharedAudios();
-                                    JSONObject audioJson = sharedAudiosArray.getJSONObject(k);
-                                    sharedAudios.setAddedById(audioJson.getString("added_by_id"));
-                                    sharedAudios.setUserName(audioJson.getString("user_name"));
-                                    sharedAudios.setName(audioJson.getString("name"));
-                                    sharedAudios.setProfileUrl(audioJson.getString("profile_url"));
-                                    sharedAudios.setDateAdded(audioJson.getString("date_added"));
-                                    sharedAudios.setDuration(audioJson.getString("duration"));
-                                    sharedAudios.setRecordingUrl(audioJson.getString("recording_url"));
-                                    sharedAudioList.add(sharedAudios);
-                                }
-                            }
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
             seekBarChata.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -299,16 +267,54 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             holder.ivPlay.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if (sharedAudioList.size() > 0) {
+                        sharedAudioList.clear();
+                    }
                     holder.progressDialog = new ProgressDialog(view.getContext());
                     holder.progressDialog.setMessage("Loading...");
                     holder.progressDialog.setCancelable(false);
                     holder.progressDialog.show();
                     String rid = message.getFileId();
-                    fetchPlayJoinAudio(rid);
+
+                    //        fetchPlayJoinAudio(rid);
                     //This is only for testing Abhishek Dubey
 
                     ivPrev.setEnabled(false);
                     ivNext.setEnabled(false);
+
+
+                    JSONArray audiosDetailsArray = message.getAudioDetails();
+                    if (audiosDetailsArray != null && audiosDetailsArray.length() > 0) {
+                        for (int j = 0; j < audiosDetailsArray.length(); j++) {
+                            try {
+                                JSONObject detailsJson = audiosDetailsArray.getJSONObject(j);
+                                holder.tvMelodyName.setText(detailsJson.getString("recording_topic"));
+                                String s = "@" + detailsJson.getString("user_name");
+                                holder.tvUserName.setText(s);
+                                if (!detailsJson.get("recordings").equals(null) && !detailsJson.get("recordings").equals("")) {
+                                    JSONArray sharedAudiosArray = detailsJson.getJSONArray("recordings");
+
+                                    if (sharedAudiosArray.length() > 0) {
+                                        for (int k = 0; k < sharedAudiosArray.length(); k++) {
+                                            SharedAudios sharedAudios = new SharedAudios();
+                                            JSONObject audioJson = sharedAudiosArray.getJSONObject(k);
+                                            sharedAudios.setAddedById(audioJson.getString("added_by_id"));
+                                            sharedAudios.setUserName(audioJson.getString("user_name"));
+                                            sharedAudios.setName(audioJson.getString("name"));
+                                            sharedAudios.setProfileUrl(audioJson.getString("profile_url"));
+                                            sharedAudios.setDateAdded(audioJson.getString("date_added"));
+                                            sharedAudios.setDuration(audioJson.getString("duration"));
+                                            sharedAudios.setRecordingUrl(audioJson.getString("recording_url"));
+                                            sharedAudioList.add(sharedAudios);
+                                        }
+                                    }
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
 
                     Log.d("Shared audio URL :-------", "" + sharedAudioList.get(0).getRecordingUrl());
                     try {
@@ -322,14 +328,20 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                             ChatActivity.tvNumPlayer.setText(holder.tvNum.getText().toString().trim());
                             str = "(1" + " of " + String.valueOf(JoinMp.size()) + ")";
                             holder.tvNum.setText(str);
-                            if (mp != null) {
-                                try {
-                                    mp.stop();
-                                    mp.release();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
+                            try {
+                                if (mp.isPlaying()) {
+                                    try {
+                                        mp.stop();
+                                        mp.release();
+                                        mp = null;
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                 }
+                            } catch (Throwable e) {
+                                e.printStackTrace();
                             }
+
 
                             mp = new MediaPlayer();
                             try {
@@ -359,6 +371,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                             ex.printStackTrace();
                                         }
                                     }
+                                    if (sharedAudioList.size() > 0) {
+                                        sharedAudioList.clear();
+                                    }
                                     holder.progressDialog.dismiss();
                                     return false;
                                 }
@@ -370,13 +385,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                     mHandler1.removeCallbacksAndMessages(null);
                                     seekBarChata.setProgress(0);
                                     holder.progressDialog.dismiss();
-                                    if (mp != null) {
-                                        try {
-                                            mp.stop();
-                                            mp.release();
-                                        } catch (Exception ex) {
-                                            ex.printStackTrace();
-                                        }
+                                    mp.stop();
+                                    mp.release();
+                                    if (sharedAudioList.size() > 0) {
+                                        sharedAudioList.clear();
                                     }
                                 }
                             });
@@ -405,6 +417,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
+                    }
+                    if (sharedAudioList.size() > 0) {
+                        sharedAudioList.clear();
                     }
                 }
             });
