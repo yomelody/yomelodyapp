@@ -902,7 +902,7 @@ public class StudioActivity extends AppCompatActivity {
                         instrumentList.clear();
                     }
                     PrepareInstruments prepareInstruments=new PrepareInstruments();
-                    prepareInstruments.cancel(true);
+                    prepareInstruments.cancel(false);
                     if (!recordTask.isCancelled() && recordTask.getStatus() == AsyncTask.Status.RUNNING) {
                         recordTask.cancel(false);
                     } else {
@@ -1667,14 +1667,15 @@ public class StudioActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-                    try {
-                        recordingDuration = getDuration(new File(audioFilePath));
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                    }
+
 
                     stop_rec_time = SystemClock.elapsedRealtime() - StudioActivity.chrono.getBase();
                     time_stop = formateMilliSeccond(StudioActivity.stop_rec_time);
+                    try {
+                        recordingDuration = time_stop;
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -3263,7 +3264,7 @@ public class StudioActivity extends AppCompatActivity {
             if (!recordTask.isCancelled() && recordTask.getStatus() == AsyncTask.Status.RUNNING) {
                 recordTask.cancel(false);
             } else {
-                Toast.makeText(StudioActivity.this, "Task not running.", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(StudioActivity.this, "Task not running.", Toast.LENGTH_SHORT).show();
             }
 
         } catch (Throwable e) {
