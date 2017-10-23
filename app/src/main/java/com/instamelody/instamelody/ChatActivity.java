@@ -214,7 +214,9 @@ public class ChatActivity extends AppCompatActivity {
                     sender_name = intent.getStringExtra("sender_name");
                     // Toast.makeText(context, "Brod :"+chatId_new + "Old :"+chatId , Toast.LENGTH_SHORT).show();
                     if (chatId_new.equals(chatId)) {
-                        tvUserName.setText(sender_name);
+                        if (chatType.equals("single")) {
+                            tvUserName.setText(sender_name);
+                        }
                         getChatMsgs(chatId_new);
                     }
 

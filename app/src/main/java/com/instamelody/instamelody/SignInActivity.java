@@ -240,16 +240,18 @@ public class SignInActivity extends AppCompatActivity {
                                     //Picasso.with(SignInActivity.this).load("https://graph.facebook.com/" + id + "/picture").into(ivuserimg);
                                     firstNamefb = object.getString("first_name");
                                     lastNamefb = object.getString("last_name");
-                                    fbEmail = object.getString("email");
+                                    if(object.has("email")){
+                                        fbEmail = object.getString("email");
+                                    }
                                     //tvFirstName.setText(namefb);
                                     //tvUserName.setText("@" + namefb);
                                     gender = object.getString("gender");
                                     //birthday = object.getString("birthday");
-                                    String temp = object.getString("email");
+                               //     String temp = object.getString("email");
                                     fbProfilePic = "https://graph.facebook.com/" + fbId + "/picture";
-                                    username = temp.substring(0, temp.indexOf("@"));
-                                    String profilePicUrl = object.getJSONObject("picture").getJSONObject("data").getString("url");
-                                    Log.d("1", profilePicUrl);
+                                    username = "@"+firstNamefb;
+                                 //   String profilePicUrl = object.getJSONObject("picture").getJSONObject("data").getString("url");
+                                    Log.d("1", fbProfilePic);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -761,6 +763,7 @@ public class SignInActivity extends AppCompatActivity {
                 params.put(KEY_USER_TYPE, "2");
                 params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);
                 params.put(KEY_DEVICE_TYPE, "android");
+                params.put(KEY_PROFILE_PIC, fbProfilePic);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
