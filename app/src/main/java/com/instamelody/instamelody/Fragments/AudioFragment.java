@@ -147,7 +147,6 @@ public class AudioFragment extends Fragment {
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
 
-
             }
 
             @Override
@@ -1039,8 +1038,9 @@ public class AudioFragment extends Fragment {
 
                             if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount &&
                                     firstVisibleItemPosition >= 0 && totalItemCount >= count) {
-                                isLoading=true;
+
                                 if(AppHelper.checkNetworkConnection(mActivity)){
+                                    isLoading=true;
                                     callApi();
                                 }
                             }

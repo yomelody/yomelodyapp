@@ -814,7 +814,7 @@ public class StationCommentActivity extends AppCompatActivity {
 
 
             tvRecordingDate.setText(convertDate(recordingsPool.getDateAdded()));
-            tvViewCount.setText(String.valueOf(recordingsModel.getPlayCount()));
+            tvViewCount.setText(getIntent().getStringExtra("play_count"));
             tvLikeCount.setText(getIntent().getStringExtra("likes"));
             tvCommentCount.setText(String.valueOf(recordingsModel.getCommentCount()));
             tvShareCount.setText(recordingsModel.getShareCount() + "");
@@ -950,7 +950,6 @@ public class StationCommentActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        //       Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
                         JSONObject jsonObject, respObject;
 
                         try {
@@ -958,7 +957,10 @@ public class StationCommentActivity extends AppCompatActivity {
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
                                 respObject = jsonObject.getJSONObject(KEY_RESPONSE);
                                 String str = respObject.getString("play_count");
-                                //      Toast.makeText(context, "" + str, Toast.LENGTH_SHORT).show();
+
+                                Intent resultIntent = new Intent();
+                                resultIntent.putExtra("PLAY", "Play");
+                                setResult(Activity.RESULT_OK, resultIntent);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -968,7 +970,6 @@ public class StationCommentActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        //       Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
                         String errorMsg = error.toString();
                         Log.d("Error", errorMsg);
                     }

@@ -1,5 +1,6 @@
 package com.instamelody.instamelody.Fragments;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
@@ -38,6 +39,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,7 +56,6 @@ import static com.instamelody.instamelody.utils.RMethod.getServerDiffrenceDate;
 public class ActivityFragment extends Fragment {
 
     private static RecyclerView.Adapter adapter;
-    private RecyclerView.LayoutManager lmactivity;
     private RecyclerView recyclerView;
     String USER_ID = "user_id";
     String KEY_FLAG = "flag";
@@ -62,7 +63,14 @@ public class ActivityFragment extends Fragment {
     String KEY_MESSAGE = "message";
     String id = "id", userId = "";
     ProgressDialog progressDialog;
-    private static ArrayList<ActivityModel> arraylist;
+    private ArrayList<ActivityModel> arraylist;
+    private Activity mActivity;
+    private String msgUnsuccess="No record found.";
+    LinearLayoutManager linearLayoutManager;
+    private final int count=30;
+    private boolean isLoading=false;
+    private boolean isLastPage=false;
+    private String limit="limit";
 
     public ActivityFragment() {
     }
@@ -76,12 +84,20 @@ public class ActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_activity, container, false);
+        mActivity=getActivity();
+        progressDialog = new ProgressDialog(mActivity);
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewActivity);
         recyclerView.setHasFixedSize(true);
-        lmactivity = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(lmactivity);
+        linearLayoutManager = new LinearLayoutManager(mActivity);
+        recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        arraylist = new ArrayList<ActivityModel>();
+        arraylist = new ArrayList<>();
+        adapter = new ActivityCardAdapter(arraylist, mActivity);
+        recyclerView.setAdapter(adapter);
         String position;
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
@@ -96,105 +112,96 @@ public class ActivityFragment extends Fragment {
             userId = twitterPref.getString("userId", null);
             //MelodyUser=userId;
         }
-//        StationActivity.ivFilter.setVisibility(View.GONE);
 
         if (!userId.equals("") && userId != null) {
             fetchActivityData(userId);
+
+            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+                }
+
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+                    int visibleItemCount = linearLayoutManager.getChildCount();
+                    int totalItemCount = linearLayoutManager.getItemCount();
+                    int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
+//                        AppHelper.sop("onScrolled==visibleItemCount"+visibleItemCount+"=totalItemCount="+
+//                                totalItemCount+ "=firstVisibleItemPosition="+firstVisibleItemPosition);
+                    if (!isLoading && !isLastPage) {
+//                            AppHelper.sop("isLoading==isLastPage");
+
+                        if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount &&
+                                firstVisibleItemPosition >= 0 && totalItemCount >= count) {
+
+                            if(AppHelper.checkNetworkConnection(mActivity)){
+                                isLoading=true;
+                                fetchActivityData(userId);
+                            }
+                        }
+                    }
+                }
+            });
+
         }
-//        else {
-//            Toast.makeText(getApplicationContext(), "Log in to Chat", Toast.LENGTH_SHORT).show();
-//            Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
-//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            getApplicationContext().startActivity(intent);
-//        }
+        else {
+            Toast.makeText(getActivity().getBaseContext(), "Please login to see user activity", Toast.LENGTH_SHORT).show();
+        }
+
         return view;
     }
 
-    private class FetchActivityDetails extends AsyncTask<String, Void, String> {
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setTitle("Processing...");
-            progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
 
-        }
-
-        protected String doInBackground(String... params) {
-
-            try {
-                String UserID = params[0];
-
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            if (progressDialog != null) {
-                progressDialog.dismiss();
-            }
-            // progressDialog.dismiss();
-        }
-    }
 
     public void fetchActivityData(final String userId) {
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setTitle("Processing...");
-        progressDialog.setMessage("Please wait...");
-        progressDialog.setCancelable(false);
         progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, ACTIVITY,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        //Toast.makeText(getActivity(), "" + response, Toast.LENGTH_SHORT).show();
                         AppHelper.sop("response=="+response);
                         JSONObject jsonObject;
                         JSONArray jsonArray;
 
                         try {
                             jsonObject = new JSONObject(response);
-                            String flag = jsonObject.getString(KEY_FLAG);
-                            String msg = jsonObject.getString(KEY_MESSAGE);
-                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
-//                                if (msg!= null){
-//                                    Toast.makeText(getActivity().getBaseContext(), ""+msg, Toast.LENGTH_SHORT).show();
-//                                }
-                                ArrayList<ActivityModel> list = new ArrayList<ActivityModel>();
-                                jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
-                                JSONArray newJsonArray = new JSONArray();
-                                for (int i = jsonArray.length() - 1; i >= 0; i--) {
-                                    newJsonArray.put(jsonArray.get(i));
-                                }
-                                for (int i = 0; i < newJsonArray.length(); i++) {
-
-                                    JSONObject c = newJsonArray.getJSONObject(i);
-                                    arraylist.add(new ActivityModel(
-                                            Integer.parseInt(c.getString("id")),
-                                            c.getString("activity_name"),
-                                            c.getString("topic"),
-//                                            DateTime(c.getString("activity_created_time")),
-                                            c.getString("ActivityTime"),
-                                            c.getString("profile_pick"),
-                                            c.getString("created_by_userID"),
-                                            c.getString("first_user"),
-                                            c.getString("second_user")
-                                    ));
-
-
-                                    adapter = new ActivityCardAdapter(arraylist, getActivity());
-
-
-                                }
-                                adapter = new ActivityCardAdapter(arraylist);
-
-                                recyclerView.setAdapter(adapter);
+                            /*String flag = jsonObject.getString(KEY_FLAG);
+                            String msg = jsonObject.getString(KEY_MESSAGE);*/
+                            if (arraylist.size()<=0){
+                                arraylist.clear();
                             }
+
+                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
+
+                                jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
+
+                                if (jsonArray.length()>0){
+                                    for (int i = 0; i < jsonArray.length(); i++) {
+                                        JSONObject c = jsonArray.getJSONObject(i);
+                                        arraylist.add(new ActivityModel(
+                                                Integer.parseInt(c.getString("id")),
+                                                c.getString("activity_name"),
+                                                c.getString("topic"),
+//                                            DateTime(c.getString("activity_created_time")),
+                                                c.getString("ActivityTime"),
+                                                c.getString("profile_pick"),
+                                                c.getString("created_by_userID"),
+                                                c.getString("first_user"),
+                                                c.getString("second_user")
+                                        ));
+
+                                    }
+                                    adapter.notifyDataSetChanged();
+                                    isLastPage=false;
+                                }
+                                else {
+                                    Toast.makeText(mActivity, msgUnsuccess, Toast.LENGTH_SHORT).show();
+                                    isLastPage=true;
+                                }
+                            }
+                            isLoading=false;
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -208,7 +215,8 @@ public class ActivityFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                        isLoading=false;
+                        isLastPage=false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -241,6 +249,7 @@ public class ActivityFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(USER_ID, userId);
+                params.put(limit, arraylist.size()+"");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 AppHelper.sop("params=="+params+"\nURL=="+ACTIVITY);
                 return params;

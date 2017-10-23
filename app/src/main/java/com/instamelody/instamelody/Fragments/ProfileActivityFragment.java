@@ -57,14 +57,21 @@ import static com.instamelody.instamelody.utils.RMethod.getServerDiffrenceDate;
 public class ProfileActivityFragment extends Fragment {
 
     private static RecyclerView.Adapter activityAdapter;
-    private RecyclerView.LayoutManager lmactivity;
+//    private RecyclerView.LayoutManager lmactivity;
     private RecyclerView recyclerView;
     ProgressDialog progressDialog;
     private static ArrayList<ActivityModel> arraylist;
     String KEY_FLAG = "flag";
     String USER_ID = "user_id";
     String KEY_RESPONSE = "response";
+    String userId;
     Activity mActivity;
+    private String msgUnsuccess="No record found.";
+    LinearLayoutManager linearLayoutManager;
+    private final int count=30;
+    private boolean isLoading=false;
+    private boolean isLastPage=false;
+    private String limit="limit";
 
 
     public ProfileActivityFragment() {
@@ -80,75 +87,79 @@ public class ProfileActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_activity_profile, container, false);
         mActivity=getActivity();
+
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewActivity);
         recyclerView.setHasFixedSize(true);
-        lmactivity = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(lmactivity);
+        linearLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        String position, userId;
+
         arraylist = new ArrayList<ActivityModel>();
 
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+        SharedPreferences twitterPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+
 
         userId = ((ProfileActivity)mActivity).getUserId();
         if (TextUtils.isEmpty(userId)){
             userId = loginSharedPref.getString("userId", null);
         }
-
-        if(userId!=null) {
-            //fetchActivityData(userId);
-            new ProfileActivityFragment.FetchActivityDetails().execute(userId);
+        else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
         }
-        for (int i = 0; i < ActivityData.id_.length; i++) {
-//            arraylist.add(new ActivityModel(
-//                    ActivityData.id_[i],
-//                    ActivityData.userProfileImage[i],
-//                    ActivityData.UserNameArray1[i],
-//                    ActivityData.Topic[i],
-//                    ActivityData.Time[i]
-//
-//            ));
+        else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
         }
 
-        activityAdapter = new ActivityCardAdapter(arraylist);
+        if (!TextUtils.isEmpty(userId)){
+            activityAdapter = new ActivityCardAdapter(arraylist, getActivity());
+            recyclerView.setAdapter(activityAdapter);
+            fetchActivityData(userId);
 
-        recyclerView.setAdapter(activityAdapter);
+            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+                }
+
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+                    int visibleItemCount = linearLayoutManager.getChildCount();
+                    int totalItemCount = linearLayoutManager.getItemCount();
+                    int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
+//                        AppHelper.sop("onScrolled==visibleItemCount"+visibleItemCount+"=totalItemCount="+
+//                                totalItemCount+ "=firstVisibleItemPosition="+firstVisibleItemPosition);
+                    if (!isLoading && !isLastPage) {
+//                            AppHelper.sop("isLoading==isLastPage");
+
+                        if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount &&
+                                firstVisibleItemPosition >= 0 && totalItemCount >= count) {
+
+                            if(AppHelper.checkNetworkConnection(mActivity)){
+                                isLoading=true;
+                                fetchActivityData(userId);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        else {
+            Toast.makeText(getActivity().getBaseContext(), "Please login to see user activity", Toast.LENGTH_SHORT).show();
+        }
 
         return view;
     }
-    private class FetchActivityDetails extends AsyncTask<String, Void, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setTitle("Processing...");
-            progressDialog.setMessage("Please wait...");
-            //progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-        @Override
-        protected String doInBackground(String... params) {
 
-            try {
-                String UserID = params[0];
-                fetchActivityData(UserID);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            if (progressDialog != null)
-            {
-                progressDialog.dismiss();
-            }
-            //progressDialog.dismiss();
-        }
-    }
-    public void fetchActivityData(final String userId) {
+    private void fetchActivityData(final String userId) {
+        progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, ACTIVITY,
                 new Response.Listener<String>() {
                     @Override
@@ -159,43 +170,54 @@ public class ProfileActivityFragment extends Fragment {
 
                         try {
                             jsonObject = new JSONObject(response);
+                            if (arraylist.size()<=0){
+                                arraylist.clear();
+                            }
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
                                 ArrayList<ActivityModel> list = new ArrayList<ActivityModel>();
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
-                                JSONArray newJsonArray = new JSONArray();
+                                /*JSONArray newJsonArray = new JSONArray();
                                 for (int i = jsonArray.length()-1; i>=0; i--) {
                                     newJsonArray.put(jsonArray.get(i));
-                                }
-                                for (int i = 0; i < newJsonArray.length(); i++) {
-
-                                    JSONObject c = newJsonArray.getJSONObject(i);
-                                    arraylist.add(new ActivityModel(
-                                            Integer.parseInt(c.getString("id")),
-                                            c.getString("activity_name"),
-                                            c.getString("topic"),
+                                }*/
+                                if (jsonArray.length()>0){
+                                    for (int i = 0; i < jsonArray.length(); i++) {
+                                        JSONObject c = jsonArray.getJSONObject(i);
+                                        arraylist.add(new ActivityModel(
+                                                Integer.parseInt(c.getString("id")),
+                                                c.getString("activity_name"),
+                                                c.getString("topic"),
 //                                            DateTime(c.getString("activity_created_time")),
-                                            c.getString("ActivityTime"),
-                                            c.getString("profile_pick"),
-                                            c.getString("created_by_userID"),
-                                            c.getString("first_user"),
-                                            c.getString("second_user")
-                                    ));
-
-                                    activityAdapter = new ActivityCardAdapter(arraylist, getActivity());
+                                                c.getString("ActivityTime"),
+                                                c.getString("profile_pick"),
+                                                c.getString("created_by_userID"),
+                                                c.getString("first_user"),
+                                                c.getString("second_user")
+                                        ));
+                                    }
+                                    activityAdapter.notifyDataSetChanged();
+                                    isLastPage=false;
                                 }
-                                activityAdapter = new ActivityCardAdapter(arraylist);
-
-                                recyclerView.setAdapter(activityAdapter);
+                                else {
+                                    Toast.makeText(mActivity, msgUnsuccess, Toast.LENGTH_SHORT).show();
+                                    isLastPage=true;
+                                }
+                                isLoading=false;
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        finally {
+                            progressDialog.dismiss();
+                        }
+
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                        isLoading=false;
+                        isLastPage=false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -210,14 +232,15 @@ public class ProfileActivityFragment extends Fragment {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+                        progressDialog.dismiss();
                     }
                 }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(USER_ID, userId);
+                params.put(limit, arraylist.size()+"");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 AppHelper.sop("params===="+params+"\nURL===="+ACTIVITY);
                 return params;

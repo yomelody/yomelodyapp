@@ -956,8 +956,8 @@ public class MelodyPacksFragment extends Fragment {
 
                             if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount &&
                                     firstVisibleItemPosition >= 0 && totalItemCount >= count) {
-                                isLoading=true;
                                 if(AppHelper.checkNetworkConnection(mActivity)){
+                                    isLoading=true;
                                     getDataApi();
                                 }
                             }

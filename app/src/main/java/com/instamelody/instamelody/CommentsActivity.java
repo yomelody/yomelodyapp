@@ -510,7 +510,9 @@ public class CommentsActivity extends AppCompatActivity {
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
                                 respObject = jsonObject.getJSONObject(KEY_RESPONSE);
                                 String str = respObject.getString("play_count");
-                                //      Toast.makeText(context, "" + str, Toast.LENGTH_SHORT).show();
+                                Intent resultIntent = new Intent();
+                                resultIntent.putExtra("PARAMETER", "play");
+                                setResult(Activity.RESULT_OK, resultIntent);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -598,7 +600,7 @@ public class CommentsActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("params=="+response);
+                        AppHelper.sop("response=="+response);
 
                         Intent resultIntent = new Intent();
                         resultIntent.putExtra("PARAMETER", "Like");

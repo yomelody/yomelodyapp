@@ -396,6 +396,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         Intent intent = new Intent(context, StationCommentActivity.class);
                         intent.putExtra("likes", likes);
                         intent.putExtra("LikeStatus", LikeStatus);
+                        intent.putExtra("play_count", plays);
                         intent.putExtra("recording_modle", recording);
                         intent.putExtra("recording_pool", recordingsPools.get(getAdapterPosition()));
 //                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

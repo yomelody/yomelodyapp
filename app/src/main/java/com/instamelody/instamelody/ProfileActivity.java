@@ -160,7 +160,7 @@ public class ProfileActivity extends AppCompatActivity {
         mActivity=ProfileActivity.this;
         progressDialog = new ProgressDialog(ProfileActivity.this);
         sharePrefClearProfile();
-
+        AppHelper.sop("ProfileActivity..call");
         SharedPreferences filterPref = this.getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
         SharedPreferences filterPrefArtist = this.getSharedPreferences("FilterPrefArtist", MODE_PRIVATE);
@@ -975,8 +975,8 @@ public class ProfileActivity extends AppCompatActivity {
 
                             if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount &&
                                     firstVisibleItemPosition >= 0 && totalItemCount >= count) {
-                                isLoading=true;
                                 if(AppHelper.checkNetworkConnection(mActivity)){
+                                    isLoading=true;
                                     callApi();
                                 }
                             }
@@ -993,7 +993,6 @@ public class ProfileActivity extends AppCompatActivity {
         if (rv != null) {
             rv.setAdapter(adapter);
         }
-
 
         if (strName == null && strSearch == null) {
             fetchRecordings();
@@ -1643,7 +1642,11 @@ public class ProfileActivity extends AppCompatActivity {
                         try {
                             jsonObject = new JSONObject(response);
                             String chat_Id = jsonObject.getString("chatID");
-                            String receiverName = jsonObject.getString("receiverName");
+                            String receiverName = "";
+                            if (jsonObject.has("receiverName")){
+                                receiverName = jsonObject.getString("receiverName");
+                            }
+
 
                             if (chat_Id.equals("0")) {
                                 chat_Id = "";
@@ -1675,7 +1678,7 @@ public class ProfileActivity extends AppCompatActivity {
                         } else if (error instanceof ParseError) {
                             errorMsg = "ParseError";
                         }
-                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
                     }
                 }) {
