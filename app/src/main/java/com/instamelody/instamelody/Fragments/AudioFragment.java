@@ -123,63 +123,6 @@ public class AudioFragment extends Fragment {
         mActivity = getActivity();
         StationActivity.ivFilter.setVisibility(View.VISIBLE);
         rv = (RecyclerView) view.findViewById(R.id.recyclerViewAudio);
-
-        /*//setRetainInstance(true);
-        //final  LinearLayoutManager linearLayoutManager = ((LinearLayoutManager)rv.getLayoutManager());
-
-        final LinearLayoutManager mLayoutManager;
-        mLayoutManager = new LinearLayoutManager(view.getContext());
-        rv.setLayoutManager(mLayoutManager);
-
-        rv.setLayoutManager(mLayoutManager);
-        //adapter = new RecordingsCardAdapter();
-        rv.setAdapter(adapter);
-*/
-
-        /*rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-
-
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                //int visibleItemCount        = lm.getChildCount();
-                //int totalItemCount          = lm.getItemCount();
-                int firstVisibleItemPosition= rv.getVerticalScrollbarPosition();
-                *//*if (((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition() == LAST_POSITION) {
-                    // code here
-                }*//*
-
-
-                //int findFirstCompletelyVisibleItemPosition=rv.(((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
-                //int findLastVisibleItemPosition=mLayoutManager.findLastVisibleItemPosition();
-                //int findLastCompletelyVisibleItemPosition=mLayoutManager.findLastCompletelyVisibleItemPosition();
-
-                //Toast.makeText(getActivity(), "findFirstVisibleItemPosition position>>> " + String.valueOf(visibleItemCount), Toast.LENGTH_SHORT).show();
-                //Toast.makeText(getActivity(), "findFirstCompletelyVisibleItemPosition position>>> " + String.valueOf(totalItemCount), Toast.LENGTH_SHORT).show();
-                Toast.makeText(getActivity(), "findLastVisibleItemPosition position>>> " + String.valueOf(firstVisibleItemPosition), Toast.LENGTH_SHORT).show();
-                //Toast.makeText(getActivity(), "findLastCompletelyVisibleItemPosition position>>> " + String.valueOf(findLastCompletelyVisibleItemPosition), Toast.LENGTH_SHORT).show();
-                counter = counter + 1;
-                if (dy > 0) {
-                    if (counter >= 20) {
-
-                        //Toast.makeText(getActivity(), "Hi comment>>> " + String.valueOf(counter), Toast.LENGTH_SHORT).show();
-
-                    }
-                } //else {
-                //int pastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
-                //if (pastVisibleItems == 0) {
-                //Toast.makeText(getContext(), "Top most item", Toast.LENGTH_SHORT).show();
-                //}
-                //}
-            }
-        });*/
-
-
         return view;
     }
 
@@ -187,7 +130,6 @@ public class AudioFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mActivity = getActivity();
-        // fetchGenreNames();
         progressDialog = new ProgressDialog(getActivity());
         SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
@@ -971,7 +913,7 @@ public class AudioFragment extends Fragment {
                     //adapter.notifyItemInserted(recordingList.size()-1);
                     //Toast.makeText(getActivity(), "list "+String.valueOf(recordingList.size()), Toast.LENGTH_SHORT).show();
                 }
-            }catch (Exception ex ){
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
 

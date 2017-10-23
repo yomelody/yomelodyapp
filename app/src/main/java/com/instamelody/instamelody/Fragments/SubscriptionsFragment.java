@@ -329,7 +329,18 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                         }
                         subscriptionPackageArrayList.clear();
                         new ParseContents(getActivity()).parsePackageSubscription(response, subscriptionPackageArrayList);
+                        TextView[] tv2 = new TextView[4];
+                        tv2[0] = (TextView) rootView.findViewById(R.id.tvPriceFree);
+                        tv2[1] = (TextView) rootView.findViewById(R.id.priceStandard);
+                        tv2[2] = (TextView) rootView.findViewById(R.id.pricePremium);
+                        tv2[3] = (TextView) rootView.findViewById(R.id.priceProducer);
 
+                        for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
+                            tv2[0].setText(subscriptionPackageArrayList.get(0).getCost());
+                            tv2[1].setText("$" + (subscriptionPackageArrayList.get(1).getCost()));
+                            tv2[2].setText("$" + (subscriptionPackageArrayList.get(2).getCost()));
+                            tv2[3].setText("$" + (subscriptionPackageArrayList.get(3).getCost()));
+                        }
 
                         TextView[] tv = new TextView[4];
                         tv[0] = (TextView) rootView.findViewById(R.id.tvFreemium);
@@ -340,6 +351,9 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
 
                         for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
                             tv[i].setText(subscriptionPackageArrayList.get(i).getPackage_name());
+                            if (subscriptionPackageArrayList.get(i).getPackage_name().equals("Freemium")) {
+                                tv2[0].setText("Free");
+                            }
 
                         }
 
@@ -353,18 +367,6 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                             tv1[i].setText(subscriptionPackageArrayList.get(i).getTotal_melody());
                         }
 
-                        TextView[] tv2 = new TextView[4];
-                        tv2[0] = (TextView) rootView.findViewById(R.id.tvPriceFree);
-                        tv2[1] = (TextView) rootView.findViewById(R.id.priceStandard);
-                        tv2[2] = (TextView) rootView.findViewById(R.id.pricePremium);
-                        tv2[3] = (TextView) rootView.findViewById(R.id.priceProducer);
-
-                        for (int i = 0; i < subscriptionPackageArrayList.size(); i++) {
-                            tv2[0].setText(subscriptionPackageArrayList.get(0).getCost());
-                            tv2[1].setText("$" + (subscriptionPackageArrayList.get(1).getCost()));
-                            tv2[2].setText("$" + (subscriptionPackageArrayList.get(2).getCost()));
-                            tv2[3].setText("$" + (subscriptionPackageArrayList.get(3).getCost()));
-                        }
 
                         TextView[] tv3 = new TextView[4];
                         tv3[0] = (TextView) rootView.findViewById(R.id.descFreeRecordingTime);
@@ -464,7 +466,7 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                                         switchFlag = "1";
                                         packageId = "2";
 //                                    subscription();
-                                    onBuyPressed(v);
+                                        onBuyPressed(v);
 //                                    onBraintreeSubmit(v);
 
                                     }
@@ -491,7 +493,7 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                                         switchFlag = "1";
                                         packageId = "3";
 //                                    subscription();
-                                    onBuyPressed(v);
+                                        onBuyPressed(v);
 //                                    onBraintreeSubmit(v);
                                     }
                                 }
@@ -517,7 +519,7 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
                                         switchFlag = "1";
                                         packageId = "4";
 //                                    subscription();
-                                    onBuyPressed(v);
+                                        onBuyPressed(v);
 //                                    onBraintreeSubmit(v);
 
                                     }
