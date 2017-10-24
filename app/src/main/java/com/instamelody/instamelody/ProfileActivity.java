@@ -1601,16 +1601,21 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-        if (RecordingsCardAdapter.mp != null && RecordingsCardAdapter.mp.isPlaying()) {
-            try {
-                RecordingsCardAdapter.mp.stop();
-                RecordingsCardAdapter.mp.reset();
-                RecordingsCardAdapter.mp.release();
-            } catch (Throwable e) {
-                e.printStackTrace();
+        try{
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+            if (RecordingsCardAdapter.mp != null && RecordingsCardAdapter.mp.isPlaying()) {
+                try {
+                    RecordingsCardAdapter.mp.stop();
+                    RecordingsCardAdapter.mp.reset();
+                    RecordingsCardAdapter.mp.release();
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
             }
+        }catch (Throwable e){
+            e.printStackTrace();
         }
+
 
     }
 
