@@ -303,7 +303,7 @@ public class StudioActivity extends AppCompatActivity {
     URL ShortUrl;
     String pos = "0";
     BroadcastReceiver mRegistrationBroadcastReceiver;
-    private boolean fbSwitch, twitterSwitch, googleSwitch;
+//    private boolean fbSwitch, twitterSwitch, googleSwitch;
     private BroadcastReceiver mReceiver;
     private IntentFilter intentFilter;
     private String thumbnailUrl = "";
@@ -323,6 +323,8 @@ public class StudioActivity extends AppCompatActivity {
     public static Visualizer mVisualizer;
     public static boolean IsRepeat = false;
     int RecmaxVolume = 1, MelmaxVolume = 1;
+    private SharedPreferences socialStatusPref;
+
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -331,6 +333,8 @@ public class StudioActivity extends AppCompatActivity {
         setContentView(R.layout.activity_studio);
         mActivity = StudioActivity.this;
         progressDialog = new ProgressDialog(StudioActivity.this);
+        socialStatusPref = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE);
+
         rlBase = (RelativeLayout) findViewById(R.id.rlBase);
         frameprog = (ProgressBar) findViewById(R.id.frameProg);
         message = (ImageView) findViewById(R.id.message);
@@ -1917,6 +1921,7 @@ public class StudioActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 
@@ -2484,22 +2489,15 @@ public class StudioActivity extends AppCompatActivity {
                         SharedPreferences switchFbEditor = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE);
                         int switchFbStatus = switchFbEditor.getInt("switch", 0);
 
-                        SharedPreferences switchFbEditorFb = getApplicationContext().getSharedPreferences("SwitchStatusFb", MODE_PRIVATE);
-                        fbSwitch = switchFbEditorFb.getBoolean("switchFb", false);
+                        AppHelper.sop("fbSwitch=" + socialStatusPref.getBoolean(Const.FB_STATUS,false) +
+                                "=twitterSwitch=" + socialStatusPref.getBoolean(Const.TWITTER_STATUS,false) +
+                                "=googleSwitch" + socialStatusPref.getBoolean(Const.GOOGLE_STATUS,false));
 
-                        SharedPreferences switchTwitterEditor = getApplicationContext().getSharedPreferences("SwitchStatusTwitter", MODE_PRIVATE);
-                        twitterSwitch = switchTwitterEditor.getBoolean("switchTwitter", false);
-
-                        SharedPreferences switchGoogleEditor = getApplicationContext().getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE);
-                        googleSwitch = switchGoogleEditor.getBoolean("switchGoogle", false);
-
-                        AppHelper.sop("fbSwitch=" + fbSwitch + "=twitterSwitch=" + twitterSwitch + "=googleSwitch" + googleSwitch);
-
-                        if (fbSwitch) {
+                        if (socialStatusPref.getBoolean(Const.FB_STATUS,false)) {
                             FbShare();
-                        } else if (googleSwitch) {
+                        } else if (socialStatusPref.getBoolean(Const.GOOGLE_STATUS,false)) {
                             GoogleShare();
-                        } else if (twitterSwitch) {
+                        } else if (socialStatusPref.getBoolean(Const.TWITTER_STATUS,false)) {
                             TweetShare();
                         }
 
@@ -3010,7 +3008,7 @@ public class StudioActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         } else if (requestCode == REQUEST_GOOGLE_SHARE) {
-            if (twitterSwitch) {
+            if (socialStatusPref.getBoolean(Const.TWITTER_STATUS,false)) {
                 TweetShare();
             }
 
@@ -3298,20 +3296,19 @@ public class StudioActivity extends AppCompatActivity {
                 editorT.clear();
                 editorT.apply();*/
                 AppHelper.sop("FacebookCallback==onSuccess");
-                if (googleSwitch) {
+                if (socialStatusPref.getBoolean(Const.GOOGLE_STATUS,false)) {
                     GoogleShare();
-                } else if (twitterSwitch) {
+                } else if (socialStatusPref.getBoolean(Const.TWITTER_STATUS,false)) {
                     TweetShare();
                 }
             }
-
             @Override
             public void onCancel() {
                 Toast.makeText(StudioActivity.this, "Recording not Uploaded", Toast.LENGTH_SHORT).show();
                 AppHelper.sop("FacebookCallback==onCancel");
-                if (googleSwitch) {
+                if (socialStatusPref.getBoolean(Const.GOOGLE_STATUS,false)) {
                     GoogleShare();
-                } else if (twitterSwitch) {
+                } else if (socialStatusPref.getBoolean(Const.TWITTER_STATUS,false)) {
                     TweetShare();
                 }
             }
@@ -3319,9 +3316,9 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onError(FacebookException error) {
                 AppHelper.sop("FacebookCallback==onError");
-                if (googleSwitch) {
+                if (socialStatusPref.getBoolean(Const.GOOGLE_STATUS,false)) {
                     GoogleShare();
-                } else if (twitterSwitch) {
+                } else if (socialStatusPref.getBoolean(Const.TWITTER_STATUS,false)) {
                     TweetShare();
                 }
             }

@@ -43,6 +43,8 @@ public class Const {
         public static final String MixingAudio_InstrumentsAudio = BASE_URL + "audiomixing.php";
         public static final String AuthenticationKeyName = "ApiAuthenticationKey";
         public static final String LOGOUT = BASE_URL + "logout.php";
+        public static final String change_social_status = BASE_URL + "change_social_status.php";
+        public static final String social_status = BASE_URL + "social_status.php";
 
         public static final String JoinRecording = BASE_URL + "join_recording.php";
 
@@ -75,4 +77,9 @@ public class Const {
     public static final int NOTIFICATION_ID_BIG_IMAGE = 101;
 
     public static final String SHARED_PREF = "instamelody_firebase";
+
+    public static final String SOCIAL_STATUS_PREF = "SOCIAL_STATUS_PREF";
+    public static final String FB_STATUS = "FB_STATUS";
+    public static final String TWITTER_STATUS = "TWITTER_STATUS";
+    public static final String GOOGLE_STATUS = "GOOGLE_STATUS";
 }

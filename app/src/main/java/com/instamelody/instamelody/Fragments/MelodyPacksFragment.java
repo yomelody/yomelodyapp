@@ -124,12 +124,12 @@ public class MelodyPacksFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         mActivity=getActivity();
         progressDialog = new ProgressDialog(mActivity);
         progressDialog.setTitle("Processing...");
         progressDialog.setMessage("Please wait...");
         progressDialog.setCancelable(false);
-
 
         SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);

@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.facebook.login.LoginManager;
 import com.instamelody.instamelody.Fragments.SubscriptionsFragment;
 import com.instamelody.instamelody.utils.AppHelper;
+import com.instamelody.instamelody.utils.Const;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -277,35 +278,25 @@ public class SettingsActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
 
-                    SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
+                    SharedPreferences.Editor editor = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
                     editor.clear();
                     editor.commit();
-                    SharedPreferences.Editor tEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
+                    SharedPreferences.Editor tEditor = getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
                     tEditor.clear();
                     tEditor.commit();
-                    SharedPreferences.Editor fbeditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
+                    SharedPreferences.Editor fbeditor = getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
                     fbeditor.clear();
                     fbeditor.commit();
-                    SharedPreferences.Editor profileEditor = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE).edit();
+                    SharedPreferences.Editor profileEditor = getSharedPreferences("ProfileUpdate", MODE_PRIVATE).edit();
                     profileEditor.clear();
                     profileEditor.commit();
-                    SharedPreferences.Editor profileImageEditor = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE).edit();
+                    SharedPreferences.Editor profileImageEditor = getSharedPreferences("ProfileImage", MODE_PRIVATE).edit();
                     profileImageEditor.clear();
                     profileImageEditor.commit();
 
-
-
-                    SharedPreferences.Editor SwitchStatusFb = getSharedPreferences("SwitchStatusFb", MODE_PRIVATE).edit();
-                    SwitchStatusFb.clear();
-                    SwitchStatusFb.commit();
-
-                    SharedPreferences.Editor SwitchStatusTwitter = getSharedPreferences("SwitchStatusTwitter", MODE_PRIVATE).edit();
-                    SwitchStatusTwitter.clear();
-                    SwitchStatusTwitter.commit();
-
-                    SharedPreferences.Editor SwitchStatusGoogle = getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE).edit();
-                    SwitchStatusGoogle.clear();
-                    SwitchStatusGoogle.commit();
+                    SharedPreferences.Editor socialStatusPreff = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE).edit();
+                    socialStatusPreff.clear();
+                    socialStatusPreff.commit();
 
                     LoginManager.getInstance().logOut();
                     HomeActivity.SignOut.setVisibility(View.INVISIBLE);

@@ -39,6 +39,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.login.LoginManager;
+import com.instamelody.instamelody.utils.Const;
 import com.instamelody.instamelody.utils.NotificationUtils;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.Twitter;
@@ -258,18 +259,9 @@ public class HomeActivity extends AppCompatActivity {
                 profileImageEditor1.clear();
                 profileImageEditor1.commit();
 
-
-                SharedPreferences.Editor SwitchStatusFb = getSharedPreferences("SwitchStatusFb", MODE_PRIVATE).edit();
-                SwitchStatusFb.clear();
-                SwitchStatusFb.commit();
-
-                SharedPreferences.Editor SwitchStatusTwitter = getSharedPreferences("SwitchStatusTwitter", MODE_PRIVATE).edit();
-                SwitchStatusTwitter.clear();
-                SwitchStatusTwitter.commit();
-
-                SharedPreferences.Editor SwitchStatusGoogle = getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE).edit();
-                SwitchStatusGoogle.clear();
-                SwitchStatusGoogle.commit();
+                SharedPreferences.Editor socialStatusPreff = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE).edit();
+                socialStatusPreff.clear();
+                socialStatusPreff.commit();
 
                 LoginManager.getInstance().logOut();
                 SignOut.setVisibility(View.INVISIBLE);
