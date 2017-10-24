@@ -38,29 +38,31 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/newest_blue_bubble">
 
+                <TextView
+                    android:id="@+id/txtsenderName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginTop="-2dp"
+                    android:text="Abhishek"
+                    android:textColor="@color/tw__light_gray"
+                    android:textSize="8dp"
+                    android:visibility="gone" />
+
                 <RelativeLayout
                     android:id="@+id/rlMessageInside"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/txtsenderName"
                     android:layout_toEndOf="@+id/ticks"
                     android:layout_toRightOf="@+id/ticks">
-                    <!--<TextView-->
-                        <!--android:id="@+id/senderName"-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:text="Abhishek"-->
-                        <!--android:layout_alignParentLeft="true"-->
-                        <!--android:textColor="@color/black"-->
-                        <!--android:layout_marginTop="0dp"-->
 
-                        <!--/>-->
 
                     <TextView
                         android:id="@+id/chatMessage"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Honda koog"
-                        android:layout_below="@+id/senderName"
                         android:textColor="#FFFFFF"
                         android:textSize="16sp" />
 

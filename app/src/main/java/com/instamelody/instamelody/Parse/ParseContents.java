@@ -21,6 +21,7 @@ import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.MixingData;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
+import com.instamelody.instamelody.Models.SharedAudios;
 import com.instamelody.instamelody.Models.SubscriptionPackage;
 import com.instamelody.instamelody.StudioActivity;
 import com.squareup.picasso.Picasso;
@@ -45,6 +46,7 @@ public class ParseContents {
         mContext = context;
     }
 
+    public static ArrayList<SharedAudios> sharedAudioList = new ArrayList<>();
     ArrayList<MelodyCard> melodyList = new ArrayList<>();
     ArrayList<Genres> genreList = new ArrayList<>();
     static ArrayList<MelodyInstruments> instrumentsList = new ArrayList<>();
@@ -101,6 +103,7 @@ public class ParseContents {
     String SUBSCRIPTION_TOTAL_MELODY = "total_melody";
     String SUBSCRIPTION_RECORDING_TIME = "recording_time";
     String SUBSCRIPTION_COST = "cost";
+    JSONArray audiosDetailsArray;
 
     public ArrayList<MelodyCard> parseMelodyPacks(String response, ArrayList<MelodyCard> melodyList, ArrayList<MelodyInstruments> instrumentList) {
 
@@ -574,6 +577,47 @@ public class ParseContents {
             e.printStackTrace();
         }
         return subscriptionPackageArrayList;
+    }
+
+    public ArrayList<SharedAudios> parseSharedJoin(int pos, ArrayList<Message> message) {
+        try {
+            audiosDetailsArray = message.get(pos).getAudioDetails();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
+
+        if (audiosDetailsArray != null && audiosDetailsArray.length() > 0) {
+            if (audiosDetailsArray != null && audiosDetailsArray.length() > 0) {
+                for (int j = 0; j < audiosDetailsArray.length(); j++) {
+                    try {
+                        JSONObject detailsJson = audiosDetailsArray.getJSONObject(j);
+                        if (!detailsJson.get("recordings").equals(null) && !detailsJson.get("recordings").equals("")) {
+                            JSONArray sharedAudiosArray = detailsJson.getJSONArray("recordings");
+
+                            if (sharedAudiosArray.length() > 0) {
+                                for (int k = 0; k < sharedAudiosArray.length(); k++) {
+                                    SharedAudios sharedAudios = new SharedAudios();
+                                    JSONObject audioJson = sharedAudiosArray.getJSONObject(k);
+                                    sharedAudios.setAddedById(audioJson.getString("added_by_id"));
+                                    sharedAudios.setUserName(audioJson.getString("user_name"));
+                                    sharedAudios.setName(audioJson.getString("name"));
+                                    sharedAudios.setProfileUrl(audioJson.getString("profile_url"));
+                                    sharedAudios.setDateAdded(audioJson.getString("date_added"));
+                                    sharedAudios.setDuration(audioJson.getString("duration"));
+                                    sharedAudios.setRecordingUrl(audioJson.getString("recording_url"));
+                                    sharedAudioList.add(sharedAudios);
+                                }
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        return sharedAudioList;
+
     }
 
 }

@@ -219,6 +219,7 @@
                         android:layout_marginStart="5dp">
 
                         <ImageView
+                            android:id="@+id/songPre"
                             android:layout_width="35dp"
                             android:layout_height="35dp"
                             android:layout_centerVertical="true"
@@ -272,6 +273,7 @@
                         android:layout_marginStart="5dp">
 
                         <ImageView
+                            android:id="@+id/songNext"
                             android:layout_width="35dp"
                             android:layout_height="35dp"
                             android:layout_centerVertical="true"

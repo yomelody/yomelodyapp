@@ -69,6 +69,7 @@ import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.RecentImagesModel;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.SharedAudios;
+import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.utils.AppHelper;
 import com.instamelody.instamelody.utils.ImageCompressor;
 import com.instamelody.instamelody.utils.NotificationUtils;
@@ -129,7 +130,7 @@ public class ChatActivity extends AppCompatActivity {
     ImageView ivBackButton, ivHomeButton, ivCamera, ivNewChat, ivRecieverProfilePic, ivSelectedImage, ivGroupImage;
     TextView tvSend, tvRecieverName, tvDone, tvEdit, tvUpdate;
     RecyclerView recycleImage, recyclerViewChat;
-    RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton, rlMessage, rlSelectedImage, rlUserName, rlPrevPlayer, rlNextPlayer, rlUpdateGroup, contInviteButton;
+    public static RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton, rlMessage, rlSelectedImage, rlUserName, rlPrevPlayer, rlNextPlayer, rlUpdateGroup, contInviteButton;
 
     RecentImagesAdapter riAdapter;
     ChatAdapter cAdapter;
@@ -166,7 +167,7 @@ public class ChatActivity extends AppCompatActivity {
     String userId, chatId, receiverId, receiverName, packId, packType, receiverImage, groupImage, deviceToken, chatIds;
     String username = "";
     String senderId = "";
-    String chatType = "";
+    public static String chatType = "";
     String group = "";
     String sendImageName = "";
     String sendGroupImageName = "";
@@ -174,7 +175,8 @@ public class ChatActivity extends AppCompatActivity {
     int updateGroupFlag = 0;
     RecordingsModel mRecordingsModel;
     Activity mActivity;
-    String sender_name = "";
+    public static String sender_name = "";
+    ImageView songNext, songPre;
 
     @TargetApi(18)
     @Override
@@ -223,7 +225,6 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         };
-
         rlUserName = (RelativeLayout) findViewById(R.id.rlUserName);
         rlSelectedImage = (RelativeLayout) findViewById(R.id.rlSelectedImage);
         ivClose = (ImageView) findViewById(R.id.ivClose);
@@ -329,25 +330,25 @@ public class ChatActivity extends AppCompatActivity {
         recyclerViewChat.setItemAnimator(new DefaultItemAnimator());
         cAdapter = new ChatAdapter(getApplicationContext(), chatList/*, audioDetailsList, sharedAudioList*/);
         recyclerViewChat.setAdapter(cAdapter);
-        recyclerViewChat.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (rlChatPlayer.getVisibility() == View.VISIBLE) {
-                    try {
-                        rlChatPlayer.setVisibility(View.GONE);
-                        flSeekbar.setVisibility(View.GONE);
-                        if (ChatAdapter.mp != null) {
-                            ChatAdapter.mp.stop();
-                            ChatAdapter.mp.release();
-                        }
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                }
-                return false;
-            }
-        });
+//        recyclerViewChat.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View view, MotionEvent motionEvent) {
+//                if (rlChatPlayer.getVisibility() == View.VISIBLE) {
+//                    try {
+//                        rlChatPlayer.setVisibility(View.GONE);
+//                        flSeekbar.setVisibility(View.GONE);
+//                        if (ChatAdapter.mp != null) {
+//                            ChatAdapter.mp.stop();
+//                            ChatAdapter.mp.release();
+//                        }
+//                    } catch (Throwable e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                }
+//                return false;
+//            }
+//        });
 
         SharedPreferences token = this.getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
         deviceToken = token.getString("regId", null);
@@ -931,7 +932,6 @@ public class ChatActivity extends AppCompatActivity {
                         chatList.clear();
 //                        audioDetailsList.clear();
 //                        sharedAudioList.clear();
-
                         String usrId = userId;
                         if (rlChatPlayer.getVisibility() == View.VISIBLE) {
                             try {
