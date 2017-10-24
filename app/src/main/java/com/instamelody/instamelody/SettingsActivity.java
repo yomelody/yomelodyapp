@@ -18,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
-import com.instamelody.instamelody.Fragments.SubscriptionsFragment;
 import com.instamelody.instamelody.utils.AppHelper;
 import com.squareup.picasso.Picasso;
 
