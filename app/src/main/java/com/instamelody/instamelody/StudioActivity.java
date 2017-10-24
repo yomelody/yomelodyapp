@@ -323,7 +323,7 @@ public class StudioActivity extends AppCompatActivity {
     public static Visualizer mVisualizer;
     public static boolean IsRepeat = false;
     int RecmaxVolume = 1, MelmaxVolume = 1;
-    private SharedPreferences socialStatusPref;
+    public static boolean IsRepeteReAll=false;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -753,6 +753,14 @@ public class StudioActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
 
+                    if(StudioActivity.PlayAllModel.size()>0){
+                        for(int i=0;i<=StudioActivity.PlayAllModel.size()-1;i++){
+                            StudioActivity.PlayAllModel.get(i).setRepete(false);
+                        }
+                    }
+                    if (mVisualizer != null) {
+                        mVisualizer.release();
+                    }
                     handler.removeCallbacksAndMessages(null);
 
                     if (lstViewHolder.size() > 0) {
@@ -851,7 +859,11 @@ public class StudioActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 try {
-
+                    if(StudioActivity.PlayAllModel.size()>0){
+                        for(int i=0;i<=StudioActivity.PlayAllModel.size()-1;i++){
+                            StudioActivity.PlayAllModel.get(i).setRepete(false);
+                        }
+                    }
                     handler.removeCallbacksAndMessages(null);
                     if (mVisualizer != null) {
                         mVisualizer.release();
@@ -895,6 +907,7 @@ public class StudioActivity extends AppCompatActivity {
                         }
                         mediaPlayersAll.clear();
                     }
+
                     if (mpInst != null) {
                         try {
                             mpInst.stop();
@@ -923,6 +936,11 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    if(StudioActivity.PlayAllModel.size()>0){
+                        for(int i=0;i<=StudioActivity.PlayAllModel.size()-1;i++){
+                            StudioActivity.PlayAllModel.get(i).setRepete(false);
+                        }
+                    }
                     if (mVisualizer != null) {
                         mVisualizer.release();
                     }
@@ -996,6 +1014,11 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    if(StudioActivity.PlayAllModel.size()>0){
+                        for(int i=0;i<=StudioActivity.PlayAllModel.size()-1;i++){
+                            StudioActivity.PlayAllModel.get(i).setRepete(false);
+                        }
+                    }
                     if (mVisualizer != null) {
                         mVisualizer.release();
                     }
@@ -1071,6 +1094,11 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
+                    if(StudioActivity.PlayAllModel.size()>0){
+                        for(int i=0;i<=StudioActivity.PlayAllModel.size()-1;i++){
+                            StudioActivity.PlayAllModel.get(i).setRepete(false);
+                        }
+                    }
                     if (mVisualizer != null) {
                         mVisualizer.release();
                     }
@@ -1146,6 +1174,11 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
+                    if(StudioActivity.PlayAllModel.size()>0){
+                        for(int i=0;i<=StudioActivity.PlayAllModel.size()-1;i++){
+                            StudioActivity.PlayAllModel.get(i).setRepete(false);
+                        }
+                    }
                     if (mVisualizer != null) {
                         mVisualizer.release();
                     }
@@ -1221,6 +1254,11 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    if(StudioActivity.PlayAllModel.size()>0){
+                        for(int i=0;i<=StudioActivity.PlayAllModel.size()-1;i++){
+                            StudioActivity.PlayAllModel.get(i).setRepete(false);
+                        }
+                    }
                     if (mVisualizer != null) {
                         mVisualizer.release();
                     }
@@ -1583,7 +1621,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-
+                    IsRepeteReAll=false;
                     if (!recordTask.isCancelled() && recordTask.getStatus() == AsyncTask.Status.RUNNING) {
                         recordTask.cancel(false);
                     } else {
@@ -1631,7 +1669,7 @@ public class StudioActivity extends AppCompatActivity {
                         if (mpall != null) {
                             mpall.stop();
                             for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
-
+                                StudioActivity.PlayAllModel.get(i).setRepete(false);
                                 final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
                                 final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
                                 final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
@@ -3656,7 +3694,7 @@ public class StudioActivity extends AppCompatActivity {
         protected void onPreExecute() {
             try {
                 try {
-
+                    IsRepeteReAll=false;
                     InstrumentCountSize = 0;
                     frameProgress.setVisibility(View.VISIBLE);
                     if (PlayAllModel.size() > 0) {
@@ -3719,6 +3757,7 @@ public class StudioActivity extends AppCompatActivity {
                             MaxMpSessionID = StudioActivity.mediaPlayersAll.get(i).getAudioSessionId();
                         }
                     }
+                    IsRepeteReAll=true;
 
 
                     StudioActivity.mpall.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {

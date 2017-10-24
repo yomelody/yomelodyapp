@@ -201,6 +201,8 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
 
+
+
         <provider android:authorities="com.facebook.app.FacebookContentProvider164934724003307"
             android:name="com.facebook.FacebookContentProvider"
             android:exported="true"/>
