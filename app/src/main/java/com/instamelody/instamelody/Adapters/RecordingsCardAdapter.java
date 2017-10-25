@@ -534,6 +534,11 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
         holder.txtJoinCount.setText(totaljoincount);
         Picasso.with(context).load(recordingList.get(listPosition).getUserProfilePic()).into(holder.userProfileImage);
+        Picasso.with(context)
+                .load(recordingList.get(listPosition).getRecordingCover())
+                .placeholder(R.drawable.bg_cell)
+                .error(R.drawable.bg_cell)
+                .into(holder.ivRecordingCover);
 
         holder.tvUserName.setText(recordingList.get(listPosition).getUserName());
         holder.tvRecordingName.setText(recordingList.get(listPosition).getRecordingName());
@@ -585,7 +590,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                 if (instrumentFile != "") {
                     try {
-                        if (mp.isPlaying()) {
+                        if (mp!=null&& mp.isPlaying()) {
 
                             try {
                                 mHandler1.removeCallbacksAndMessages(null);

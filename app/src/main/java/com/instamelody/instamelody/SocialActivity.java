@@ -1,5 +1,6 @@
 package com.instamelody.instamelody;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -21,6 +22,13 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -42,6 +50,8 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.PlusOneButton;
 import com.google.android.gms.plus.PlusShare;
+import com.instamelody.instamelody.utils.AppHelper;
+import com.instamelody.instamelody.utils.Const;
 import com.jlubecki.soundcloud.webapi.android.auth.AuthenticationCallback;
 import com.jlubecki.soundcloud.webapi.android.auth.SoundCloudAuthenticator;
 import com.squareup.picasso.Picasso;
@@ -64,12 +74,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.fabric.sdk.android.Fabric;
 import io.fabric.sdk.android.services.concurrency.AsyncTask;
 
 import static android.R.attr.data;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
+import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
+import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
+import static com.instamelody.instamelody.utils.Const.ServiceType.change_social_status;
+import static com.instamelody.instamelody.utils.Const.ServiceType.social_status;
 
 /**
  * Created by Shubhansh Jaiswal on 11/29/2016.
@@ -97,12 +114,25 @@ public class SocialActivity extends AppCompatActivity {
     int statusNormal;
     CircleImageView userProfileImageSocial;
     ImageView ivLogoContainer;
+    private Activity mActivity;
+    private SharedPreferences.Editor socialStatusPrefEditor;
+    private SharedPreferences socialStatusPref;
+    private String typeFB="facebook";
+    private String typeTwitter="twitter";
+    private String typeGoogle="google";
+    private ProgressDialog progressDialog;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_social);
+        mActivity = SocialActivity.this;
+        progressDialog = new ProgressDialog(mActivity);
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        socialStatusPrefEditor = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE).edit();
 
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -227,13 +257,15 @@ public class SocialActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (switchFb.isChecked()) {
-                    SharedPreferences.Editor switchFbEditor = getApplicationContext().getSharedPreferences("SwitchStatusFb", MODE_PRIVATE).edit();
+                    /*SharedPreferences.Editor switchFbEditor = getApplicationContext().getSharedPreferences("SwitchStatusFb", MODE_PRIVATE).edit();
                     switchFbEditor.putBoolean("switchFb", true);
-                    switchFbEditor.apply();
+                    switchFbEditor.apply();*/
+                    changeSocialStatusApi(typeFB,"1");
                 } else {
-                    SharedPreferences.Editor switchFbEditor = getApplicationContext().getSharedPreferences("SwitchStatusFb", MODE_PRIVATE).edit();
+                    /*SharedPreferences.Editor switchFbEditor = getApplicationContext().getSharedPreferences("SwitchStatusFb", MODE_PRIVATE).edit();
                     switchFbEditor.putBoolean("switchFb", false);
-                    switchFbEditor.apply();
+                    switchFbEditor.apply();*/
+                    changeSocialStatusApi(typeFB,"0");
                 }
             }
         });
@@ -242,18 +274,20 @@ public class SocialActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (switchTwitter.isChecked()) {
-                    SharedPreferences.Editor switchTwitterEditor = getApplicationContext().getSharedPreferences("SwitchStatusTwitter", MODE_PRIVATE).edit();
+                    /*SharedPreferences.Editor switchTwitterEditor = getApplicationContext().getSharedPreferences("SwitchStatusTwitter", MODE_PRIVATE).edit();
                     switchTwitterEditor.putBoolean("switchTwitter", true);
-                    switchTwitterEditor.apply();
+                    switchTwitterEditor.apply();*/
+                    changeSocialStatusApi(typeTwitter,"1");
                 } else {
-                    SharedPreferences.Editor switchTwitterEditor = getApplicationContext().getSharedPreferences("SwitchStatusTwitter", MODE_PRIVATE).edit();
+                    /*SharedPreferences.Editor switchTwitterEditor = getApplicationContext().getSharedPreferences("SwitchStatusTwitter", MODE_PRIVATE).edit();
                     switchTwitterEditor.putBoolean("switchTwitter", false);
-                    switchTwitterEditor.apply();
+                    switchTwitterEditor.apply();*/
+                    changeSocialStatusApi(typeTwitter,"0");
                 }
             }
         });
 
-        switchSoundCloud.setOnClickListener(new View.OnClickListener() {
+        /*switchSoundCloud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (switchSoundCloud.isChecked()) {
@@ -285,19 +319,21 @@ public class SocialActivity extends AppCompatActivity {
                     }
                 }
             }
-        });
+        });*/
 
         switchGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (switchGoogle.isChecked()) {
-                    SharedPreferences.Editor switchGoogleEditor = getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE).edit();
+                    /*SharedPreferences.Editor switchGoogleEditor = getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE).edit();
                     switchGoogleEditor.putBoolean("switchGoogle", true);
-                    switchGoogleEditor.apply();
+                    switchGoogleEditor.apply();*/
+                    changeSocialStatusApi(typeGoogle,"1");
                 } else {
-                    SharedPreferences.Editor switchGoogleEditor = getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE).edit();
+                    /*SharedPreferences.Editor switchGoogleEditor = getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE).edit();
                     switchGoogleEditor.putBoolean("switchGoogle", false);
-                    switchGoogleEditor.apply();
+                    switchGoogleEditor.apply();*/
+                    changeSocialStatusApi(typeGoogle,"0");
                 }
             }
         });
@@ -309,6 +345,8 @@ public class SocialActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+        getSocialStatusApi();
     }
 
     @Override
@@ -332,7 +370,7 @@ public class SocialActivity extends AppCompatActivity {
     }
 
 
-    protected void onResume() {
+    /*protected void onResume() {
         super.onResume();
         SharedPreferences switchFbEditor = getApplicationContext().getSharedPreferences("SwitchStatusFb", MODE_PRIVATE);
         switchFb.setChecked(switchFbEditor.getBoolean("switchFb", false));
@@ -343,9 +381,9 @@ public class SocialActivity extends AppCompatActivity {
         SharedPreferences switchGoogleEditor = getApplicationContext().getSharedPreferences("SwitchStatusGoogle", MODE_PRIVATE);
         switchGoogle.setChecked(switchGoogleEditor.getBoolean("switchGoogle", false));
         plus_one_button.initialize(fetchThumbNailUrl, PLUS_ONE_REQUEST_CODE);
-    }
+    }*/
 
-    @Override
+    /*@Override
     protected void onRestart() {
         super.onRestart();
         if (switchFb.isChecked()) {
@@ -360,5 +398,158 @@ public class SocialActivity extends AppCompatActivity {
         if (switchGoogle.isChecked()) {
             switchGoogle.setChecked(true);
         }
+    }*/
+
+
+    private void getSocialStatusApi(){
+        progressDialog.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, social_status,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        progressDialog.dismiss();
+                        AppHelper.sop("response==" + response);
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            if (jsonObject.getString("flag").equalsIgnoreCase("success")){
+                                JSONObject jsonResponse = jsonObject.getJSONObject("Response");
+
+                                if (jsonResponse.getInt("facebook_status")==1){
+                                    socialStatusPrefEditor.putBoolean(Const.FB_STATUS, true);
+                                    socialStatusPrefEditor.apply();
+                                }
+                                else {
+                                    socialStatusPrefEditor.putBoolean(Const.FB_STATUS, false);
+                                    socialStatusPrefEditor.apply();
+                                }
+
+                                if (jsonResponse.getInt("google_status")==1){
+                                    socialStatusPrefEditor.putBoolean(Const.GOOGLE_STATUS, true);
+                                    socialStatusPrefEditor.apply();
+                                }
+                                else {
+                                    socialStatusPrefEditor.putBoolean(Const.GOOGLE_STATUS, false);
+                                    socialStatusPrefEditor.apply();
+                                }
+
+                                if (jsonResponse.getInt("twitter_status")==1){
+                                    socialStatusPrefEditor.putBoolean(Const.TWITTER_STATUS, true);
+                                    socialStatusPrefEditor.apply();
+                                }
+                                else {
+                                    socialStatusPrefEditor.putBoolean(Const.TWITTER_STATUS, false);
+                                    socialStatusPrefEditor.apply();
+                                }
+
+                                socialStatusPref = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE);
+                                switchFb.setChecked(socialStatusPref.getBoolean(Const.FB_STATUS, false));
+                                switchTwitter.setChecked(socialStatusPref.getBoolean(Const.TWITTER_STATUS, false));
+                                switchGoogle.setChecked(socialStatusPref.getBoolean(Const.GOOGLE_STATUS, false));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                        progressDialog.dismiss();
+                    }
+                }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("user_id", userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params==" + params + "\nURL==" + social_status);
+                return params;
+
+            }
+        };
+
+        RequestQueue requestQueue= Volley.newRequestQueue(mActivity);
+        requestQueue.add(stringRequest);
+    }
+
+    private void changeSocialStatusApi(final String socialType, final String status){
+        progressDialog.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, change_social_status,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        progressDialog.dismiss();
+                        AppHelper.sop("response=" + response);
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            if (jsonObject.getString("flag").equalsIgnoreCase("success")){
+
+                                if (socialType.equals(typeFB)){
+                                    if (status.equalsIgnoreCase("1")){
+                                        socialStatusPrefEditor.putBoolean(Const.FB_STATUS, true);
+                                        socialStatusPrefEditor.apply();
+                                        switchFb.setChecked(true);
+                                    }
+                                    else {
+                                        socialStatusPrefEditor.putBoolean(Const.FB_STATUS, false);
+                                        socialStatusPrefEditor.apply();
+                                        switchFb.setChecked(false);
+                                    }
+                                }
+                                else if (socialType.equals(typeTwitter)){
+                                    if (status.equalsIgnoreCase("1")){
+                                        socialStatusPrefEditor.putBoolean(Const.TWITTER_STATUS, true);
+                                        socialStatusPrefEditor.apply();
+                                        switchTwitter.setChecked(true);
+                                    }
+                                    else {
+                                        socialStatusPrefEditor.putBoolean(Const.TWITTER_STATUS, false);
+                                        socialStatusPrefEditor.apply();
+                                        switchTwitter.setChecked(false);
+                                    }
+                                }
+                                else if (socialType.equals(typeGoogle)) {
+                                    if (status.equalsIgnoreCase("1")){
+                                        socialStatusPrefEditor.putBoolean(Const.GOOGLE_STATUS, true);
+                                        socialStatusPrefEditor.apply();
+                                        switchGoogle.setChecked(true);
+                                    }
+                                    else {
+                                        socialStatusPrefEditor.putBoolean(Const.GOOGLE_STATUS, false);
+                                        socialStatusPrefEditor.apply();
+                                        switchGoogle.setChecked(false);
+                                    }
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                        progressDialog.dismiss();
+                    }
+                }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("user_id", userId);
+                params.put("type", socialType);
+                params.put("status", status);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params==" + params + "\nURL==" + change_social_status);
+                return params;
+
+            }
+        };
+
+        RequestQueue requestQueue= Volley.newRequestQueue(mActivity);
+        requestQueue.add(stringRequest);
     }
 }
