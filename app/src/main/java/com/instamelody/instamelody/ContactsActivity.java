@@ -45,10 +45,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.instamelody.instamelody.Adapters.ContactsAdapter.Count;
+import static com.instamelody.instamelody.Adapters.ContactsAdapter.recId;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
+import static com.instamelody.instamelody.utils.Const.ServiceType.BASE_URL;
 import static com.instamelody.instamelody.utils.Const.ServiceType.CONTACT_LIST;
+import static com.instamelody.instamelody.utils.Const.ServiceType.CREATE_GROUP;
 import static com.instamelody.instamelody.utils.Const.ServiceType.TOTAL_COUNT;
+import static com.instamelody.instamelody.utils.Const.ServiceType.USER_CHAT_ID;
 
 /**
  * Created by Shubhansh Jaiswal on 04/05/17.
@@ -153,9 +158,12 @@ public class ContactsActivity extends AppCompatActivity {
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
-                intent.putExtra("from", "ContactsActivity");
-                startActivity(intent);
+                if (!userId.equals("") && Count == 1) {
+                    getChatId(userId, recId);
+                } else if (!userId.equals("") && Count > 1) {
+                    createGroup(recId);
+                }
+
             }
         });
 
@@ -197,6 +205,7 @@ public class ContactsActivity extends AppCompatActivity {
                 editor.putString("receiverImage", "");
                 editor.putString("chatId", "");
                 editor.commit();
+                Count=0;
                 String caller = "";
                 if (getIntent() != null && getIntent().hasExtra("Previous")) {
                     caller = getIntent().getStringExtra("Previous");
@@ -239,7 +248,7 @@ public class ContactsActivity extends AppCompatActivity {
                 editor.putString("receiverImage", "");
                 editor.putString("chatId", "");
                 editor.commit();
-
+                Count=0;
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(intent);
             }
@@ -254,6 +263,7 @@ public class ContactsActivity extends AppCompatActivity {
         editor.putString("receiverImage", "");
         editor.putString("chatId", "");
         editor.commit();
+        Count=0;
         String caller = "";
         if (getIntent() != null && getIntent().hasExtra("Previous")) {
             caller = getIntent().getStringExtra("Previous");
@@ -402,6 +412,153 @@ public class ContactsActivity extends AppCompatActivity {
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
+    private void getChatId(final String user_id, final String reciever_id) {
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, USER_CHAT_ID,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+//                        Toast.makeText(context, " Shubz" + response, Toast.LENGTH_LONG).show();
+
+                        JSONObject jsonObject;
+                        try {
+                            jsonObject = new JSONObject(response);
+                            String chat_Id = jsonObject.getString("chatID");
+
+                            String receiverName;
+                            String group_pick = "";
+
+                            if (jsonObject.has("receiverName")) {
+                                receiverName = jsonObject.getString("receiverName");
+                            } else {
+                                receiverName = "New Group";
+                            }
+
+                            if (jsonObject.has("group_pick")) {
+                                group_pick = jsonObject.getString("group_pick");
+                            }
+
+                            if (chat_Id.equals("0")) {
+                                chat_Id = "";
+                            }
+
+                            SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                            editor.putString("chatId", chat_Id);
+                            editor.putString("receiverName", receiverName);
+                            editor.putString("groupImage", group_pick);
+                            editor.commit();
+                            Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+                            intent.putExtra("from", "ContactsActivity");
+                            startActivity(intent);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            errorMsg = "There is either no connection or it timed out.";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "ServerError";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "Network Error";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("senderID", user_id);
+                params.put("receiverID", reciever_id);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+    }
+    private void createGroup(final String recId) {
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, CREATE_GROUP,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+//                        Toast.makeText(context, " Shubz" + response, Toast.LENGTH_LONG).show();
+
+                        JSONObject jsonObject;
+                        try {
+                            jsonObject = new JSONObject(response);
+                            JSONObject res = jsonObject.getJSONObject("response");
+                            String chat_Id = res.getString("chat_id");
+
+                            String groupName = res.getString("groupName");
+                            String group_pick = "";
+
+
+                            if (res.has("groupPic")) {
+                                group_pick = BASE_URL + res.getString("groupPic");
+                            }
+
+                            if (chat_Id.equals("0")) {
+                                chat_Id = "0";
+                            }
+
+                            SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                            editor.putString("chatId", chat_Id);
+                            editor.putString("receiverName", groupName);
+                            editor.putString("groupImage", group_pick);
+                            editor.commit();
+                            Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+                            intent.putExtra("from", "ContactsActivity");
+                            startActivity(intent);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            errorMsg = "There is either no connection or it timed out.";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "ServerError";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "Network Error";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("usersId", recId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
     }
 }

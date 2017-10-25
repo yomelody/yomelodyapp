@@ -7,7 +7,7 @@ package com.instamelody.instamelody.utils;
 public class Const {
     // web services
     public class ServiceType {
-        private static final String HOST_URL = "http://52.89.220.199/";
+        public static final String HOST_URL = "http://52.89.220.199/";
         public static final String BASE_URL = HOST_URL + "api/";
         public static final String LOGIN = BASE_URL + "login.php";
         public static final String REGISTER = BASE_URL + "registration.php";
@@ -31,6 +31,7 @@ public class Const {
         public static final String USER_CONVERSATION = BASE_URL + "UserConversation.php";
         public static final String MESSAGE_LIST = BASE_URL + "messageList.php";
         public static final String USER_CHAT_ID = BASE_URL + "user_chat_id.php";
+        public static final String CREATE_GROUP=BASE_URL + "chatgroup.php";
         public static final String FOLLOWERS = BASE_URL + "followers.php";
         public static final String USERS_BIO = BASE_URL + "users_bio.php";
         public static final String UPDATEPROFILE = BASE_URL + "updateprofile.php";

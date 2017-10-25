@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -57,6 +58,7 @@ public class ActivityFragment extends Fragment {
 
     private static RecyclerView.Adapter adapter;
     private RecyclerView recyclerView;
+    FrameLayout Norecord;
     String USER_ID = "user_id";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";
@@ -65,12 +67,12 @@ public class ActivityFragment extends Fragment {
     ProgressDialog progressDialog;
     private ArrayList<ActivityModel> arraylist;
     private Activity mActivity;
-    private String msgUnsuccess="No record found.";
+    private String msgUnsuccess = "No record found.";
     LinearLayoutManager linearLayoutManager;
-    private final int count=30;
-    private boolean isLoading=false;
-    private boolean isLastPage=false;
-    private String limit="limit";
+    private final int count = 30;
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
+    private String limit = "limit";
 
     public ActivityFragment() {
     }
@@ -84,12 +86,12 @@ public class ActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_activity, container, false);
-        mActivity=getActivity();
+        mActivity = getActivity();
         progressDialog = new ProgressDialog(mActivity);
         progressDialog.setTitle("Processing...");
         progressDialog.setMessage("Please wait...");
         progressDialog.setCancelable(false);
-
+        Norecord = (FrameLayout) view.findViewById(R.id.Norecord);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewActivity);
         recyclerView.setHasFixedSize(true);
         linearLayoutManager = new LinearLayoutManager(mActivity);
@@ -136,8 +138,8 @@ public class ActivityFragment extends Fragment {
                         if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount &&
                                 firstVisibleItemPosition >= 0 && totalItemCount >= count) {
 
-                            if(AppHelper.checkNetworkConnection(mActivity)){
-                                isLoading=true;
+                            if (AppHelper.checkNetworkConnection(mActivity)) {
+                                isLoading = true;
                                 fetchActivityData(userId);
                             }
                         }
@@ -145,14 +147,12 @@ public class ActivityFragment extends Fragment {
                 }
             });
 
-        }
-        else {
+        } else {
             Toast.makeText(getActivity().getBaseContext(), "Please login to see user activity", Toast.LENGTH_SHORT).show();
         }
 
         return view;
     }
-
 
 
     public void fetchActivityData(final String userId) {
@@ -161,7 +161,7 @@ public class ActivityFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response=="+response);
+                        AppHelper.sop("response==" + response);
                         JSONObject jsonObject;
                         JSONArray jsonArray;
 
@@ -169,7 +169,7 @@ public class ActivityFragment extends Fragment {
                             jsonObject = new JSONObject(response);
                             /*String flag = jsonObject.getString(KEY_FLAG);
                             String msg = jsonObject.getString(KEY_MESSAGE);*/
-                            if (arraylist.size()<=0){
+                            if (arraylist.size() <= 0) {
                                 arraylist.clear();
                             }
 
@@ -177,7 +177,7 @@ public class ActivityFragment extends Fragment {
 
                                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
 
-                                if (jsonArray.length()>0){
+                                if (jsonArray.length() > 0) {
                                     for (int i = 0; i < jsonArray.length(); i++) {
                                         JSONObject c = jsonArray.getJSONObject(i);
                                         arraylist.add(new ActivityModel(
@@ -194,14 +194,15 @@ public class ActivityFragment extends Fragment {
 
                                     }
                                     adapter.notifyDataSetChanged();
-                                    isLastPage=false;
-                                }
-                                else {
-                                    Toast.makeText(mActivity, msgUnsuccess, Toast.LENGTH_SHORT).show();
-                                    isLastPage=true;
+                                    isLastPage = false;
+                                } else {
+                                    Norecord.setVisibility(View.VISIBLE);
+                                  //  StationActivity.ivStationSearch.setVisibility(View.GONE);
+                                    // Toast.makeText(mActivity, msgUnsuccess, Toast.LENGTH_SHORT).show();
+                                    isLastPage = true;
                                 }
                             }
-                            isLoading=false;
+                            isLoading = false;
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -215,8 +216,8 @@ public class ActivityFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        isLoading=false;
-                        isLastPage=false;
+                        isLoading = false;
+                        isLastPage = false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -249,9 +250,9 @@ public class ActivityFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(USER_ID, userId);
-                params.put(limit, arraylist.size()+"");
+                params.put(limit, arraylist.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=="+params+"\nURL=="+ACTIVITY);
+                AppHelper.sop("params==" + params + "\nURL==" + ACTIVITY);
                 return params;
             }
         };

@@ -50,6 +50,8 @@ import java.util.regex.Pattern;
 import static android.content.Context.MODE_PRIVATE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
+import static com.instamelody.instamelody.utils.Const.ServiceType.BASE_URL;
+import static com.instamelody.instamelody.utils.Const.ServiceType.CREATE_GROUP;
 import static com.instamelody.instamelody.utils.Const.ServiceType.USER_CHAT_ID;
 
 /**
@@ -63,10 +65,10 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
     String rsList[];
     String senderID = "";
     String recieverId = "";
-    String recId = "";
+    public static String recId = "";
     String recieverName = "";
     String recieverImage = "";
-    int Count = 0;
+    public static int Count = 0;
 
     public ContactsAdapter(Context context, ArrayList<Contacts> contactsList) {
         this.contactsList = contactsList;
@@ -130,12 +132,6 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
 
                         if (recId.startsWith(",")) {
                             recId = recId.substring(1, recId.length());
-                        }
-
-                        if (!userId.equals("")) {
-                            getChatId(userId, recId);
-                        } else {
-                            Toast.makeText(context, "Logged in user null id error", Toast.LENGTH_SHORT).show();
                         }
 
                         String fname = contactsList.get(getAdapterPosition()).getfName();
@@ -214,6 +210,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
         }
     }
 
+
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_contacts, parent, false);
@@ -236,77 +233,4 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
         return contactsList.size();
     }
 
-    private void getChatId(final String user_id, final String reciever_id) {
-        final StringRequest stringRequest = new StringRequest(Request.Method.POST, USER_CHAT_ID,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-//                        Toast.makeText(context, " Shubz" + response, Toast.LENGTH_LONG).show();
-
-                        JSONObject jsonObject;
-                        try {
-                            jsonObject = new JSONObject(response);
-                            String chat_Id = jsonObject.getString("chatID");
-
-                            String receiverName;
-                            String group_pick = "";
-
-                            if (jsonObject.has("receiverName")) {
-                                receiverName = jsonObject.getString("receiverName");
-                            } else {
-                                receiverName = "New Group";
-                            }
-
-                            if (jsonObject.has("group_pick")) {
-                                group_pick = jsonObject.getString("group_pick");
-                            }
-
-                            if (chat_Id.equals("0")) {
-                                chat_Id = "";
-                            }
-
-                            SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
-                            editor.putString("chatId", chat_Id);
-                            editor.putString("receiverName", receiverName);
-                            editor.putString("groupImage", group_pick);
-                            editor.commit();
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        String errorMsg = "";
-                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-                            errorMsg = "There is either no connection or it timed out.";
-                        } else if (error instanceof AuthFailureError) {
-                            errorMsg = "AuthFailureError";
-                        } else if (error instanceof ServerError) {
-                            errorMsg = "ServerError";
-                        } else if (error instanceof NetworkError) {
-                            errorMsg = "Network Error";
-                        } else if (error instanceof ParseError) {
-                            errorMsg = "ParseError";
-                        }
-                        Toast.makeText(context, errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("senderID", user_id);
-                params.put("receiverID", reciever_id);
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                return params;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
-        requestQueue.add(stringRequest);
-    }
 }

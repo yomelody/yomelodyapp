@@ -36,6 +36,8 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.JsonObject;
 import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
+import com.instamelody.instamelody.ChatActivity;
+import com.instamelody.instamelody.MelodyActivity;
 import com.instamelody.instamelody.Models.Genres;
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
@@ -115,22 +117,20 @@ public class MelodyPacksFragment extends Fragment {
     int post = 0;
     Activity mActivity;
     RecyclerView rv;
-    private String msgUnsuccess="No record found.";
-    private final int count=10;
-    private boolean isLoading=false;
-    private boolean isLastPage=false;
+    private String msgUnsuccess = "No record found.";
+    private final int count = 10;
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mActivity=getActivity();
+        mActivity = getActivity();
         progressDialog = new ProgressDialog(mActivity);
         progressDialog.setTitle("Processing...");
         progressDialog.setMessage("Please wait...");
         progressDialog.setCancelable(false);
-
         SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
         SharedPreferences searchPref = getActivity().getSharedPreferences("SearchPref", MODE_PRIVATE);
@@ -183,7 +183,7 @@ public class MelodyPacksFragment extends Fragment {
 
     }
 
-    void getDataApi(){
+    void getDataApi() {
         if (strName == null && strSearch == null) {
             fetchMelodyPacks();
         } else if (strSearch != null) {
@@ -260,26 +260,24 @@ public class MelodyPacksFragment extends Fragment {
                                     public void onTabChanged(String arg0) {
                                         packName = arg0;
                                         int currentTab = host.getCurrentTab();
-                                        AppHelper.sop("Tab=change="+arg0+"=currentTab="+currentTab);
+                                        AppHelper.sop("Tab=change=" + arg0 + "=currentTab=" + currentTab);
                                         if (currentTab == 0) {
                                             packId = "";
                                         } else {
                                             packId = (genresArrayList.get(currentTab)).getId();
                                         }
 
-                                        if (currentTab==6){
-                                            if (TextUtils.isEmpty(userId)){
+                                        if (currentTab == 6) {
+                                            if (TextUtils.isEmpty(userId)) {
                                                 Toast.makeText(mActivity, "Log in to see your melody.", Toast.LENGTH_SHORT).show();
                                                 Intent intent = new Intent(mActivity, SignInActivity.class);
                                                 startActivity(intent);
-                                            }
-                                            else {
+                                            } else {
                                                 melodyList.clear();
                                                 instrumentList.clear();
                                                 fetchMelodyPacks();
                                             }
-                                        }
-                                        else {
+                                        } else {
                                             melodyList.clear();
                                             instrumentList.clear();
                                             fetchMelodyPacks();
@@ -348,7 +346,7 @@ public class MelodyPacksFragment extends Fragment {
                     @Override
                     public void onResponse(String response) {
                         AppHelper.sop("response=fetchMelodyPacks==" + response);
-                        if (melodyList.size()<=0){
+                        if (melodyList.size() <= 0) {
                             melodyList.clear();
                             instrumentList.clear();
                         }
@@ -359,13 +357,12 @@ public class MelodyPacksFragment extends Fragment {
                             if (jsonObject.getString(KEY_FLAG).equals("unsuccess")) {
                                 String str = jsonObject.getString(KEY_MSG);
 //                                if (str.equals("No pack found")) {
-                                    str = "Sorry, no " + packName + " melody available.";
-                                    Toast.makeText(getActivity(), msgUnsuccess, Toast.LENGTH_SHORT).show();
-                                    isLastPage=true;
+                                str = "Sorry, no " + packName + " melody available.";
+                                Toast.makeText(getActivity(), msgUnsuccess, Toast.LENGTH_SHORT).show();
+                                isLastPage = true;
 //                                }
-                            }
-                            else {
-                                isLastPage=false;
+                            } else {
+                                isLastPage = false;
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -377,14 +374,14 @@ public class MelodyPacksFragment extends Fragment {
                                 progressDialog.dismiss();
                             }
                         }
-                        isLoading=false;
+                        isLoading = false;
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        isLoading=false;
-                        isLastPage=false;
+                        isLoading = false;
+                        isLastPage = false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -419,20 +416,20 @@ public class MelodyPacksFragment extends Fragment {
                 if (packId.equals("7") && userId != null) {
                     params.put(USER_ID, userId);
                     params.put(FILE_TYPE, "user_melody");
-                    params.put(limit, melodyList.size()+"");
+                    params.put(limit, melodyList.size() + "");
                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
 
                 } else if (userId != null) {
                     params.put(users_id, userId);
                     params.put(GENRE, packId);
                     params.put(FILE_TYPE, "admin_melody");
-                    params.put(limit, melodyList.size()+"");
+                    params.put(limit, melodyList.size() + "");
                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
 
                 } else {
                     params.put(GENRE, packId);
                     params.put(FILE_TYPE, "admin_melody");
-                    params.put(limit, melodyList.size()+"");
+                    params.put(limit, melodyList.size() + "");
                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
 
                 }
@@ -472,7 +469,7 @@ public class MelodyPacksFragment extends Fragment {
 //                        Toast.makeText(getActivity(), "" + response, Toast.LENGTH_SHORT).show();
 
                         Log.d("ReturnData1", response);
-                        if (melodyList.size()<=0){
+                        if (melodyList.size() <= 0) {
                             melodyList.clear();
                             instrumentList.clear();
                         }
@@ -498,14 +495,14 @@ public class MelodyPacksFragment extends Fragment {
                                 progressDialog.dismiss();
                             }
                         }
-                        isLoading=false;
+                        isLoading = false;
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        isLoading=false;
-                        isLastPage=false;
+                        isLoading = false;
+                        isLastPage = false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -536,7 +533,7 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(FILE_TYPE, "admin_melody");
                 params.put(FILTER_TYPE, strName);
                 params.put(FILTER, "extrafilter");
-                params.put(limit, melodyList.size()+"");
+                params.put(limit, melodyList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 AppHelper.sop("params==" + params + "\nURL==" + MELODY);
                 return params;
@@ -568,17 +565,16 @@ public class MelodyPacksFragment extends Fragment {
                             if (flag.equals("unsuccess")) {
                                 String msg = jsonObject.getString("msg");
                                 Toast.makeText(getActivity(), "" + msg, Toast.LENGTH_SHORT).show();
-                                isLastPage=true;
-                            }
-                            else {
-                                isLastPage=false;
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 //                        Toast.makeText(getActivity(), "" + response, Toast.LENGTH_SHORT).show();
-                        if (melodyList.size()<=0){
+                        if (melodyList.size() <= 0) {
                             melodyList.clear();
                             instrumentList.clear();
                         }
@@ -590,14 +586,14 @@ public class MelodyPacksFragment extends Fragment {
                                 progressDialog.dismiss();
                             }
                         }
-                        isLoading=false;
+                        isLoading = false;
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        isLoading=false;
-                        isLastPage=false;
+                        isLoading = false;
+                        isLastPage = false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -626,7 +622,7 @@ public class MelodyPacksFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(FILE_TYPE, "admin_melody");
                 params.put(KEY_SEARCH, strSearch);
-                params.put(limit, melodyList.size()+"");
+                params.put(limit, melodyList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 AppHelper.sop("params=search=" + params + "\nURL==" + MELODY);
                 return params;
@@ -656,10 +652,9 @@ public class MelodyPacksFragment extends Fragment {
                             String flag = jsonObject.getString("flag");
                             if (flag.equals("unsuccess")) {
                                 Toast.makeText(getActivity(), msgUnsuccess, Toast.LENGTH_SHORT).show();
-                                isLastPage=true;
-                            }
-                            else {
-                                isLastPage=false;
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
                             }
 
                         } catch (JSONException e) {
@@ -667,7 +662,7 @@ public class MelodyPacksFragment extends Fragment {
                         }
 
 //                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
-                        if (melodyList.size()<=0){
+                        if (melodyList.size() <= 0) {
                             melodyList.clear();
                             instrumentList.clear();
                         }
@@ -679,14 +674,14 @@ public class MelodyPacksFragment extends Fragment {
                                 progressDialog.dismiss();
                             }
                         }
-                        isLoading=false;
+                        isLoading = false;
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        isLoading=false;
-                        isLastPage=false;
+                        isLoading = false;
+                        isLastPage = false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -719,7 +714,7 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(FILTER_TYPE, strName);
                 params.put(USER_NAME, strArtist);
                 params.put(FILTER, "extrafilter");
-                params.put(limit, melodyList.size()+"");
+                params.put(limit, melodyList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 AppHelper.sop("params=artist=" + params + "\nURL==" + MELODY);
                 return params;
@@ -750,10 +745,9 @@ public class MelodyPacksFragment extends Fragment {
 
                             if (flag.equals("unsuccess")) {
                                 Toast.makeText(getActivity(), msgUnsuccess, Toast.LENGTH_SHORT).show();
-                                isLastPage=true;
-                            }
-                            else {
-                                isLastPage=false;
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
                             }
 
                         } catch (JSONException e) {
@@ -761,7 +755,7 @@ public class MelodyPacksFragment extends Fragment {
                         }
 
 //                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
-                        if (melodyList.size()<=0){
+                        if (melodyList.size() <= 0) {
                             melodyList.clear();
                             instrumentList.clear();
                         }
@@ -772,14 +766,14 @@ public class MelodyPacksFragment extends Fragment {
                                 progressDialog.dismiss();
                             }
                         }
-                        isLoading=false;
+                        isLoading = false;
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        isLoading=false;
-                        isLastPage=false;
+                        isLoading = false;
+                        isLastPage = false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -812,7 +806,7 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(FILTER_TYPE, "Instruments");
                 params.put(COUNT, strInstruments);
                 params.put(FILTER, "extrafilter");
-                params.put(limit, melodyList.size()+"");
+                params.put(limit, melodyList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 AppHelper.sop("params=instru=" + params + "\nURL==" + MELODY);
                 return params;
@@ -843,17 +837,16 @@ public class MelodyPacksFragment extends Fragment {
 //                            Toast.makeText(getActivity(), "" + flag, Toast.LENGTH_SHORT).show();
                             if (flag.equals("unsuccess")) {
                                 Toast.makeText(getActivity(), msgUnsuccess, Toast.LENGTH_SHORT).show();
-                                isLastPage=true;
-                            }
-                            else {
-                                isLastPage=false;
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
 //                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
-                        if (melodyList.size()<=0){
+                        if (melodyList.size() <= 0) {
                             melodyList.clear();
                             instrumentList.clear();
                         }
@@ -865,14 +858,14 @@ public class MelodyPacksFragment extends Fragment {
                                 progressDialog.dismiss();
                             }
                         }
-                        isLoading=false;
+                        isLoading = false;
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        isLoading=false;
-                        isLastPage=false;
+                        isLoading = false;
+                        isLastPage = false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -905,7 +898,7 @@ public class MelodyPacksFragment extends Fragment {
                 params.put(FILTER_TYPE, strName);
                 params.put(COUNT, strBPM);
                 params.put(FILTER, "extrafilter");
-                params.put(limit, melodyList.size()+"");
+                params.put(limit, melodyList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 AppHelper.sop("params=BPM=" + params + "\nURL==" + MELODY);
                 return params;
@@ -956,8 +949,8 @@ public class MelodyPacksFragment extends Fragment {
 
                             if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount &&
                                     firstVisibleItemPosition >= 0 && totalItemCount >= count) {
-                                if(AppHelper.checkNetworkConnection(mActivity)){
-                                    isLoading=true;
+                                if (AppHelper.checkNetworkConnection(mActivity)) {
+                                    isLoading = true;
                                     getDataApi();
                                 }
                             }
