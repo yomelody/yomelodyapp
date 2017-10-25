@@ -516,12 +516,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                             holder.progressDialog.setMessage("Loading...");
                             holder.progressDialog.setCancelable(false);
                             holder.progressDialog.show();
-
-                            //This is only for testing Abhishek Dubey
-
-//                    ivPrev.setEnabled(false);
-//                    ivNext.setEnabled(false);
-
                             try {
                                 Log.d("Shared audio URL :-------", "" + ParseContents.sharedAudioList.get(count).getRecordingUrl());
                             } catch (Throwable e) {
