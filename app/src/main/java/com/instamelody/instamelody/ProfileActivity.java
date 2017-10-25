@@ -160,7 +160,6 @@ public class ProfileActivity extends AppCompatActivity {
         mActivity=ProfileActivity.this;
         progressDialog = new ProgressDialog(ProfileActivity.this);
         sharePrefClearProfile();
-        AppHelper.sop("ProfileActivity..call");
         SharedPreferences filterPref = this.getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
         SharedPreferences filterPrefArtist = this.getSharedPreferences("FilterPrefArtist", MODE_PRIVATE);
@@ -429,6 +428,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("user_detail", userDetails);
+                bundle.putString("show_Profile_UserId", showProfileUserId);
                 bioFragment.setArguments(bundle);
 
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -571,7 +571,7 @@ public class ProfileActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response===" + response);
+                        AppHelper.sop("response=bio=" + response);
                         String records, fans, followers;
                         String str = response;
                         JSONObject jsonObject;
@@ -730,7 +730,7 @@ public class ProfileActivity extends AppCompatActivity {
                     params.put(MY_ID, userId);
                 }
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("Param===" + params + "\nURL====" + USERS_BIO);
+                AppHelper.sop("Param=bio==" + params + "\nURL====" + USERS_BIO);
                 return params;
             }
         };

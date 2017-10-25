@@ -575,6 +575,7 @@ public class SignInActivity extends AppCompatActivity {
                                 editor.putString("dob", dob);
                                 editor.putString("mobile", mobile);
                                 editor.putInt("status", 1);
+                                editor.putString("description", rspns.getString("discription"));
                                 editor.commit();
                                 Intent i;
 
@@ -718,6 +719,7 @@ public class SignInActivity extends AppCompatActivity {
                                 fbEditor.putString("followers", followers);
                                 fbEditor.putString("records", records);
                                 fbEditor.putInt("status", 1);
+                                fbEditor.putString("description", rspns.getString("discription"));
                                 fbEditor.commit();
                             }
 
@@ -819,6 +821,7 @@ public class SignInActivity extends AppCompatActivity {
                                 twitterEditor.putString("followers", followers);
                                 twitterEditor.putString("records", records);
                                 twitterEditor.putInt("status", 1);
+                                twitterEditor.putString("description", rspns.getString("discription"));
                                 twitterEditor.commit();
                             }
                         } catch (JSONException e) {

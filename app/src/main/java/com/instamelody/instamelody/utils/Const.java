@@ -45,6 +45,7 @@ public class Const {
         public static final String LOGOUT = BASE_URL + "logout.php";
         public static final String change_social_status = BASE_URL + "change_social_status.php";
         public static final String social_status = BASE_URL + "social_status.php";
+        public static final String description = BASE_URL + "description.php";
 
         public static final String JoinRecording = BASE_URL + "join_recording.php";
 

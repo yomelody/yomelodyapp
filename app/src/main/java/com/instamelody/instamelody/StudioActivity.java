@@ -324,6 +324,7 @@ public class StudioActivity extends AppCompatActivity {
     public static boolean IsRepeat = false;
     int RecmaxVolume = 1, MelmaxVolume = 1;
     public static boolean IsRepeteReAll=false;
+    private SharedPreferences socialStatusPref;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
