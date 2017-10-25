@@ -1489,6 +1489,8 @@ public class StudioActivity extends AppCompatActivity {
                     alertDialog.setPositiveButton("Sign In", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             Intent i = new Intent(getApplicationContext(), SignInActivity.class);
+                            i.putExtra("StudioBack", "ReturnStudioScreen");
+                            i.putExtra("melodyPackId", melodyPackId);
                             startActivity(i);
                         }
                     });

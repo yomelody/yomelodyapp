@@ -228,7 +228,7 @@
                                     android:layout_alignParentEnd="true"
                                     android:layout_alignParentRight="true"
                                     android:layout_alignStart="@+id/tvContributeDate"
-                                    android:text="00:00"
+                                    android:text="00:00:00"
                                     android:textColor="#FFFFFF"
                                     android:textSize="12sp" />
 
