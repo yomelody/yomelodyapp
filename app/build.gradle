@@ -86,6 +86,7 @@ dependencies {
     compile 'com.braintreepayments.api:drop-in:3.1.0'
     testCompile 'junit:junit:4.12'
     compile 'com.github.lsjwzh.RecyclerViewPager:lib:v1.1.2'
+
     //    compile files('libs/facebook.jar')
 
 }

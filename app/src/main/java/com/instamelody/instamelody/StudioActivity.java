@@ -324,6 +324,7 @@ public class StudioActivity extends AppCompatActivity {
     public static boolean IsRepeat = false;
     int RecmaxVolume = 1, MelmaxVolume = 1;
     public static boolean IsRepeteReAll=false;
+    private SharedPreferences socialStatusPref;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -1488,6 +1489,8 @@ public class StudioActivity extends AppCompatActivity {
                     alertDialog.setPositiveButton("Sign In", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             Intent i = new Intent(getApplicationContext(), SignInActivity.class);
+                            i.putExtra("StudioBack", "ReturnStudioScreen");
+                            i.putExtra("melodyPackId", melodyPackId);
                             startActivity(i);
                         }
                     });
