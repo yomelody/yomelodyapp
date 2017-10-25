@@ -128,7 +128,7 @@ public class ChatActivity extends AppCompatActivity {
     ImageView ivClose, ivJoin;
     EditText etMessage, etGroupName;
     ImageView ivBackButton, ivHomeButton, ivCamera, ivNewChat, ivRecieverProfilePic, ivSelectedImage, ivGroupImage;
-    TextView tvSend, tvRecieverName, tvDone, tvEdit, tvUpdate;
+    public TextView tvSend, tvRecieverName, tvDone, tvEdit, tvUpdate;
     RecyclerView recycleImage, recyclerViewChat;
     public static RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton, rlMessage, rlSelectedImage, rlUserName, rlPrevPlayer, rlNextPlayer, rlUpdateGroup, contInviteButton;
 
@@ -649,10 +649,14 @@ public class ChatActivity extends AppCompatActivity {
                     etGroupName.setClickable(false);
                     etGroupName.setText(receiverName);
                     if (receiverName.equals("New Group") && (chatId.equals(""))) {
-                        String grpImg = "http://52.89.220.199/api/uploads/profilepics/group.png";
-                        Picasso.with(ivGroupImage.getContext()).load(grpImg).into(ivGroupImage);
+                        // String grpImg = "http://52.89.220.199/api/uploads/profilepics/group.png";
+                        Picasso.with(ivGroupImage.getContext()).load(groupImage).into(ivGroupImage);
                     } else {
-                        Picasso.with(ivGroupImage.getContext()).load(groupImage).placeholder(getResources().getDrawable(R.drawable.loading)).error(getResources().getDrawable(R.drawable.no_image)).into(ivGroupImage);
+                        try {
+                            Picasso.with(ivGroupImage.getContext()).load(groupImage).placeholder(getResources().getDrawable(R.drawable.loading)).error(getResources().getDrawable(R.drawable.no_image)).into(ivGroupImage);
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -978,6 +982,8 @@ public class ChatActivity extends AppCompatActivity {
                                         chatList.add(i, message);
                                     }
                                     recyclerViewChat.smoothScrollToPosition(chatList.size() - 1);
+                                    rlNoMsg.setVisibility(View.GONE);
+                                    rlTxtContent.setVisibility(View.GONE);
                                 } else {
                                     tvRecieverName.setText(" " + receiverName);
                                     Picasso.with(ivRecieverProfilePic.getContext()).load(receiverImage).into(ivRecieverProfilePic);
@@ -1038,6 +1044,7 @@ public class ChatActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(NetworkResponse response) {
                             String str = new String(response.data);
+                            Log.d("Chat.php Response for image:-",str);
 //                            Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
                             try {
                                 JSONObject json = new JSONObject(str);
@@ -1134,6 +1141,8 @@ public class ChatActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(String response) {
                     String str = response;
+                    AppHelper.sop("Chat.php Response normal :- "+str);
+                  //  Log.d("Chat.php Response normal :-",str);
 //                    Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
                     try {
                         JSONObject json = new JSONObject(response);

@@ -101,7 +101,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView chatMessage, chatImageName, timeStamp, tvUserName, tvMelodyName, tvNum, txtsenderName;
+        TextView chatMessage, chatImageName, timeStamp, tvUserName, tvMelodyName, tvNum;
         ImageView userProfileImage, chatImage, ivPlay, ivSettings, ivTick, ivDoubleTick;
         RelativeLayout rlChatImage, rlBelowImage;
         SeekBar seekBarChat;
@@ -125,7 +125,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             ivTick = (ImageView) itemView.findViewById(R.id.tick);
             ivDoubleTick = (ImageView) itemView.findViewById(R.id.doubleTick);
             tvNum = (TextView) itemView.findViewById(R.id.tvNum);
-            txtsenderName = (TextView) itemView.findViewById(R.id.txtsenderName);
         }
 
         private void primarySeekBarProgressUpdater() {
