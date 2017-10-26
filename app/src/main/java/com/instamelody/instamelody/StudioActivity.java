@@ -517,7 +517,6 @@ public class StudioActivity extends AppCompatActivity {
             if (IscheckMelody == null) {
                 if (melodyPackId != null) {
 
-
                     fetchInstruments(melodyPackId);
                     JoinActivity.instrumentList.clear();
                     noMelodyNote.setVisibility(View.GONE);

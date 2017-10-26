@@ -128,7 +128,7 @@ public class AudioFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_audio, container, false);
         mActivity = getActivity();
         StationActivity.ivFilter.setVisibility(View.VISIBLE);
-        rv = (RecyclerView) view.findViewById(R.id.recyclerViewAudio);
+//        rv = (RecyclerView) view.findViewById(R.id.recyclerViewAudio);
         return view;
     }
 
@@ -164,15 +164,15 @@ public class AudioFragment extends Fragment {
             userId = twitterPref.getString("userId", null);
         }
         adapter = new RecordingsCardAdapter(mActivity, recordingList, recordingsPools);
+        if (rv != null) {
+            rv.setAdapter(adapter);
+        }
         fetchGenreNames();
 //        callApi();
 
     }
 
     private void callApi() {
-        if (rv != null) {
-            rv.setAdapter(adapter);
-        }
 
         if (strName == null && strSearch == null) {
             fetchRecordings();
@@ -949,7 +949,7 @@ public class AudioFragment extends Fragment {
         return new TabHost.TabContentFactory() {
             @Override
             public View createTabContent(String tag) {
-                //rv = new RecyclerView(getActivity());
+                rv = new RecyclerView(getActivity());
 
                 rv.setHasFixedSize(true);
                 linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -995,196 +995,6 @@ public class AudioFragment extends Fragment {
             }
         };
     }
-
-    /*private RecyclerView.OnScrollListener recyclerViewOnScrollListener = new RecyclerView.OnScrollListener() {
-        @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            super.onScrollStateChanged(recyclerView, newState);
-        }
-
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            super.onScrolled(recyclerView, dx, dy);
-            try {
-                int visibleItemCount = linearLayoutManager.getChildCount();
-                int totalItemCount = linearLayoutManager.getItemCount();
-                post = linearLayoutManager.findLastVisibleItemPosition();
-                //Toast.makeText(getActivity(), "111111   >>>" + String.valueOf(post), Toast.LENGTH_SHORT).show();
-                //Toast.makeText(getActivity(), String.valueOf(recordingList.size()), Toast.LENGTH_SHORT).show();
-                //Toast.makeText(getActivity(), "post "+String.valueOf(post+1), Toast.LENGTH_SHORT).show();
-                if (post + 1 == recordingList.size() && recordingList.size() >= 10) {
-                    // Toast.makeText(getActivity(), "post ", Toast.LENGTH_SHORT).show();
-                    new FetchActivityDetails().execute(String.valueOf(recordingList.size() + 10));
-
-                    //adapter.notifyDataSetChanged();
-                    //linearLayoutManager.scrollToPosition(post+1);
-
-                    //rv.setAdapter(adapter);
-                    //adapter.notifyItemInserted(recordingList.size()-1);
-                    //Toast.makeText(getActivity(), "list "+String.valueOf(recordingList.size()), Toast.LENGTH_SHORT).show();
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-
-
-        }
-    };*/
-
-    /*private class FetchActivityDetails extends AsyncTask<String, String, String> {
-        protected void onPreExecute() {
-            super.onPreExecute();
-            try {
-                running = true;
-
-                progressDialog = ProgressDialog.show(getActivity(), "Processing...", "Please Wait...");
-                progressDialog.setCancelable(false);
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-
-
-        }
-
-        boolean running;
-        ProgressDialog progressDialog;
-
-        protected String doInBackground(String... params) {
-
-            try {
-
-                final int Pos = Integer.parseInt(params[0]);
-                fetchRecordingsMore(Pos);
-                *//*int i = 3;
-                while(running){*//*
-                try {
-                    Thread.sleep(7000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                    *//*if(i-- == 0){
-                        running = false;
-                    }*//*
-
-                //}
-                return null;
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-            super.onProgressUpdate(values);
-            //progressDialog.setMessage(String.valueOf(values[0]));
-        }
-
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-
-            //Toast.makeText(getActivity(), "1111", Toast.LENGTH_SHORT).show();
-            if (progressDialog != null) {
-                if (progressDialog.isShowing()) {
-                    progressDialog.dismiss();
-                }
-            }
-
-            //Toast.makeText(getActivity(), "2222", Toast.LENGTH_SHORT).show();
-
-
-        }
-    }*/
-
-    /*public void fetchRecordingsMore(final int position) {
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-//                        Toast.makeText(getActivity(), ""+response, Toast.LENGTH_SHORT).show();
-
-                        Log.d("ReturnData", response);
-
-                        recordingList.clear();
-                        //recordingsPools.clear();
-                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
-
-                        try {
-                            //recordingList.addAll(recordingListMore);
-                            //rv.setAdapter(adapter);
-                            adapter.notifyDataSetChanged();
-                            ClearSharedPref();
-                        } catch (NullPointerException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        String errorMsg = "";
-                        if (error instanceof TimeoutError) {
-                            errorMsg = "Internet connection timed out";
-                        } else if (error instanceof NoConnectionError) {
-//                            errorMsg = "There is no connection";
-                        } else if (error instanceof AuthFailureError) {
-                            errorMsg = "AuthFailureError";
-                        } else if (error instanceof ServerError) {
-                            errorMsg = "We are facing problem in connecting to server";
-                        } else if (error instanceof NetworkError) {
-                            errorMsg = "We are facing problem in connecting to network";
-                        } else if (error instanceof ParseError) {
-                            errorMsg = "ParseError";
-                        }
-//                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                        if (progressDialog != null) {
-                            if (progressDialog.isShowing()) {
-                                progressDialog.dismiss();
-                            }
-                        }
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-//                params.put(ID, userId);
-               *//* params.put(KEY, STATION);
-                params.put(GENRE, genreString);*//*
-                if (userId != null) {
-                    params.put(ID, userId);
-                    params.put(KEY, STATION);
-                    params.put(GENRE, genreString);
-                    params.put("limit", String.valueOf(position));
-                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                } else {
-                    params.put(KEY, STATION);
-                    params.put(GENRE, genreString);
-                    params.put("limit", String.valueOf(position));
-                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                }
-                return params;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(mActivity);
-
-        int socketTimeout = 30000; // 30 seconds. You can change it
-        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-
-        stringRequest.setRetryPolicy(policy);
-        requestQueue.add(stringRequest);
-
-
-    }*/
 
     void ClearSharedPref() {
         try {

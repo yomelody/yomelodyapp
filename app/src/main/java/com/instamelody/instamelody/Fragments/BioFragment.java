@@ -65,9 +65,10 @@ public class BioFragment extends Fragment {
  //   EditText etBio;
     TextView textViewName, tvStation, tvDate,tvEdit,tvBioDes;
     CircleImageView userBioImage;
-    String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, userId;
-    int statusNormal, statusFb, statusTwitter;
-    UserDetails userDetails;
+    /*String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId;
+    int statusNormal, statusFb, statusTwitter;*/
+    private String userId;
+//    UserDetails userDetails;
     private LinearLayout editLl;
     private Activity mActivity;
     private ProgressDialog progressDialog;
@@ -134,17 +135,16 @@ public class BioFragment extends Fragment {
 //                UserDetails userDetails= (UserDetails) getArguments().getSerializable("user_detail");
                 tvBioDes.setText(((UserDetails) getArguments().getSerializable("user_detail")).getDiscrisption());
             }
-            textViewName.setText("Artist: "+((UserDetails) getArguments().getSerializable("user_detail")).getFname()+
+            textViewName.setText(((UserDetails) getArguments().getSerializable("user_detail")).getFname()+
                    " " +((UserDetails) getArguments().getSerializable("user_detail")).getLname());
-            tvStation.setText("Station: @"+((UserDetails) getArguments().getSerializable("user_detail")).getUsername());
+            tvStation.setText(((UserDetails) getArguments().getSerializable("user_detail")).getUsername());
 
             Picasso.with(mActivity).load(((UserDetails) getArguments().getSerializable("user_detail")).getProfilepic()).into(userBioImage);
-            AppHelper.sop("Registration=date="+((UserDetails) getArguments().getSerializable("user_detail")).getRegisterdate());
-//            String input = "Sat Feb 17 2012";
-            Date datee = null;
+//            AppHelper.sop("Registration=date="+((UserDetails) getArguments().getSerializable("user_detail")).getRegisterdate());
+//            Date datee = null;
             try {
-                datee = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss").parse(((UserDetails) getArguments().getSerializable("user_detail")).getRegisterdate());
-
+                /*datee = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss").parse(((UserDetails) getArguments().getSerializable("user_detail")).getRegisterdate());
+                AppHelper.sop("datee=="+datee);
                 long milliseconds = datee.getTime();
                 long millisecondsFromNow = milliseconds - (new Date()).getTime();
 
@@ -152,12 +152,17 @@ public class BioFragment extends Fragment {
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                 String dateString = sdf.format(milliseconds);
                 tvDate.setText("Created:" + " " + dateString);
+                String input = ((UserDetails) getArguments().getSerializable("user_detail")).getRegisterdate();*/
 
-            } catch (ParseException e) {
+                java.sql.Timestamp ts = java.sql.Timestamp.valueOf(((UserDetails) getArguments().getSerializable("user_detail")).getRegisterdate()) ;
+//                Date startDate = ts;
+                long millisecondsNew = ts.getTime();
+                AppHelper.sop("Timestamp=="+ts+"=millisecondsNew="+new SimpleDateFormat("dd/MM/yyyy").format(millisecondsNew));
+                tvDate.setText(new SimpleDateFormat("dd/MM/yyyy").format(millisecondsNew));
+
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-
-
         }
 
         editLl.setOnClickListener(new View.OnClickListener() {

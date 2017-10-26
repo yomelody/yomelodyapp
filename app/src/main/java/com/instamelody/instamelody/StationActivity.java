@@ -534,6 +534,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         editorFilterString.apply();
         AudioFragment af = new AudioFragment();
         getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
+        search1.setQuery("",false);
         return false;
     }
 
