@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,7 +21,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
@@ -64,6 +67,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.ChatAdapter;
 import com.instamelody.instamelody.Adapters.RecentImagesAdapter;
+import com.instamelody.instamelody.Fragments.viewImageFragment;
 import com.instamelody.instamelody.Models.AudioDetails;
 import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.RecentImagesModel;
@@ -99,6 +103,7 @@ import java.util.concurrent.TimeUnit;
 import static android.os.Environment.isExternalStorageEmulated;
 import static android.os.Environment.isExternalStorageRemovable;
 //import static com.instamelody.instamelody.Adapters.ChatAdapter.tvNum;
+import static com.instamelody.instamelody.Adapters.RecentImagesAdapter.pos;
 import static com.instamelody.instamelody.utils.Const.PUSH_NOTIFICATION;
 import static com.instamelody.instamelody.utils.Const.READ_NOTIFICATION;
 import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
@@ -127,18 +132,18 @@ public class ChatActivity extends AppCompatActivity {
     FrameLayout flCover;
     ImageView ivClose, ivJoin;
     EditText etMessage, etGroupName;
-    ImageView ivBackButton, ivHomeButton, ivCamera, ivNewChat, ivRecieverProfilePic, ivSelectedImage, ivGroupImage;
-    public TextView tvSend, tvRecieverName, tvDone, tvEdit, tvUpdate;
-    RecyclerView recycleImage, recyclerViewChat;
+    public static ImageView ivBackButton, ivHomeButton, ivCamera, ivNewChat, ivRecieverProfilePic, ivSelectedImage, ivGroupImage;
+    public static TextView tvSend, tvRecieverName, tvDone, tvEdit, tvUpdate;
+    public static RecyclerView recycleImage, recyclerViewChat;
     public static RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton, rlMessage, rlSelectedImage, rlUserName, rlPrevPlayer, rlNextPlayer, rlUpdateGroup, contInviteButton;
 
     RecentImagesAdapter riAdapter;
-    ChatAdapter cAdapter;
+    public static ChatAdapter cAdapter;
     LayoutInflater inflater;
-    Bitmap sendImageBitmap, groupImageBitmap;
+    public static Bitmap sendImageBitmap, groupImageBitmap;
     private Uri imageToUploadUri;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
-
+    public static AppBarLayout appbar;
     public static int oldCount = 0;
     public static int newCount = 0;
 
@@ -147,29 +152,29 @@ public class ChatActivity extends AppCompatActivity {
     private static final int PERMISSION_READ_STORAGE = 201;
     private static final int PERMISSION_CAMERA = 202;
 
-    ArrayList<Message> chatList = new ArrayList<>();// list of messages
+    public static ArrayList<Message> chatList = new ArrayList<>();// list of messages
     ArrayList<SharedAudios> sharedAudioList = new ArrayList<>();// list of shared audios
     ArrayList<AudioDetails> audioDetailsList = new ArrayList<>();// list of shared audio details
     public static ArrayList<RecentImagesModel> fileInfo = new ArrayList<>();
     ArrayList<String> imageFileList = new ArrayList<>();
-    ArrayList<String> groupList = new ArrayList<>();
+    public static ArrayList<String> groupList = new ArrayList<>();
     String CHECK_FILE_URL = "http://35.165.96.167/api/ShareAudioChat.php";
-    String SENDER_ID = "senderID";
-    String RECEIVER_ID = "receiverID";
-    String CHAT_ID = "chat_id";
-    String CHAT_ID_ = "chatID";
-    String IS_READ = "isread";
-    String FILE_TYPE = "file_type";
-    String FILE = "file";
-    String TITLE = "title";
-    String MESSAGE = "message";
+    public static String SENDER_ID = "senderID";
+    public static String RECEIVER_ID = "receiverID";
+    public static String CHAT_ID = "chat_id";
+    public static String CHAT_ID_ = "chatID";
+    public static String IS_READ = "isread";
+    public static String FILE_TYPE = "file_type";
+    public static String FILE = "file";
+    public static String TITLE = "title";
+    public static String MESSAGE = "message";
     String KEY_FLAG = "flag";
-    String userId, chatId, receiverId, receiverName, packId, packType, receiverImage, groupImage, deviceToken, chatIds;
+    public static String userId, chatId, receiverId, receiverName, packId, packType, receiverImage, groupImage, deviceToken, chatIds;
     String username = "";
-    String senderId = "";
+    public static String senderId = "";
     public static String chatType = "";
-    String group = "";
-    String sendImageName = "";
+    public static String group = "";
+    public static String sendImageName = "";
     String sendGroupImageName = "";
     String flagFileType = "0"; // 0 = null, 1 = image file, 2 = station audio file , 3 = admin_melody audio file
     int updateGroupFlag = 0;
@@ -177,6 +182,8 @@ public class ChatActivity extends AppCompatActivity {
     Activity mActivity;
     public static String sender_name = "";
     ImageView songNext, songPre;
+    public static Dialog alertDialog;
+    public static RelativeLayout fotter;
 
     @TargetApi(18)
     @Override
@@ -197,6 +204,16 @@ public class ChatActivity extends AppCompatActivity {
             userId = twitterPref.getString("userId", null);
             username = twitterPref.getString("userName", null);
         }
+//       viewImageFragment test=(viewImageFragment)getFragmentManager().findFragmentByTag("testID");
+//        if (test != null && test.isVisible()) {
+//            Toast.makeText(mActivity, "Open", Toast.LENGTH_SHORT).show();
+//            //DO STUFF
+//        }
+//        else {
+//            getFragmentManager().popBackStack();
+//            Toast.makeText(mActivity, "Close", Toast.LENGTH_SHORT).show();
+//            //Whatever
+//        }
         SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
         senderId = prefs.getString("senderId", null);
         receiverId = prefs.getString("receiverId", null);
@@ -208,6 +225,8 @@ public class ChatActivity extends AppCompatActivity {
         groupImage = prefs.getString("groupImage", null);
         tvUserName = (TextView) findViewById(R.id.tvUserName);
         tvUserName.setText(receiverName);
+        appbar = (AppBarLayout) findViewById(R.id.appbar);
+        fotter = (RelativeLayout) findViewById(R.id.fotter);
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -264,25 +283,6 @@ public class ChatActivity extends AppCompatActivity {
         } catch (Throwable e) {
             e.printStackTrace();
         }
-
-
-        SharedPreferences selectedImagePos = getApplicationContext().getSharedPreferences("selectedImagePos", MODE_PRIVATE);
-        if (selectedImagePos.getString("pos", null) != null) {
-            String pos = selectedImagePos.getString("pos", null);
-            int position = Integer.parseInt(pos);
-            SharedPreferences.Editor editor = getSharedPreferences("selectedImagePos", MODE_PRIVATE).edit();
-            editor.putString("pos", null);
-            editor.apply();
-            sendImageName = fileInfo.get(position).getName();
-            sendImageBitmap = fileInfo.get(position).getBitmap();
-            rlSelectedImage.setVisibility(View.VISIBLE);
-            ivSelectedImage.setVisibility(View.VISIBLE);
-            ivSelectedImage.setImageBitmap(sendImageBitmap);
-            flagFileType = "1";
-        }
-
-//        parent = getIntent().getStringExtra("from");
-
         imageFileList.clear();
         fileInfo.clear();
         getGalleryImages();
@@ -393,13 +393,25 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent it = getIntent();
                 if (it != null) {
-                    String clickFromProfile = it.getExtras().getString("clickFromProfile");
-                    if (clickFromProfile != null) {
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra("From profile screen", "Comming from");
-                        setResult(Activity.RESULT_OK, resultIntent);
-                        Log.d("From profile screen", "Comming from");
+                    try {
+                        String clickFromProfile = it.getExtras().getString("clickFromProfile");
+                        if (clickFromProfile != null) {
+                            Intent resultIntent = new Intent();
+                            resultIntent.putExtra("From profile screen", "Comming from");
+                            setResult(Activity.RESULT_OK, resultIntent);
+                            Log.d("From profile screen", "Comming from");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                        editor.putString("receiverId", "");
+                        editor.putString("receiverName", "");
+                        editor.putString("receiverImage", "");
+                        editor.putString("chatId", "");
+                        editor.commit();
                     }
+
                 } else {
                     SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
                     editor.putString("receiverId", "");
@@ -509,7 +521,7 @@ public class ChatActivity extends AppCompatActivity {
                  */
                 LayoutInflater mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 View customView = mInflater.inflate(R.layout.custom_dialog_view, null, false);
-                final Dialog alertDialog = new Dialog(ChatActivity.this);
+                alertDialog = new Dialog(ChatActivity.this);
 
                 if (checkPermissions()) {
                     recycleImage = (RecyclerView) customView.findViewById(R.id.recyclerViewDialogBox);
@@ -581,63 +593,6 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-//        flPlayPausePlayer.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                ChatActivity.rlChatPlayer.setVisibility(View.VISIBLE);
-//                if (ivPlayPlayer.getVisibility() == View.VISIBLE) {
-//                    ivPlayPlayer.setVisibility(View.GONE);
-//                    ivPausePlayer.setVisibility(View.VISIBLE);
-//                } else {
-//                    ivPausePlayer.setVisibility(View.GONE);
-//                    ivPlayPlayer.setVisibility(View.VISIBLE);
-//                }
-//                SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
-//                String audioUrl = sharedAudios.getRecordingUrl();
-//                Picasso.with(userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).into(userProfileImagePlayer);
-//                ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
-//                ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
-//                ChatActivity.tvNumPlayer.setText(tvNum.getText().toString().trim());
-//                AudioOperator(audioUrl);
-//            }
-//        });
-//
-//        rlPrevPlayer.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                ivPlayPlayer.setVisibility(View.GONE);
-//                ivPausePlayer.setVisibility(View.VISIBLE);
-//                playingAudio = playingAudio - 1;
-//                String str = "(" + (playingAudio + 1) + " of " + String.valueOf(sharedAudioList.size()) + ")";
-//                tvNum.setText(str);
-//                SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
-//                String audioUrl = sharedAudios.getRecordingUrl();
-//                Picasso.with(userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).into(userProfileImagePlayer);
-//                ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
-//                ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
-//                ChatActivity.tvNumPlayer.setText(str);
-//                AudioOperator(audioUrl);
-//            }
-//        });
-//
-//        rlNextPlayer.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                ivPlayPlayer.setVisibility(View.GONE);
-//                ivPausePlayer.setVisibility(View.VISIBLE);
-//                playingAudio = playingAudio + 1;
-//                String str = "(" + (playingAudio + 1) + " of " + String.valueOf(sharedAudioList.size()) + ")";
-//                tvNum.setText(str);
-//                SharedAudios sharedAudios = sharedAudioList.get(playingAudio);
-//                String audioUrl = sharedAudios.getRecordingUrl();
-//                Picasso.with(userProfileImagePlayer.getContext()).load(sharedAudios.getProfileUrl()).into(userProfileImagePlayer);
-//                ChatActivity.tvNamePlayer.setText(sharedAudios.getName());
-//                ChatActivity.tvUserNamePlayer.setText(sharedAudios.getUserName());
-//                ChatActivity.tvNumPlayer.setText(str);
-//                AudioOperator(audioUrl);
-//            }
-//        });
-
         rlUserName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -649,7 +604,6 @@ public class ChatActivity extends AppCompatActivity {
                     etGroupName.setClickable(false);
                     etGroupName.setText(receiverName);
                     if (receiverName.equals("New Group") && (chatId.equals(""))) {
-                        // String grpImg = "http://52.89.220.199/api/uploads/profilepics/group.png";
                         Picasso.with(ivGroupImage.getContext()).load(groupImage).into(ivGroupImage);
                     } else {
                         try {
@@ -755,15 +709,6 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         });
-
-
-//        Runnable chatRunnable = new Runnable() {
-//            public void run() {
-//                getChatMsgs(chatId);
-//            }
-//        };
-//        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-//        executor.scheduleAtFixedRate(chatRunnable, 0, 5, TimeUnit.SECONDS);
     }
 
     @Override
@@ -800,9 +745,6 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-//            ivAdjust.setVisibility(View.VISIBLE);
-//            tvCancel.setVisibility(View.GONE);
-//            ivAdjust.invalidate();
         }
         return super.onKeyDown(keyCode, event);
     }
@@ -835,10 +777,14 @@ public class ChatActivity extends AppCompatActivity {
                     ImageCompressor ic = new ImageCompressor(getApplicationContext());
                     sendImageBitmap = ic.compressImage(sendImageName);
                     if (sendImageBitmap != null) {
-                        rlSelectedImage.setVisibility(View.VISIBLE);
-                        ivSelectedImage.setVisibility(View.VISIBLE);
-                        ivSelectedImage.setImageBitmap(sendImageBitmap);
+                        alertDialog.cancel();
                         flagFileType = "1";
+                        appbar.setVisibility(View.GONE);
+                        fotter.setVisibility(View.GONE);
+                        viewImageFragment imageview = new viewImageFragment();
+                        getFragmentManager().beginTransaction().replace(R.id.activity_chat, imageview).commit();
+                        // sendMessage("", userId);
+
                     } else {
                         Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
                     }
@@ -878,14 +824,17 @@ public class ChatActivity extends AppCompatActivity {
                     String img_Decodable_Str = cursor.getString(columnIndex);
                     cursor.close();
                     sendImageName = img_Decodable_Str.substring(img_Decodable_Str.lastIndexOf("/") + 1);
-                    rlSelectedImage.setVisibility(View.VISIBLE);
-                    ivSelectedImage.setVisibility(View.VISIBLE);
                     ImageCompressor ic = new ImageCompressor(getApplicationContext());
                     sendImageBitmap = ic.compressImage(img_Decodable_Str);
                     if (sendImageBitmap != null) {
-                        ivSelectedImage.setImageBitmap(sendImageBitmap);
+                        flagFileType = "1";
+                        appbar.setVisibility(View.GONE);
+                        fotter.setVisibility(View.GONE);
+                        viewImageFragment imageview = new viewImageFragment();
+                        getFragmentManager().beginTransaction().replace(R.id.activity_chat, imageview).commit();
+                        //   sendMessage("",userId);
                     }
-                    flagFileType = "1";
+
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
@@ -933,6 +882,11 @@ public class ChatActivity extends AppCompatActivity {
                         } catch (Throwable e) {
                             e.printStackTrace();
                         }
+                        if (rlNoMsg.getVisibility() == View.VISIBLE && rlTxtContent.getVisibility() == View.VISIBLE) {
+                            rlNoMsg.setVisibility(View.GONE);
+                            rlTxtContent.setVisibility(View.GONE);
+                        }
+
                         chatList.clear();
 //                        audioDetailsList.clear();
 //                        sharedAudioList.clear();
@@ -1044,7 +998,7 @@ public class ChatActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(NetworkResponse response) {
                             String str = new String(response.data);
-                            Log.d("Chat.php Response for image:-",str);
+                            AppHelper.sop("Chat.php Response for image :- " + str);
 //                            Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
                             try {
                                 JSONObject json = new JSONObject(str);
@@ -1112,7 +1066,7 @@ public class ChatActivity extends AppCompatActivity {
                     params.put(SENDER_ID, user_Id);
                     params.put(CHAT_ID, chatId);
                     params.put(TITLE, "message");
-                    params.put(MESSAGE, message);
+                    //    params.put(MESSAGE, message);
                     params.put(IS_READ, "0");
                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
                     return params;
@@ -1141,8 +1095,8 @@ public class ChatActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(String response) {
                     String str = response;
-                    AppHelper.sop("Chat.php Response normal :- "+str);
-                  //  Log.d("Chat.php Response normal :-",str);
+                    AppHelper.sop("Chat.php Response normal :- " + str);
+                    //  Log.d("Chat.php Response normal :-",str);
 //                    Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
                     try {
                         JSONObject json = new JSONObject(response);
@@ -1660,5 +1614,11 @@ public class ChatActivity extends AppCompatActivity {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
+    }
+    public void openFrag(){
+        appbar.setVisibility(View.GONE);
+        fotter.setVisibility(View.GONE);
+        viewImageFragment imageview = new viewImageFragment();
+        getFragmentManager().beginTransaction().replace(R.id.activity_chat, imageview).commit();
     }
 }
