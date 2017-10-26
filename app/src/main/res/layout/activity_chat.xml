@@ -4,10 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context="com.instamelody.instamelody.ChatActivity">
+    android:id="@+id/activity_chat"
+    tools:context="com.instamelody.instamelody.ChatActivity"
+    >
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="38dp"
         android:background="#FFFFFF"
@@ -124,7 +126,7 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/relativeLayout3"
+            android:id="@+id/fotter"
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:layout_alignParentBottom="true"
