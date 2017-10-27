@@ -72,6 +72,7 @@ import static com.instamelody.instamelody.ChatActivity.chatList;
 import static com.instamelody.instamelody.ChatActivity.chatType;
 import static com.instamelody.instamelody.ChatActivity.fileInfo;
 import static com.instamelody.instamelody.ChatActivity.flSeekbar;
+import static com.instamelody.instamelody.ChatActivity.flagFileType;
 import static com.instamelody.instamelody.ChatActivity.fotter;
 import static com.instamelody.instamelody.ChatActivity.group;
 import static com.instamelody.instamelody.ChatActivity.groupList;
@@ -80,7 +81,6 @@ import static com.instamelody.instamelody.ChatActivity.receiverId;
 import static com.instamelody.instamelody.ChatActivity.receiverImage;
 import static com.instamelody.instamelody.ChatActivity.receiverName;
 import static com.instamelody.instamelody.ChatActivity.recyclerViewChat;
-import static com.instamelody.instamelody.ChatActivity.rlChatPlayer;
 import static com.instamelody.instamelody.ChatActivity.rlNoMsg;
 import static com.instamelody.instamelody.ChatActivity.rlTxtContent;
 import static com.instamelody.instamelody.ChatActivity.senderId;
@@ -102,7 +102,6 @@ public class RecentImagesAdapter extends RecyclerView.Adapter<RecentImagesAdapte
     ArrayList<RecentImagesModel> fileList = new ArrayList<>();
     Context context;
     public static int pos;
-    String flagFileType = "0";
     String sendImageName = "";
     Bitmap sendImageBitmap;
 
@@ -168,12 +167,21 @@ public class RecentImagesAdapter extends RecyclerView.Adapter<RecentImagesAdapte
                     public void onResponse(NetworkResponse response) {
                         String str = new String(response.data);
                         AppHelper.sop("Chat.php Response for image :- " + str);
+                        flagFileType = "0";
 //                            Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
                         try {
                             JSONObject json = new JSONObject(str);
-                            JSONObject jsonMsg = json.getJSONObject("usermsg");
-                            String chat_id = jsonMsg.getString("chat_id");
-                            getChatMsgs(chat_id);
+                            String flag=json.getString("flag");
+                            if(flag.equals("success")){
+                                JSONObject jsonMsg = json.getJSONObject("usermsg");
+                                String chat_id = jsonMsg.getString("chat_id");
+                                getChatMsgs(chat_id);
+                            }
+                            else{
+                                JSONObject jsonMsg = json.getJSONObject("usermsg");
+                                String chat_id = jsonMsg.getString("chat_id");
+                                getChatMsgs(chat_id);
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -284,19 +292,6 @@ public class RecentImagesAdapter extends RecyclerView.Adapter<RecentImagesAdapte
 //                        audioDetailsList.clear();
 //                        sharedAudioList.clear();
                         String usrId = userId;
-                        if (rlChatPlayer.getVisibility() == View.VISIBLE) {
-                            try {
-                                rlChatPlayer.setVisibility(View.GONE);
-                                flSeekbar.setVisibility(View.GONE);
-                                if (ChatAdapter.mp != null) {
-                                    ChatAdapter.mp.stop();
-                                    ChatAdapter.mp.release();
-                                }
-                            } catch (Throwable e) {
-                                e.printStackTrace();
-                            }
-
-                        }
 
                         cAdapter.notifyDataSetChanged();
                         JSONObject jsonObject;
