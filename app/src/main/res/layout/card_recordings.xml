@@ -209,14 +209,14 @@
 
                         <RelativeLayout
                             android:id="@+id/rlDetail"
-                            android:layout_width="45dp"
+                            android:layout_width="50dp"
                             android:layout_height="match_parent"
                             android:layout_marginBottom="5dp"
                             android:layout_marginLeft="200dp"
                             android:orientation="vertical">
 
                             <RelativeLayout
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_centerVertical="true">
 
@@ -224,13 +224,13 @@
                                     android:id="@+id/tvContributeLength"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_alignLeft="@+id/tvContributeDate"
                                     android:layout_alignParentEnd="true"
                                     android:layout_alignParentRight="true"
-                                    android:layout_alignStart="@+id/tvContributeDate"
+                                    android:gravity="right"
                                     android:text="00:00:00"
                                     android:textColor="#FFFFFF"
-                                    android:textSize="12sp" />
+                                    android:textSize="12sp"
+                                    android:layout_alignParentStart="true" />
 
                                 <TextView
                                     android:id="@+id/tvContributeDate"
