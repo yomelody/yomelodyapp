@@ -7,12 +7,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -101,6 +104,8 @@ public class Update extends AppCompatActivity {
     String finalDate = "";
     public static ProgressDialog progressDialog;
     Activity mActivity;
+    private final int PERMISSION_READ_STORAGE = 241;
+    private final int PERMISSION_CAMERA = 262;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -365,11 +370,18 @@ public class Update extends AppCompatActivity {
                             alertDialog.setNegativeButton("Open Camera", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     //uploadImage();
-                                    Intent photoCaptureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                    startActivityForResult(photoCaptureIntent, requestCode);
+                                    try {
+                                        Intent photoCaptureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                        startActivityForResult(photoCaptureIntent, requestCode);
+                                    }
+                                    catch (Exception e){
+                                        e.printStackTrace();
+                                    }
+
                                 }
                             });
                             alertDialog.show();
+                            setPermissions();
                         }
                     }
                 });
@@ -419,6 +431,22 @@ public class Update extends AppCompatActivity {
         });
         setformSelection();
 
+    }
+
+    public void setPermissions() {
+        if (ContextCompat.checkSelfPermission(mActivity, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(mActivity, android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                ActivityCompat.requestPermissions(mActivity, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_STORAGE);
+            } else {
+                ActivityCompat.requestPermissions(mActivity, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_STORAGE);
+            }
+        } else if (ContextCompat.checkSelfPermission(mActivity, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(mActivity, android.Manifest.permission.CAMERA)) {
+                ActivityCompat.requestPermissions(mActivity, new String[]{android.Manifest.permission.CAMERA}, PERMISSION_CAMERA);
+            } else {
+                ActivityCompat.requestPermissions(mActivity, new String[]{android.Manifest.permission.CAMERA}, PERMISSION_CAMERA);
+            }
+        }
     }
 
     private void setformSelection(){

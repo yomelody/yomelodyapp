@@ -17,7 +17,11 @@ public class RecordingsModel implements Serializable{
     String userProfilePic;
     String recordingCover;
     String genreId;
-    String genreName,recordingurl,joinCount;
+    String genreName;
+    String recordingurl;
+    String joinCount;
+
+    String thumnailUrl;
 
     public String getJoinCount() {
         return joinCount;
@@ -149,5 +153,13 @@ public class RecordingsModel implements Serializable{
     public void setGenreId(String genreId) {
         genreId = "Genre: " + genreId;
         this.genreId = genreId;
+    }
+
+    public String getThumnailUrl() {
+        return thumnailUrl;
+    }
+
+    public void setThumnailUrl(String thumnailUrl) {
+        this.thumnailUrl = thumnailUrl;
     }
 }

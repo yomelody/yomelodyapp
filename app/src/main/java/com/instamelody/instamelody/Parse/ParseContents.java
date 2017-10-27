@@ -395,6 +395,7 @@ public class ParseContents {
                     RecordingsModel card = new RecordingsModel();
                     JSONObject cardJson = jsonArray.getJSONObject(i);
                     card.setAddedBy(cardJson.getString("added_by"));
+
                     card.setRecordingCreated(cardJson.getString("date_added"));
                     card.setGenreId(cardJson.getString("genre"));
                     card.setRecordingName(cardJson.getString("recording_topic"));
@@ -406,6 +407,7 @@ public class ParseContents {
                     card.setJoinCount(cardJson.getString("join_count"));
                     card.setLikeStatus(cardJson.getInt("like_status"));
                     card.setJoinCount(cardJson.getString("join_count"));
+                    card.setThumnailUrl(cardJson.getString("thumbnail_url"));
                     if (cardJson.isNull("recording_url")) {
                         card.setrecordingurl("");
                     } else {

@@ -319,7 +319,7 @@ public class StationCommentActivity extends AppCompatActivity {
                                 shareIntent.setAction(Intent.ACTION_SEND);
                                 shareIntent.putExtra(Intent.EXTRA_STREAM, "");
                                 shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt");
-                                shareIntent.putExtra(Intent.EXTRA_TEXT, RecordingURL);
+                                shareIntent.putExtra(Intent.EXTRA_TEXT, recording.getThumnailUrl());
                                 shareIntent.setType("image/jpeg");
                                 shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(Intent.createChooser(shareIntent, "Choose Sharing option!"));

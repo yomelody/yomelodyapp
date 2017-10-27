@@ -1476,7 +1476,7 @@ public class ChatActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response==" + response);
+                        AppHelper.sop("response=shareCountApi=" + response);
                     }
                 },
                 new Response.ErrorListener() {
@@ -1495,7 +1495,7 @@ public class ChatActivity extends AppCompatActivity {
                 params.put("file_id", mRecordingsModel.getRecordingId());
                 params.put("file_type", fileType);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params==" + params + "\nURL==" + sharefile);
+                AppHelper.sop("params=shareCountApi=" + params + "\nURL==" + sharefile);
                 return params;
             }
         };
