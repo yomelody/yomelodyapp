@@ -107,7 +107,9 @@ public class SubscriptionsFragment extends Fragment implements PaymentMethodNonc
     String packageId = "";
     private static PayPalConfiguration config = new PayPalConfiguration()
             .environment(PayPalConfiguration.ENVIRONMENT_NO_NETWORK)
-            .clientId("AeE8pO8NpWo4hbsM8Ha5sjRXXvFVjUNO4R6VKF7Oic0UeLcbgrAXdtXsjtvLtkDaGfB9RSAKC3qfDDq6");
+            .clientId("AeHEshNVb13dCP6cjgFMUMAV9rZOi7nDFUYepaEyPCioC8CzWHa_Mj1G4o5i9BnmG3PS3sojs0jvuMhR");
+            //.clientId("AeE8pO8NpWo4hbsM8Ha5sjRXXvFVjUNO4R6VKF7Oic0UeLcbgrAXdtXsjtvLtkDaGfB9RSAKC3qfDDq6");
+
 
     PayPalPayment payment;
     BraintreeFragment brainTreeFragment;

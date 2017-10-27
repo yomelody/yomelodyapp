@@ -553,7 +553,8 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 //        holder.tvContributeDate.setText(recordingList.get(listPosition).getRecordingCreated());
         try {
             holder.tvContributeDate.setText(convertDate(recordingList.get(listPosition).getRecordingCreated()));
-            holder.tvContributeLength.setText(DateUtils.formatElapsedTime(Long.parseLong(recordingsPools.get(listPosition).getDuration())));
+
+            holder.tvContributeLength.setText("00:"+DateUtils.formatElapsedTime(Long.parseLong(recordingsPools.get(listPosition).getDuration())));
         } catch (Throwable e) {
             e.printStackTrace();
         }

@@ -215,9 +215,9 @@
                                     android:textSize="12sp"
                                     android:textColor="#FFFFFF"
                                     android:layout_alignParentRight="true"
+                                    android:gravity="right"
                                     android:layout_alignParentEnd="true"
-                                    android:layout_alignLeft="@+id/tvContributeDate"
-                                    android:layout_alignStart="@+id/tvContributeDate" />
+                                    android:layout_alignParentStart="true" />
 
                                 <TextView
                                     android:id="@+id/tvContributeDate"

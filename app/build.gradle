@@ -90,5 +90,9 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.github.lsjwzh.RecyclerViewPager:lib:v1.1.2'
     //    compile files('libs/facebook.jar')
+<<<<<<< HEAD
+=======
+
+>>>>>>> Ajay-Copy
 }
 apply plugin: 'com.google.gms.google-services'
