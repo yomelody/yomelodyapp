@@ -278,7 +278,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 if (RecordingsCardAdapter.mp != null) {
                     try {
 
-                        RecordingsCardAdapter.mp.stop();
+                        RecordingsCardAdapter.mp.reset();
                         RecordingsCardAdapter.mp.release();
 
 
@@ -297,7 +297,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 if (RecordingsCardAdapter.mp != null) {
                     try {
 
-                        RecordingsCardAdapter.mp.stop();
+                        RecordingsCardAdapter.mp.reset();
                         RecordingsCardAdapter.mp.release();
 
 
@@ -317,7 +317,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 if (RecordingsCardAdapter.mp != null) {
                     try {
 
-                        RecordingsCardAdapter.mp.stop();
+                        RecordingsCardAdapter.mp.reset();
                         RecordingsCardAdapter.mp.release();
 
 
@@ -337,7 +337,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 if (RecordingsCardAdapter.mp != null) {
                     try {
 
-                        RecordingsCardAdapter.mp.stop();
+                        RecordingsCardAdapter.mp.reset();
                         RecordingsCardAdapter.mp.release();
 
 
@@ -365,7 +365,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 if (RecordingsCardAdapter.mp != null) {
                     try {
 
-                        RecordingsCardAdapter.mp.stop();
+                        RecordingsCardAdapter.mp.reset();
                         RecordingsCardAdapter.mp.release();
                     } catch (Throwable e) {
                         e.printStackTrace();
@@ -766,7 +766,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
         if (RecordingsCardAdapter.mp != null) {
             try {
-                RecordingsCardAdapter.mp.stop();
+                RecordingsCardAdapter.mp.reset();
                 RecordingsCardAdapter.mp.release();
                 try {
                     //AudioFragment af = new AudioFragment();

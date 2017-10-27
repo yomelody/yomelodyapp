@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -176,7 +177,7 @@ public class ChatActivity extends AppCompatActivity {
     public static String group = "";
     public static String sendImageName = "";
     String sendGroupImageName = "";
-    String flagFileType = "0"; // 0 = null, 1 = image file, 2 = station audio file , 3 = admin_melody audio file
+    public static String flagFileType = "0"; // 0 = null, 1 = image file, 2 = station audio file , 3 = admin_melody audio file
     int updateGroupFlag = 0;
     RecordingsModel mRecordingsModel;
     Activity mActivity;
@@ -184,6 +185,7 @@ public class ChatActivity extends AppCompatActivity {
     ImageView songNext, songPre;
     public static Dialog alertDialog;
     public static RelativeLayout fotter;
+    public static ProgressDialog progressDialog;
 
     @TargetApi(18)
     @Override
@@ -191,6 +193,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         mActivity = ChatActivity.this;
+        progressDialog=new ProgressDialog(ChatActivity.this);
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
         SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
@@ -204,16 +207,7 @@ public class ChatActivity extends AppCompatActivity {
             userId = twitterPref.getString("userId", null);
             username = twitterPref.getString("userName", null);
         }
-//       viewImageFragment test=(viewImageFragment)getFragmentManager().findFragmentByTag("testID");
-//        if (test != null && test.isVisible()) {
-//            Toast.makeText(mActivity, "Open", Toast.LENGTH_SHORT).show();
-//            //DO STUFF
-//        }
-//        else {
-//            getFragmentManager().popBackStack();
-//            Toast.makeText(mActivity, "Close", Toast.LENGTH_SHORT).show();
-//            //Whatever
-//        }
+        mRecordingsModel = (RecordingsModel) mActivity.getIntent().getSerializableExtra("share");
         SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
         senderId = prefs.getString("senderId", null);
         receiverId = prefs.getString("receiverId", null);
@@ -302,10 +296,10 @@ public class ChatActivity extends AppCompatActivity {
         packType = packPref.getString("PackType", null);
 
         getChatMsgs(chatId);
-        if (rlChatPlayer.getVisibility() == View.VISIBLE) {
-            flSeekbar.setVisibility(View.GONE);
-            rlChatPlayer.setVisibility(View.GONE);
-        }
+//        if (rlChatPlayer.getVisibility() == View.VISIBLE) {
+//            flSeekbar.setVisibility(View.GONE);
+//            rlChatPlayer.setVisibility(View.GONE);
+//        }
         etMessage = (EditText) findViewById(R.id.etMessage);
         etMessage.setHintTextColor(Color.parseColor("#7B888F"));
         inflater = LayoutInflater.from(ChatActivity.this);
@@ -330,15 +324,16 @@ public class ChatActivity extends AppCompatActivity {
         recyclerViewChat.setItemAnimator(new DefaultItemAnimator());
         cAdapter = new ChatAdapter(getApplicationContext(), chatList/*, audioDetailsList, sharedAudioList*/);
         recyclerViewChat.setAdapter(cAdapter);
-//        recyclerViewChat.setOnTouchListener(new View.OnTouchListener() {
+//        recyclerViewChat.addOnScrollListener(new RecyclerView.OnScrollListener() {
 //            @Override
-//            public boolean onTouch(View view, MotionEvent motionEvent) {
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
 //                if (rlChatPlayer.getVisibility() == View.VISIBLE) {
 //                    try {
 //                        rlChatPlayer.setVisibility(View.GONE);
 //                        flSeekbar.setVisibility(View.GONE);
 //                        if (ChatAdapter.mp != null) {
-//                            ChatAdapter.mp.stop();
+//                            //ChatAdapter.mp.stop();
 //                            ChatAdapter.mp.release();
 //                        }
 //                    } catch (Throwable e) {
@@ -346,9 +341,27 @@ public class ChatActivity extends AppCompatActivity {
 //                    }
 //
 //                }
-//                return false;
 //            }
 //        });
+        recyclerViewChat.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (rlChatPlayer.getVisibility() == View.VISIBLE) {
+                    try {
+                        rlChatPlayer.setVisibility(View.GONE);
+                        flSeekbar.setVisibility(View.GONE);
+                        if (ChatAdapter.mp != null) {
+                            ChatAdapter.mp.reset();
+                            ChatAdapter.mp.release();
+                        }
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                }
+                return false;
+            }
+        });
 
         SharedPreferences token = this.getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
         deviceToken = token.getString("regId", null);
@@ -423,7 +436,7 @@ public class ChatActivity extends AppCompatActivity {
 
                 try {
                     if (ChatAdapter.mp != null) {
-                        ChatAdapter.mp.stop();
+                        //   ChatAdapter.mp.stop();
                         ChatAdapter.mp.reset();
                         ChatAdapter.mp.release();
                     }
@@ -447,7 +460,7 @@ public class ChatActivity extends AppCompatActivity {
                 editor.commit();
                 try {
                     if (ChatAdapter.mp != null) {
-                        ChatAdapter.mp.stop();
+                        //   ChatAdapter.mp.stop();
                         ChatAdapter.mp.reset();
                         ChatAdapter.mp.release();
                     }
@@ -471,7 +484,7 @@ public class ChatActivity extends AppCompatActivity {
                 editor.commit();
                 try {
                     if (ChatAdapter.mp != null) {
-                        ChatAdapter.mp.stop();
+                        //  ChatAdapter.mp.stop();
                         ChatAdapter.mp.reset();
                         ChatAdapter.mp.release();
                     }
@@ -705,7 +718,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (rlChatPlayer.getVisibility() == View.VISIBLE) {
                     rlChatPlayer.setVisibility(View.GONE);
-                    ChatAdapter.mp.stop();
+                    //  ChatAdapter.mp.stop();
                 }
             }
         });
@@ -845,7 +858,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        getChatMsgs(chatId);
+      //  getChatMsgs(chatId);
         imageFileList.clear();
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(PUSH_NOTIFICATION));
@@ -857,12 +870,16 @@ public class ChatActivity extends AppCompatActivity {
         super.onPause();
         try {
             if (ChatAdapter.mp != null) {
-                ChatAdapter.mp.stop();
+                //   ChatAdapter.mp.stop();
                 ChatAdapter.mp.reset();
                 ChatAdapter.mp.release();
             }
         } catch (Throwable e) {
             e.printStackTrace();
+        }
+        if (rlChatPlayer.getVisibility() == View.VISIBLE) {
+            flSeekbar.setVisibility(View.GONE);
+            rlChatPlayer.setVisibility(View.GONE);
         }
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
@@ -896,7 +913,7 @@ public class ChatActivity extends AppCompatActivity {
                                 rlChatPlayer.setVisibility(View.GONE);
                                 flSeekbar.setVisibility(View.GONE);
                                 if (ChatAdapter.mp != null) {
-                                    ChatAdapter.mp.stop();
+                                    //   ChatAdapter.mp.stop();
                                     ChatAdapter.mp.release();
                                 }
                             } catch (Throwable e) {
@@ -940,7 +957,12 @@ public class ChatActivity extends AppCompatActivity {
                                     rlTxtContent.setVisibility(View.GONE);
                                 } else {
                                     tvRecieverName.setText(" " + receiverName);
-                                    Picasso.with(ivRecieverProfilePic.getContext()).load(receiverImage).into(ivRecieverProfilePic);
+                                    try {
+                                        Picasso.with(ivRecieverProfilePic.getContext()).load(receiverImage).into(ivRecieverProfilePic);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+
                                     rlNoMsg.setVisibility(View.VISIBLE);
                                     rlTxtContent.setVisibility(View.VISIBLE);
                                 }
@@ -1002,9 +1024,18 @@ public class ChatActivity extends AppCompatActivity {
 //                            Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
                             try {
                                 JSONObject json = new JSONObject(str);
-                                JSONObject jsonMsg = json.getJSONObject("usermsg");
-                                String chat_id = jsonMsg.getString("chat_id");
-                                getChatMsgs(chat_id);
+                                String flag=json.getString("flag");
+                                if(flag.equals("success")){
+                                    JSONObject jsonMsg = json.getJSONObject("usermsg");
+                                    String chat_id = jsonMsg.getString("chat_id");
+                                    getChatMsgs(chat_id);
+                                }
+                                else{
+                                    JSONObject jsonMsg = json.getJSONObject("usermsg");
+                                    String chat_id = jsonMsg.getString("chat_id");
+                                    getChatMsgs(chat_id);
+                                }
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -1100,9 +1131,17 @@ public class ChatActivity extends AppCompatActivity {
 //                    Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
                     try {
                         JSONObject json = new JSONObject(response);
-                        JSONObject jsonMsg = json.getJSONObject("usermsg");
-                        String chat_id = jsonMsg.getString("chat_id");
-                        getChatMsgs(chat_id);
+                        String flag=json.getString("flag");
+                        if(flag.equals("success")){
+                            JSONObject jsonMsg = json.getJSONObject("usermsg");
+                            String chat_id = jsonMsg.getString("chat_id");
+                            getChatMsgs(chat_id);
+                        }
+                        else{
+                            JSONObject jsonMsg = json.getJSONObject("usermsg");
+                            String chat_id = jsonMsg.getString("chat_id");
+                            getChatMsgs(chat_id);
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -1110,8 +1149,9 @@ public class ChatActivity extends AppCompatActivity {
 
                     flagFileType = "0";
                     //service for comment count.
+
                     if (getIntent() != null && getIntent().hasExtra("share")) {
-                        mRecordingsModel = (RecordingsModel) mActivity.getIntent().getSerializableExtra("share");
+
                         AppHelper.sop("mRecordingsModel==" + mRecordingsModel);
                         if (mRecordingsModel != null) {
                             shareCountApi(getIntent().getStringExtra("file_type"));
@@ -1477,6 +1517,7 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         AppHelper.sop("response==" + response);
+                        mRecordingsModel=null;
                     }
                 },
                 new Response.ErrorListener() {
@@ -1615,7 +1656,8 @@ public class ChatActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
     }
-    public void openFrag(){
+
+    public void openFrag() {
         appbar.setVisibility(View.GONE);
         fotter.setVisibility(View.GONE);
         viewImageFragment imageview = new viewImageFragment();

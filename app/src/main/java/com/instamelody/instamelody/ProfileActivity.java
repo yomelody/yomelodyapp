@@ -443,7 +443,6 @@ public class ProfileActivity extends AppCompatActivity {
                 try {
                     if (RecordingsCardAdapter.mp != null && RecordingsCardAdapter.mp.isPlaying()) {
                         try {
-                            RecordingsCardAdapter.mp.stop();
                             RecordingsCardAdapter.mp.reset();
                             RecordingsCardAdapter.mp.release();
                         } catch (Throwable e) {
@@ -1605,7 +1604,7 @@ public class ProfileActivity extends AppCompatActivity {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
             if (RecordingsCardAdapter.mp != null && RecordingsCardAdapter.mp.isPlaying()) {
                 try {
-                    RecordingsCardAdapter.mp.stop();
+                    RecordingsCardAdapter.mp.reset();
                     RecordingsCardAdapter.mp.reset();
                     RecordingsCardAdapter.mp.release();
                 } catch (Throwable e) {

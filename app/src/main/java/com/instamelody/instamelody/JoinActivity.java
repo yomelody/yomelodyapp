@@ -7,6 +7,7 @@ import android.media.MediaPlayer;
 import android.media.audiofx.Visualizer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,6 +32,7 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.vision.text.Text;
 import com.instamelody.instamelody.Adapters.JoinInstrumentListAdp;
 import com.instamelody.instamelody.Adapters.JoinListAdapter;
 import com.instamelody.instamelody.Fragments.CommentJoinFragment;
@@ -91,6 +93,7 @@ public class JoinActivity extends AppCompatActivity {
     public static ArrayList<MediaPlayer> mediaPlayersAll = new ArrayList<MediaPlayer>();
     public static VisualizerView mVisualizerView;
     public static Visualizer mVisualizer;
+    TextView tvDone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,6 +129,7 @@ public class JoinActivity extends AppCompatActivity {
         ivLikeButton = (ImageView) findViewById(R.id.ivLikeButton);
         ivDislikeButton = (ImageView) findViewById(R.id.ivDislikeButton);
         chrono = (Chronometer) findViewById(R.id.chrono);
+        tvDone = (TextView) findViewById(R.id.tvDone);
         rlComment = (RelativeLayout) findViewById(R.id.rlComment);
         rlIncluded = (RelativeLayout) findViewById(R.id.rlIncluded);
         rlJoinButton = (RelativeLayout) findViewById(R.id.rlJoinButton);
@@ -200,9 +204,9 @@ public class JoinActivity extends AppCompatActivity {
                     ex.printStackTrace();
                 }
                 if (JoinListAdapter.mp != null) {
-                    JoinListAdapter.mp.stop();
+                    JoinListAdapter.mp.reset();
                 }
-                if(mVisualizer!=null){
+                if (mVisualizer != null) {
                     mVisualizer.release();
                 }
                 if (JoinInstrumentListAdp.mp_start != null) {
@@ -221,13 +225,14 @@ public class JoinActivity extends AppCompatActivity {
             }
         });
 
+
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (JoinListAdapter.mp != null) {
-                    JoinListAdapter.mp.stop();
+                    JoinListAdapter.mp.reset();
                 }
-                if(mVisualizer!=null){
+                if (mVisualizer != null) {
                     mVisualizer.release();
                 }
                 if (JoinInstrumentListAdp.mp_start != null) {
@@ -249,14 +254,20 @@ public class JoinActivity extends AppCompatActivity {
 
             }
         });
+        tvDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ivBackButton.performClick();
+            }
+        });
 
         ivHomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (JoinListAdapter.mp != null) {
-                    JoinListAdapter.mp.stop();
+                    JoinListAdapter.mp.reset();
                 }
-                if(mVisualizer!=null){
+                if (mVisualizer != null) {
                     mVisualizer.release();
                 }
                 if (JoinInstrumentListAdp.mp_start != null) {
@@ -303,8 +314,6 @@ public class JoinActivity extends AppCompatActivity {
         melody_date.setText(dateString);
 
     }
-
-
 
 
     public void getJoined_users(final String addedBy, final String RecId) {
@@ -386,9 +395,9 @@ public class JoinActivity extends AppCompatActivity {
         super.onBackPressed();
         finish();
         if (JoinListAdapter.mp != null) {
-            JoinListAdapter.mp.stop();
+            JoinListAdapter.mp.reset();
         }
-        if(mVisualizer!=null){
+        if (mVisualizer != null) {
             mVisualizer.release();
         }
 
@@ -412,9 +421,9 @@ public class JoinActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         if (JoinListAdapter.mp != null) {
-            JoinListAdapter.mp.stop();
+            JoinListAdapter.mp.reset();
         }
-        if(mVisualizer!=null){
+        if (mVisualizer != null) {
             mVisualizer.release();
         }
 

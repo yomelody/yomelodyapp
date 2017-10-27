@@ -76,7 +76,7 @@ public class MessengerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messenger);
-        mActivity=MessengerActivity.this;
+        mActivity = MessengerActivity.this;
 
         ivNewMessage = (ImageView) findViewById(R.id.ivNewMessage);
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
@@ -201,7 +201,7 @@ public class MessengerActivity extends AppCompatActivity {
 
                         chatList.clear();
                         adapter.notifyDataSetChanged();
-                        recyclerView.smoothScrollToPosition(adapter.getItemCount());
+                        //recyclerView.smoothScrollToPosition(adapter.getItemCount());
 
                         JSONObject jsonObject;
                         JSONArray jsonArray;

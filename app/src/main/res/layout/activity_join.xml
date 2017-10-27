@@ -67,16 +67,16 @@
 
             </RelativeLayout>
 
-            <ImageView
-                android:id="@+id/ivSound"
-                android:layout_width="38dp"
-                android:layout_height="38dp"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="8dp"
+            <!--<ImageView-->
+                <!--android:id="@+id/ivSound"-->
+                <!--android:layout_width="38dp"-->
+                <!--android:layout_height="38dp"-->
+                <!--android:layout_centerVertical="true"-->
+                <!--android:layout_marginRight="8dp"-->
 
-                android:layout_toLeftOf="@+id/rlAppBarSideButton"
-                android:padding="8dp"
-                android:src="@drawable/volume" />
+                <!--android:layout_toLeftOf="@+id/rlAppBarSideButton"-->
+                <!--android:padding="8dp"-->
+                <!--android:src="@drawable/volume" />-->
 
             <ImageView
                 android:id="@+id/ivHomeButton"
