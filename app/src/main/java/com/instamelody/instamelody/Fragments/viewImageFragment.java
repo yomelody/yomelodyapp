@@ -62,7 +62,6 @@ import static com.instamelody.instamelody.ChatActivity.cAdapter;
 import static com.instamelody.instamelody.ChatActivity.chatId;
 import static com.instamelody.instamelody.ChatActivity.chatList;
 import static com.instamelody.instamelody.ChatActivity.chatType;
-import static com.instamelody.instamelody.ChatActivity.flSeekbar;
 import static com.instamelody.instamelody.ChatActivity.flagFileType;
 import static com.instamelody.instamelody.ChatActivity.fotter;
 import static com.instamelody.instamelody.ChatActivity.group;

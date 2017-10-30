@@ -153,6 +153,8 @@ public class RecordingsFragment extends Fragment {
             userId = userIdTwitter;
         }
 
+
+
         if (TextUtils.isEmpty(userId)){
             Intent intent = new Intent(mActivity, SignInActivity.class);
             startActivity(intent);
@@ -160,19 +162,18 @@ public class RecordingsFragment extends Fragment {
         }
         else {
             fetchGenreNames();
+
+            adapter = new RecordingsCardAdapter(mActivity, recordingList, recordingsPools);
+            if (rv != null) {
+                rv.setAdapter(adapter);
+            }
+
             callApi();
         }
 
-
-        // new DownloadFileFromURL();
-        adapter = new RecordingsCardAdapter(mActivity, recordingList, recordingsPools);
     }
 
     private void callApi() {
-        if (rv != null) {
-            rv.setAdapter(adapter);
-        }
-
         if (strName == null && strSearch == null) {
             fetchRecordings();
         } else if (strSearch != null) {
