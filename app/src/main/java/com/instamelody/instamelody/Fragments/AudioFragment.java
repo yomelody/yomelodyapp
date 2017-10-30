@@ -525,7 +525,12 @@ public class AudioFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
+                if (userId!=null){
+                    params.put(ID, userId);
+                }
+                else {
+                    params.put(ID, "");
+                }
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
@@ -629,7 +634,12 @@ public class AudioFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
+                if (userId!=null){
+                    params.put(ID, userId);
+                }
+                else {
+                    params.put(ID, "");
+                }
                 params.put(KEY, STATION);
                 params.put(KEY_SEARCH, strSearch);
                 params.put(limit, recordingList.size()+"");
@@ -721,7 +731,12 @@ public class AudioFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
+                if (userId!=null){
+                    params.put(ID, userId);
+                }
+                else {
+                    params.put(ID, "");
+                }
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
@@ -818,7 +833,12 @@ public class AudioFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
+                if (userId!=null){
+                    params.put(ID, userId);
+                }
+                else {
+                    params.put(ID, "");
+                }
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
@@ -915,7 +935,12 @@ public class AudioFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
+                if (userId!=null){
+                    params.put(ID, userId);
+                }
+                else {
+                    params.put(ID, "");
+                }
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
