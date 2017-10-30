@@ -986,6 +986,13 @@ public class ChatActivity extends AppCompatActivity {
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+
+        int socketTimeout = 60000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
         requestQueue.add(stringRequest);
     }
 
@@ -1614,7 +1621,8 @@ public class ChatActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
     }
-    public void openFrag(){
+
+    public void openFrag() {
         appbar.setVisibility(View.GONE);
         fotter.setVisibility(View.GONE);
         viewImageFragment imageview = new viewImageFragment();

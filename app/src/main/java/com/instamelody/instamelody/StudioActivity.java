@@ -223,7 +223,7 @@ public class StudioActivity extends AppCompatActivity {
     private final int requestCode = 20;
     public static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     public static boolean isRecording = false;
-    public static MediaPlayer mediaPlayer=null;
+    public static MediaPlayer mediaPlayer = null;
     public static String audioFilePath;
     private static String instrumentFilePath;
     public static ArrayList<InstrumentListAdapter.ViewHolder> lstViewHolder = new ArrayList<InstrumentListAdapter.ViewHolder>();
@@ -303,7 +303,7 @@ public class StudioActivity extends AppCompatActivity {
     URL ShortUrl;
     String pos = "0";
     BroadcastReceiver mRegistrationBroadcastReceiver;
-//    private boolean fbSwitch, twitterSwitch, googleSwitch;
+    //    private boolean fbSwitch, twitterSwitch, googleSwitch;
     private BroadcastReceiver mReceiver;
     private IntentFilter intentFilter;
     private String thumbnailUrl = "";
@@ -323,7 +323,7 @@ public class StudioActivity extends AppCompatActivity {
     public static Visualizer mVisualizer;
     public static boolean IsRepeat = false;
     int RecmaxVolume = 1, MelmaxVolume = 1;
-    public static boolean IsRepeteReAll=false;
+    public static boolean IsRepeteReAll = false;
     private SharedPreferences socialStatusPref;
 
 
@@ -516,7 +516,6 @@ public class StudioActivity extends AppCompatActivity {
 
             if (IscheckMelody == null) {
                 if (melodyPackId != null) {
-
                     fetchInstruments(melodyPackId);
                     JoinActivity.instrumentList.clear();
                     noMelodyNote.setVisibility(View.GONE);
@@ -753,8 +752,8 @@ public class StudioActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
 
-                    if(StudioActivity.PlayAllModel.size()>0){
-                        for(int i=0;i<=StudioActivity.PlayAllModel.size()-1;i++){
+                    if (StudioActivity.PlayAllModel.size() > 0) {
+                        for (int i = 0; i <= StudioActivity.PlayAllModel.size() - 1; i++) {
                             StudioActivity.PlayAllModel.get(i).setRepete(false);
                         }
                     }
@@ -771,7 +770,7 @@ public class StudioActivity extends AppCompatActivity {
                             mediaPlayer.stop();
                             mediaPlayer.release();
                             mediaPlayer = null;
-                        }catch (Exception ex){
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         }
                     }
@@ -834,7 +833,7 @@ public class StudioActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
-                    PrepareInstruments prepareInstruments=new PrepareInstruments();
+                    PrepareInstruments prepareInstruments = new PrepareInstruments();
                     prepareInstruments.cancel(true);
                     if (!recordTask.isCancelled() && recordTask.getStatus() == AsyncTask.Status.RUNNING) {
                         recordTask.cancel(false);
@@ -859,8 +858,8 @@ public class StudioActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 try {
-                    if(StudioActivity.PlayAllModel.size()>0){
-                        for(int i=0;i<=StudioActivity.PlayAllModel.size()-1;i++){
+                    if (StudioActivity.PlayAllModel.size() > 0) {
+                        for (int i = 0; i <= StudioActivity.PlayAllModel.size() - 1; i++) {
                             StudioActivity.PlayAllModel.get(i).setRepete(false);
                         }
                     }
@@ -876,7 +875,7 @@ public class StudioActivity extends AppCompatActivity {
                             mediaPlayer.stop();
                             mediaPlayer.release();
                             mediaPlayer = null;
-                        }catch (Exception ex){
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         }
                     }
@@ -918,7 +917,7 @@ public class StudioActivity extends AppCompatActivity {
                     if (instrumentList.size() > 0) {
                         instrumentList.clear();
                     }
-                    PrepareInstruments prepareInstruments=new PrepareInstruments();
+                    PrepareInstruments prepareInstruments = new PrepareInstruments();
                     prepareInstruments.cancel(false);
                     if (!recordTask.isCancelled() && recordTask.getStatus() == AsyncTask.Status.RUNNING) {
                         recordTask.cancel(false);
@@ -936,8 +935,8 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    if(StudioActivity.PlayAllModel.size()>0){
-                        for(int i=0;i<=StudioActivity.PlayAllModel.size()-1;i++){
+                    if (StudioActivity.PlayAllModel.size() > 0) {
+                        for (int i = 0; i <= StudioActivity.PlayAllModel.size() - 1; i++) {
                             StudioActivity.PlayAllModel.get(i).setRepete(false);
                         }
                     }
@@ -953,7 +952,7 @@ public class StudioActivity extends AppCompatActivity {
                             mediaPlayer.stop();
                             mediaPlayer.release();
                             mediaPlayer = null;
-                        }catch (Exception ex){
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         }
                     }
@@ -994,7 +993,7 @@ public class StudioActivity extends AppCompatActivity {
                     if (instrumentList.size() > 0) {
                         instrumentList.clear();
                     }
-                    PrepareInstruments prepareInstruments=new PrepareInstruments();
+                    PrepareInstruments prepareInstruments = new PrepareInstruments();
                     prepareInstruments.cancel(true);
                     if (!recordTask.isCancelled() && recordTask.getStatus() == AsyncTask.Status.RUNNING) {
                         recordTask.cancel(false);
@@ -1014,8 +1013,8 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    if(StudioActivity.PlayAllModel.size()>0){
-                        for(int i=0;i<=StudioActivity.PlayAllModel.size()-1;i++){
+                    if (StudioActivity.PlayAllModel.size() > 0) {
+                        for (int i = 0; i <= StudioActivity.PlayAllModel.size() - 1; i++) {
                             StudioActivity.PlayAllModel.get(i).setRepete(false);
                         }
                     }
@@ -1031,7 +1030,7 @@ public class StudioActivity extends AppCompatActivity {
                             mediaPlayer.stop();
                             mediaPlayer.release();
                             mediaPlayer = null;
-                        }catch (Exception ex){
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         }
                     }
@@ -1074,7 +1073,7 @@ public class StudioActivity extends AppCompatActivity {
                     if (instrumentList.size() > 0) {
                         instrumentList.clear();
                     }
-                    PrepareInstruments prepareInstruments=new PrepareInstruments();
+                    PrepareInstruments prepareInstruments = new PrepareInstruments();
                     prepareInstruments.cancel(true);
                     if (!recordTask.isCancelled() && recordTask.getStatus() == AsyncTask.Status.RUNNING) {
                         recordTask.cancel(false);
@@ -1094,8 +1093,8 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    if(StudioActivity.PlayAllModel.size()>0){
-                        for(int i=0;i<=StudioActivity.PlayAllModel.size()-1;i++){
+                    if (StudioActivity.PlayAllModel.size() > 0) {
+                        for (int i = 0; i <= StudioActivity.PlayAllModel.size() - 1; i++) {
                             StudioActivity.PlayAllModel.get(i).setRepete(false);
                         }
                     }
@@ -1111,7 +1110,7 @@ public class StudioActivity extends AppCompatActivity {
                             mediaPlayer.stop();
                             mediaPlayer.release();
                             mediaPlayer = null;
-                        }catch (Exception ex){
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         }
                     }
@@ -1154,7 +1153,7 @@ public class StudioActivity extends AppCompatActivity {
                     if (instrumentList.size() > 0) {
                         instrumentList.clear();
                     }
-                    PrepareInstruments prepareInstruments=new PrepareInstruments();
+                    PrepareInstruments prepareInstruments = new PrepareInstruments();
                     prepareInstruments.cancel(true);
                     if (!recordTask.isCancelled() && recordTask.getStatus() == AsyncTask.Status.RUNNING) {
                         recordTask.cancel(false);
@@ -1174,8 +1173,8 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    if(StudioActivity.PlayAllModel.size()>0){
-                        for(int i=0;i<=StudioActivity.PlayAllModel.size()-1;i++){
+                    if (StudioActivity.PlayAllModel.size() > 0) {
+                        for (int i = 0; i <= StudioActivity.PlayAllModel.size() - 1; i++) {
                             StudioActivity.PlayAllModel.get(i).setRepete(false);
                         }
                     }
@@ -1191,7 +1190,7 @@ public class StudioActivity extends AppCompatActivity {
                             mediaPlayer.stop();
                             mediaPlayer.release();
                             mediaPlayer = null;
-                        }catch (Exception ex){
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         }
                     }
@@ -1234,7 +1233,7 @@ public class StudioActivity extends AppCompatActivity {
                     if (instrumentList.size() > 0) {
                         instrumentList.clear();
                     }
-                    PrepareInstruments prepareInstruments=new PrepareInstruments();
+                    PrepareInstruments prepareInstruments = new PrepareInstruments();
                     prepareInstruments.cancel(true);
                     if (!recordTask.isCancelled() && recordTask.getStatus() == AsyncTask.Status.RUNNING) {
                         recordTask.cancel(false);
@@ -1254,8 +1253,8 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    if(StudioActivity.PlayAllModel.size()>0){
-                        for(int i=0;i<=StudioActivity.PlayAllModel.size()-1;i++){
+                    if (StudioActivity.PlayAllModel.size() > 0) {
+                        for (int i = 0; i <= StudioActivity.PlayAllModel.size() - 1; i++) {
                             StudioActivity.PlayAllModel.get(i).setRepete(false);
                         }
                     }
@@ -1271,7 +1270,7 @@ public class StudioActivity extends AppCompatActivity {
                             mediaPlayer.stop();
                             mediaPlayer.release();
                             mediaPlayer = null;
-                        }catch (Exception ex){
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         }
                     }
@@ -1314,7 +1313,7 @@ public class StudioActivity extends AppCompatActivity {
                     if (instrumentList.size() > 0) {
                         instrumentList.clear();
                     }
-                    PrepareInstruments prepareInstruments=new PrepareInstruments();
+                    PrepareInstruments prepareInstruments = new PrepareInstruments();
                     prepareInstruments.cancel(true);
                     if (!recordTask.isCancelled() && recordTask.getStatus() == AsyncTask.Status.RUNNING) {
                         recordTask.cancel(false);
@@ -1623,7 +1622,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    IsRepeteReAll=false;
+                    IsRepeteReAll = false;
                     if (!recordTask.isCancelled() && recordTask.getStatus() == AsyncTask.Status.RUNNING) {
                         recordTask.cancel(false);
                     } else {
@@ -1710,7 +1709,6 @@ public class StudioActivity extends AppCompatActivity {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
 
 
                     stop_rec_time = SystemClock.elapsedRealtime() - StudioActivity.chrono.getBase();
@@ -2126,6 +2124,10 @@ public class StudioActivity extends AppCompatActivity {
     }
 
     public void fetchInstruments(String melodyPackId) {
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         final String mpid = melodyPackId;
         StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
                 new Response.Listener<String>() {
@@ -2138,7 +2140,11 @@ public class StudioActivity extends AppCompatActivity {
 
                         InstrumentCountSize = MelodyInstruments.getInstrumentCount();
                         adapter.notifyDataSetChanged();
-
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
 
                     }
                 },
@@ -2148,6 +2154,11 @@ public class StudioActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
                         String errorMsg = error.toString();
                         Log.d("Error", errorMsg);
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 }) {
             @Override
@@ -2164,7 +2175,10 @@ public class StudioActivity extends AppCompatActivity {
     }
 
     public void fetchInstrumentsForJoin(final String addedBy, final String RecId, final int position) {
-
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, JOINED_USERS,
                 new Response.Listener<String>() {
                     @Override
@@ -2183,6 +2197,11 @@ public class StudioActivity extends AppCompatActivity {
                         new ParseContents(getApplicationContext()).parseJoinInstrument(response, instrumentList, position);
                         InstrumentCountSize = MelodyInstruments.getInstrumentCount();
                         adapter.notifyDataSetChanged();
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                         //   }
 
                     }
@@ -2207,6 +2226,11 @@ public class StudioActivity extends AppCompatActivity {
                         }
 //                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
                     }
                 }) {
             @Override
@@ -2529,15 +2553,15 @@ public class StudioActivity extends AppCompatActivity {
                         SharedPreferences switchFbEditor = getApplicationContext().getSharedPreferences("SwitchStatus", MODE_PRIVATE);
                         int switchFbStatus = switchFbEditor.getInt("switch", 0);
 
-                        AppHelper.sop("fbSwitch=" + socialStatusPref.getBoolean(Const.FB_STATUS,false) +
-                                "=twitterSwitch=" + socialStatusPref.getBoolean(Const.TWITTER_STATUS,false) +
-                                "=googleSwitch" + socialStatusPref.getBoolean(Const.GOOGLE_STATUS,false));
+                        AppHelper.sop("fbSwitch=" + socialStatusPref.getBoolean(Const.FB_STATUS, false) +
+                                "=twitterSwitch=" + socialStatusPref.getBoolean(Const.TWITTER_STATUS, false) +
+                                "=googleSwitch" + socialStatusPref.getBoolean(Const.GOOGLE_STATUS, false));
 
-                        if (socialStatusPref.getBoolean(Const.FB_STATUS,false)) {
+                        if (socialStatusPref.getBoolean(Const.FB_STATUS, false)) {
                             FbShare();
-                        } else if (socialStatusPref.getBoolean(Const.GOOGLE_STATUS,false)) {
+                        } else if (socialStatusPref.getBoolean(Const.GOOGLE_STATUS, false)) {
                             GoogleShare();
-                        } else if (socialStatusPref.getBoolean(Const.TWITTER_STATUS,false)) {
+                        } else if (socialStatusPref.getBoolean(Const.TWITTER_STATUS, false)) {
                             TweetShare();
                         }
 
@@ -3049,7 +3073,7 @@ public class StudioActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         } else if (requestCode == REQUEST_GOOGLE_SHARE) {
-            if (socialStatusPref.getBoolean(Const.TWITTER_STATUS,false)) {
+            if (socialStatusPref.getBoolean(Const.TWITTER_STATUS, false)) {
                 TweetShare();
             }
 
@@ -3298,7 +3322,7 @@ public class StudioActivity extends AppCompatActivity {
             if (StudioActivity.mpInst != null) {
                 StudioActivity.mpInst.stop();
             }
-            PrepareInstruments prepareInstruments=new PrepareInstruments();
+            PrepareInstruments prepareInstruments = new PrepareInstruments();
             prepareInstruments.cancel(true);
             if (!recordTask.isCancelled() && recordTask.getStatus() == AsyncTask.Status.RUNNING) {
                 recordTask.cancel(false);
@@ -3337,19 +3361,20 @@ public class StudioActivity extends AppCompatActivity {
                 editorT.clear();
                 editorT.apply();*/
                 AppHelper.sop("FacebookCallback==onSuccess");
-                if (socialStatusPref.getBoolean(Const.GOOGLE_STATUS,false)) {
+                if (socialStatusPref.getBoolean(Const.GOOGLE_STATUS, false)) {
                     GoogleShare();
-                } else if (socialStatusPref.getBoolean(Const.TWITTER_STATUS,false)) {
+                } else if (socialStatusPref.getBoolean(Const.TWITTER_STATUS, false)) {
                     TweetShare();
                 }
             }
+
             @Override
             public void onCancel() {
                 Toast.makeText(StudioActivity.this, "Recording not Uploaded", Toast.LENGTH_SHORT).show();
                 AppHelper.sop("FacebookCallback==onCancel");
-                if (socialStatusPref.getBoolean(Const.GOOGLE_STATUS,false)) {
+                if (socialStatusPref.getBoolean(Const.GOOGLE_STATUS, false)) {
                     GoogleShare();
-                } else if (socialStatusPref.getBoolean(Const.TWITTER_STATUS,false)) {
+                } else if (socialStatusPref.getBoolean(Const.TWITTER_STATUS, false)) {
                     TweetShare();
                 }
             }
@@ -3357,9 +3382,9 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onError(FacebookException error) {
                 AppHelper.sop("FacebookCallback==onError");
-                if (socialStatusPref.getBoolean(Const.GOOGLE_STATUS,false)) {
+                if (socialStatusPref.getBoolean(Const.GOOGLE_STATUS, false)) {
                     GoogleShare();
-                } else if (socialStatusPref.getBoolean(Const.TWITTER_STATUS,false)) {
+                } else if (socialStatusPref.getBoolean(Const.TWITTER_STATUS, false)) {
                     TweetShare();
                 }
             }
@@ -3697,7 +3722,7 @@ public class StudioActivity extends AppCompatActivity {
         protected void onPreExecute() {
             try {
                 try {
-                    IsRepeteReAll=false;
+                    IsRepeteReAll = false;
                     InstrumentCountSize = 0;
                     frameProgress.setVisibility(View.VISIBLE);
                     if (PlayAllModel.size() > 0) {
@@ -3760,7 +3785,7 @@ public class StudioActivity extends AppCompatActivity {
                             MaxMpSessionID = StudioActivity.mediaPlayersAll.get(i).getAudioSessionId();
                         }
                     }
-                    IsRepeteReAll=true;
+                    IsRepeteReAll = true;
 
 
                     StudioActivity.mpall.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {

@@ -30,22 +30,26 @@
                 android:layout_marginTop="6dp"
                 android:src="@drawable/left_arrow" />
 
-            <RelativeLayout
-                android:id="@+id/rlAppBarSideButton"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+
+            <Button
+                android:id="@+id/appBarSearchDiscoverBtn"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginRight="15dp">
+                android:layout_centerVertical="true"
+                android:layout_marginRight="60dp"
+                android:background="@drawable/search" />
 
-                <Button
-                    android:id="@+id/appBarSearchDiscoverBtn"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_centerVertical="true"
-                    android:background="@drawable/search" />
+            <Button
+                android:id="@+id/Melodybut"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:background="@drawable/melody"
+                />
 
-            </RelativeLayout>
 
             <android.support.v7.widget.SearchView
                 android:id="@+id/searchDiscover"
@@ -92,8 +96,8 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="10dp"
-                android:layout_toLeftOf="@+id/rlAppBarSideButton"
+                android:layout_marginRight="30dp"
+                android:layout_toLeftOf="@+id/appBarSearchDiscoverBtn"
                 android:src="@drawable/filter" />
 
             <ImageView
@@ -184,8 +188,8 @@
                             android:layout_width="16dp"
                             android:layout_height="16dp"
                             android:layout_gravity="end"
-                            android:layout_marginRight="30dp"
                             android:layout_marginEnd="30dp"
+                            android:layout_marginRight="30dp"
                             android:layout_marginTop="2dp"
                             android:background="@drawable/red_circle"
                             android:gravity="center"
