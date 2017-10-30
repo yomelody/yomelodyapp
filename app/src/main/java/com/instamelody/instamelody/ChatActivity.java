@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -176,7 +177,7 @@ public class ChatActivity extends AppCompatActivity {
     public static String group = "";
     public static String sendImageName = "";
     String sendGroupImageName = "";
-    String flagFileType = "0"; // 0 = null, 1 = image file, 2 = station audio file , 3 = admin_melody audio file
+    public static String flagFileType = "0"; // 0 = null, 1 = image file, 2 = station audio file , 3 = admin_melody audio file
     int updateGroupFlag = 0;
     RecordingsModel mRecordingsModel;
     Activity mActivity;
@@ -184,6 +185,7 @@ public class ChatActivity extends AppCompatActivity {
     ImageView songNext, songPre;
     public static Dialog alertDialog;
     public static RelativeLayout fotter;
+    public static ProgressDialog progressDialog;
 
     @TargetApi(18)
     @Override
@@ -191,6 +193,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         mActivity = ChatActivity.this;
+        progressDialog = new ProgressDialog(ChatActivity.this);
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
         SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
@@ -423,7 +426,6 @@ public class ChatActivity extends AppCompatActivity {
 
                 try {
                     if (ChatAdapter.mp != null) {
-                        ChatAdapter.mp.stop();
                         ChatAdapter.mp.reset();
                         ChatAdapter.mp.release();
                     }
@@ -447,7 +449,6 @@ public class ChatActivity extends AppCompatActivity {
                 editor.commit();
                 try {
                     if (ChatAdapter.mp != null) {
-                        ChatAdapter.mp.stop();
                         ChatAdapter.mp.reset();
                         ChatAdapter.mp.release();
                     }
@@ -471,7 +472,6 @@ public class ChatActivity extends AppCompatActivity {
                 editor.commit();
                 try {
                     if (ChatAdapter.mp != null) {
-                        ChatAdapter.mp.stop();
                         ChatAdapter.mp.reset();
                         ChatAdapter.mp.release();
                     }
@@ -705,7 +705,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (rlChatPlayer.getVisibility() == View.VISIBLE) {
                     rlChatPlayer.setVisibility(View.GONE);
-                    ChatAdapter.mp.stop();
+                    ChatAdapter.mp.reset();
                 }
             }
         });
@@ -857,7 +857,6 @@ public class ChatActivity extends AppCompatActivity {
         super.onPause();
         try {
             if (ChatAdapter.mp != null) {
-                ChatAdapter.mp.stop();
                 ChatAdapter.mp.reset();
                 ChatAdapter.mp.release();
             }
@@ -896,7 +895,7 @@ public class ChatActivity extends AppCompatActivity {
                                 rlChatPlayer.setVisibility(View.GONE);
                                 flSeekbar.setVisibility(View.GONE);
                                 if (ChatAdapter.mp != null) {
-                                    ChatAdapter.mp.stop();
+                                    ChatAdapter.mp.reset();
                                     ChatAdapter.mp.release();
                                 }
                             } catch (Throwable e) {
@@ -987,6 +986,13 @@ public class ChatActivity extends AppCompatActivity {
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+
+        int socketTimeout = 60000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
         requestQueue.add(stringRequest);
     }
 
@@ -1615,7 +1621,8 @@ public class ChatActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
     }
-    public void openFrag(){
+
+    public void openFrag() {
         appbar.setVisibility(View.GONE);
         fotter.setVisibility(View.GONE);
         viewImageFragment imageview = new viewImageFragment();

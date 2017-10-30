@@ -35,10 +35,6 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.devbrackets.android.exomedia.EMAudioPlayer;
-import com.devbrackets.android.exomedia.listener.OnCompletionListener;
-import com.devbrackets.android.exomedia.listener.OnErrorListener;
-import com.devbrackets.android.exomedia.listener.OnPreparedListener;
 import com.instamelody.instamelody.JoinActivity;
 import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Models.JoinedUserProfile;
@@ -88,7 +84,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     String RECORDING_ID = "rid";
     String STATUS = "status";
     ProgressDialog progressDialog;
-    public static EMAudioPlayer mp;
+    public static MediaPlayer mp;
     String userId = "";
     RelativeLayout rlLike;
     public static int click_pos = 0;
@@ -497,7 +493,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     JoinActivity.play_count.setText(String.valueOf(playValue));
                     fetchViewCount(userId, recording_id);
                 }
-                mp = new EMAudioPlayer(context);
+                mp = new MediaPlayer();
                 mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 try {
                     if (posForStudio != 0) {
@@ -514,67 +510,49 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
-                mp.setOnPreparedListener(new OnPreparedListener() {
+
+                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
-                    public void onPrepared() {
+                    public void onPrepared(MediaPlayer mp) {
                         progressDialog.dismiss();
                         mp.start();
                         JoinActivity.chrono.setBase(SystemClock.elapsedRealtime());
                         JoinActivity.chrono.start();
-                        initEMAudio(mp);
+                        initAudio(mp);
+                        /*try {
+                            if (mRecordingThread == null) {
+                                mShouldContinue = true;
+                                mRecordingThread = new RecordingThread();
+                                mRecordingThread.start();
+                            } else if (!mRecordingThread.isAlive()) {
+                                try {
+                                    mShouldContinue = true;
+                                    mRecordingThread = new RecordingThread();
+                                    mRecordingThread.start();
+                                } catch (Throwable e) {
+                                    e.printStackTrace();
+                                }
+
+                            } else {
+                                mRecordingThread.stopRunning();
+                            }
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }*/
+
+
                     }
                 });
-
-
-//                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-//                    @Override
-//                    public void onPrepared(MediaPlayer mp) {
-//                        progressDialog.dismiss();
-//                        mp.start();
-//                        JoinActivity.chrono.setBase(SystemClock.elapsedRealtime());
-//                        JoinActivity.chrono.start();
-//                        initAudio(mp);
-//                        /*try {
-//                            if (mRecordingThread == null) {
-//                                mShouldContinue = true;
-//                                mRecordingThread = new RecordingThread();
-//                                mRecordingThread.start();
-//                            } else if (!mRecordingThread.isAlive()) {
-//                                try {
-//                                    mShouldContinue = true;
-//                                    mRecordingThread = new RecordingThread();
-//                                    mRecordingThread.start();
-//                                } catch (Throwable e) {
-//                                    e.printStackTrace();
-//                                }
-//
-//                            } else {
-//                                mRecordingThread.stopRunning();
-//                            }
-//                        } catch (NullPointerException e) {
-//                            e.printStackTrace();
-//                        }*/
-//
-//
-//                    }
-//                });
-                mp.setOnErrorListener(new OnErrorListener() {
+                mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                     @Override
-                    public boolean onError() {
+                    public boolean onError(MediaPlayer mp, int what, int extra) {
                         progressDialog.dismiss();
                         return false;
                     }
                 });
-//                mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-//                    @Override
-//                    public boolean onError(MediaPlayer mp, int what, int extra) {
-//                        progressDialog.dismiss();
-//                        return false;
-//                    }
-//                });
-                mp.setOnCompletionListener(new OnCompletionListener() {
+                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
-                    public void onCompletion() {
+                    public void onCompletion(MediaPlayer mp) {
                         JoinActivity.chrono.stop();
                         if (JoinActivity.mVisualizer != null) {
                             JoinActivity.mVisualizer.release();
@@ -584,18 +562,6 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         progressDialog.dismiss();
                     }
                 });
-//                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//                    @Override
-//                    public void onCompletion(MediaPlayer mp) {
-//                        JoinActivity.chrono.stop();
-//                        if (JoinActivity.mVisualizer != null) {
-//                            JoinActivity.mVisualizer.release();
-//                        }
-//                        JoinActivity.ivJoinPlay.setVisibility(VISIBLE);
-//                        JoinActivity.ivJoinPause.setVisibility(GONE);
-//                        progressDialog.dismiss();
-//                    }
-//                });
 
             }
         });
@@ -664,7 +630,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         fetchViewCount(userId, recording_id);
                     }
 
-                    mp = new EMAudioPlayer(context);
+                    mp = new MediaPlayer();
                     mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
                     try {
                         Uri url = Uri.parse(join.getRecording_url());
@@ -673,44 +639,29 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
-                    mp.setOnPreparedListener(new OnPreparedListener() {
+
+                    mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
-                        public void onPrepared() {
+                        public void onPrepared(MediaPlayer mp) {
+                            progressDialog.dismiss();
                             mp.start();
                             JoinActivity.chrono.setBase(SystemClock.elapsedRealtime());
                             JoinActivity.chrono.start();
-                            initEMAudio(mp);
+                            initAudio(mp);
+
+
                         }
                     });
-//                    mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-//                        @Override
-//                        public void onPrepared(MediaPlayer mp) {
-//                            progressDialog.dismiss();
-//                            mp.start();
-//                            JoinActivity.chrono.setBase(SystemClock.elapsedRealtime());
-//                            JoinActivity.chrono.start();
-//                            initAudio(mp);
-//
-//
-//                        }
-//                    });
-                    mp.setOnErrorListener(new OnErrorListener() {
+                    mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                         @Override
-                        public boolean onError() {
+                        public boolean onError(MediaPlayer mp, int what, int extra) {
                             progressDialog.dismiss();
                             return false;
                         }
                     });
-//                    mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-//                        @Override
-//                        public boolean onError(MediaPlayer mp, int what, int extra) {
-//                            progressDialog.dismiss();
-//                            return false;
-//                        }
-//                    });
-                    mp.setOnCompletionListener(new OnCompletionListener() {
+                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
-                        public void onCompletion() {
+                        public void onCompletion(MediaPlayer mp) {
                             JoinActivity.chrono.stop();
                             if (JoinActivity.mVisualizer != null) {
                                 JoinActivity.mVisualizer.release();
@@ -719,7 +670,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                             JoinActivity.ivJoinPause.setVisibility(GONE);
                             progressDialog.dismiss();
                             try {
-                                mp.reset();
+                                mp.stop();
                                 mp.release();
                                 mp = null;
                             } catch (Exception ex) {
@@ -727,25 +678,6 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                             }
                         }
                     });
-//                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//                        @Override
-//                        public void onCompletion(MediaPlayer mp) {
-//                            JoinActivity.chrono.stop();
-//                            if (JoinActivity.mVisualizer != null) {
-//                                JoinActivity.mVisualizer.release();
-//                            }
-//                            JoinActivity.ivJoinPlay.setVisibility(VISIBLE);
-//                            JoinActivity.ivJoinPause.setVisibility(GONE);
-//                            progressDialog.dismiss();
-//                            try {
-//                                mp.stop();
-//                                mp.release();
-//                                mp = null;
-//                            } catch (Exception ex) {
-//                                ex.printStackTrace();
-//                            }
-//                        }
-//                    });
                 }
                 Log.d("Next play", "" + realPosition);
 
@@ -818,7 +750,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                             fetchViewCount(userId, recording_id);
                         }
 
-                        mp = new EMAudioPlayer(context);
+                        mp = new MediaPlayer();
                         mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
                         try {
                             Uri url=Uri.parse(join.getRecording_url());
@@ -827,45 +759,32 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         } catch (Throwable e) {
                             e.printStackTrace();
                         }
-                        mp.setOnPreparedListener(new OnPreparedListener() {
+
+
+                        mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                             @Override
-                            public void onPrepared() {
+                            public void onPrepared(MediaPlayer mp) {
+                                progressDialog.dismiss();
                                 mp.start();
                                 JoinActivity.chrono.setBase(SystemClock.elapsedRealtime());
                                 JoinActivity.chrono.start();
-                                initEMAudio(mp);
+                                initAudio(mp);
+
+
                             }
                         });
 
-//                        mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-//                            @Override
-//                            public void onPrepared(MediaPlayer mp) {
-//                                progressDialog.dismiss();
-//                                mp.start();
-//                                JoinActivity.chrono.setBase(SystemClock.elapsedRealtime());
-//                                JoinActivity.chrono.start();
-//                                initAudio(mp);
-//
-//
-//                            }
-//                        });
-                        mp.setOnErrorListener(new OnErrorListener() {
+                        mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                             @Override
-                            public boolean onError() {
+                            public boolean onError(MediaPlayer mp, int what, int extra) {
                                 progressDialog.dismiss();
                                 return false;
                             }
                         });
-//                        mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-//                            @Override
-//                            public boolean onError(MediaPlayer mp, int what, int extra) {
-//                                progressDialog.dismiss();
-//                                return false;
-//                            }
-//                        });
-                        mp.setOnCompletionListener(new OnCompletionListener() {
+
+                        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                             @Override
-                            public void onCompletion() {
+                            public void onCompletion(MediaPlayer mp) {
                                 JoinActivity.chrono.stop();
                                 if (JoinActivity.mVisualizer != null) {
                                     JoinActivity.mVisualizer.release();
@@ -874,34 +793,15 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                 JoinActivity.ivJoinPause.setVisibility(GONE);
                                 progressDialog.dismiss();
                                 try {
-                                    mp.reset();
+                                    mp.stop();
                                     mp.release();
                                     mp = null;
                                 } catch (Exception ex) {
                                     ex.printStackTrace();
                                 }
+
                             }
                         });
-//                        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//                            @Override
-//                            public void onCompletion(MediaPlayer mp) {
-//                                JoinActivity.chrono.stop();
-//                                if (JoinActivity.mVisualizer != null) {
-//                                    JoinActivity.mVisualizer.release();
-//                                }
-//                                JoinActivity.ivJoinPlay.setVisibility(VISIBLE);
-//                                JoinActivity.ivJoinPause.setVisibility(GONE);
-//                                progressDialog.dismiss();
-//                                try {
-//                                    mp.stop();
-//                                    mp.release();
-//                                    mp = null;
-//                                } catch (Exception ex) {
-//                                    ex.printStackTrace();
-//                                }
-//
-//                            }
-//                        });
 
                     } catch (IndexOutOfBoundsException e) {
                         e.printStackTrace();
@@ -1215,28 +1115,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
     }
 
-    public void initEMAudio(EMAudioPlayer mpst) {
-        //setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        //mMediaPlayer = mpst;
 
-        setupVisualizerFxAndUIEM(mpst);
-        // Make sure the visualizer is enabled only when you actually want to
-        // receive data, and
-        // when it makes sense to receive data.
-        JoinActivity.mVisualizer.setEnabled(true);
-        // When the stream ends, we don't need to collect any more data. We
-        // don't do this in
-        // setupVisualizerFxAndUI because we likely want to have more,
-        // non-Visualizer related code
-        // in this callback.
-       /* mpst.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    public void onCompletion(MediaPlayer mediaPlayer) {
-                        mVisualizer.setEnabled(false);
-                    }
-                });*/
-        //mpst.start();
-
-    }
 
     private void setupVisualizerFxAndUI(MediaPlayer mpvis) {
 
@@ -1256,21 +1135,5 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                 }, Visualizer.getMaxCaptureRate() / 2, true, false);
     }
 
-    private void setupVisualizerFxAndUIEM(EMAudioPlayer mpvis) {
 
-        // Create the Visualizer object and attach it to our media player.
-        JoinActivity.mVisualizer = new Visualizer(mpvis.getAudioSessionId());
-        JoinActivity.mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
-        JoinActivity.mVisualizer.setDataCaptureListener(
-                new Visualizer.OnDataCaptureListener() {
-                    public void onWaveFormDataCapture(Visualizer visualizer,
-                                                      byte[] bytes, int samplingRate) {
-                        JoinActivity.mVisualizerView.updateVisualizer(bytes);
-                    }
-
-                    public void onFftDataCapture(Visualizer visualizer,
-                                                 byte[] bytes, int samplingRate) {
-                    }
-                }, Visualizer.getMaxCaptureRate() / 2, true, false);
-    }
 }

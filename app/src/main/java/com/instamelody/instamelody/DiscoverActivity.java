@@ -166,7 +166,7 @@ public class DiscoverActivity extends AppCompatActivity {
         message_count = (TextView) findViewById(R.id.message_count);
         rlViewPagerMain = (RelativeLayout) findViewById(R.id.rlViewPagerMain);
         recyclerViewPager = (RecyclerViewPager) findViewById(R.id.recyclerViewPager);
-        recyclerViewPagerIndicator = (CircleIndicator) findViewById(R.id.recyclerViewPagerIndicator);
+       // recyclerViewPagerIndicator = (CircleIndicator) findViewById(R.id.recyclerViewPagerIndicator);
         recyclerViewPager.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         adapterAdvertiseMent = new DiscoverAdapter(pagingDataArrayList, getApplicationContext());
         recyclerViewPager.setAdapter(adapterAdvertiseMent);
