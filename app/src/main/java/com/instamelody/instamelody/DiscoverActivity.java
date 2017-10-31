@@ -13,11 +13,13 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -27,11 +29,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.support.wearable.view.DotsPageIndicator;
+import android.widget.Toolbar;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
@@ -74,6 +79,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Handler;
 
 import me.relex.circleindicator.CircleIndicator;
 
@@ -126,12 +132,12 @@ public class DiscoverActivity extends AppCompatActivity {
     String userIdNormal, userIdFb, userIdTwitter, artistName, Instruments, BPM;
     int statusNormal, statusFb, statusTwitter;
     ProgressDialog progressDialog;
-//    LongOperation myTask = null;
+    //    LongOperation myTask = null;
     RelativeLayout rlDiscoverSearch, rlViewPagerMain;
     android.support.v7.widget.SearchView search2;
     Button btnCancel;
-    RecyclerViewPager recyclerViewPager;
-    RecyclerViewPager.Adapter adapterAdvertiseMent;
+    ViewPager recyclerViewPager;
+    DiscoverAdapter adapterAdvertiseMent;
     CircleIndicator recyclerViewPagerIndicator;
     DotsPageIndicator page_indicator;
     Activity mActivity;
@@ -139,13 +145,14 @@ public class DiscoverActivity extends AppCompatActivity {
     BroadcastReceiver mRegistrationBroadcastReceiver;
     int totalCount = 0;
     LinearLayoutManager linearLayoutManager;
-    private String msgUnsuccess="No record found.";
-    private final int count=10;
-    private boolean isLoading=false;
-    private boolean isLastPage=false;
-    private String limit="limit";
-
-
+    private String msgUnsuccess = "No record found.";
+    private final int count = 10;
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
+    private String limit = "limit";
+    Button Melodybut;
+    LinearLayout ll_dots;
+    private TextView[] dots;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -157,7 +164,7 @@ public class DiscoverActivity extends AppCompatActivity {
         progressDialog.setMessage("Please wait...");
         progressDialog.setCancelable(false);
         clearSharedPref();
-
+        Melodybut = (Button) findViewById(R.id.Melodybut);
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
         discover = (ImageView) findViewById(R.id.discover);
         message = (ImageView) findViewById(R.id.message);
@@ -165,14 +172,29 @@ public class DiscoverActivity extends AppCompatActivity {
         ivProfile = (ImageView) findViewById(R.id.ivProfileD);
         message_count = (TextView) findViewById(R.id.message_count);
         rlViewPagerMain = (RelativeLayout) findViewById(R.id.rlViewPagerMain);
-        recyclerViewPager = (RecyclerViewPager) findViewById(R.id.recyclerViewPager);
-       // recyclerViewPagerIndicator = (CircleIndicator) findViewById(R.id.recyclerViewPagerIndicator);
-        recyclerViewPager.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        adapterAdvertiseMent = new DiscoverAdapter(pagingDataArrayList, getApplicationContext());
+        recyclerViewPager = (ViewPager) findViewById(R.id.vp_slider);
+        ll_dots = (LinearLayout) findViewById(R.id.ll_dots);
+        advertisePaging();
+
+
+        adapterAdvertiseMent = new DiscoverAdapter(pagingDataArrayList, DiscoverActivity.this);
         recyclerViewPager.setAdapter(adapterAdvertiseMent);
-        PagerSnapHelper snapHelper = new PagerSnapHelper();
-        snapHelper.attachToRecyclerView(recyclerViewPager);
-        recyclerViewPager.addItemDecoration(new PagerIndicator());
+        recyclerViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                addBottomDots(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
 
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
@@ -227,7 +249,7 @@ public class DiscoverActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        advertisePaging();
+
         if (userId != null && userId != "") {
             adapter = new RecordingsCardAdapter(mActivity, recordingList, recordingsPools);
             fetchGenreNames();
@@ -254,6 +276,13 @@ public class DiscoverActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
                 startActivity(intent);
+            }
+        });
+        Melodybut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent it = new Intent(getApplicationContext(), MelodyActivity.class);
+                startActivity(it);
             }
         });
 
@@ -413,6 +442,22 @@ public class DiscoverActivity extends AppCompatActivity {
             fetchRecordingsFilter();
         }
     }
+    private void addBottomDots(int currentPage) {
+        dots = new TextView[pagingDataArrayList.size()];
+
+        ll_dots.removeAllViews();
+        for (int i = 0; i < dots.length; i++) {
+            dots[i] = new TextView(this);
+            dots[i].setText(Html.fromHtml("&#8226;"));
+            dots[i].setTextSize(35);
+            dots[i].setTextColor(Color.parseColor("#FFFFFF"));
+            ll_dots.addView(dots[i]);
+        }
+
+        if (dots.length >= 0)
+            dots[currentPage].setTextColor(Color.parseColor("#000000"));
+    }
+
 
     public void fetchGenreNames() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
@@ -498,6 +543,7 @@ public class DiscoverActivity extends AppCompatActivity {
                         Log.d("AdvertisementData", response);
                         pagingDataArrayList.clear();
                         new ParseContents(getApplicationContext()).parseAdvertisePaging(response, pagingDataArrayList);
+                        addBottomDots(0);
                         adapterAdvertiseMent.notifyDataSetChanged();
                     }
                 },
@@ -536,32 +582,31 @@ public class DiscoverActivity extends AppCompatActivity {
                             String flag = jsonObject.getString("flag");
                             if (flag.equals("unsuccess")) {
                                 Toast.makeText(mActivity, msgUnsuccess, Toast.LENGTH_SHORT).show();
-                                isLastPage=true;
-                            }
-                            else {
-                                isLastPage=false;
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-                        AppHelper.sop("response=fetchRecordings="+response);
-                        if (recordingList.size()<=0){
+                        AppHelper.sop("response=fetchRecordings=" + response);
+                        if (recordingList.size() <= 0) {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
                         new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
-                        isLoading=false;
+                        isLoading = false;
                         progressDialog.dismiss();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        isLoading=false;
-                        isLastPage=false;
+                        isLoading = false;
+                        isLastPage = false;
                         String errorMsg = error.toString();
                         Log.d("Error", errorMsg);
                         progressDialog.dismiss();
@@ -573,9 +618,9 @@ public class DiscoverActivity extends AppCompatActivity {
                 params.put(ID, userId);
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
-                params.put(limit, recordingList.size()+"");
+                params.put(limit, recordingList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=fetchRecordings="+params+"\nURL=="+RECORDINGS);
+                AppHelper.sop("params=fetchRecordings=" + params + "\nURL==" + RECORDINGS);
                 return params;
             }
         };
@@ -594,37 +639,36 @@ public class DiscoverActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response=filter="+response);
+                        AppHelper.sop("response=filter=" + response);
                         try {
                             JSONObject jsonObject = new JSONObject(response);
                             String flag = jsonObject.getString("flag");
                             if (flag.equals("unsuccess")) {
                                 Toast.makeText(mActivity, msgUnsuccess, Toast.LENGTH_SHORT).show();
-                                isLastPage=true;
-                            }
-                            else {
-                                isLastPage=false;
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-                        if (recordingList.size()<=0){
+                        if (recordingList.size() <= 0) {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
                         new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
-                        isLoading=false;
+                        isLoading = false;
                         progressDialog.dismiss();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        isLoading=false;
-                        isLastPage=false;
+                        isLoading = false;
+                        isLastPage = false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -653,9 +697,9 @@ public class DiscoverActivity extends AppCompatActivity {
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
                 params.put(FILTER, "extrafilter");
-                params.put(limit, recordingList.size()+"");
+                params.put(limit, recordingList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=filter="+params+"\nURL=="+RECORDINGS);
+                AppHelper.sop("params=filter=" + params + "\nURL==" + RECORDINGS);
                 return params;
             }
         };
@@ -816,37 +860,36 @@ public class DiscoverActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response=artist="+response);
+                        AppHelper.sop("response=artist=" + response);
                         try {
                             JSONObject jsonObject = new JSONObject(response);
                             String flag = jsonObject.getString("flag");
                             if (flag.equals("unsuccess")) {
                                 Toast.makeText(mActivity, msgUnsuccess, Toast.LENGTH_SHORT).show();
-                                isLastPage=true;
-                            }
-                            else {
-                                isLastPage=false;
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-                        if (recordingList.size()<=0){
+                        if (recordingList.size() <= 0) {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
                         new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
-                        isLoading=false;
+                        isLoading = false;
                         progressDialog.dismiss();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        isLoading=false;
-                        isLastPage=false;
+                        isLoading = false;
+                        isLastPage = false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -875,9 +918,9 @@ public class DiscoverActivity extends AppCompatActivity {
                 params.put(FILTER_TYPE, strName);
                 params.put(USER_NAME, artistName);
                 params.put(FILTER, "extrafilter");
-                params.put(limit, recordingList.size()+"");
+                params.put(limit, recordingList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=artist="+params+"\nURL=="+RECORDINGS);
+                AppHelper.sop("params=artist=" + params + "\nURL==" + RECORDINGS);
                 return params;
             }
         };
@@ -894,29 +937,28 @@ public class DiscoverActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response=search="+response);
+                        AppHelper.sop("response=search=" + response);
                         try {
                             JSONObject jsonObject = new JSONObject(response);
                             String flag = jsonObject.getString("flag");
                             if (flag.equals("unsuccess")) {
                                 Toast.makeText(mActivity, msgUnsuccess, Toast.LENGTH_SHORT).show();
-                                isLastPage=true;
-                            }
-                            else {
-                                isLastPage=false;
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-                        if (recordingList.size()<=0){
+                        if (recordingList.size() <= 0) {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
                         new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
-                        isLoading=false;
+                        isLoading = false;
                         progressDialog.dismiss();
                     }
                 },
@@ -924,8 +966,8 @@ public class DiscoverActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         String errorMsg = "";
-                        isLoading=false;
-                        isLastPage=false;
+                        isLoading = false;
+                        isLastPage = false;
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
                         } else if (error instanceof NoConnectionError) {
@@ -949,9 +991,9 @@ public class DiscoverActivity extends AppCompatActivity {
                 params.put(ID, userId);
                 params.put(KEY, STATION);
                 params.put(KEY_SEARCH, strSearch);
-                params.put(limit, recordingList.size()+"");
+                params.put(limit, recordingList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=search="+params+"\nURL=="+RECORDINGS);
+                AppHelper.sop("params=search=" + params + "\nURL==" + RECORDINGS);
                 return params;
             }
         };
@@ -965,37 +1007,36 @@ public class DiscoverActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response=instrument="+response);
+                        AppHelper.sop("response=instrument=" + response);
                         try {
                             JSONObject jsonObject = new JSONObject(response);
                             String flag = jsonObject.getString("flag");
                             if (flag.equals("unsuccess")) {
                                 Toast.makeText(mActivity, msgUnsuccess, Toast.LENGTH_SHORT).show();
-                                isLastPage=true;
-                            }
-                            else {
-                                isLastPage=false;
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-                        if (recordingList.size()<=0){
+                        if (recordingList.size() <= 0) {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
                         new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
-                        isLoading=false;
+                        isLoading = false;
                         progressDialog.dismiss();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        isLoading=false;
-                        isLastPage=false;
+                        isLoading = false;
+                        isLastPage = false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -1024,9 +1065,9 @@ public class DiscoverActivity extends AppCompatActivity {
                 params.put(FILTER_TYPE, "Instruments");
                 params.put(COUNT, Instruments);
                 params.put(FILTER, "extrafilter");
-                params.put(limit, recordingList.size()+"");
+                params.put(limit, recordingList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=instrument="+params+"\nURL=="+RECORDINGS);
+                AppHelper.sop("params=instrument=" + params + "\nURL==" + RECORDINGS);
                 return params;
             }
         };
@@ -1040,37 +1081,36 @@ public class DiscoverActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response=BPM="+response);
+                        AppHelper.sop("response=BPM=" + response);
                         try {
                             JSONObject jsonObject = new JSONObject(response);
                             String flag = jsonObject.getString("flag");
                             if (flag.equals("unsuccess")) {
                                 Toast.makeText(mActivity, msgUnsuccess, Toast.LENGTH_SHORT).show();
-                                isLastPage=true;
-                            }
-                            else {
-                                isLastPage=false;
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-                        if (recordingList.size()<=0){
+                        if (recordingList.size() <= 0) {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
                         new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
-                        isLoading=false;
+                        isLoading = false;
                         progressDialog.dismiss();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        isLoading=false;
-                        isLastPage=false;
+                        isLoading = false;
+                        isLastPage = false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -1099,9 +1139,9 @@ public class DiscoverActivity extends AppCompatActivity {
                 params.put(FILTER_TYPE, strName);
                 params.put(COUNT, BPM);
                 params.put(FILTER, "extrafilter");
-                params.put(limit, recordingList.size()+"");
+                params.put(limit, recordingList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=BPM="+params+"\nURL=="+RECORDINGS);
+                AppHelper.sop("params=BPM=" + params + "\nURL==" + RECORDINGS);
                 return params;
             }
         };
@@ -1139,8 +1179,8 @@ public class DiscoverActivity extends AppCompatActivity {
 
                             if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount &&
                                     firstVisibleItemPosition >= 0 && totalItemCount >= count) {
-                                isLoading=true;
-                                if(AppHelper.checkNetworkConnection(mActivity)){
+                                isLoading = true;
+                                if (AppHelper.checkNetworkConnection(mActivity)) {
                                     callApi();
                                 }
                             }

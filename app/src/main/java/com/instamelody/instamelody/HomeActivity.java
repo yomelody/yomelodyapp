@@ -96,7 +96,7 @@ public class HomeActivity extends AppCompatActivity {
     public static HomeActivity fa;
     TextView tvFirstName, tvUserName, message_count;
     String Name, userName, profilePic, fbEmail, profilepic2, fbFirstName, fbUserName, fbLastName, fbProfilePic, name2, userName2, galleryPrfPic, fbId;
-    String firstName, lastName, userNameLogin, profilePicLogin, userIdNormal;
+    String firstName, lastName, userNameLogin, profilePicLogin, userId;
     int statusNormal, statusFb, statusTwitter;
     CircleImageView userProfileImage;
     int totalCount = 0;
@@ -132,14 +132,26 @@ public class HomeActivity extends AppCompatActivity {
         userProfileImage = (CircleImageView) findViewById(R.id.userProfileImage);
 
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+        SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
         firstName = loginSharedPref.getString("firstName", null);
         lastName = loginSharedPref.getString("lastName", null);
         userNameLogin = loginSharedPref.getString("userName", null);
         profilePicLogin = loginSharedPref.getString("profilePic", null);
-        userIdNormal = loginSharedPref.getString("userId", null);
+        //  userIdNormal = loginSharedPref.getString("userId", null);
         statusNormal = loginSharedPref.getInt("status", 0);
 
-        getTotalCount();
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
+        }
+        if (userId != null) {
+            getTotalCount();
+        }
+
 
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -164,7 +176,6 @@ public class HomeActivity extends AppCompatActivity {
             Picasso.with(HomeActivity.this).load(profilePicLogin).into(userProfileImage);
         }
 
-        SharedPreferences twitterPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
         Name = twitterPref.getString("Name", null);
         userName = twitterPref.getString("userName", null);
         profilePic = twitterPref.getString("profilePic", null);
@@ -183,7 +194,7 @@ public class HomeActivity extends AppCompatActivity {
             Picasso.with(HomeActivity.this).load(profilePic).into(userProfileImage);
         }
 
-        SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+
         fbFirstName = fbPref.getString("FbName", null);
         fbLastName = fbPref.getString("FbLastName", null);
         fbId = fbPref.getString("fbId", null);
@@ -468,7 +479,7 @@ public class HomeActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                params.put(USER_ID, userIdNormal);
+                params.put(USER_ID, userId);
                 return params;
             }
         };
@@ -522,7 +533,7 @@ public class HomeActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                params.put("userid", userIdNormal);
+                params.put("userid", userId);
                 return params;
             }
         };

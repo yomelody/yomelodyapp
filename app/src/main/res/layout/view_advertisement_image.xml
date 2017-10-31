@@ -7,7 +7,7 @@
     <RelativeLayout
         android:id="@+id/rlViewPagerMain"
         android:layout_width="match_parent"
-        android:layout_height="140dp">
+        android:layout_height="150dp">
 
         <ImageView
             android:id="@+id/ivAdvertiseImage"
