@@ -73,10 +73,9 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
 public class MelodyPacksFragment extends Fragment {
 
 
-    RecyclerView.Adapter adapter, adapter1;
-    ArrayList<MelodyCard> melodyList = new ArrayList<>();
-    ArrayList<RecordingsModel> recordingList = new ArrayList<>();
-    ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
+    RecyclerView.Adapter adapter;
+    private ArrayList<MelodyCard> melodyList = new ArrayList<>();
+    ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     String KEY_GENRE_NAME = "name";
     String KEY_FLAG = "flag";
     String KEY_GENRE_ID = "id";
@@ -93,12 +92,9 @@ public class MelodyPacksFragment extends Fragment {
     private String USER_NAME = "username";
     private String COUNT = "count";
 
-    String home;
-    ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     String KEY_MSG = "msg";
     String packName;
     String packId = "0";
-    String resp;
     String strName, strSearch, strArtist, strInstruments, strBPM;
     String userId;
 
@@ -109,8 +105,6 @@ public class MelodyPacksFragment extends Fragment {
     private String FILTER = "filter";
     private String SAVE_MELODY = "save_melody";
     ArrayList<Genres> genresArrayList = new ArrayList<>();
-    ArrayList<UserMelodyCard> userMelodyList = new ArrayList<>();
-    ArrayList<UserMelodyPlay> melodyPools = new ArrayList<>();
     TabHost host = null;
     ProgressDialog progressDialog;
     LinearLayoutManager linearLayoutManager;
@@ -961,6 +955,15 @@ public class MelodyPacksFragment extends Fragment {
                 return rv;
             }
         };
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (adapter!=null){
+            ((MelodyCardListAdapter)adapter).killMediaPlayer();
+        }
     }
 
     @Override

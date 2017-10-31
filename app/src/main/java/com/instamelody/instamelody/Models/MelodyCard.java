@@ -1,5 +1,7 @@
 package com.instamelody.instamelody.Models;
 
+import java.util.ArrayList;
+
 /**
  * Created by Shubhansh Jaiswal on 12/2/2016.
  */
@@ -21,6 +23,7 @@ public class MelodyCard {
     String genreName;
     int LikeStatus;
     String MelodyURL;
+    ArrayList<MelodyInstruments> melodyInstrumentsList;
 
     public String getMelodyPackId() {
         return melodyPackId;
@@ -169,6 +172,14 @@ public class MelodyCard {
 
     public String getMelodyLength() {
         return melodyLength;
+    }
+
+    public ArrayList<MelodyInstruments> getMelodyInstrumentsList() {
+        return melodyInstrumentsList;
+    }
+
+    public void setMelodyInstrumentsList(ArrayList<MelodyInstruments> melodyInstrumentsList) {
+        this.melodyInstrumentsList = melodyInstrumentsList;
     }
 
     public void setMelodyLength(String melodyLength) {

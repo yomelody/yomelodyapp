@@ -24,6 +24,7 @@ import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Models.SharedAudios;
 import com.instamelody.instamelody.Models.SubscriptionPackage;
 import com.instamelody.instamelody.StudioActivity;
+import com.instamelody.instamelody.utils.AppHelper;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -50,6 +51,7 @@ public class ParseContents {
     ArrayList<MelodyCard> melodyList = new ArrayList<>();
     ArrayList<Genres> genreList = new ArrayList<>();
     static ArrayList<MelodyInstruments> instrumentsList = new ArrayList<>();
+    ArrayList<MelodyInstruments> instrumentsListLocal = new ArrayList<>();
     String KEY_FLAG = "flag";
     String KEY_INFO = "info";
     String KEY_RESPONSE = "response";//JSONArray
@@ -106,7 +108,7 @@ public class ParseContents {
     JSONArray audiosDetailsArray;
 
     public ArrayList<MelodyCard> parseMelodyPacks(String response, ArrayList<MelodyCard> melodyList, ArrayList<MelodyInstruments> instrumentList) {
-
+        instrumentsListLocal.clear();
         JSONObject jsonObject;
         JSONArray jsonArray, instrumentArray;
         try {
@@ -114,6 +116,7 @@ public class ParseContents {
             if (jsonObject.getString(KEY_FLAG).equals("success")) {
                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                 for (int i = 0; i < jsonArray.length(); i++) {
+                    instrumentsListLocal.clear();
                     MelodyCard card = new MelodyCard();
                     JSONObject cardJson = jsonArray.getJSONObject(i);
                     card.setMelodyPackId(cardJson.getString(KEY_MELODY_PACK_ID));
@@ -153,8 +156,12 @@ public class ParseContents {
                         melodyInstruments.setInstrumentCover(instrumentsJson.getString(KEY_INSTRUMENT_COVER_PIC));
                         melodyInstruments.setUserName(instrumentsJson.getString(KEY_INSTRUMENT_USERNAME));
                         instrumentList.add(melodyInstruments);
-
+                        instrumentsListLocal.add(melodyInstruments);
                     }
+                    AppHelper.sop("=instrumentsListLocal=size="+instrumentsListLocal.size());
+//                    AppHelper.sop("=instrumentArray=size="+instrumentArray.length());
+                    card.setMelodyInstrumentsList(instrumentsListLocal);
+
                     instrumentsList = instrumentList;
                     melodyList.add(card);
 
