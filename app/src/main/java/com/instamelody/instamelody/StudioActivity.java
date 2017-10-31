@@ -1605,6 +1605,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     recyclerViewInstruments.smoothScrollToPosition(instrumentList.size());
 
                     //executeAsyncTask();

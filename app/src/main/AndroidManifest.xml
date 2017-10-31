@@ -69,7 +69,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
         <activity
             android:name=".StudioActivity"
             android:configChanges="orientation"
@@ -199,21 +198,6 @@
             android:name=".StationCommentActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_melody"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".Payemo.MainActivity"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".Payemo.CreateTransactionActivity"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".Payemo.SettingsActivity"
-            android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
 
