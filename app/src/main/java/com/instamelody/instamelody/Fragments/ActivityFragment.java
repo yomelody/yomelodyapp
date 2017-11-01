@@ -148,6 +148,7 @@ public class ActivityFragment extends Fragment {
             });
 
         } else {
+            Norecord.setVisibility(View.VISIBLE);
             Toast.makeText(getActivity().getBaseContext(), "Please login to see user activity", Toast.LENGTH_SHORT).show();
         }
 
@@ -197,7 +198,7 @@ public class ActivityFragment extends Fragment {
                                     isLastPage = false;
                                 } else {
                                     Norecord.setVisibility(View.VISIBLE);
-                                  //  StationActivity.ivStationSearch.setVisibility(View.GONE);
+                                    //  StationActivity.ivStationSearch.setVisibility(View.GONE);
                                     // Toast.makeText(mActivity, msgUnsuccess, Toast.LENGTH_SHORT).show();
                                     isLastPage = true;
                                 }
