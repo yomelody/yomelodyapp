@@ -101,7 +101,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     private Activity mActivity;
     String position, audioUrl;
     private RecyclerView.ViewHolder lastModifiedHoled = null;
-    int instCount=0;
+    int instCount = 0;
 
 
     public MelodyCardListAdapter(ArrayList<MelodyCard> melodyList, Context context) {
@@ -304,11 +304,17 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         comments = tvCommentCount.getText().toString().trim();
                         shares = tvShareCount.getText().toString().trim();
                         int pos = getAdapterPosition();
-                        melodyID = mpids.get(pos);
+                        melodyID = melody.getMelodyPackId();
                         RecordingURL = melody.getMelodyURL();
                         CoverUrl = melody.getMelodyCover();
                         ProfilePick = melody.getUserProfilePic();
                         SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
+                        SharedPreferences file_type = getApplicationContext().getSharedPreferences("FileType", MODE_PRIVATE);
+                        String file = "";
+                        if (file_type.getString("File_Tyoe", null) != null) {
+                            file = file_type.getString("File_Tyoe", null);
+                        }
+
                         editor.putString("instruments", instruments);
                         editor.putString("bpm", bpm);
                         editor.putString("genre", genre);
@@ -323,7 +329,11 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         editor.putString("bitmapProfile", ProfilePick);
 //                    editor.putString("bitmapCover", cover);
                         editor.putString("melodyID", melodyID);
-                        editor.putString("fileType", "admin_melody");
+                        if (file.equals("user_melody") && file != null) {
+                            editor.putString("fileType", "user_melody");
+                        } else {
+                            editor.putString("fileType", "admin_melody");
+                        }
                         editor.putString("RecordingURL", RecordingURL);
                         editor.putString("CoverUrl", CoverUrl);
                         editor.putString("LikeStatus", LikeStatus);
@@ -449,11 +459,11 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 if (listPosition < instrumentList.size()) {
                     audioUrl = melody.getMelodyURL();
                 }
-                instCount=0;
-                AppHelper.sop("=melodyInstrumentsArrayList=size="+melodyInstrumentsArrayList.size()+"=position="+position+"=listPosition="+listPosition);
+                instCount = 0;
+                AppHelper.sop("=melodyInstrumentsArrayList=size=" + melodyInstrumentsArrayList.size() + "=position=" + position + "=listPosition=" + listPosition);
                 //      if (mediaPlayer != null) {
                 try {
-                    if (mediaPlayer !=null && mediaPlayer.isPlaying()) {
+                    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
                         duration = 0;
                         length = 0;
                         mediaPlayer.stop();
@@ -469,7 +479,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                             lastModifiedHoled.itemView.findViewById(R.id.rlSeekbarTracer).setVisibility(GONE);
                            /* lastModifiedHoled.itemView.setBackgroundColor(Color.TRANSPARENT);
                             lastModifiedHoled.txtIndustry.setTextColor(context.getResources().getColor(R.color.text_color_blue));*/
-                           // notifyItemChanged(lastPosition);
+                            // notifyItemChanged(lastPosition);
                         }
                         /*View view = null;
                         holder.ivPause.setVisibility(VISIBLE);
@@ -530,16 +540,15 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         duration = 0;
                         length = 0;
                         instCount++;
-                        AppHelper.sop("setOnCompletionListener=instCount="+instCount+"=melodyInstrumentsArrayList=size="+melodyInstrumentsArrayList.size());
+                        AppHelper.sop("setOnCompletionListener=instCount=" + instCount + "=melodyInstrumentsArrayList=size=" + melodyInstrumentsArrayList.size());
                         try {
-                            if (instCount<melodyInstrumentsArrayList.size()){
+                            if (instCount < melodyInstrumentsArrayList.size()) {
                                 holder.progressDialog.show();
                                 mediaPlayer.reset();
                                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                                 mediaPlayer.setDataSource(melodyInstrumentsArrayList.get(instCount).getInstrumentFile());
                                 mediaPlayer.prepareAsync();
-                            }
-                            else {
+                            } else {
                                 lastModifiedHoled.itemView.findViewById(R.id.ivPlay).setVisibility(VISIBLE);
                                 lastModifiedHoled.itemView.findViewById(R.id.ivPause).setVisibility(GONE);
                                 lastModifiedHoled.itemView.findViewById(R.id.melodySlider).setVisibility(GONE);
@@ -751,11 +760,11 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     public void killMediaPlayer() {
         if (mediaPlayer != null) {
             try {
-                if (mediaPlayer.isPlaying()){
+                if (mediaPlayer.isPlaying()) {
                     mediaPlayer.reset();
                 }
                 mediaPlayer.release();
-                mediaPlayer=null;
+                mediaPlayer = null;
             } catch (Exception e) {
                 e.printStackTrace();
 //                Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();

@@ -115,7 +115,7 @@ public class CommentsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
-        mActivity=CommentsActivity.this;
+        mActivity = CommentsActivity.this;
         tvInstrumentsUsed = (TextView) findViewById(R.id.tvInstrumentsUsed);
         tvBpmRate = (TextView) findViewById(R.id.tvBpmRate);
         tvMelodyGenre = (TextView) findViewById(R.id.tvMelodyGenre);
@@ -233,6 +233,10 @@ public class CommentsActivity extends AppCompatActivity {
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                SharedPreferences.Editor commentsData = getApplicationContext().getSharedPreferences("commentData", MODE_PRIVATE).edit();
+                commentsData.clear();
+                commentsData.apply();
                /* SharedPreferences prefsActivity = getSharedPreferences("PreviousActivity", MODE_PRIVATE);
                 String PrevAct = prefsActivity.getString("instruments", null);
                 Intent intent = new Intent(getApplicationContext(),);
@@ -292,15 +296,15 @@ public class CommentsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!userId.equals("") && userId != null) {
-                Intent shareIntent = new Intent();
-                shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                shareIntent.setType("text/plain");
-                shareIntent.putExtra(Intent.EXTRA_TEXT, "Melody Songs" + "\n" + CoverUrl + "\n" + RecordingURL);
-                shareIntent.putExtra(Intent.EXTRA_TEXT, "Melody Songs" + "\n" + RecordingURL);
+                    Intent shareIntent = new Intent();
+                    shareIntent.setAction(Intent.ACTION_SEND);
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                    shareIntent.setType("text/plain");
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, "Melody Songs" + "\n" + CoverUrl + "\n" + RecordingURL);
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, "Melody Songs" + "\n" + RecordingURL);
 
-                shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(Intent.createChooser(shareIntent, "Hello."));
+                    shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(Intent.createChooser(shareIntent, "Hello."));
                 } else {
                     Toast.makeText(getApplicationContext(), "Log in to comment", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
@@ -548,7 +552,7 @@ public class CommentsActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response=="+response);
+                        AppHelper.sop("response==" + response);
                         commentList.clear();
                         adapter.notifyDataSetChanged();
                         recyclerView.smoothScrollToPosition(adapter.getItemCount());
@@ -584,7 +588,7 @@ public class CommentsActivity extends AppCompatActivity {
                 params.put(FILE_ID, melodyID);
                 params.put(FILE_TYPE, fileType);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=="+params+"\nURL=="+COMMENT_LIST);
+                AppHelper.sop("params==" + params + "\nURL==" + COMMENT_LIST);
                 return params;
             }
         };
@@ -600,7 +604,7 @@ public class CommentsActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response=="+response);
+                        AppHelper.sop("response==" + response);
 
                         Intent resultIntent = new Intent();
                         resultIntent.putExtra("PARAMETER", "Like");
@@ -644,7 +648,7 @@ public class CommentsActivity extends AppCompatActivity {
                 params.put(USER_ID, userId);
                 params.put(TOPIC, melodyName);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=="+params+"\nURL=="+COMMENTS);
+                AppHelper.sop("params==" + params + "\nURL==" + COMMENTS);
                 return params;
             }
         };
@@ -660,7 +664,7 @@ public class CommentsActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(String response) {
 //                            Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
-                            AppHelper.sop("response===="+response);
+                            AppHelper.sop("response====" + response);
                             Intent resultIntent = new Intent();
                             resultIntent.putExtra("PARAMETER", "Like");
                             setResult(Activity.RESULT_OK, resultIntent);
@@ -683,7 +687,7 @@ public class CommentsActivity extends AppCompatActivity {
                     params.put(TYPE, fileType);
                     params.put(LIKES, likeState);
                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                    AppHelper.sop("params=="+params+"\nURL="+LIKESAPI);
+                    AppHelper.sop("params==" + params + "\nURL=" + LIKESAPI);
                     return params;
                 }
             };
@@ -725,8 +729,8 @@ public class CommentsActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mediaPlayer!=null ) {
-            if(mediaPlayer.isPlaying()){
+        if (mediaPlayer != null) {
+            if (mediaPlayer.isPlaying()) {
                 mediaPlayer.stop();
             }
             mediaPlayer.reset();

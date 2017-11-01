@@ -374,6 +374,9 @@ public class MelodyActivity extends AppCompatActivity {
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPreferences.Editor file = getApplicationContext().getSharedPreferences("FileType", MODE_PRIVATE).edit();
+                file.clear();
+                file.apply();
                 finish();
             }
         });
