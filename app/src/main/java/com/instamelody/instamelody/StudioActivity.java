@@ -2686,6 +2686,7 @@ public class StudioActivity extends AppCompatActivity {
                 }
                 params.put(Mixrecording, myarray.toString());
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("param=getParams==="+params+"\nURL===="+MixingAudio_InstrumentsAudio);
                 return params;
             }
 
@@ -2693,7 +2694,11 @@ public class StudioActivity extends AppCompatActivity {
             protected Map<String, DataPart> getByteData() {
                 Map<String, DataPart> params = new HashMap<>();
                 params.put(Mixvocalsound, new DataPart("InstaMelody.mp3", soundBytes, "audio/amr"));
-//                params.put(FILE1, new DataPart("CoverImg.jpg", AppHelper.getFileDataFromDrawable(getBaseContext(), ivNewRecordCover.getDrawable()), "image/jpeg"));
+                if (ivNewRecordCover.getDrawable()!=null){
+                    AppHelper.sop("param=DataPart=if=="+params);
+                    params.put("cover", new DataPart("CoverImg.jpg", AppHelper.getFileDataFromDrawable(getBaseContext(), ivNewRecordCover.getDrawable()), "image/jpeg"));
+                }
+                AppHelper.sop("param=DataPart==="+params);
                 return params;
             }
 

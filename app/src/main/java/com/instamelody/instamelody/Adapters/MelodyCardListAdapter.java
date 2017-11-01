@@ -70,8 +70,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     public static final int REQUEST_MELODY_COMMENT = 001;
     String profile, cover;
     static ArrayList<MelodyCard> melodyList = new ArrayList<>();
-    ArrayList<MelodyCard> melodyListNew = new ArrayList<>();
-    ArrayList<MelodyInstruments> melodyInstrumentsArrayList;
+    ArrayList<MelodyInstruments> melodyInstrumentsArrayList=new ArrayList<>();
     ArrayList<String> mpids = new ArrayList<>();
     private static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     ArrayList<UserMelodyCard> userMelodyCardArrayList = new ArrayList<>();
@@ -106,7 +105,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 
     public MelodyCardListAdapter(ArrayList<MelodyCard> melodyList, Context context) {
         this.melodyList = melodyList;
-        melodyListNew = melodyList;
+
         this.context = context;
     }
 
@@ -443,13 +442,26 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 holder.progressDialog.show();
                 // holder.ivPause.setVisibility(VISIBLE);
                 position = melodyList.get(listPosition).getMelodyPackId();
-                melodyInstrumentsArrayList = melodyList.get(listPosition).getMelodyInstrumentsList();
+//                melodyInstrumentsArrayList = melodyList.get(listPosition).getMelodyInstrumentsList();
+
                 ParseContents pc = new ParseContents(context);
                 instrumentList = pc.getInstruments();
                 if (listPosition < instrumentList.size()) {
                     audioUrl = melody.getMelodyURL();
                 }
                 instCount=0;
+
+                melodyInstrumentsArrayList.clear();
+                for (int i=0; i<instrumentList.size(); i++){
+                    if (position.equalsIgnoreCase(""+instrumentList.get(i).getMelodyPacksId())){
+                        melodyInstrumentsArrayList.add(instrumentList.get(i));
+                    }
+                }
+
+                if (melodyInstrumentsArrayList.size()>0){
+                    audioUrl = melodyInstrumentsArrayList.get(0).getInstrumentFile();
+                }
+
                 AppHelper.sop("=melodyInstrumentsArrayList=size="+melodyInstrumentsArrayList.size()+"=position="+position+"=listPosition="+listPosition);
                 //      if (mediaPlayer != null) {
                 try {

@@ -51,7 +51,7 @@ public class ParseContents {
     ArrayList<MelodyCard> melodyList = new ArrayList<>();
     ArrayList<Genres> genreList = new ArrayList<>();
     static ArrayList<MelodyInstruments> instrumentsList = new ArrayList<>();
-    ArrayList<MelodyInstruments> instrumentsListLocal = new ArrayList<>();
+    private ArrayList<MelodyInstruments> instrumentsListLocal = new ArrayList<>();
     String KEY_FLAG = "flag";
     String KEY_INFO = "info";
     String KEY_RESPONSE = "response";//JSONArray
@@ -126,7 +126,7 @@ public class ParseContents {
                     card.setGenreId(cardJson.getString(KEY_GENRE_ID));
                     card.setGenreName(cardJson.getString(KEY_GENRE_NAME));
                     card.setMelodyLength(cardJson.getString(KEY_DURATION));
-                    card.setInstrumentCount(cardJson.getString(KEY_INSTRUMENT_COUNT));
+//                    card.setInstrumentCount(cardJson.getString(KEY_INSTRUMENT_COUNT));
                     card.setMelodyBpm(cardJson.getString(KEY_BPM));
                     card.setPlayCount(cardJson.getInt(KEY_PLAY_COUNTS));
                     card.setLikeCount(cardJson.getInt(KEY_LIKES_COUNTS));
@@ -158,8 +158,10 @@ public class ParseContents {
                         instrumentList.add(melodyInstruments);
                         instrumentsListLocal.add(melodyInstruments);
                     }
-                    AppHelper.sop("=instrumentsListLocal=size="+instrumentsListLocal.size());
+
+//                    AppHelper.sop("=instrumentsListLocal=size="+instrumentsListLocal.size());
 //                    AppHelper.sop("=instrumentArray=size="+instrumentArray.length());
+                    card.setInstrumentCount(instrumentArray.length()+"");
                     card.setMelodyInstrumentsList(instrumentsListLocal);
 
                     instrumentsList = instrumentList;

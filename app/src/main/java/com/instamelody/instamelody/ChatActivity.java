@@ -1483,6 +1483,8 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         AppHelper.sop("response=shareCountApi=" + response);
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("LIKE", "Like");
                     }
                 },
                 new Response.ErrorListener() {
