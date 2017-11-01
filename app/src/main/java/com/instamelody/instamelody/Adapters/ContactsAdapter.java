@@ -220,12 +220,15 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int listPosition) {
-
-        Contacts contacts = contactsList.get(listPosition);
-        Picasso.with(holder.userProfileImage.getContext()).load(contacts.getUserProfileImage()).into(holder.userProfileImage);
-        holder.tvRealName.setText(contacts.getfName() + " " + contacts.getlName());
-        String s = "@" + contacts.getUserName();
-        holder.tvUserName.setText(s);
+        try {
+            Contacts contacts = contactsList.get(listPosition);
+            Picasso.with(holder.userProfileImage.getContext()).load(contacts.getUserProfileImage()).into(holder.userProfileImage);
+            holder.tvRealName.setText(contacts.getfName() + " " + contacts.getlName());
+            String s = "@" + contacts.getUserName();
+            holder.tvUserName.setText(s);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override

@@ -6,14 +6,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import java.util.List;
+
 import de.hdodenhof.circleimageview.CircleImageView;
+
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.R;
 
 /**
  * Created by Shubhansh Jaiswal on 11/26/2016.
- *
+ * <p>
  * this has no use in app till now.
  */
 
@@ -22,7 +25,7 @@ public class MelodyCardAdapter extends RecyclerView.Adapter<MelodyCardAdapter.Vi
 
     private List<MelodyCard> melodyAddedList, melodyList;
     private String[] mDataSet;
-     private int[] mDataSetTypes;
+    private int[] mDataSetTypes;
 
     public static final int ListMelody = 0;
     public static final int ListAddedMelody = 1;
@@ -59,12 +62,12 @@ public class MelodyCardAdapter extends RecyclerView.Adapter<MelodyCardAdapter.Vi
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-
-        if (viewHolder.getItemViewType() == ListMelody) {
-            MelodyListViewHolder holder = (MelodyListViewHolder) viewHolder;
-            MelodyCard melodyCard = melodyAddedList.get(position);
-            holder.tvUserName.setText("Abhishek");
-            holder.tvMelodyName.setText("Dubey");
+        try {
+            if (viewHolder.getItemViewType() == ListMelody) {
+                MelodyListViewHolder holder = (MelodyListViewHolder) viewHolder;
+                MelodyCard melodyCard = melodyAddedList.get(position);
+                holder.tvUserName.setText("Abhishek");
+                holder.tvMelodyName.setText("Dubey");
 //            holder.tvMelodyLength.setText(melodyCard.getTvMelodyLength());
 //            holder.tvBpmRate.setText(melodyCard.getTvBpmRate());
 //            holder.tvInstrumentsUsed.setText(melodyCard.getTvInstrumentsUsed());
@@ -76,13 +79,16 @@ public class MelodyCardAdapter extends RecyclerView.Adapter<MelodyCardAdapter.Vi
 //            holder.tvCommentCount.setText(melodyCard.getTvCommentCount());
 //            holder.tvShareCount.setText(melodyCard.getTvShareCount());
 
-        } else if (viewHolder.getItemViewType() == ListAddedMelody) {
-            AddedMelodyListViewHolder holder = (AddedMelodyListViewHolder) viewHolder;
-            MelodyCard melodyCard = melodyAddedList.get(position);
-            holder.tvUserName.setText("Abhishek");
-            holder.tvMelodyName.setText("Dubey");
+            } else if (viewHolder.getItemViewType() == ListAddedMelody) {
+                AddedMelodyListViewHolder holder = (AddedMelodyListViewHolder) viewHolder;
+                MelodyCard melodyCard = melodyAddedList.get(position);
+                holder.tvUserName.setText("Abhishek");
+                holder.tvMelodyName.setText("Dubey");
 //            holder.tvMelodyLength.setText(melodyCard.getTvMelodyLength());
 //            holder.tvBpmRate.setText(melodyCard.getTvBpmRate());
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -101,7 +107,7 @@ public class MelodyCardAdapter extends RecyclerView.Adapter<MelodyCardAdapter.Vi
         }
     }
 
-    public MelodyCardAdapter(String[] dataSet,int[] dataSetTypes) {
+    public MelodyCardAdapter(String[] dataSet, int[] dataSetTypes) {
         mDataSet = dataSet;
         mDataSetTypes = dataSetTypes;
     }
@@ -115,8 +121,7 @@ public class MelodyCardAdapter extends RecyclerView.Adapter<MelodyCardAdapter.Vi
         } else if (viewType == ListAddedMelody) {
             v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_melody_added, viewGroup, false);
             return new AddedMelodyListViewHolder(v);
-        }
-      else{
+        } else {
             v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_melody_list, viewGroup, false);
             return new MelodyListViewHolder(v);
         }

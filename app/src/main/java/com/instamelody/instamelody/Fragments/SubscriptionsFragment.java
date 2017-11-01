@@ -212,6 +212,7 @@ public class SubscriptionsFragment extends Fragment {
             tvUserUpgrade.setText("Upgrade" + " " + userNameLogin + "!");
 
             switchFree.setChecked(true);
+            switchFree.setClickable(false);
         }else {
             switchStandard.setChecked(false);
             switchFree.setChecked(false);
@@ -264,7 +265,7 @@ public class SubscriptionsFragment extends Fragment {
                             }
                             if (packageId.equals("1")) {
                                 switchFree.setChecked(true);
-                                switchFree.setClickable(false);
+
                                 switchStandard.setChecked(false);
                                 switchPremium.setChecked(false);
                                 switchProducer.setChecked(false);
@@ -376,9 +377,7 @@ public class SubscriptionsFragment extends Fragment {
                                 switchFree.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                                     @Override
                                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                        if(isChecked){
-                                            onBraintreeSubmit();
-                                        }
+
                                     }
                                 });
                                /* switchFree.setOnClickListener(new View.OnClickListener() {

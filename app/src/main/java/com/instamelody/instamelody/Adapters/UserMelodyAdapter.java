@@ -48,8 +48,7 @@ public class UserMelodyAdapter extends RecyclerView.Adapter<UserMelodyAdapter.My
     Context context;
 
 
-
-    public UserMelodyAdapter(ArrayList<UserMelodyCard> userMelodyList,  ArrayList<UserMelodyPlay> melodyPools ,Context context){
+    public UserMelodyAdapter(ArrayList<UserMelodyCard> userMelodyList, ArrayList<UserMelodyPlay> melodyPools, Context context) {
         this.userMelodyList = userMelodyList;
         this.melodyPools = melodyPools;
         this.context = context;
@@ -150,29 +149,32 @@ public class UserMelodyAdapter extends RecyclerView.Adapter<UserMelodyAdapter.My
 
     @Override
     public void onBindViewHolder(final UserMelodyAdapter.MyViewHolder holder, int position) {
-        UserMelodyCard userMelodyCard = userMelodyList.get(position);
-        Picasso.with(holder.ivRecordingCover.getContext()).load(userMelodyCard.getCover_url()).into(holder.ivRecordingCover);
-        Picasso.with(holder.userProfileImage.getContext()).load(userMelodyCard.getProfile_url()).into(holder.ivRecordingCover);
-        holder.tvUserName.setText(userMelodyCard.getUsername());
-        holder.tvRecordingName.setText(userMelodyCard.getName());
+        try {
+            UserMelodyCard userMelodyCard = userMelodyList.get(position);
+            Picasso.with(holder.ivRecordingCover.getContext()).load(userMelodyCard.getCover_url()).into(holder.ivRecordingCover);
+            Picasso.with(holder.userProfileImage.getContext()).load(userMelodyCard.getProfile_url()).into(holder.ivRecordingCover);
+            holder.tvUserName.setText(userMelodyCard.getUsername());
+            holder.tvRecordingName.setText(userMelodyCard.getName());
 
-        UserMelodyPlay userMelodyPlay = melodyPools.get(position);
-        melodyFile = userMelodyPlay.getMelodyurl();
+            UserMelodyPlay userMelodyPlay = melodyPools.get(position);
+            melodyFile = userMelodyPlay.getMelodyurl();
 
 
-        holder.ivStationPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            holder.ivStationPlay.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-                try {
-                    playAudio();
-                    holder.primarySeekBarProgressUpdater();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    try {
+                        playAudio();
+                        holder.primarySeekBarProgressUpdater();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        });
-
+            });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
     }
 

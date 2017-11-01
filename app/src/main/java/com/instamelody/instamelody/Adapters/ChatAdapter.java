@@ -27,10 +27,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.devbrackets.android.exomedia.EMAudioPlayer;
-import com.devbrackets.android.exomedia.listener.OnCompletionListener;
-import com.devbrackets.android.exomedia.listener.OnErrorListener;
-import com.devbrackets.android.exomedia.listener.OnPreparedListener;
 import com.instamelody.instamelody.ChatActivity;
 import com.instamelody.instamelody.JoinActivity;
 import com.instamelody.instamelody.Models.AudioDetails;
@@ -332,7 +328,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                 e.printStackTrace();
                             }
 
-
+                            Uri uri = Uri.parse(ParseContents.sharedAudioList.get(count).getRecordingUrl());
                             mp = new MediaPlayer();
                             pos = position;
                             try {
@@ -340,30 +336,31 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                             } catch (NullPointerException e) {
                                 e.printStackTrace();
                             }
-                            mp.setDataSource(ParseContents.sharedAudioList.get(count).getRecordingUrl());
+                            // String url=ParseContents.sharedAudioList.get(count).getRecordingUrl();
+                            mp.setDataSource(context, uri);
                             mp.prepareAsync();
 //                            mp.start();
 //                            progressDialog.dismiss();
 //                            holder.primarySeekBarProgressUpdater();
                             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                                 @Override
-                                public void onPrepared(MediaPlayer mp) {
+                                public void onPrepared(MediaPlayer mediaPlayer) {
                                     mp.start();
                                     progressDialog.dismiss();
                                     holder.primarySeekBarProgressUpdater();
                                 }
                             });
+
                             mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                                 @Override
-                                public boolean onError(MediaPlayer mp, int what, int extra) {
+                                public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
                                     progressDialog.dismiss();
                                     return false;
-
                                 }
                             });
                             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                                 @Override
-                                public void onCompletion(MediaPlayer mp) {
+                                public void onCompletion(MediaPlayer mediaPlayer) {
                                     mHandler1.removeCallbacksAndMessages(null);
                                     seekBarChata.setProgress(0);
                                     progressDialog.dismiss();
@@ -479,15 +476,16 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                     } catch (Throwable e) {
                                         e.printStackTrace();
                                     }
-
+                                    Uri url = Uri.parse(ParseContents.sharedAudioList.get(count).getRecordingUrl());
                                     mp = new MediaPlayer();
                                     try {
                                         mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
                                     } catch (NullPointerException e) {
                                         e.printStackTrace();
                                     }
-                                    mp.setDataSource(ParseContents.sharedAudioList.get(count).getRecordingUrl());
+                                    mp.setDataSource(context, url);
                                     mp.prepareAsync();
+
 
                                     mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                                         @Override
@@ -502,7 +500,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                         public boolean onError(MediaPlayer mp, int what, int extra) {
                                             if (mp != null) {
                                                 try {
-                                                    //  mp.stop();
+                                                    mp.stop();
                                                     mp.release();
                                                 } catch (Exception ex) {
                                                     ex.printStackTrace();
@@ -518,45 +516,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                             mHandler1.removeCallbacksAndMessages(null);
                                             seekBarChata.setProgress(0);
                                             progressDialog.dismiss();
-                                            //  mp.stop();
+                                            mp.stop();
                                             mp.release();
                                         }
                                     });
-
-
-//                                    mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-//                                        @Override
-//                                        public void onPrepared(MediaPlayer mp) {
-//                                            mp.start();
-//                                            holder.progressDialog.dismiss();
-//                                            holder.primarySeekBarProgressUpdater();
-//                                        }
-//                                    });
-//                                    mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-//                                        @Override
-//                                        public boolean onError(MediaPlayer mp, int what, int extra) {
-//                                            if (mp != null) {
-//                                                try {
-//                                                    mp.stop();
-//                                                    mp.release();
-//                                                } catch (Exception ex) {
-//                                                    ex.printStackTrace();
-//                                                }
-//                                            }
-//                                            holder.progressDialog.dismiss();
-//                                            return false;
-//                                        }
-//                                    });
-//                                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//                                        @Override
-//                                        public void onCompletion(MediaPlayer mp) {
-//                                            mHandler1.removeCallbacksAndMessages(null);
-//                                            seekBarChata.setProgress(0);
-//                                            holder.progressDialog.dismiss();
-//                                            mp.stop();
-//                                            mp.release();
-//                                        }
-//                                    });
                                 }
                             } catch (Exception ex) {
                                 progressDialog.dismiss();
@@ -616,15 +579,16 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                         e.printStackTrace();
                                     }
 
-
+                                    Uri url = Uri.parse(ParseContents.sharedAudioList.get(count).getRecordingUrl());
                                     mp = new MediaPlayer();
                                     try {
                                         mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
                                     } catch (NullPointerException e) {
                                         e.printStackTrace();
                                     }
-                                    mp.setDataSource(ParseContents.sharedAudioList.get(count).getRecordingUrl());
+                                    mp.setDataSource(context, url);
                                     mp.prepareAsync();
+
 
                                     mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                                         @Override
@@ -639,7 +603,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                         public boolean onError(MediaPlayer mp, int what, int extra) {
                                             if (mp != null) {
                                                 try {
-                                                    //mp.stop();
+                                                    mp.stop();
                                                     mp.release();
                                                 } catch (Exception ex) {
                                                     ex.printStackTrace();
@@ -655,44 +619,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                             mHandler1.removeCallbacksAndMessages(null);
                                             seekBarChata.setProgress(0);
                                             progressDialog.dismiss();
-                                            //  mp.stop();
+                                            mp.stop();
                                             mp.release();
                                         }
                                     });
-
-//                                    mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-//                                        @Override
-//                                        public void onPrepared(MediaPlayer mp) {
-//                                            mp.start();
-//                                            holder.progressDialog.dismiss();
-//                                            holder.primarySeekBarProgressUpdater();
-//                                        }
-//                                    });
-//                                    mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-//                                        @Override
-//                                        public boolean onError(MediaPlayer mp, int what, int extra) {
-//                                            if (mp != null) {
-//                                                try {
-//                                                    mp.stop();
-//                                                    mp.release();
-//                                                } catch (Exception ex) {
-//                                                    ex.printStackTrace();
-//                                                }
-//                                            }
-//                                            holder.progressDialog.dismiss();
-//                                            return false;
-//                                        }
-//                                    });
-//                                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//                                        @Override
-//                                        public void onCompletion(MediaPlayer mp) {
-//                                            mHandler1.removeCallbacksAndMessages(null);
-//                                            seekBarChata.setProgress(0);
-//                                            holder.progressDialog.dismiss();
-//                                            mp.stop();
-//                                            mp.release();
-//                                        }
-//                                    });
                                 }
                             } catch (Exception ex) {
                                 progressDialog.dismiss();
