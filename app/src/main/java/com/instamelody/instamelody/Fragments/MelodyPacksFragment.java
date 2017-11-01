@@ -115,7 +115,7 @@ public class MelodyPacksFragment extends Fragment {
     private final int count = 10;
     private boolean isLoading = false;
     private boolean isLastPage = false;
-
+    SharedPreferences.Editor editor;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -125,6 +125,7 @@ public class MelodyPacksFragment extends Fragment {
         progressDialog.setTitle("Processing...");
         progressDialog.setMessage("Please wait...");
         progressDialog.setCancelable(false);
+        editor = getActivity().getSharedPreferences("FileType", MODE_PRIVATE).edit();
         SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
         SharedPreferences searchPref = getActivity().getSharedPreferences("SearchPref", MODE_PRIVATE);
@@ -269,11 +270,16 @@ public class MelodyPacksFragment extends Fragment {
                                             } else {
                                                 melodyList.clear();
                                                 instrumentList.clear();
+
+                                                editor.putString("File_Tyoe","user_melody");
+                                                editor.commit();
                                                 fetchMelodyPacks();
                                             }
                                         } else {
                                             melodyList.clear();
                                             instrumentList.clear();
+                                            editor.putString("File_Tyoe","admin_melody");
+                                            editor.commit();
                                             fetchMelodyPacks();
                                         }
                                     }

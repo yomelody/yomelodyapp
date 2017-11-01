@@ -335,7 +335,6 @@ public class StudioActivity extends AppCompatActivity {
         mActivity = StudioActivity.this;
         progressDialog = new ProgressDialog(StudioActivity.this);
         socialStatusPref = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE);
-
         rlBase = (RelativeLayout) findViewById(R.id.rlBase);
         frameprog = (ProgressBar) findViewById(R.id.frameProg);
         message = (ImageView) findViewById(R.id.message);

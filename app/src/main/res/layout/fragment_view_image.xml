@@ -39,7 +39,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_marginRight="10dp"
                 android:padding="5dp"
-                android:src="@drawable/planeicon_send" />
+                android:src="@drawable/plane_iconbig" />
         </RelativeLayout>
     </FrameLayout>
 </RelativeLayout>
