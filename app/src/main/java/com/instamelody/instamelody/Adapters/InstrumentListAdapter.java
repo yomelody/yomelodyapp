@@ -249,7 +249,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             mRecordingThread = new RecordingThread(new AudioDataReceivedListener() {
                 @Override
                 public void onAudioDataReceived(byte[] data) {
-                    StudioActivity.waveform_view.setSamples(bytesToShort(data));
+
                 }
             });
 

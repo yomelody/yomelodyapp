@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.icu.text.SimpleDateFormat;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -76,7 +76,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     public static final int REQUEST_JOIN_COMMENT = 712;
     String genreName, mpid, MelodyName, profile;
     static String instrumentFile;
-    public static MediaPlayer mp;
+    public static MediaPlayer mp=null;
     int duration1, currentPosition;
     int length;
     ArrayList<String> mpids = new ArrayList<>();
@@ -316,7 +316,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 intent.putExtra("Previous", "station");
                                 intent.putExtra("share", recordingList.get(getAdapterPosition()));
                                 intent.putExtra("file_type", "user_recording");
-                                mActivity.startActivityForResult(intent,REQUEST_RECORDING_COMMENT);
+                                context.startActivity(intent);
                             }
                         });
                         alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -539,7 +539,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 .placeholder(R.drawable.bg_cell)
                 .error(R.drawable.bg_cell)
                 .into(holder.ivRecordingCover);
-
         holder.tvUserName.setText(recordingList.get(listPosition).getUserName());
         holder.tvRecordingName.setText(recordingList.get(listPosition).getRecordingName());
         holder.tvRecordingGenres.setText("Genre:" + " " + recording.getGenreName());
@@ -548,11 +547,11 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 //        holder.tvContributeDate.setText(recordingList.get(listPosition).getRecordingCreated());
         try {
             holder.tvContributeDate.setText(convertDate(recordingList.get(listPosition).getRecordingCreated()));
-
-            holder.tvContributeLength.setText("00:" + DateUtils.formatElapsedTime(Long.parseLong(recordingsPools.get(listPosition).getDuration())));
+            holder.tvContributeLength.setText("00:"+DateUtils.formatElapsedTime(Long.parseLong(recordingsPools.get(listPosition).getDuration())));
         } catch (Throwable e) {
             e.printStackTrace();
         }
+
 
 
         int likeStatus = recordingList.get(listPosition).getLikeStatus();
@@ -590,13 +589,13 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                 if (instrumentFile != "") {
                     try {
-                        if (mp != null && mp.isPlaying()) {
+                        if (mp!=null) {
 
                             try {
                                 mHandler1.removeCallbacksAndMessages(null);
 
                                 try {
-                                    mp.reset();
+                                    mp.stop();
                                     mp.release();
                                     mp = null;
                                     duration1 = 0;
@@ -639,10 +638,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     }
 
                     try {
-                        Uri url = Uri.parse(instrumentFile);
-                        mp.setDataSource(context, url);
+                        mp.setDataSource(instrumentFile);
 
-                    } catch (Throwable e) {
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
                     String play = holder.tvViewCount.getText().toString().trim();
@@ -749,7 +747,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                     if (mp != null) {
                                         if (mp.isPlaying()) {
                                             try {
-                                                mp.reset();
+                                                mp.stop();
                                             } catch (Exception ex) {
                                                 ex.printStackTrace();
                                             }
@@ -786,48 +784,24 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 mp.prepareAsync();
                                 holder.txtJoinCount.setText(CalJoinCountPrevRec(NxtCount));
 
-
                                 mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                                     @Override
-                                    public void onPrepared(MediaPlayer mediaPlayer) {
+                                    public void onPrepared(MediaPlayer mp) {
                                         mp.start();
                                         holder.progressDialog.dismiss();
                                         lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(GONE);
                                         lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(VISIBLE);
 
                                         holder.primarySeekBarProgressUpdater();
+
                                     }
                                 });
                                 mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                                     @Override
-                                    public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+                                    public boolean onError(MediaPlayer mp, int what, int extra) {
                                         if (mp != null) {
                                             try {
-                                                mp.reset();
-                                            } catch (Exception ex) {
-                                                ex.printStackTrace();
-                                            }
-                                        }
-                                        for (int j = 0; j <= JoinMp.size() - 1; j++) {
-                                            if (JoinMp.get(i).isPlaying()) {
-                                                try {
-                                                    JoinMp.get(j).reset();
-                                                } catch (Exception ex) {
-                                                    ex.printStackTrace();
-                                                }
-                                            }
-                                        }
-                                        holder.progressDialog.dismiss();
-                                        return false;
-                                    }
-                                });
-                                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                    @Override
-                                    public void onCompletion(MediaPlayer mediaPlayer) {
-                                        mHandler1.removeCallbacksAndMessages(null);
-                                        if (mp != null) {
-                                            try {
-                                                mp.reset();
+                                                mp.stop();
                                             } catch (Exception ex) {
                                                 ex.printStackTrace();
                                             }
@@ -835,7 +809,32 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                         for (int i = 0; i <= JoinMp.size() - 1; i++) {
                                             if (JoinMp.get(i).isPlaying()) {
                                                 try {
-                                                    JoinMp.get(i).reset();
+                                                    JoinMp.get(i).stop();
+                                                } catch (Exception ex) {
+                                                    ex.printStackTrace();
+                                                }
+                                            }
+                                        }
+                                        holder.progressDialog.dismiss();
+
+                                        return false;
+                                    }
+                                });
+                                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        mHandler1.removeCallbacksAndMessages(null);
+                                        if (mp != null) {
+                                            try {
+                                                mp.stop();
+                                            } catch (Exception ex) {
+                                                ex.printStackTrace();
+                                            }
+                                        }
+                                        for (int i = 0; i <= JoinMp.size() - 1; i++) {
+                                            if (JoinMp.get(i).isPlaying()) {
+                                                try {
+                                                    JoinMp.get(i).stop();
                                                 } catch (Exception ex) {
                                                     ex.printStackTrace();
                                                 }
@@ -845,6 +844,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                         holder.seekBarRecordings.setProgress(0);
                                         holder.ivStationPause.setVisibility(GONE);
                                         holder.ivStationPlay.setVisibility(VISIBLE);
+
                                     }
                                 });
                             }
@@ -874,7 +874,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 try {
                                     if (mp != null) {
                                         if (mp.isPlaying()) {
-                                            mp.reset();
+                                            mp.stop();
 
                                         }
 
@@ -904,9 +904,10 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 mp.prepareAsync();
                                 holder.txtJoinCount.setText(CalJoinCountNextRec(NxtCount));
 
+
                                 mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                                     @Override
-                                    public void onPrepared(MediaPlayer mediaPlayer) {
+                                    public void onPrepared(MediaPlayer mp) {
                                         try {
                                             mp.start();
                                             holder.progressDialog.dismiss();
@@ -917,17 +918,20 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                         } catch (Throwable e) {
                                             e.printStackTrace();
                                         }
+
+
                                     }
                                 });
                                 mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                                     @Override
-                                    public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+                                    public boolean onError(MediaPlayer mp, int what, int extra) {
+
                                         if (mp != null) {
-                                            mp.reset();
+                                            mp.stop();
                                         }
-                                        for (int j = 0; j <= JoinMp.size() - 1; j++) {
-                                            if (JoinMp.get(j).isPlaying()) {
-                                                JoinMp.get(j).reset();
+                                        for (int i = 0; i <= JoinMp.size() - 1; i++) {
+                                            if (JoinMp.get(i).isPlaying()) {
+                                                JoinMp.get(i).stop();
                                             }
                                         }
                                         holder.progressDialog.dismiss();
@@ -936,11 +940,11 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 });
                                 mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                                     @Override
-                                    public void onCompletion(MediaPlayer mediaPlayer) {
+                                    public void onCompletion(MediaPlayer mp) {
                                         mHandler1.removeCallbacksAndMessages(null);
                                         if (mp != null) {
                                             try {
-                                                mp.reset();
+                                                mp.stop();
                                             } catch (Exception ex) {
                                                 ex.printStackTrace();
                                             }
@@ -948,7 +952,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                         for (int i = 0; i <= JoinMp.size() - 1; i++) {
                                             if (JoinMp.get(i).isPlaying()) {
                                                 try {
-                                                    JoinMp.get(i).reset();
+                                                    JoinMp.get(i).stop();
                                                 } catch (Exception ex) {
                                                     ex.printStackTrace();
                                                 }
@@ -958,6 +962,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                         holder.seekBarRecordings.setProgress(0);
                                         holder.ivStationPause.setVisibility(GONE);
                                         holder.ivStationPlay.setVisibility(VISIBLE);
+
                                     }
                                 });
 
@@ -1100,8 +1105,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                     try {
                                         MediaPlayer mediaPlayer = new MediaPlayer();
                                         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                                        Uri url = Uri.parse(respObject.getString("recording_url"));
-                                        mediaPlayer.setDataSource(context, url);
+                                        mediaPlayer.setDataSource(respObject.getString("recording_url"));
                                         //mediaPlayer.prepare();
                                         JoinMp.add(mediaPlayer);
 
@@ -1185,7 +1189,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     public void releaseMediaPlayer() {
         if (mp != null) {
             if (mp.isPlaying()) {
-                mp.reset();
+                mp.stop();
             }
             mp.reset();
             mp.release();
