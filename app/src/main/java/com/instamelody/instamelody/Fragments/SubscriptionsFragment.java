@@ -391,6 +391,7 @@ public class SubscriptionsFragment extends Fragment {
                                     @Override
                                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                         if(isChecked) {
+                                            packageId="2";
                                             onBraintreeSubmit();
                                         }
                                     }
@@ -405,6 +406,7 @@ public class SubscriptionsFragment extends Fragment {
                                     @Override
                                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                         if(isChecked) {
+                                            packageId="3";
                                             onBraintreeSubmit();
                                         }
                                     }
@@ -420,6 +422,7 @@ public class SubscriptionsFragment extends Fragment {
                                     @Override
                                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                         if(isChecked) {
+                                            packageId="4";
                                             onBraintreeSubmit();
                                         }
                                     }
