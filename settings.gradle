@@ -1,1 +1,1 @@
-include ':app', ':library', ':waveform'
+include ':app', ':library'

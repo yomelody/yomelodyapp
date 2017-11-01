@@ -32,6 +32,15 @@
 			<version>${project.version}</version>
 			<type>apklib</type>
 		</dependency>
+		<!--<dependency>
+			<groupId>com.braintreepayments.api</groupId>
+			<artifactId>drop-in</artifactId>
+			<version>[3.0.0,)</version>
+			<type>aar</type>
+			<configuration>
+				<manifestMergeLibraries>true</manifestMergeLibraries>
+			</configuration>
+		</dependency>-->
 	</dependencies>
 
 	<build>
