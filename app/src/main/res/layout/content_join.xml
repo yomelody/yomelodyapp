@@ -177,12 +177,6 @@
                                 android:background="@drawable/background_home3"
                                 android:scaleType="fitXY" />
 
-                            <com.instamelody.instamelody.utils.WaveformView
-                                android:id="@+id/waveform_view"
-                                android:layout_width="match_parent"
-                                android:layout_height="95dp"
-                                android:visibility="gone"
-                                android:background="@drawable/background_new_dialog" />
 
                             <com.instamelody.instamelody.utils.VisualizerView
                                 android:id="@+id/myvisualizerview"
