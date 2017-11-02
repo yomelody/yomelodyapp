@@ -18,7 +18,6 @@ import java.util.ArrayList;
 /**
  * Created by Saurabh Singh on 4/18/2017.
  * this will be use in AudioFragment
- *
  */
 
 public class AudioCardAdapter extends RecyclerView.Adapter<AudioCardAdapter.MyViewHolder> {
@@ -73,32 +72,35 @@ public class AudioCardAdapter extends RecyclerView.Adapter<AudioCardAdapter.MyVi
 
     @Override
     public void onBindViewHolder(final AudioCardAdapter.MyViewHolder holder, final int listPosition) {
-
-        AudioModel recording = data.get(listPosition);
-        TextView tvRecordingGenres = holder.tvRecordingGenres;
-        TextView tvUserName = holder.tvUserName;
-        TextView tvRecordingName = holder.tvRecordingName;
-        TextView tvContributeLength = holder.tvContributeLength;
-        TextView tvRecordingDate = holder.tvRecordingDate;
-        TextView tvViewCount = holder.tvViewCount;
-        TextView tvLikeCount = holder.tvLikeCount;
-        TextView tvCommentCount = holder.tvCommentCount;
-        TextView tvShareCount = holder.tvShareCount;
-        TextView tvIncludedCount = holder.tvIncludedCount;
-        TextView tvContributeDate = holder.tvContributeDate;
+        try {
+            AudioModel recording = data.get(listPosition);
+            TextView tvRecordingGenres = holder.tvRecordingGenres;
+            TextView tvUserName = holder.tvUserName;
+            TextView tvRecordingName = holder.tvRecordingName;
+            TextView tvContributeLength = holder.tvContributeLength;
+            TextView tvRecordingDate = holder.tvRecordingDate;
+            TextView tvViewCount = holder.tvViewCount;
+            TextView tvLikeCount = holder.tvLikeCount;
+            TextView tvCommentCount = holder.tvCommentCount;
+            TextView tvShareCount = holder.tvShareCount;
+            TextView tvIncludedCount = holder.tvIncludedCount;
+            TextView tvContributeDate = holder.tvContributeDate;
 
 //        Picasso.with(holder.ivRecordingCover.getContext()).load(data.get(listPosition).getIvRecordingCover()).into(holder.ivRecordingCover);
 //        Picasso.with(holder.userProfileImage.getContext()).load(data.get(listPosition).getUserProfileImage()).into(holder.userProfileImage);
-        tvRecordingGenres.setText(data.get(listPosition).getTvUserName());
-        tvRecordingName.setText(data.get(listPosition).getTvRecordingName());
-        tvContributeLength.setText(data.get(listPosition).getTvContributeLength());
-        tvRecordingDate.setText(data.get(listPosition).getTvRecordingDate());
-        //    tvContributeDate.setText(recordingList.get(listPosition).getTvContributeDate());
-        tvViewCount.setText(String.valueOf(data.get(listPosition).getTvViewCount()));
-        tvLikeCount.setText(String.valueOf(data.get(listPosition).getTvLikeCount()));
-        tvCommentCount.setText(String.valueOf(data.get(listPosition).getTvCommentCount()));
-        tvShareCount.setText(String.valueOf(data.get(listPosition).getTvShareCount()));
-        tvIncludedCount.setText(String.valueOf(data.get(listPosition).getTvIncludedCount()));
+            tvRecordingGenres.setText(data.get(listPosition).getTvUserName());
+            tvRecordingName.setText(data.get(listPosition).getTvRecordingName());
+            tvContributeLength.setText(data.get(listPosition).getTvContributeLength());
+            tvRecordingDate.setText(data.get(listPosition).getTvRecordingDate());
+            //    tvContributeDate.setText(recordingList.get(listPosition).getTvContributeDate());
+            tvViewCount.setText(String.valueOf(data.get(listPosition).getTvViewCount()));
+            tvLikeCount.setText(String.valueOf(data.get(listPosition).getTvLikeCount()));
+            tvCommentCount.setText(String.valueOf(data.get(listPosition).getTvCommentCount()));
+            tvShareCount.setText(String.valueOf(data.get(listPosition).getTvShareCount()));
+            tvIncludedCount.setText(String.valueOf(data.get(listPosition).getTvIncludedCount()));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
 
     }

@@ -217,7 +217,6 @@ public class StudioActivity extends AppCompatActivity {
     RadioGroup rgR;
     RadioButton radioButton;
     public static TextView mDecibelView;
-    public static com.instamelody.instamelody.utils.WaveformView waveform_view;
 
     public static MediaRecorder recorder;
     private final int requestCode = 20;
@@ -335,7 +334,6 @@ public class StudioActivity extends AppCompatActivity {
         mActivity = StudioActivity.this;
         progressDialog = new ProgressDialog(StudioActivity.this);
         socialStatusPref = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE);
-
         rlBase = (RelativeLayout) findViewById(R.id.rlBase);
         frameprog = (ProgressBar) findViewById(R.id.frameProg);
         message = (ImageView) findViewById(R.id.message);
@@ -410,7 +408,7 @@ public class StudioActivity extends AppCompatActivity {
         rlSetCover = (RelativeLayout) findViewById(R.id.rlSetCover);
         ivNewRecordCover = (ImageView) findViewById(R.id.ivNewRecordCover);
         chrono = (Chronometer) findViewById(R.id.chrono);
-        waveform_view = (com.instamelody.instamelody.utils.WaveformView) findViewById(R.id.waveform_view);
+
         mDecibelView = (TextView) findViewById(R.id.decibel_view);
         startTime = SystemClock.elapsedRealtime();
         rlInviteButton = (RelativeLayout) findViewById(R.id.rlInviteButton);
@@ -1809,7 +1807,7 @@ public class StudioActivity extends AppCompatActivity {
         AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
         String rate = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
         String size = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
-        Log.d("Buffer Size & sample rate", "Size :" + size + " & Rate: " + rate);
+        Log.d("BufferSize&samplerate", "Size :" + size + " & Rate: " + rate);
     }
 
     public void playAurdio() throws IOException {
@@ -3771,7 +3769,7 @@ public class StudioActivity extends AppCompatActivity {
 
                     InstrumentCountSize = instrumentList.size();
                     for (int i = 0; i < InstrumentCountSize; i++) {
-                        Log.d("Instrument url----------------:", "" + instrumentList.get(i).getInstrumentFile());
+                        Log.d("Instrument url-:", "" + instrumentList.get(i).getInstrumentFile());
                         mpall = new MediaPlayer();
                         mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
                         mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
@@ -4181,7 +4179,7 @@ public class StudioActivity extends AppCompatActivity {
                 throwable = (Throwable) results[0];
                 Log.e(RecordWaveTask.class.getSimpleName(), throwable.getMessage(), throwable);
             }
-            waveform_view.setSamples(bytesToShort(buffer));
+
             // If we're attached to an activity
             if (ctx != null) {
                 if (throwable == null) {

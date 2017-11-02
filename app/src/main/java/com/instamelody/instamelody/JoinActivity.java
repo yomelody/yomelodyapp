@@ -79,7 +79,7 @@ public class JoinActivity extends AppCompatActivity {
     public static int position;
     ProgressDialog progressDialog;
     public static ArrayList<JoinedUserProfile> listProfile = new ArrayList<JoinedUserProfile>();
-    public static com.instamelody.instamelody.utils.WaveformView waveform_view;
+
     private boolean mShouldContinue = true;
     public static TextView mDecibelView, recording_name, artist_name;
     public static ImageView profile_image, ivShareButton, ivRecordJoin;
@@ -114,7 +114,7 @@ public class JoinActivity extends AppCompatActivity {
         ivRecordJoin = (ImageView) findViewById(R.id.ivRecordJoin);
         playAll = (ImageView) findViewById(R.id.playAll);
         pauseAll = (ImageView) findViewById(R.id.pauseAll);
-        waveform_view = (com.instamelody.instamelody.utils.WaveformView) findViewById(R.id.waveform_view);
+
         mVisualizerView = (VisualizerView) findViewById(R.id.myvisualizerview);
         mDecibelView = (TextView) findViewById(R.id.decibel_view);
         play_count = (TextView) findViewById(R.id.tvPlayCount);

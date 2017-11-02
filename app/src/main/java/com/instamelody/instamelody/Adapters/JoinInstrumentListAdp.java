@@ -216,202 +216,205 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
-        final MelodyInstruments instruments = instrumentList.get(listPosition);
-        viewHolder = new ViewHolder();
-        viewHolder.melodySlider = (SeekBar) holder.melodySlider.findViewById(R.id.melodySlider);
-        viewHolder.ivPlay = (ImageView) holder.ivPlay.findViewById(R.id.ivPlay);
-        viewHolder.ivPause = (ImageView) holder.ivPause.findViewById(R.id.ivPause);
+        try {
+            final MelodyInstruments instruments = instrumentList.get(listPosition);
+            viewHolder = new ViewHolder();
+            viewHolder.melodySlider = (SeekBar) holder.melodySlider.findViewById(R.id.melodySlider);
+            viewHolder.ivPlay = (ImageView) holder.ivPlay.findViewById(R.id.ivPlay);
+            viewHolder.ivPause = (ImageView) holder.ivPause.findViewById(R.id.ivPause);
 
-        if (JoinActivity.lstViewHolder.size() < getItemCount()) {
-            JoinActivity.lstViewHolder.add(viewHolder);
-        }
+            if (JoinActivity.lstViewHolder.size() < getItemCount()) {
+                JoinActivity.lstViewHolder.add(viewHolder);
+            }
 
 
-        if (InstrumentCountSize == 0) {
-            InstrumentCountSize = MelodyInstruments.getInstrumentCount();
-        }
+            if (InstrumentCountSize == 0) {
+                InstrumentCountSize = MelodyInstruments.getInstrumentCount();
+            }
 
-        if (coverPicStudio != null) {
-            Picasso.with(holder.ivInstrumentCover.getContext()).load(coverPicStudio).into(holder.ivInstrumentCover);
-        } else if (instruments.getInstrumentCover().charAt(0) == '#') {
-            String color = instruments.getInstrumentCover();
-            holder.ivInstrumentCover.setBackgroundColor(Color.parseColor(color));
-        } else {
-            Picasso.with(holder.ivInstrumentCover.getContext()).load(instruments.getInstrumentCover()).into(holder.ivInstrumentCover);
-        }
-        if (profilePic != null) {
-            Picasso.with(holder.userProfileImage.getContext()).load(profilePic).into(holder.userProfileImage);
-        } else if (fbId != null) {
-            Picasso.with(holder.userProfileImage.getContext()).load("https://graph.facebook.com/" + fbId + "/picture").into(holder.userProfileImage);
-        } else
-            Picasso.with(holder.userProfileImage.getContext()).load(instruments.getUserProfilePic()).into(holder.userProfileImage);
-        holder.tvBpmRate.setText(instruments.getInstrumentBpm());
-        if (userName != null) {
-            holder.tvUserName.setText("@" + userName);
-        } else if (fbName != null) {
-            holder.tvUserName.setText("@" + fbName);
-        } else
-            holder.tvUserName.setText(instruments.getUserName());
-        holder.tvInstrumentName.setText(instruments.getInstrumentName());
+            if (coverPicStudio != null) {
+                Picasso.with(holder.ivInstrumentCover.getContext()).load(coverPicStudio).into(holder.ivInstrumentCover);
+            } else if (instruments.getInstrumentCover().charAt(0) == '#') {
+                String color = instruments.getInstrumentCover();
+                holder.ivInstrumentCover.setBackgroundColor(Color.parseColor(color));
+            } else {
+                Picasso.with(holder.ivInstrumentCover.getContext()).load(instruments.getInstrumentCover()).into(holder.ivInstrumentCover);
+            }
+            if (profilePic != null) {
+                Picasso.with(holder.userProfileImage.getContext()).load(profilePic).into(holder.userProfileImage);
+            } else if (fbId != null) {
+                Picasso.with(holder.userProfileImage.getContext()).load("https://graph.facebook.com/" + fbId + "/picture").into(holder.userProfileImage);
+            } else
+                Picasso.with(holder.userProfileImage.getContext()).load(instruments.getUserProfilePic()).into(holder.userProfileImage);
+            holder.tvBpmRate.setText(instruments.getInstrumentBpm());
+            if (userName != null) {
+                holder.tvUserName.setText("@" + userName);
+            } else if (fbName != null) {
+                holder.tvUserName.setText("@" + fbName);
+            } else
+                holder.tvUserName.setText(instruments.getUserName());
+            holder.tvInstrumentName.setText(instruments.getInstrumentName());
 
-        holder.tvInstrumentLength.setText(instruments.getInstrumentLength());
-        instrumentFile = instruments.getInstrumentFile();
-        instrument_url_count.add(instrumentFile);
+            holder.tvInstrumentLength.setText(instruments.getInstrumentLength());
+            instrumentFile = instruments.getInstrumentFile();
+            instrument_url_count.add(instrumentFile);
 //        Toast.makeText(context, "" + instrumentFile, Toast.LENGTH_SHORT).show();
-        Log.d("Instruments size", "" + instrumentFile);
+            Log.d("Instruments size", "" + instrumentFile);
 
 
-        //StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL,PositionId));
+            //StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL,PositionId));
 
 
-        audioValue = instruments.getAudioType();
+            audioValue = instruments.getAudioType();
 
 
-        holder.ivPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                JoinActivity.playAll.setEnabled(false);
-                holder.ivPlay.setVisibility(v.GONE);
-                holder.ivPause.setVisibility(v.VISIBLE);
-                instruments_url.add(instrumentFile);
-                instrumentFile = instruments.getInstrumentFile();
+            holder.ivPlay.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    JoinActivity.playAll.setEnabled(false);
+                    holder.ivPlay.setVisibility(v.GONE);
+                    holder.ivPause.setVisibility(v.VISIBLE);
+                    instruments_url.add(instrumentFile);
+                    instrumentFile = instruments.getInstrumentFile();
 
-                holder.progressDialog = new ProgressDialog(v.getContext());
-                holder.progressDialog.setMessage("Loading...");
-                holder.progressDialog.show();
-                holder.mp = new MediaPlayer();
+                    holder.progressDialog = new ProgressDialog(v.getContext());
+                    holder.progressDialog.setMessage("Loading...");
+                    holder.progressDialog.show();
+                    holder.mp = new MediaPlayer();
 
-                holder.mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                try {
-                    holder.mp.setDataSource(instrumentFile);
-                    holder.mp.prepareAsync();
-                    mp_start.add(holder.mp);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                for (MediaPlayer instrument_media : mp_start) {
-                    instrument_media.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(MediaPlayer mp) {
-                            holder.progressDialog.dismiss();
-                            mp.start();
-                            try {
-                                holder.primarySeekBarProgressUpdater();
-                            } catch (Throwable e) {
-                                e.printStackTrace();
+                    holder.mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    try {
+                        holder.mp.setDataSource(instrumentFile);
+                        holder.mp.prepareAsync();
+                        mp_start.add(holder.mp);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    for (MediaPlayer instrument_media : mp_start) {
+                        instrument_media.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                            @Override
+                            public void onPrepared(MediaPlayer mp) {
+                                holder.progressDialog.dismiss();
+                                mp.start();
+                                try {
+                                    holder.primarySeekBarProgressUpdater();
+                                } catch (Throwable e) {
+                                    e.printStackTrace();
+                                }
+
                             }
+                        });
+                    }
 
+                    holder.mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                        @Override
+                        public boolean onError(MediaPlayer mp, int what, int extra) {
+                            holder.progressDialog.dismiss();
+                            return false;
                         }
                     });
+                    holder.mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            duration1 = holder.mp.getDuration();
+                            currentPosition = holder.mp.getCurrentPosition();
+                            holder.progressDialog.dismiss();
+                        }
+                    });
+
+                    instrumentName = instruments.getInstrumentName();
+
                 }
-
-                holder.mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                    @Override
-                    public boolean onError(MediaPlayer mp, int what, int extra) {
-                        holder.progressDialog.dismiss();
-                        return false;
-                    }
-                });
-                holder.mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        duration1 = holder.mp.getDuration();
-                        currentPosition = holder.mp.getCurrentPosition();
-                        holder.progressDialog.dismiss();
-                    }
-                });
-
-                instrumentName = instruments.getInstrumentName();
-
-            }
-        });
+            });
 
 
-        holder.ivPause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                JoinActivity.playAll.setEnabled(true);
-                holder.ivPlay.setVisibility(v.VISIBLE);
-                holder.ivPause.setVisibility(v.GONE);
-                holder.mp.pause();
-                length = holder.mp.getCurrentPosition();
-                holder.melodySlider.setProgress(0);
-            }
-        });
-
-        JoinActivity.playAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    if (holder.mp.isPlaying()) {
-                        JoinActivity.playAll.setEnabled(false);
-                    } else {
-                        JoinActivity.playAll.setEnabled(true);
-                    }
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
+            holder.ivPause.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    JoinActivity.playAll.setEnabled(true);
+                    holder.ivPlay.setVisibility(v.VISIBLE);
+                    holder.ivPause.setVisibility(v.GONE);
+                    holder.mp.pause();
+                    length = holder.mp.getCurrentPosition();
+                    holder.melodySlider.setProgress(0);
                 }
+            });
 
-                holder.ivPlay.setEnabled(false);
-                holder.ivPause.setEnabled(false);
-                holder.melodySlider.setEnabled(false);
-                JoinActivity.ivJoinPlay.setEnabled(false);
-                JoinActivity.ivJoinPause.setEnabled(false);
-                JoinActivity.ivPlayNext.setEnabled(false);
-                JoinActivity.ivPlayPre.setEnabled(false);
-                new PrepareInstrumentsForPlayAll().execute();
-            }
-        });
-
-        JoinActivity.pauseAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //   JoinActivity.playAll.setVisibility(View.VISIBLE);
-                // JoinActivity.pauseAll.setVisibility(View.GONE);
-                // Pause button code ...
-                for (MediaPlayer mp : JoinActivity.mediaPlayersAll) {
+            JoinActivity.playAll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
                     try {
-                        mp.stop();
-                        mp.reset();
-                        mp.release();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                for (int i = 0; i <= JoinActivity.mediaPlayersAll.size() - 1; i++) {
-                    try {
-                        holderPlay = JoinActivity.lstViewHolder.get(i).ivPlay;
-                        holderPause = JoinActivity.lstViewHolder.get(i).ivPause;
-                        seekBar = JoinActivity.lstViewHolder.get(i).melodySlider;
-                        holderPlay.setVisibility(View.VISIBLE);
-                        holderPause.setVisibility(View.GONE);
-                        JoinActivity.playAll.setVisibility(View.VISIBLE);
-                        JoinActivity.pauseAll.setVisibility(View.GONE);
-                        seekBar.setProgress(0);
-                    } catch (Throwable e) {
+                        if (holder.mp.isPlaying()) {
+                            JoinActivity.playAll.setEnabled(false);
+                        } else {
+                            JoinActivity.playAll.setEnabled(true);
+                        }
+                    } catch (NullPointerException e) {
                         e.printStackTrace();
                     }
 
+                    holder.ivPlay.setEnabled(false);
+                    holder.ivPause.setEnabled(false);
+                    holder.melodySlider.setEnabled(false);
+                    JoinActivity.ivJoinPlay.setEnabled(false);
+                    JoinActivity.ivJoinPause.setEnabled(false);
+                    JoinActivity.ivPlayNext.setEnabled(false);
+                    JoinActivity.ivPlayPre.setEnabled(false);
+                    new PrepareInstrumentsForPlayAll().execute();
                 }
-                JoinActivity.mediaPlayersAll.clear();
-                holder.ivPlay.setEnabled(true);
-                holder.ivPause.setEnabled(true);
-                holder.melodySlider.setEnabled(true);
-                JoinActivity.ivJoinPlay.setEnabled(true);
-                JoinActivity.ivJoinPause.setEnabled(true);
-                JoinActivity.ivPlayNext.setEnabled(true);
-                JoinActivity.ivPlayPre.setEnabled(true);
+            });
 
-            }
-        });
+            JoinActivity.pauseAll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //   JoinActivity.playAll.setVisibility(View.VISIBLE);
+                    // JoinActivity.pauseAll.setVisibility(View.GONE);
+                    // Pause button code ...
+                    for (MediaPlayer mp : JoinActivity.mediaPlayersAll) {
+                        try {
+                            mp.stop();
+                            mp.reset();
+                            mp.release();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    for (int i = 0; i <= JoinActivity.mediaPlayersAll.size() - 1; i++) {
+                        try {
+                            holderPlay = JoinActivity.lstViewHolder.get(i).ivPlay;
+                            holderPause = JoinActivity.lstViewHolder.get(i).ivPause;
+                            seekBar = JoinActivity.lstViewHolder.get(i).melodySlider;
+                            holderPlay.setVisibility(View.VISIBLE);
+                            holderPause.setVisibility(View.GONE);
+                            JoinActivity.playAll.setVisibility(View.VISIBLE);
+                            JoinActivity.pauseAll.setVisibility(View.GONE);
+                            seekBar.setProgress(0);
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                    JoinActivity.mediaPlayersAll.clear();
+                    holder.ivPlay.setEnabled(true);
+                    holder.ivPause.setEnabled(true);
+                    holder.melodySlider.setEnabled(true);
+                    JoinActivity.ivJoinPlay.setEnabled(true);
+                    JoinActivity.ivJoinPause.setEnabled(true);
+                    JoinActivity.ivPlayNext.setEnabled(true);
+                    JoinActivity.ivPlayPre.setEnabled(true);
+
+                }
+            });
 
 
-        Intent i = new Intent("fetchingInstrumentsJoin");
-        i.putStringArrayListExtra("instrumentsJoin", instrument_url_count);
-        LocalBroadcastManager.getInstance(context).sendBroadcast(i);
+            Intent i = new Intent("fetchingInstrumentsJoin");
+            i.putStringArrayListExtra("instrumentsJoin", instrument_url_count);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(i);
 
-
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
 

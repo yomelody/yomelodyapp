@@ -40,7 +40,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
     public MessengerAdapter(ArrayList<Chat> chatList, Context context) {
         this.chatList = chatList;
         this.context = context;
-        mActivity= (Activity) context;
+        mActivity = (Activity) context;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -100,7 +100,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
                     Intent intent = new Intent(context, ChatActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.putExtra("from", "MessengerActivity");
-                    if (mActivity.getIntent()!=null && mActivity.getIntent().hasExtra("share")){
+                    if (mActivity.getIntent() != null && mActivity.getIntent().hasExtra("share")) {
                         RecordingsModel mRecordingsModel = (RecordingsModel) mActivity.getIntent().getSerializableExtra("share");
                         intent.putExtra("share", mRecordingsModel);
                         intent.putExtra("file_type", mActivity.getIntent().getStringExtra("file_type"));
@@ -144,34 +144,37 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int listPosition) {
+        try {
+            holder.setIsRecyclable(false);
 
-        holder.setIsRecyclable(false);
-
-        Chat chat = chatList.get(listPosition);
-        if (chat.getChatType().equals("group")) {
-            holder.tvUserName.setText(chat.getGroupName());
-            if (!chat.getProfilePic().equals("")) {
-                Picasso.with(holder.userProfileImage.getContext()).load(chat.getGroupPic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
-            }
-            holder.tvMsg.setText(chat.getSenderName() + " : " + chat.getMessage());
-        } else {
-            holder.tvUserName.setText(chat.getReceiverName());
-            if (!chat.getProfilePic().equals("")) {
-                Picasso.with(holder.userProfileImage.getContext()).load(chat.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
-            }
+            Chat chat = chatList.get(listPosition);
+            if (chat.getChatType().equals("group")) {
+                holder.tvUserName.setText(chat.getGroupName());
+                if (!chat.getProfilePic().equals("")) {
+                    Picasso.with(holder.userProfileImage.getContext()).load(chat.getGroupPic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
+                }
+                holder.tvMsg.setText(chat.getSenderName() + " : " + chat.getMessage());
+            } else {
+                holder.tvUserName.setText(chat.getReceiverName());
+                if (!chat.getProfilePic().equals("")) {
+                    Picasso.with(holder.userProfileImage.getContext()).load(chat.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
+                }
 //            if (userId.equals(chat.getSenderID())){
 //                holder.tvMsg.setText("You" + " : " + chat.getMessage());
 //            }else{
 //                holder.tvMsg.setText(chat.getSenderName() + " : " + chat.getMessage());
 //            }
 
-            holder.tvMsg.setText(chat.getMessage());
-        }
-        holder.tvTime.setText(chat.getSendAt());
-        int msgCount;
-        if (!chat.getNewMessages().equals("null") && !chat.getNewMessages().equals("0")) {
-            holder.message_count.setVisibility(View.VISIBLE);
-            holder.message_count.setText(chat.getNewMessages());
+                holder.tvMsg.setText(chat.getMessage());
+            }
+            holder.tvTime.setText(chat.getSendAt());
+            int msgCount;
+            if (!chat.getNewMessages().equals("null") && !chat.getNewMessages().equals("0")) {
+                holder.message_count.setVisibility(View.VISIBLE);
+                holder.message_count.setText(chat.getNewMessages());
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 

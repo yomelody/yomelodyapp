@@ -188,6 +188,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
+        try{
         final JoinedArtists joinArt = Joined_artist.get(position);
         Log.d("Position", "" + position);
         click = getItemCount() - 1;
@@ -598,7 +599,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
                     JoinActivity.txtCount.setText(realPosition + 1 + " of " + getItemCount());
                     JoinedArtists join = Joined_artist.get(realPosition);
-                    JoinActivity.waveform_view.setVisibility(VISIBLE);
+
                     if (JoinActivity.ivJoinPlay.getVisibility() == VISIBLE) {
                         JoinActivity.ivJoinPlay.setVisibility(v.GONE);
                         JoinActivity.ivJoinPause.setVisibility(v.VISIBLE);
@@ -717,7 +718,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
                         JoinActivity.txtCount.setText(count + 1 + " of " + getItemCount());
                         JoinedArtists join = Joined_artist.get(realPosition);
-                        JoinActivity.waveform_view.setVisibility(VISIBLE);
+
                         if (JoinActivity.ivJoinPlay.getVisibility() == VISIBLE) {
                             JoinActivity.ivJoinPlay.setVisibility(v.GONE);
                             JoinActivity.ivJoinPause.setVisibility(v.VISIBLE);
@@ -865,6 +866,9 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
             }
         });
 
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
 
     }
 
