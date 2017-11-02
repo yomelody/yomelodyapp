@@ -106,7 +106,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
                         intent.putExtra("file_type", mActivity.getIntent().getStringExtra("file_type"));
                     }
 
-                    context.startActivity(intent);
+                    mActivity.startActivityForResult(intent,RecordingsCardAdapter.REQUEST_RECORDING_COMMENT);
                 }
             });
 

@@ -1,6 +1,7 @@
 package com.instamelody.instamelody;
 
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
@@ -100,12 +101,13 @@ public class MelodyActivity extends AppCompatActivity {
     RecordingsFragment rf;
     BroadcastReceiver mRegistrationBroadcastReceiver;
     int totalCount = 0;
+    private Activity mActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_melody);
-
+        mActivity=MelodyActivity.this;
         clearSharePrefMelody();
 
         SharedPreferences filterPref = this.getSharedPreferences("FilterPref", MODE_PRIVATE);
@@ -384,7 +386,8 @@ public class MelodyActivity extends AppCompatActivity {
         ivHomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                Intent intent = new Intent(mActivity, HomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
         });

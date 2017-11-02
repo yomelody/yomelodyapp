@@ -76,6 +76,7 @@ import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.SharedAudios;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.utils.AppHelper;
+import com.instamelody.instamelody.utils.Const;
 import com.instamelody.instamelody.utils.ImageCompressor;
 import com.instamelody.instamelody.utils.NotificationUtils;
 import com.instamelody.instamelody.utils.VolleyMultipartRequest;
@@ -404,45 +405,6 @@ public class ChatActivity extends AppCompatActivity {
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent it = getIntent();
-                if (it != null) {
-                    try {
-                        String clickFromProfile = it.getExtras().getString("clickFromProfile");
-                        if (clickFromProfile != null) {
-                            Intent resultIntent = new Intent();
-                            resultIntent.putExtra("From profile screen", "Comming from");
-                            setResult(Activity.RESULT_OK, resultIntent);
-                            Log.d("From profile screen", "Comming from");
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    } finally {
-                        SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
-                        editor.putString("receiverId", "");
-                        editor.putString("receiverName", "");
-                        editor.putString("receiverImage", "");
-                        editor.putString("chatId", "");
-                        editor.commit();
-                    }
-
-                } else {
-                    SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
-                    editor.putString("receiverId", "");
-                    editor.putString("receiverName", "");
-                    editor.putString("receiverImage", "");
-                    editor.putString("chatId", "");
-                    editor.commit();
-                }
-
-                try {
-                    if (ChatAdapter.mp != null) {
-                        //   ChatAdapter.mp.stop();
-                        ChatAdapter.mp.reset();
-                        ChatAdapter.mp.release();
-                    }
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
                 finish();
             }
         });
@@ -467,7 +429,8 @@ public class ChatActivity extends AppCompatActivity {
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
-                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                Intent intent = new Intent(mActivity, HomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
         });
@@ -724,17 +687,59 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+    private void beforeDestroyingWork(){
+        Intent it = getIntent();
+        if (it != null) {
+            try {
+                String clickFromProfile = it.getExtras().getString("clickFromProfile");
+                if (clickFromProfile != null) {
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra("From profile screen", "Comming from");
+                    setResult(Activity.RESULT_OK, resultIntent);
+                    Log.d("From profile screen", "Comming from");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                editor.putString("receiverId", "");
+                editor.putString("receiverName", "");
+                editor.putString("receiverImage", "");
+                editor.putString("chatId", "");
+                editor.commit();
+            }
+
+        } else {
+            SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+            editor.putString("receiverId", "");
+            editor.putString("receiverName", "");
+            editor.putString("receiverImage", "");
+            editor.putString("chatId", "");
+            editor.commit();
+        }
+
+        try {
+            if (ChatAdapter.mp != null) {
+                //   ChatAdapter.mp.stop();
+                ChatAdapter.mp.reset();
+                ChatAdapter.mp.release();
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void onBackPressed() {
-        SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+        /*SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
         editor.putString("receiverId", "");
         editor.putString("receiverName", "");
         editor.putString("receiverImage", "");
         editor.putString("chatId", "");
-        editor.commit();
+        editor.commit();*/
         finish();
-        Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
-        startActivity(intent);
+        /*Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
+        startActivity(intent);*/
     }
 
     /**
@@ -760,6 +765,12 @@ public class ChatActivity extends AppCompatActivity {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        beforeDestroyingWork();
     }
 
     @Override
@@ -1516,15 +1527,16 @@ public class ChatActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-<<<<<<< HEAD
+
                         AppHelper.sop("response=shareCountApi=" + response);
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra("share", "share");
-                        setResult(Activity.RESULT_OK, resultIntent);
-=======
-                        AppHelper.sop("response==" + response);
+                        Intent intent = new Intent();
+                        intent.putExtra("share", "share");
+                        setResult(Activity.RESULT_OK, intent);
+                        SharedPreferences.Editor socialStatusPrefEditor = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE).edit();
+                        socialStatusPrefEditor.putBoolean(Const.REC_SHARE_STATUS, true);
+                        socialStatusPrefEditor.apply();
                         mRecordingsModel=null;
->>>>>>> 5d1c9024077cd01a130733a8d067e8e235510e3b
+
                     }
                 },
                 new Response.ErrorListener() {

@@ -43,6 +43,7 @@ import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.StationActivity;
 import com.instamelody.instamelody.utils.AppHelper;
+import com.instamelody.instamelody.utils.Const;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -64,9 +65,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.RECORDINGS;
 
 public class AudioFragment extends Fragment {
 
-    ArrayList<AudioModel> audioList = new ArrayList<>();
     ArrayList<RecordingsModel> recordingList = new ArrayList<RecordingsModel>();
-    ArrayList<RecordingsModelMore> recordingListMore = new ArrayList<RecordingsModelMore>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
     ArrayList<Genres> genresArrayList = new ArrayList<>();
     private String ID = "id";
@@ -81,7 +80,6 @@ public class AudioFragment extends Fragment {
     private String COUNT = "count";
     LinearLayoutManager linearLayoutManager;
 
-    String recordingId, addedBy, recordingTopic, userName, dateAdded, likeCount, playCount, commentCount, shareCount, profileUrl, coverUrl, genre, recordings;
     private String limit="limit";
     String KEY_GENRE_NAME = "name";
     String KEY_GENRE_ID = "id";
@@ -91,25 +89,15 @@ public class AudioFragment extends Fragment {
 
 
     RecyclerView.Adapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
-    private static RecyclerView recyclerView;
-    private static ArrayList<RecordingsModel> data;
-    ProgressDialog pDialog;
+
     String userId;
-    String userIdNormal, userIdFb, userIdTwitter;
-    int statusNormal, statusFb, statusTwitter;
+
     ProgressDialog progressDialog;
     // LongOperation myTask = null;
     String strName, strSearch, strArtist, strInstruments, strBPM;
     TabHost host = null;
-
-    private boolean loading = true;
-    int pastVisiblesItems, visibleItemCount, totalItemCount;
-    LinearLayoutManager mLayoutManager;
     public static RecyclerView rv;
-    int counter = 0;
     RecyclerView.LayoutManager lm;
-    int post = 0;
     private String msgUnsuccess="No record found.";
     Activity mActivity;
     private final int count=10;
@@ -1054,6 +1042,16 @@ public class AudioFragment extends Fragment {
                 recordingsPools.clear();
                 callApi();
                 AppHelper.sop("onActivityResult==called=" + "resultCode==" + resultCode);
+            } else {
+                SharedPreferences socialStatusPref = mActivity.getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE);;
+                if (socialStatusPref.getBoolean(Const.REC_SHARE_STATUS, false)) {
+                    SharedPreferences.Editor socialStatusPrefEditor = mActivity.getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE).edit();
+                    socialStatusPrefEditor.putBoolean(Const.REC_SHARE_STATUS, false);
+                    socialStatusPrefEditor.apply();
+                    recordingList.clear();
+                    recordingsPools.clear();
+                    callApi();
+                }
             }
 
         }

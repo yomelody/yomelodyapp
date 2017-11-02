@@ -1,5 +1,6 @@
 package com.instamelody.instamelody;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -149,12 +150,14 @@ public class SignInActivity extends AppCompatActivity {
     ProgressDialog progressDialog;
     String IscheckMelody=null;
     String melodyPackId=null;
+    private Activity mActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_sign_in);
+        mActivity=SignInActivity.this;
         progressDialog = new ProgressDialog(SignInActivity.this);
         final TextView tvFirstName = (TextView) findViewById(R.id.tvFirstName);
         final TextView tvUserName = (TextView) findViewById(R.id.tvUserName);
@@ -335,7 +338,8 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                Intent intent = new Intent(mActivity, HomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
 
             }

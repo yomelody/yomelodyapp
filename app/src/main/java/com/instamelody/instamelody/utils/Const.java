@@ -84,4 +84,5 @@ public class Const {
     public static final String FB_STATUS = "FB_STATUS";
     public static final String TWITTER_STATUS = "TWITTER_STATUS";
     public static final String GOOGLE_STATUS = "GOOGLE_STATUS";
+    public static final String REC_SHARE_STATUS = "REC_SHARE_STATUS";
 }

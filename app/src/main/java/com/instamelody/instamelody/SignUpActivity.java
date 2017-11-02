@@ -1,6 +1,7 @@
 package com.instamelody.instamelody;
 
 import android.*;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -137,11 +138,13 @@ public class SignUpActivity extends AppCompatActivity {
     String date;
     int day, month, year;
     ProgressDialog progressDialog;
+    private Activity mActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+        mActivity=SignUpActivity.this;
         progressDialog = new ProgressDialog(SignUpActivity.this);
         etfirstname = (EditText) findViewById(R.id.etFirstName);
         etlastname = (EditText) findViewById(R.id.etLastName);
@@ -448,7 +451,8 @@ public class SignUpActivity extends AppCompatActivity {
                                   {
                                       @Override
                                       public void onClick(View view) {
-                                          Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                                          Intent intent = new Intent(mActivity, HomeActivity.class);
+                                          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                           startActivity(intent);
                                       }
                                   }

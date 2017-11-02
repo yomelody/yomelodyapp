@@ -998,7 +998,8 @@ public class StudioActivity extends AppCompatActivity {
                     } else {
                         //Toast.makeText(StudioActivity.this, "Task not running.", Toast.LENGTH_SHORT).show();
                     }
-                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                    Intent intent = new Intent(mActivity, HomeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -3170,7 +3171,7 @@ public class StudioActivity extends AppCompatActivity {
 
     }
 
-    public class LongOperation1 extends AsyncTask<String, Void, String> {
+    /*public class LongOperation1 extends AsyncTask<String, Void, String> {
         protected void onPreExecute() {
             progressDialog = new ProgressDialog(StudioActivity.this);
             progressDialog.setTitle("Processing...");
@@ -3181,7 +3182,7 @@ public class StudioActivity extends AppCompatActivity {
 
         public String doInBackground(String... params) {
             // saveRecordings1();
-            uploadRecordings(idUpload);
+//            uploadRecordings(idUpload);
             return null;
         }
 
@@ -3195,7 +3196,7 @@ public class StudioActivity extends AppCompatActivity {
             progressDialog.dismiss();
         }
 
-    }
+    }*/
 
     @Override
     protected void onDestroy() {

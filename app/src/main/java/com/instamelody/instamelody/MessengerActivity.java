@@ -34,6 +34,7 @@ import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.MessengerAdapter;
 import com.instamelody.instamelody.Models.Chat;
 import com.instamelody.instamelody.app.Config;
+import com.instamelody.instamelody.utils.AppHelper;
 import com.instamelody.instamelody.utils.Const;
 import com.instamelody.instamelody.utils.NotificationUtils;
 
@@ -179,6 +180,7 @@ public class MessengerActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mActivity, HomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
         });
@@ -187,8 +189,8 @@ public class MessengerActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         finish();
-        Intent intent = new Intent(mActivity, HomeActivity.class);
-        startActivity(intent);
+        /*Intent intent = new Intent(mActivity, HomeActivity.class);
+        startActivity(intent);*/
     }
 
     public void getChats(final String user_Id) {
@@ -347,5 +349,11 @@ public class MessengerActivity extends AppCompatActivity {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        AppHelper.sop("onActivityResult=MessengerActivity=requestCode="+requestCode+"=resultCode="+resultCode+"=data="+data);
     }
 }

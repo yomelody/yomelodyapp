@@ -1,5 +1,6 @@
 package com.instamelody.instamelody;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -94,11 +95,13 @@ public class JoinActivity extends AppCompatActivity {
     public static VisualizerView mVisualizerView;
     public static Visualizer mVisualizer;
     TextView tvDone;
+    private Activity mActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join);
+        mActivity=JoinActivity.this;
         progressDialog = new ProgressDialog(this);
         profile_image = (ImageView) findViewById(R.id.profile_image);
         artist_name = (TextView) findViewById(R.id.artist_name);
@@ -283,7 +286,8 @@ public class JoinActivity extends AppCompatActivity {
                     mediaPlayersAll.clear();
                     lstViewHolder.clear();
                 }
-                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                Intent intent = new Intent(mActivity, HomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
         });
