@@ -26,7 +26,7 @@ public class NetworkStateReceiver extends BroadcastReceiver {
             Toast.makeText(context, "Internet Connection Lost", Toast.LENGTH_LONG).show();
 
             //showSnack(true);
-            Intent i = new Intent(context, MainActivity.class);
+            Intent i = new Intent(context, HomeActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(i);
 

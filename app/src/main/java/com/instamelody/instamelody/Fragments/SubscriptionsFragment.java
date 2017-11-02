@@ -263,6 +263,9 @@ public class SubscriptionsFragment extends Fragment {
                                 packageId = jsonObject.getString("subscribedPack");
 
                             }
+                            switchPremium.setClickable(true);
+                            switchStandard.setClickable(true);
+                            switchProducer.setClickable(true);
                             if (packageId.equals("1")) {
                                 switchFree.setChecked(true);
 
@@ -456,7 +459,8 @@ public class SubscriptionsFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(KEY_SUBSCRIPTION, "admin@123");
+                params.put(USER_ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
@@ -558,13 +562,15 @@ public class SubscriptionsFragment extends Fragment {
                         }
                     }
 
+                    //txtCard_Number.setText(result.getPaymentMethodNonce());
+                    alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    WindowManager.LayoutParams wmlp = alertDialog.getWindow().getAttributes();
+                    wmlp.width = WindowManager.LayoutParams.MATCH_PARENT;
+                    wmlp.height = WindowManager.LayoutParams.MATCH_PARENT;
+                    alertDialog.show();
+
                 }
-                //txtCard_Number.setText(result.getPaymentMethodNonce());
-                alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                WindowManager.LayoutParams wmlp = alertDialog.getWindow().getAttributes();
-                wmlp.width = WindowManager.LayoutParams.MATCH_PARENT;
-                wmlp.height = WindowManager.LayoutParams.MATCH_PARENT;
-                alertDialog.show();
+
                 //
                 btnPaymentConf.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -659,9 +665,9 @@ public class SubscriptionsFragment extends Fragment {
                             JSONObject jsonObject = new JSONObject(response);
                             String flag = jsonObject.getString("status");
                             if (flag.equals("201")) {
-                                switchProducer.setChecked(true);
-                                alertDialog.dismiss();
-                                if (switchStandard.isChecked() == true) {
+
+
+                                /*if (switchStandard.isChecked() == true) {
                                     switchStandard.setChecked(true);
                                     switchPremium.setChecked(false);
                                     switchProducer.setChecked(false);
@@ -676,7 +682,9 @@ public class SubscriptionsFragment extends Fragment {
                                     switchPremium.setChecked(false);
                                     switchStandard.setChecked(false);
                                     switchFree.setChecked(false);
-                                }
+                                }*/
+                                subscriptionPackage();
+                                alertDialog.dismiss();
                             } else {
                                 /*switchPremium.setChecked(false);
                                 switchStandard.setChecked(false);
