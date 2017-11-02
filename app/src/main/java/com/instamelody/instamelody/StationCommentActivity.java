@@ -44,6 +44,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.CommentsAdapter;
+import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Models.Comments;
 import com.instamelody.instamelody.Models.JoinRecordingModel;
 import com.instamelody.instamelody.Models.RecordingsModel;
@@ -304,7 +305,8 @@ public class StationCommentActivity extends AppCompatActivity {
                                 intent.putExtra("Previous", "station");
                                 intent.putExtra("share", recording);
                                 intent.putExtra("file_type", "user_recording");
-                                startActivity(intent);
+                                startActivityForResult(intent, RecordingsCardAdapter.REQUEST_RECORDING_COMMENT);
+                                finish();
                             }
 
                         }
