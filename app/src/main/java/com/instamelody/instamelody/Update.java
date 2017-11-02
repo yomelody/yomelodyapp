@@ -41,6 +41,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.crashlytics.android.Crashlytics;
 import com.facebook.login.LoginManager;
 import com.instamelody.instamelody.utils.AppHelper;
 import com.instamelody.instamelody.utils.VolleyMultipartRequest;
@@ -61,6 +62,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.fabric.sdk.android.Fabric;
 
 import static android.R.attr.id;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
@@ -112,7 +114,7 @@ public class Update extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update);
-        mActivity=Update.this;
+        mActivity = Update.this;
 
         progressDialog = new ProgressDialog(Update.this);
         progressDialog.setTitle("Processing...");
@@ -373,8 +375,7 @@ public class Update extends AppCompatActivity {
                                     try {
                                         Intent photoCaptureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                                         startActivityForResult(photoCaptureIntent, requestCode);
-                                    }
-                                    catch (Exception e){
+                                    } catch (Exception e) {
                                         e.printStackTrace();
                                     }
 
@@ -449,7 +450,7 @@ public class Update extends AppCompatActivity {
         }
     }
 
-    private void setformSelection(){
+    private void setformSelection() {
         etuFirstName.setSelection(etuFirstName.getText().length());
         etuLastName.setSelection(etuLastName.getText().length());
         etuUsername.setSelection(etuUsername.getText().length());
@@ -513,7 +514,7 @@ public class Update extends AppCompatActivity {
                                 }
 
 
-                                if(jsonObjectResponse.getString("logintype").equalsIgnoreCase("1")){
+                                if (jsonObjectResponse.getString("logintype").equalsIgnoreCase("1")) {
                                     //nornal login case
                                     SharedPreferences.Editor editor = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
                                     editor.putString("userName", updateUserName);
@@ -522,8 +523,7 @@ public class Update extends AppCompatActivity {
                                     editor.putString("dob", updateDOB);
                                     editor.putString("mobile", updateMobile);
                                     editor.commit();
-                                }
-                                else if (jsonObjectResponse.getString("logintype").equalsIgnoreCase("2")){
+                                } else if (jsonObjectResponse.getString("logintype").equalsIgnoreCase("2")) {
                                     //fb login case
                                     SharedPreferences.Editor fbEditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
                                     fbEditor.putString("userName", updateUserName);
@@ -532,8 +532,7 @@ public class Update extends AppCompatActivity {
                                     fbEditor.putString("dob", updateDOB);
                                     fbEditor.putString("mobile", updateMobile);
                                     fbEditor.commit();
-                                }
-                                else {
+                                } else {
                                     //twitter login case
                                     SharedPreferences.Editor twitterEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
                                     twitterEditor.putString("firstName", updateFirstName);
@@ -568,8 +567,7 @@ public class Update extends AppCompatActivity {
 
                                 setResult(RESULT_OK);
                                 LoginManager.getInstance().logOut();
-                            }
-                            else {
+                            } else {
                                 Toast.makeText(Update.this, "Please try again.", Toast.LENGTH_SHORT).show();
                                 progressDialog.dismiss();
                             }
@@ -646,15 +644,14 @@ public class Update extends AppCompatActivity {
                             Picasso.with(Update.this).load(profileImagePref.getString("ProfileImage", null)).into(userProfileImageUpdate);
                         }
                         Toast.makeText(Update.this, "Profile Updated.", Toast.LENGTH_SHORT).show();
-                    }
-                    else {
+                    } else {
                         Toast.makeText(Update.this, "Profile image not updated.", Toast.LENGTH_SHORT).show();
                     }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                if (progressDialog!=null){
+                if (progressDialog != null) {
                     progressDialog.dismiss();
                 }
 
@@ -666,7 +663,7 @@ public class Update extends AppCompatActivity {
                 error.printStackTrace();
 
                 Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
-                if (progressDialog!=null){
+                if (progressDialog != null) {
                     progressDialog.dismiss();
                 }
             }
@@ -691,9 +688,9 @@ public class Update extends AppCompatActivity {
                 if(ts==null){
                     ts="";
                 }*/
-                DataPart dataPart=new DataPart("img.jpg", AppHelper.getFileDataFromDrawable(mActivity, userProfileImageUpdate.getDrawable()), "image/jpeg");
+                DataPart dataPart = new DataPart("img.jpg", AppHelper.getFileDataFromDrawable(mActivity, userProfileImageUpdate.getDrawable()), "image/jpeg");
                 params.put(FILE1, dataPart);
-                AppHelper.sop("getByteData=getFileName==="+dataPart.getFileName()+"="+dataPart.getType()+"="+dataPart.getContent());
+                AppHelper.sop("getByteData=getFileName===" + dataPart.getFileName() + "=" + dataPart.getType() + "=" + dataPart.getContent());
                 return params;
             }
 
@@ -768,7 +765,7 @@ public class Update extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (this.requestCode == requestCode && resultCode == RESULT_OK) {
-            Bitmap bitmap=null;
+            Bitmap bitmap = null;
             bitmap = (Bitmap) data.getExtras().get("data");
 //            Drawable mDrawable = new BitmapDrawable(getResources(), bitmap);
             userProfileImageUpdate.setImageBitmap(bitmap);
@@ -776,7 +773,7 @@ public class Update extends AppCompatActivity {
         }
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && null != data) {
-            Uri filePath=null;
+            Uri filePath = null;
             filePath = data.getData();
             try {
                 //Getting the Bitmap from Gallery
@@ -785,7 +782,7 @@ public class Update extends AppCompatActivity {
                 //Setting the Bitmap to ImageView
                 userProfileImageUpdate.setImageBitmap(bitmap);
 //                userProfileImageUpdate.setImageDrawable(mDrawable);
-                AppHelper.sop("filePath==="+filePath);
+                AppHelper.sop("filePath===" + filePath);
             } catch (IOException e) {
                 e.printStackTrace();
             }

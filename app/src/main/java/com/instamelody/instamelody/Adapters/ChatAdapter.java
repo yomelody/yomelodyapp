@@ -42,7 +42,6 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,10 +57,6 @@ import static com.instamelody.instamelody.ChatActivity.progressDialog;
 import static com.instamelody.instamelody.ChatActivity.rlChatPlayer;
 import static com.instamelody.instamelody.ChatActivity.rlNothing;
 import static com.instamelody.instamelody.ChatActivity.seekBarChata;
-import static com.instamelody.instamelody.ChatActivity.sender_name;
-import static com.instamelody.instamelody.ChatActivity.tvNamePlayer;
-import static com.instamelody.instamelody.ChatActivity.tvUserNamePlayer;
-import static com.instamelody.instamelody.R.id.rlPrevPlayer;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.JoinRecording;

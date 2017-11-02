@@ -9,6 +9,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 
+import com.crashlytics.android.Crashlytics;
+
+import io.fabric.sdk.android.Fabric;
+
 public class PrivacyPolicy extends AppCompatActivity {
     WebView wv;
     String url="file:///android_asset/index.html";

@@ -1861,7 +1861,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                         StudioActivity.mpall.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                             @Override
                             public void onCompletion(MediaPlayer mp) {
-                                if (MaxMpSessionID == mp.getAudioSessionId()) {
+                                if (MaxMpSessionID == mp.getAudioSessionId() && StudioActivity.lstViewHolder.size() !=0) {
                                     StudioActivity.handler.removeCallbacksAndMessages(null);
                                     for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
 
@@ -1914,33 +1914,37 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     //StudioActivity.waveform_view.setVisibility(View.VISIBLE);
                     //StudioActivity.frameProgress.setVisibility(View.GONE);
                     StudioActivity.frameProgress.setVisibility(View.GONE);
-                    for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
+                    if(StudioActivity.lstViewHolder.size() !=0){
+                        for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
 
-                        try {
-                            initAudio(StudioActivity.mediaPlayersAll.get(i));
-                            StudioActivity.mediaPlayersAll.get(i).start();
+                            try {
+                                initAudio(StudioActivity.mediaPlayersAll.get(i));
+                                StudioActivity.mediaPlayersAll.get(i).start();
 
-                        } catch (IllegalArgumentException e) {
+                            } catch (IllegalArgumentException e) {
 
-                        } catch (IllegalStateException e) {
+                            } catch (IllegalStateException e) {
 
-                        } catch (Exception e) {
+                            } catch (Exception e) {
 
+                            }
+                            if (StudioActivity.IsRepeat == true) {
+                                StudioActivity.mediaPlayersAll.get(i).setLooping(true);
+                            } else if (StudioActivity.IsRepeat == false) {
+                                StudioActivity.mediaPlayersAll.get(i).setLooping(false);
+                            }
+                            final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
+                            final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
+
+                            holderPlay.setVisibility(View.GONE);
+                            holderPause.setVisibility(View.VISIBLE);
+                            holderPause.setEnabled(false);
                         }
-                        if (StudioActivity.IsRepeat == true) {
-                            StudioActivity.mediaPlayersAll.get(i).setLooping(true);
-                        } else if (StudioActivity.IsRepeat == false) {
-                            StudioActivity.mediaPlayersAll.get(i).setLooping(false);
-                        }
-                        final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                        final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
-
-                        holderPlay.setVisibility(View.GONE);
-                        holderPause.setVisibility(View.VISIBLE);
-                        holderPause.setEnabled(false);
+                        RunSeekbar();
                     }
 
-                    RunSeekbar();
+
+
 
                 } catch (IllegalStateException e) {
                     e.printStackTrace();

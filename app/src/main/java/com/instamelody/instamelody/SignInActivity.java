@@ -48,6 +48,7 @@ import com.auth0.android.lock.utils.LockException;
 import com.auth0.android.provider.AuthCallback;
 import com.auth0.android.provider.WebAuthProvider;
 import com.auth0.android.result.Credentials;
+import com.crashlytics.android.Crashlytics;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -218,6 +219,7 @@ public class SignInActivity extends AppCompatActivity {
 
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
+        Fabric.with(this,new Crashlytics());
         initCustomLogin();
 //        initTwitterLogin();
 
