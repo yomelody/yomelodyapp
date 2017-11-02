@@ -43,6 +43,7 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.crashlytics.android.Crashlytics;
 import com.instamelody.instamelody.Adapters.CommentsAdapter;
 import com.instamelody.instamelody.Models.Comments;
 import com.instamelody.instamelody.Models.JoinRecordingModel;
@@ -61,6 +62,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import io.fabric.sdk.android.Fabric;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -741,9 +744,7 @@ public class StationCommentActivity extends AppCompatActivity {
                     String comment = etComment.getText().toString().trim();
                     etComment.getText().clear();
                     sendComment(comment, userId);
-                    int commentCount = Integer.parseInt(tvCommentCount.getText().toString().trim()) + 1;
 
-                    tvCommentCount.setText(String.valueOf(commentCount));
 
                 } else {
                     Toast.makeText(getApplicationContext(), "Log in to comment", Toast.LENGTH_SHORT).show();
@@ -1109,6 +1110,9 @@ public class StationCommentActivity extends AppCompatActivity {
                         resultIntent.putExtra("PARAMETER", "Like");
                         setResult(Activity.RESULT_OK, resultIntent);
 
+                        int commentCount = Integer.parseInt(tvCommentCount.getText().toString().trim()) + 1;
+
+                        tvCommentCount.setText(String.valueOf(commentCount));
 //                        adapter.notifyDataSetChanged();
                         getComments();
 //                        recyclerView.smoothScrollToPosition(adapter.getItemCount()-1);

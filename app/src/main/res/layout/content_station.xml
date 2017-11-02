@@ -83,21 +83,6 @@
         android:textColor="#4575FC"
         android:visibility="gone" />
 
-    <RelativeLayout
-        android:id="@+id/rlFragmentActivity"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="40dp"
-        android:visibility="gone">
-
-        <fragment
-            android:id="@+id/activity_fragment"
-            android:name="com.instamelody.instamelody.Fragments.ActivityFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </RelativeLayout>
-
     <ListView
         android:id="@+id/list"
         android:layout_width="100dp"

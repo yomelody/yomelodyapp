@@ -38,6 +38,7 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.crashlytics.android.Crashlytics;
 import com.facebook.login.LoginManager;
 import com.instamelody.instamelody.utils.Const;
 import com.instamelody.instamelody.utils.NotificationUtils;
@@ -614,7 +615,10 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        getTotalCount();
+        if (userId != null) {
+            getTotalCount();
+        }
+
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(PUSH_NOTIFICATION));
         NotificationUtils.clearNotifications(getApplicationContext());

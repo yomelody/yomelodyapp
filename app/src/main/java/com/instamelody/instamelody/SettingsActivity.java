@@ -17,12 +17,14 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.facebook.login.LoginManager;
 import com.instamelody.instamelody.utils.AppHelper;
 import com.instamelody.instamelody.utils.Const;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by Shubhansh Jaiswal on 11/29/2016.

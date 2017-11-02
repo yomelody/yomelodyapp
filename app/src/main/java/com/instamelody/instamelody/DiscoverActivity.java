@@ -51,6 +51,7 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.crashlytics.android.Crashlytics;
 import com.instamelody.instamelody.Adapters.DiscoverAdapter;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Models.AdvertisePagingData;
@@ -81,6 +82,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Handler;
 
+import io.fabric.sdk.android.Fabric;
 import me.relex.circleindicator.CircleIndicator;
 
 import static com.instamelody.instamelody.app.Config.PUSH_NOTIFICATION;

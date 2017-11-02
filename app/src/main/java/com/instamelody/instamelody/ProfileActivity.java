@@ -47,6 +47,7 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.crashlytics.android.Crashlytics;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Fragments.BioFragment;
 import com.instamelody.instamelody.Fragments.ProfileActivityFragment;
@@ -79,6 +80,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.fabric.sdk.android.Fabric;
 
 import static com.instamelody.instamelody.Adapters.JoinInstrumentListAdp.count;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
