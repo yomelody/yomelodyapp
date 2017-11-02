@@ -4292,9 +4292,11 @@ public class StudioActivity extends AppCompatActivity {
                                 IsExp = jsonObject.getString("is_expired");
                                 LayerCount = Integer.parseInt(jsonObject.getString("layer"));
                                 if (IsExp == "false") {
-                                    if (LayerCount <= instrumentList.size() && LayerCount != 0) {
-                                        Toast.makeText(StudioActivity.this, "You can add only " + LayerCount + " layers of instruments." + "please subscribed another pack.", Toast.LENGTH_SHORT).show();
-                                        IsValidPack = true;
+                                    if(LayerCount != 0) {
+                                        if ( instrumentList.size()>LayerCount) {
+                                            Toast.makeText(StudioActivity.this, "You can add only " + LayerCount + " layers of instruments." + "please subscribed another pack.", Toast.LENGTH_SHORT).show();
+                                            IsValidPack = true;
+                                        }
                                     }
 
                                 } else {
