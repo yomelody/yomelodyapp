@@ -1039,7 +1039,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             @Override
             public void onClick(View v) {
                 try {
-                    StudioActivity.IsRepeteReAll=false;
+                    StudioActivity.IsRepeteReAll = false;
                     if (StudioActivity.mVisualizer != null) {
                         StudioActivity.mVisualizer.release();
                     }
@@ -1286,7 +1286,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                             holder.mp.stop();
                             holder.mp.release();
                             holder.mp = null;
-                        }catch (Exception ex){
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         }
                     }
@@ -1828,7 +1828,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 // some calculation logic of msg variable
                 try {
                     if (InstrumentCountSize == 0) {
-                        StudioActivity.IsRepeteReAll=true;
+                        StudioActivity.IsRepeteReAll = true;
                         InstrumentCountSize = instrumentList.size();
                         tmpduration = 0;
                         Compdurations = 0;
@@ -1857,7 +1857,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                         StudioActivity.mpall.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                             @Override
                             public void onCompletion(MediaPlayer mp) {
-                                if (MaxMpSessionID == mp.getAudioSessionId() && StudioActivity.lstViewHolder.size() !=0) {
+                                if (MaxMpSessionID == mp.getAudioSessionId() && StudioActivity.lstViewHolder.size() != 0) {
                                     StudioActivity.handler.removeCallbacksAndMessages(null);
                                     for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
 
@@ -1910,7 +1910,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     //StudioActivity.waveform_view.setVisibility(View.VISIBLE);
                     //StudioActivity.frameProgress.setVisibility(View.GONE);
                     StudioActivity.frameProgress.setVisibility(View.GONE);
-                    if(StudioActivity.lstViewHolder.size() !=0){
+                    if (StudioActivity.lstViewHolder.size() != 0) {
                         for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
 
                             try {
@@ -1938,8 +1938,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                         }
                         RunSeekbar();
                     }
-
-
 
 
                 } catch (IllegalStateException e) {
