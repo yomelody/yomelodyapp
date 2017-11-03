@@ -1764,7 +1764,11 @@ public class StudioActivity extends AppCompatActivity {
                     StudioActivity.mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mp) {
-                            mediaPlayer.stop();
+                            try {
+                                mediaPlayer.stop();
+                            }catch (Exception ex){
+                                ex.printStackTrace();
+                            }
                             chrono.stop();
                             ivRecord_pause.setVisibility(View.INVISIBLE);
                             rlListeningButton.setVisibility(View.INVISIBLE);
@@ -1839,10 +1843,16 @@ public class StudioActivity extends AppCompatActivity {
 
     public void playAurdio() throws IOException {
         try {
+
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(audioFilePath);
-            mediaPlayer.prepare();
-            mediaPlayer.start();
+            mediaPlayer.prepareAsync();
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
             duration = mediaPlayer.getDuration();
             initAudio(mediaPlayer.getAudioSessionId());
         } catch (Throwable e) {
@@ -2156,7 +2166,7 @@ public class StudioActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         Log.d("Instrument list Response", response);
-
+                        IsValidateSubscription();
                         instrumentList.clear();
                         new ParseContents(getApplicationContext()).parseInstrumentsAttached(response, instrumentList, mpid);
 
@@ -4292,11 +4302,14 @@ public class StudioActivity extends AppCompatActivity {
                                 IsExp = jsonObject.getString("is_expired");
                                 LayerCount = Integer.parseInt(jsonObject.getString("layer"));
                                 if (IsExp == "false") {
-                                    if(LayerCount != 0) {
+                                    if(LayerCount == 0) {
+
+                                    }else{
                                         if ( instrumentList.size()>LayerCount) {
                                             Toast.makeText(StudioActivity.this, "You can add only " + LayerCount + " layers of instruments." + "please subscribed another pack.", Toast.LENGTH_SHORT).show();
                                             IsValidPack = true;
                                         }
+
                                     }
 
                                 } else {
