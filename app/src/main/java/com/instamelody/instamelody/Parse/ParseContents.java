@@ -34,6 +34,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.instamelody.instamelody.utils.Const.ServiceType.BASE_URL;
 
 /**
  * Created by Shubhansh Jaiswal on 08/02/17.
@@ -212,7 +213,7 @@ public class ParseContents {
                     melodyInstruments.setUserName(instrumentsJson.getString(KEY_INSTRUMENT_USERNAME));
                     melodyInstruments.setAudioType("instrument");
                     instrumentList.add(melodyInstruments);
-                    StudioActivity.list.add(j, new MixingData(String.valueOf(instrumentsJson.getInt(KEY_INSTRUMENT_ID)), "5", "-5", "20", "0", "44100", "0", "0", "0", "2000", "0", "0", "0", "0", "0", "0", "0", instrumentsJson.getString(KEY_INSTRUMENT_URL).replace("http://52.89.220.199/api/", ""), String.valueOf(j)));
+                    StudioActivity.list.add(j, new MixingData(String.valueOf(instrumentsJson.getInt(KEY_INSTRUMENT_ID)), "5", "-5", "20", "0", "44100", "0", "0", "0", "2000", "0", "0", "0", "0", "0", "0", "0", instrumentsJson.getString(KEY_INSTRUMENT_URL).replace(BASE_URL, ""), String.valueOf(j)));
                 }
             }
         } catch (JSONException e) {
@@ -527,7 +528,7 @@ public class ParseContents {
                     melodyInstruments.setUserProfilePic(instrumentsJson.getString("profilepic"));
                     melodyInstruments.setInstrumentCover(instrumentsJson.getString("coverpic"));
                     instrumentList.add(melodyInstruments);
-                    StudioActivity.list.add(j, new MixingData(String.valueOf(instrumentsJson.getInt("instrument_id")), "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", instrumentsJson.getString(KEY_INSTRUMENT_URL).replace("http://52.89.220.199/api/", ""), String.valueOf(j)));
+                    StudioActivity.list.add(j, new MixingData(String.valueOf(instrumentsJson.getInt("instrument_id")), "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", instrumentsJson.getString(KEY_INSTRUMENT_URL).replace(BASE_URL, ""), String.valueOf(j)));
                 }
             }
         } catch (JSONException e) {
