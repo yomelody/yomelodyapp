@@ -1043,7 +1043,7 @@ public class AudioFragment extends Fragment {
                 callApi();
                 AppHelper.sop("onActivityResult==called=" + "resultCode==" + resultCode);
             } else {
-                SharedPreferences socialStatusPref = mActivity.getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE);;
+                SharedPreferences socialStatusPref = mActivity.getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE);
                 if (socialStatusPref.getBoolean(Const.REC_SHARE_STATUS, false)) {
                     SharedPreferences.Editor socialStatusPrefEditor = mActivity.getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE).edit();
                     socialStatusPrefEditor.putBoolean(Const.REC_SHARE_STATUS, false);

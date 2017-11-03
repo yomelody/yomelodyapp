@@ -1612,7 +1612,7 @@ public class ProfileActivity extends AppCompatActivity {
                 callApi();
             }
             else {
-                SharedPreferences socialStatusPref = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE);;
+                SharedPreferences socialStatusPref = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE);
                 if (socialStatusPref.getBoolean(Const.REC_SHARE_STATUS, false)) {
                     SharedPreferences.Editor socialStatusPrefEditor = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE).edit();
                     socialStatusPrefEditor.putBoolean(Const.REC_SHARE_STATUS, false);

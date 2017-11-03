@@ -107,6 +107,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         this.melodyList = melodyList;
 
         this.context = context;
+        mActivity = (Activity) context;
     }
 
     public MelodyCardListAdapter(ArrayList<UserMelodyCard> melodyList, ArrayList<UserMelodyPlay> melodyPools, Context context) {
@@ -372,6 +373,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         }
 
                     }
+                    mActivity.finish();
                 }
             });
 

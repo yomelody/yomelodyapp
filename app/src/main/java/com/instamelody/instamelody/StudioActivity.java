@@ -144,6 +144,7 @@ import static com.instamelody.instamelody.app.Config.PUSH_NOTIFICATION;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ADD_RECORDINGS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
+import static com.instamelody.instamelody.utils.Const.ServiceType.BASE_URL;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.IsValidateSubPack;
 import static com.instamelody.instamelody.utils.Const.ServiceType.JOINED_USERS;
@@ -336,7 +337,7 @@ public class StudioActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_studio);
         mActivity = StudioActivity.this;
-        progressDialog = new ProgressDialog(StudioActivity.this);
+        progressDialog = new ProgressDialog(mActivity);
         socialStatusPref = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE);
 
         rlBase = (RelativeLayout) findViewById(R.id.rlBase);
@@ -373,9 +374,9 @@ public class StudioActivity extends AppCompatActivity {
         frameProgress = (FrameLayout) findViewById(R.id.frameProgress);
         ivSound = (ImageView) findViewById(R.id.ivSound);
         message_count = (TextView) findViewById(R.id.message_count);
-
         playAll = (ImageView) findViewById(R.id.playAll);
         pauseAll = (ImageView) findViewById(R.id.pauseAll);
+
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         firstName = loginSharedPref.getString("firstName", null);
         userNameLogin = loginSharedPref.getString("userName", null);
@@ -850,6 +851,7 @@ public class StudioActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("cover response", MODE_PRIVATE).edit();
                     editor.clear();
                     editor.commit();
+                    finish();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -1004,7 +1006,8 @@ public class StudioActivity extends AppCompatActivity {
                     } else {
                         //Toast.makeText(StudioActivity.this, "Task not running.", Toast.LENGTH_SHORT).show();
                     }
-                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                    Intent intent = new Intent(mActivity, HomeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -2447,11 +2450,11 @@ public class StudioActivity extends AppCompatActivity {
 
                     if (msgflag.equals("Melody created")) {
                         MelodyResponseDetails = r1.getJSONObject("melody_data");
-                        melodyurl = "http://52.89.220.199/api/" + MelodyResponseDetails.getString("melodyurl");
+                        melodyurl = BASE_URL + MelodyResponseDetails.getString("melodyurl");
                         //urlRecording = r1.getString("melody");
                     } else {
                         MelodyResponseDetails = r1.getJSONObject("melody_data");
-                        melodyurl = "http://52.89.220.199/api/" + MelodyResponseDetails.getString("melodyurl");
+                        melodyurl = BASE_URL + MelodyResponseDetails.getString("melodyurl");
                         // urlRecording = r1.getString("recording");
                     }
 
@@ -2464,7 +2467,7 @@ public class StudioActivity extends AppCompatActivity {
                             melodyInstruments.setInstrumentFile("Blank");
                             melodyInstruments.setInstrumentLength(MelodyResponseDetails.getString("duration"));
                             melodyInstruments.setUserProfilePic(recPic);
-                            melodyInstruments.setInstrumentCover("#00FDFE");
+                            melodyInstruments.setInstrumentCover(BASE_URL + MelodyResponseDetails.getString("coverpic"));
                             melodyInstruments.setInstrumentCreated(MelodyResponseDetails.getString("add_date"));
                             melodyInstruments.setUserName(userName);
                             melodyInstruments.setInstrumentFile(melodyurl);
@@ -2494,7 +2497,7 @@ public class StudioActivity extends AppCompatActivity {
                             melodyInstruments.setInstrumentFile("Blank");
                             melodyInstruments.setInstrumentLength(MelodyResponseDetails.getString("duration"));
                             melodyInstruments.setUserProfilePic(recPic);
-                            melodyInstruments.setInstrumentCover("#00FDFE");
+                            melodyInstruments.setInstrumentCover(BASE_URL + MelodyResponseDetails.getString("coverpic"));
                             melodyInstruments.setInstrumentCreated(MelodyResponseDetails.getString("add_date"));
                             melodyInstruments.setUserName(userName);
                             melodyInstruments.setInstrumentFile(melodyurl);
@@ -2685,6 +2688,7 @@ public class StudioActivity extends AppCompatActivity {
                 }
                 params.put(Mixrecording, myarray.toString());
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params==="+params+"\n URL="+MixingAudio_InstrumentsAudio);
                 return params;
             }
 
@@ -2692,7 +2696,11 @@ public class StudioActivity extends AppCompatActivity {
             protected Map<String, DataPart> getByteData() {
                 Map<String, DataPart> params = new HashMap<>();
                 params.put(Mixvocalsound, new DataPart("InstaMelody.mp3", soundBytes, "audio/amr"));
-//                params.put(FILE1, new DataPart("CoverImg.jpg", AppHelper.getFileDataFromDrawable(getBaseContext(), ivNewRecordCover.getDrawable()), "image/jpeg"));
+                if (ivNewRecordCover.getDrawable()!=null){
+                    AppHelper.sop("param=DataPart=if=="+params);
+                    params.put("cover", new DataPart("CoverImg.jpg", AppHelper.getFileDataFromDrawable(getBaseContext(), ivNewRecordCover.getDrawable()), "image/jpeg"));
+                }
+                AppHelper.sop("param=DataPart==="+params);
                 return params;
             }
 
@@ -3121,8 +3129,7 @@ public class StudioActivity extends AppCompatActivity {
                     ex.printStackTrace();
                 }
             }
-            Intent i = new Intent(this, HomeActivity.class);
-            startActivity(i);
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
