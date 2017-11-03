@@ -144,6 +144,7 @@ import static com.instamelody.instamelody.app.Config.PUSH_NOTIFICATION;
 import static com.instamelody.instamelody.utils.Const.ServiceType.ADD_RECORDINGS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
+import static com.instamelody.instamelody.utils.Const.ServiceType.BASE_URL;
 import static com.instamelody.instamelody.utils.Const.ServiceType.GENERE;
 import static com.instamelody.instamelody.utils.Const.ServiceType.IsValidateSubPack;
 import static com.instamelody.instamelody.utils.Const.ServiceType.JOINED_USERS;
@@ -2447,11 +2448,11 @@ public class StudioActivity extends AppCompatActivity {
 
                     if (msgflag.equals("Melody created")) {
                         MelodyResponseDetails = r1.getJSONObject("melody_data");
-                        melodyurl = "http://52.89.220.199/api/" + MelodyResponseDetails.getString("melodyurl");
+                        melodyurl = BASE_URL+MelodyResponseDetails.getString("melodyurl");
                         //urlRecording = r1.getString("melody");
                     } else {
                         MelodyResponseDetails = r1.getJSONObject("melody_data");
-                        melodyurl = "http://52.89.220.199/api/" + MelodyResponseDetails.getString("melodyurl");
+                        melodyurl = BASE_URL+MelodyResponseDetails.getString("melodyurl");
                         // urlRecording = r1.getString("recording");
                     }
 
