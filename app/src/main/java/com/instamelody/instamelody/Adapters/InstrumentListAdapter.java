@@ -617,10 +617,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     }
                     //}
 
-                } catch (
-                        Exception ex)
-
-                {
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
 
@@ -1800,7 +1797,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 super.onPreExecute();
                 Log.e("AsyncTask", "onPreExecute");
                 try {
-
+                    StudioActivity.ivBackButton.setEnabled(false);
+                    StudioActivity.ivHomeButton.setEnabled(false);
                     for (int i = 0; i <= StudioActivity.lstViewHolder.size() - 1; i++) {
                         try {
                             final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
@@ -1834,7 +1832,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                         Compdurations = 0;
                         MaxMpSessionID = 0;
                         for (int i = 0; i < InstrumentCountSize; i++) {
-                            Log.d("Instrument url----------------:", "" + instrumentList.get(i).getInstrumentFile());
+                            Log.d("Instrument url :", "" + instrumentList.get(i).getInstrumentFile());
                             StudioActivity.mpall = new MediaPlayer();
                             StudioActivity.mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
                             StudioActivity.mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
@@ -1909,6 +1907,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     StudioActivity.ivRecord.setEnabled(false);
                     //StudioActivity.waveform_view.setVisibility(View.VISIBLE);
                     //StudioActivity.frameProgress.setVisibility(View.GONE);
+                    StudioActivity.ivBackButton.setEnabled(true);
+                    StudioActivity.ivHomeButton.setEnabled(true);
                     StudioActivity.frameProgress.setVisibility(View.GONE);
                     if (StudioActivity.lstViewHolder.size() != 0) {
                         for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {

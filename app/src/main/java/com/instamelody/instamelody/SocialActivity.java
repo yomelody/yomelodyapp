@@ -342,8 +342,9 @@ public class SocialActivity extends AppCompatActivity {
         tvDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(SocialActivity.this,SettingsActivity.class);
-                startActivity(i);
+                /*Intent i = new Intent(SocialActivity.this,SettingsActivity.class);
+                startActivity(i);*/
+                finish();
             }
         });
 

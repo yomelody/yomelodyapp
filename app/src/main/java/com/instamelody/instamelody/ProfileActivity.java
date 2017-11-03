@@ -160,7 +160,10 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         mActivity=ProfileActivity.this;
-        progressDialog = new ProgressDialog(ProfileActivity.this);
+        progressDialog = new ProgressDialog(mActivity);
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
         sharePrefClearProfile();
         SharedPreferences filterPref = this.getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
@@ -257,6 +260,9 @@ public class ProfileActivity extends AppCompatActivity {
             getApplicationContext().startActivity(intent);
         }
         adapter = new RecordingsCardAdapter(ProfileActivity.this, recordingList, recordingsPools);
+        if (rv != null) {
+            rv.setAdapter(adapter);
+        }
 
         ivToMelody.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -467,7 +473,8 @@ public class ProfileActivity extends AppCompatActivity {
         ivHomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                Intent intent = new Intent(mActivity, HomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
         });
@@ -564,9 +571,6 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void fetchUserBio() {
-        progressDialog.setTitle("Processing...");
-        progressDialog.setMessage("Please wait...");
-        progressDialog.setCancelable(false);
         progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, USERS_BIO,
                 new Response.Listener<String>() {
@@ -678,19 +682,10 @@ public class ProfileActivity extends AppCompatActivity {
 //                                        MyObject obj = gson.fromJson(json, MyObject.class);
 //                                    }
                                 }
-                                if (progressDialog != null) {
-                                    if (progressDialog.isShowing()) {
-                                        progressDialog.dismiss();
-                                    }
-                                }
+
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            if (progressDialog != null) {
-                                if (progressDialog.isShowing()) {
-                                    progressDialog.dismiss();
-                                }
-                            }
                         }
 
                     }
@@ -715,11 +710,6 @@ public class ProfileActivity extends AppCompatActivity {
                         }
                         Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
-                        if (progressDialog != null) {
-                            if (progressDialog.isShowing()) {
-                                progressDialog.dismiss();
-                            }
-                        }
                     }
                 }) {
             @Override
@@ -818,11 +808,9 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void fetchRecordings() {
-
-        if (rv != null) {
-            rv.setAdapter(adapter);
+        if (!progressDialog.isShowing()){
+            progressDialog.show();
         }
-
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
@@ -851,6 +839,10 @@ public class ProfileActivity extends AppCompatActivity {
                         adapter.notifyDataSetChanged();
                         tv_records.setText("" + recordingList.size());
                         isLoading=false;
+                        if (progressDialog!=null && progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
+
                     }
                 },
                 new Response.ErrorListener() {
@@ -861,6 +853,9 @@ public class ProfileActivity extends AppCompatActivity {
                         isLastPage=false;
                         String errorMsg = error.toString();
                         Log.d("Error", errorMsg);
+                        if (progressDialog!=null && progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
                     }
                 }) {
             @Override
@@ -991,10 +986,6 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void callApi() {
-        if (rv != null) {
-            rv.setAdapter(adapter);
-        }
-
         if (strName == null && strSearch == null) {
             fetchRecordings();
         } else if (strSearch != null) {
@@ -1010,62 +1001,11 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-    /*private class LongOperation extends AsyncTask<String, Void, String> {
-        protected void onPreExecute() {
-            progressDialog = new ProgressDialog(ProfileActivity.this);
-            progressDialog.setTitle("Processing...");
-            progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-
-        protected String doInBackground(String... params) {
-
-            try {
-                //Getting data from server
-                String filename = "myfile";
-                String outputString = "Hello world!";
-                URL aurl = new URL(RECORDINGS);
-                URLConnection connection = aurl.openConnection();
-                connection.connect();
-                // getting file length
-                int lengthOfFile = connection.getContentLength();
-                // input stream to read file - with 8k buffer
-                InputStream input = new BufferedInputStream(aurl.openStream(), 8192);
-                try {
-                    FileOutputStream outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                    outputStream.write(outputString.getBytes());
-                    outputStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                try {
-                    FileInputStream inputStream = openFileInput(filename);
-                    BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
-                    StringBuilder total = new StringBuilder();
-                    String line;
-                    while ((line = r.readLine()) != null) {
-                        total.append(line);
-                    }
-                    r.close();
-                    inputStream.close();
-                    Log.d("File", "File contents: " + total);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-            progressDialog.dismiss();
-        }
-    }*/
 
     public void fetchRecordingsFilter() {
-
+        if (!progressDialog.isShowing()){
+            progressDialog.show();
+        }
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
@@ -1093,6 +1033,9 @@ public class ProfileActivity extends AppCompatActivity {
                         new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                         isLoading=false;
+                        if (progressDialog!=null && progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -1116,6 +1059,9 @@ public class ProfileActivity extends AppCompatActivity {
                         }
                         Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+                        if (progressDialog!=null && progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
                     }
                 }) {
             @Override
@@ -1138,7 +1084,9 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void fetchSearchData() {
-
+        if (!progressDialog.isShowing()){
+            progressDialog.show();
+        }
         SharedPreferences searchPref = this.getSharedPreferences("SearchPref", MODE_PRIVATE);
         strSearch = searchPref.getString("stringSearch", null);
 
@@ -1169,6 +1117,9 @@ public class ProfileActivity extends AppCompatActivity {
                         new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                         isLoading=false;
+                        if (!progressDialog.isShowing()){
+                            progressDialog.show();
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -1192,6 +1143,9 @@ public class ProfileActivity extends AppCompatActivity {
                         }
 //                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+                        if (!progressDialog.isShowing()){
+                            progressDialog.show();
+                        }
                     }
                 }) {
             @Override
@@ -1211,7 +1165,9 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void fetchRecordingsFilterArtist() {
-
+        if (!progressDialog.isShowing()){
+            progressDialog.show();
+        }
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
@@ -1239,6 +1195,9 @@ public class ProfileActivity extends AppCompatActivity {
                         new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                         isLoading=false;
+                        if (progressDialog!=null && progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -1262,6 +1221,9 @@ public class ProfileActivity extends AppCompatActivity {
                         }
 //                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+                        if (progressDialog!=null && progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
                     }
                 }) {
             @Override
@@ -1285,6 +1247,9 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void fetchRecordingsFilterInstruments() {
+        if (!progressDialog.isShowing()){
+            progressDialog.show();
+        }
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {
@@ -1313,6 +1278,9 @@ public class ProfileActivity extends AppCompatActivity {
                         new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                         isLoading=false;
+                        if (progressDialog!=null && progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -1336,6 +1304,9 @@ public class ProfileActivity extends AppCompatActivity {
                         }
 //                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+                        if (progressDialog!=null && progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
                     }
                 }) {
             @Override
@@ -1360,6 +1331,9 @@ public class ProfileActivity extends AppCompatActivity {
 
     public void fetchRecordingsFilterBPM() {
 
+        if (!progressDialog.isShowing()){
+            progressDialog.show();
+        }
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
@@ -1387,6 +1361,10 @@ public class ProfileActivity extends AppCompatActivity {
                         new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                         isLoading=false;
+
+                        if (progressDialog!=null && progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -1410,6 +1388,9 @@ public class ProfileActivity extends AppCompatActivity {
                         }
 //                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
+                        if (progressDialog!=null && progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
                     }
                 }) {
             @Override
@@ -1629,6 +1610,17 @@ public class ProfileActivity extends AppCompatActivity {
                 recordingList.clear();
                 recordingsPools.clear();
                 callApi();
+            }
+            else {
+                SharedPreferences socialStatusPref = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE);;
+                if (socialStatusPref.getBoolean(Const.REC_SHARE_STATUS, false)) {
+                    SharedPreferences.Editor socialStatusPrefEditor = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE).edit();
+                    socialStatusPrefEditor.putBoolean(Const.REC_SHARE_STATUS, false);
+                    socialStatusPrefEditor.apply();
+                    recordingList.clear();
+                    recordingsPools.clear();
+                    callApi();
+                }
             }
         }
         if (requestCode == PROFILE_TO_MESSANGER) {

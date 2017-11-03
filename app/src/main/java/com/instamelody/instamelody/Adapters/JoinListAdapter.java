@@ -188,6 +188,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
+        try{
         final JoinedArtists joinArt = Joined_artist.get(position);
         Log.d("Position", "" + position);
         click = getItemCount() - 1;
@@ -865,6 +866,9 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
             }
         });
 
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
 
     }
 

@@ -306,7 +306,8 @@ public class DiscoverActivity extends AppCompatActivity {
         ivHomeDiscover.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                Intent intent = new Intent(mActivity, HomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
         });
@@ -1289,6 +1290,17 @@ public class DiscoverActivity extends AppCompatActivity {
                 recordingList.clear();
                 recordingsPools.clear();
                 callApi();
+            }
+            else {
+                SharedPreferences socialStatusPref = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE);;
+                if (socialStatusPref.getBoolean(Const.REC_SHARE_STATUS, false)) {
+                    SharedPreferences.Editor socialStatusPrefEditor = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE).edit();
+                    socialStatusPrefEditor.putBoolean(Const.REC_SHARE_STATUS, false);
+                    socialStatusPrefEditor.apply();
+                    recordingList.clear();
+                    recordingsPools.clear();
+                    callApi();
+                }
             }
         }
     }

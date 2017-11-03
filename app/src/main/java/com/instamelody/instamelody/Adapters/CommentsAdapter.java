@@ -69,14 +69,17 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MyView
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int listPosition) {
-
-        Comments comments = commentList.get(listPosition);
-        Picasso.with(holder.userProfileImage.getContext()).load(comments.getUserProfileImage()).into(holder.userProfileImage);
-        holder.tvRealName.setText(comments.getTvRealName());
-        holder.tvUsername.setText("@" + comments.getTvUsername());
-        holder.tvTime.setText(DateTime(comments.getTvTime()));
-        holder.tvMsg.setText(comments.getTvMsg());
-        //DateTime(c.getString(comments.getTvTime())
+        try {
+            Comments comments = commentList.get(listPosition);
+            Picasso.with(holder.userProfileImage.getContext()).load(comments.getUserProfileImage()).into(holder.userProfileImage);
+            holder.tvRealName.setText(comments.getTvRealName());
+            holder.tvUsername.setText("@" + comments.getTvUsername());
+            holder.tvTime.setText(DateTime(comments.getTvTime()));
+            holder.tvMsg.setText(comments.getTvMsg());
+            //DateTime(c.getString(comments.getTvTime())
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
     }
 

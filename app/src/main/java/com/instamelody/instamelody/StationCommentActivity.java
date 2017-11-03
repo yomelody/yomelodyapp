@@ -45,6 +45,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.crashlytics.android.Crashlytics;
 import com.instamelody.instamelody.Adapters.CommentsAdapter;
+import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Models.Comments;
 import com.instamelody.instamelody.Models.JoinRecordingModel;
 import com.instamelody.instamelody.Models.RecordingsModel;
@@ -307,7 +308,8 @@ public class StationCommentActivity extends AppCompatActivity {
                                 intent.putExtra("Previous", "station");
                                 intent.putExtra("share", recording);
                                 intent.putExtra("file_type", "user_recording");
-                                startActivity(intent);
+                                startActivityForResult(intent, RecordingsCardAdapter.REQUEST_RECORDING_COMMENT);
+                                finish();
                             }
 
                         }
@@ -728,7 +730,9 @@ public class StationCommentActivity extends AppCompatActivity {
         ivHomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                Intent intent = new Intent(mActivity, HomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
             }
         });
 

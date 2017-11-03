@@ -1,5 +1,6 @@
 package com.instamelody.instamelody;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
@@ -124,11 +125,13 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     AudioFragment af;
     BroadcastReceiver mRegistrationBroadcastReceiver;
     int totalCount = 0;
+    Activity mActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_station);
+        mActivity=StationActivity.this;
         clearSharePrefStation();
 
         message = (ImageView) findViewById(R.id.message);
@@ -181,6 +184,10 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
         af = new AudioFragment();
         getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
+        btnActivity.setBackgroundColor(Color.parseColor("#E4E4E4"));
+        btnAudio.setBackgroundColor(Color.parseColor("#FFFFFF"));
+        btnAudio.setEnabled(false);
+        btnActivity.setEnabled(true);
 
         btnAudio.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -310,7 +317,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                     }
 
                 }
-                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                Intent intent = new Intent(mActivity, HomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
         });
@@ -787,7 +795,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        AppHelper.sop("onActivityResult=of=Activity");
+        AppHelper.sop("onActivityResult=of=StationActivity=requestCode"+requestCode+"=resultCode="+resultCode+"=data="+data);
         if (af != null) {
             af.onActivityResult(requestCode, resultCode, data);
         }

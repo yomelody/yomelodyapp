@@ -60,6 +60,7 @@ public class Const {
         public static final String BRAINTREE_FILES_CHECKOUT = BASE_URL + "braintree/files/checkout.php";
         public static final String BRAINTREE_FILES_CLIENT_TOKEN = BASE_URL + "braintree/files/client_token.php";
         public static final String BRAINTREE_FILES_TRANSACTION = BASE_URL + "braintree/files/transaction.php";
+        public static final String IsValidateSubPack = BASE_URL + "check_subscription_validity.php";
 
 
 
@@ -84,4 +85,5 @@ public class Const {
     public static final String FB_STATUS = "FB_STATUS";
     public static final String TWITTER_STATUS = "TWITTER_STATUS";
     public static final String GOOGLE_STATUS = "GOOGLE_STATUS";
+    public static final String REC_SHARE_STATUS = "REC_SHARE_STATUS";
 }

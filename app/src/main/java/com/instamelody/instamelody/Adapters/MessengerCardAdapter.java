@@ -49,7 +49,7 @@ public class MessengerCardAdapter extends RecyclerView.Adapter<MessengerCardAdap
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
-
+        try{
         TextView tvUserName = holder.tvUserName;
         TextView tvMsgPrecise = holder.tvMsg;
         TextView tvTime = holder.tvTime;
@@ -59,6 +59,9 @@ public class MessengerCardAdapter extends RecyclerView.Adapter<MessengerCardAdap
         tvMsgPrecise.setText(dataSet.get(listPosition).getTvMsg());
         tvTime.setText(dataSet.get(listPosition).getTvTime());
         userProfileImage.setImageResource(dataSet.get(listPosition).getUserProfileImage());
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
     }
 
     @Override
