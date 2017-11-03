@@ -1767,7 +1767,11 @@ public class StudioActivity extends AppCompatActivity {
                     StudioActivity.mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mp) {
-                            mediaPlayer.stop();
+                            try {
+                                mediaPlayer.stop();
+                            }catch (Exception ex){
+                                ex.printStackTrace();
+                            }
                             chrono.stop();
                             ivRecord_pause.setVisibility(View.INVISIBLE);
                             rlListeningButton.setVisibility(View.INVISIBLE);
@@ -1794,19 +1798,27 @@ public class StudioActivity extends AppCompatActivity {
 
                     try {
                         if (mVisualizer != null) {
-                            mVisualizer.release();
+                            try {
+                                mVisualizer.release();
+                            }catch (Exception ex){
+                                ex.printStackTrace();
+                            }
                         }
 
                         if (mediaPlayer != null) {
-                            mediaPlayer.stop();
-                            mediaPlayer.reset();
-                            //mediaPlayer.release();
-                            mediaPlayer = null;
+                            try {
+                                mediaPlayer.stop();
+                                mediaPlayer.release();
+                                mediaPlayer.reset();
+                                mediaPlayer = null;
+                            }catch (Exception ex){
+                                ex.printStackTrace();
+                            }
+
                         }
                         if (mpall != null) {
                             try {
                                 mpall.stop();
-
                                 mpall.reset();
                                 mpall = null;
                             } catch (Exception ex) {
@@ -1842,6 +1854,7 @@ public class StudioActivity extends AppCompatActivity {
 
     public void playAurdio() throws IOException {
         try {
+
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(audioFilePath);
             mediaPlayer.prepare();
@@ -2159,7 +2172,7 @@ public class StudioActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         Log.d("Instrument list Response", response);
-
+                        IsValidateSubscription();
                         instrumentList.clear();
                         new ParseContents(getApplicationContext()).parseInstrumentsAttached(response, instrumentList, mpid);
 
@@ -4299,11 +4312,14 @@ public class StudioActivity extends AppCompatActivity {
                                 IsExp = jsonObject.getString("is_expired");
                                 LayerCount = Integer.parseInt(jsonObject.getString("layer"));
                                 if (IsExp == "false") {
-                                    if(LayerCount != 0) {
+                                    if(LayerCount == 0) {
+
+                                    }else{
                                         if ( instrumentList.size()>LayerCount) {
                                             Toast.makeText(StudioActivity.this, "You can add only " + LayerCount + " layers of instruments." + "please subscribed another pack.", Toast.LENGTH_SHORT).show();
                                             IsValidPack = true;
                                         }
+
                                     }
 
                                 } else {

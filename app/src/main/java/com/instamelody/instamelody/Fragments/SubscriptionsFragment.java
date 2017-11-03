@@ -215,7 +215,8 @@ public class SubscriptionsFragment extends Fragment {
             switchFree.setClickable(false);
         }else {
             switchStandard.setChecked(false);
-            switchFree.setChecked(false);
+            switchFree.setChecked(true);
+            switchFree.setClickable(false);
             switchPremium.setChecked(false);
             switchProducer.setChecked(false);
         }
@@ -260,7 +261,11 @@ public class SubscriptionsFragment extends Fragment {
                             JSONObject jsonObject = new JSONObject(response);
                             String flag = jsonObject.getString("flag");
                             if (flag.equals("success")) {
-                                packageId = jsonObject.getString("subscribedPack");
+                                try {
+                                    packageId = jsonObject.getString("subscribedPack");
+                                }catch (Exception ex){
+                                    ex.printStackTrace();
+                                }
 
                             }
                             switchPremium.setClickable(true);
@@ -352,7 +357,13 @@ public class SubscriptionsFragment extends Fragment {
                             SharedPreferences profileEditor = getActivity().getSharedPreferences("ProfileUpdate", MODE_PRIVATE);
                             SharedPreferences profileImageEditor = getActivity().getSharedPreferences("ProfileImage", MODE_PRIVATE);
                             if (userId == null && (profileEditor.getString("updateId", null) == null)) {
-
+                                switchFree.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent i = new Intent(getActivity(), SignInActivity.class);
+                                        startActivity(i);
+                                    }
+                                });
                                 switchStandard.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
@@ -380,7 +391,10 @@ public class SubscriptionsFragment extends Fragment {
                                 switchFree.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                                     @Override
                                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
+                                        if(isChecked) {
+                                            packageId="1";
+                                            switchFree.setChecked(false);
+                                        }
                                     }
                                 });
                                /* switchFree.setOnClickListener(new View.OnClickListener() {
@@ -459,7 +473,9 @@ public class SubscriptionsFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(USER_ID, userId);
+                if(userId!=null) {
+                    params.put(USER_ID, userId);
+                }
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
