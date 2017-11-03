@@ -1795,19 +1795,27 @@ public class StudioActivity extends AppCompatActivity {
 
                     try {
                         if (mVisualizer != null) {
-                            mVisualizer.release();
+                            try {
+                                mVisualizer.release();
+                            }catch (Exception ex){
+                                ex.printStackTrace();
+                            }
                         }
 
                         if (mediaPlayer != null) {
-                            mediaPlayer.stop();
-                            mediaPlayer.reset();
-                            //mediaPlayer.release();
-                            mediaPlayer = null;
+                            try {
+                                mediaPlayer.stop();
+                                mediaPlayer.release();
+                                mediaPlayer.reset();
+                                mediaPlayer = null;
+                            }catch (Exception ex){
+                                ex.printStackTrace();
+                            }
+
                         }
                         if (mpall != null) {
                             try {
                                 mpall.stop();
-
                                 mpall.reset();
                                 mpall = null;
                             } catch (Exception ex) {
@@ -1846,13 +1854,8 @@ public class StudioActivity extends AppCompatActivity {
 
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(audioFilePath);
-            mediaPlayer.prepareAsync();
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
+            mediaPlayer.prepare();
+            mediaPlayer.start();
             duration = mediaPlayer.getDuration();
             initAudio(mediaPlayer.getAudioSessionId());
         } catch (Throwable e) {
