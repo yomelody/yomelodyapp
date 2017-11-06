@@ -58,6 +58,15 @@ import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.OptionalPendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.instamelody.instamelody.Models.HandelLogin;
 import com.instamelody.instamelody.utils.AppHelper;
 import com.twitter.sdk.android.Twitter;
@@ -95,8 +104,9 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.REGISTER;
 /**
  * Created by Saurabh Singh on 01/04/2017
  */
-public class SignInActivity extends AppCompatActivity {
+public class SignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
 
+    private final int RC_SIGN_IN = 9001;
     String KEY_FNAME = "f_name";
     String KEY_LNAME = "l_name";
     String KEY_EMAIL_SIGN_UP = "email";
@@ -105,6 +115,7 @@ public class SignInActivity extends AppCompatActivity {
     String KEY_APP_ID = "appid";
     String KEY_GENDER = "gender";
     String KEY_DOB = "dob";
+    String KEY_PHONE = "phone";
     String KEY_DEVICE_TOKEN_SIGN_UP = "device_token";
     String KEY_DEVICE_TYPE = "device_type";
     String KEY_PROFILE_PIC = "profile_pic_url";
@@ -152,6 +163,8 @@ public class SignInActivity extends AppCompatActivity {
     String IscheckMelody=null;
     String melodyPackId=null;
     private Activity mActivity;
+    private GoogleApiClient mGoogleApiClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,6 +173,10 @@ public class SignInActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_in);
         mActivity=SignInActivity.this;
         progressDialog = new ProgressDialog(SignInActivity.this);
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
+
         final TextView tvFirstName = (TextView) findViewById(R.id.tvFirstName);
         final TextView tvUserName = (TextView) findViewById(R.id.tvUserName);
 
@@ -377,7 +394,9 @@ public class SignInActivity extends AppCompatActivity {
         rlSoundCloud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loginSoundCloud();
+//                loginSoundCloud();
+
+                signIn();
                 //   startActivity(lock.newIntent(getApplicationContext()));
             }
         });
@@ -389,6 +408,8 @@ public class SignInActivity extends AppCompatActivity {
                 .withAudience("https://codingbrains.auth0.com/userinfo")
                 // ... Options
                 .build(this);
+
+        initGmail();
     }
 
     @Override
@@ -475,7 +496,9 @@ public class SignInActivity extends AppCompatActivity {
                     tEditor.putInt("status", 1);
                     tEditor.commit();
                     registrationSpecialTwitter();
-                    startActivity(new Intent(SignInActivity.this, HomeActivity.class));
+                    Intent intent=new Intent(mActivity,HomeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
                 }
 
                 @Override
@@ -514,7 +537,13 @@ public class SignInActivity extends AppCompatActivity {
 
         if (requestCode == TwitterAuthConfig.DEFAULT_AUTH_REQUEST_CODE) {
             client.onActivityResult(requestCode, resultCode, data);
-        } else {
+        }
+        else if (requestCode == RC_SIGN_IN) {
+            AppHelper.sop("gmailEmail==RC_SIGN_IN");
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleSignInResult(result);
+        }
+        else {
             if (mcallbckmanager.onActivityResult(requestCode, resultCode, data))
                 return;
         }
@@ -525,9 +554,6 @@ public class SignInActivity extends AppCompatActivity {
         final String email = etEmail.getText().toString().trim();
         final String password = etPassword.getText().toString().trim();
 
-        progressDialog.setTitle("Processing...");
-        progressDialog.setMessage("Please wait...");
-        progressDialog.setCancelable(false);
         progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, LOGIN,
                 new Response.Listener<String>() {
@@ -598,7 +624,7 @@ public class SignInActivity extends AppCompatActivity {
                                     }
                                 }
                                 if(IscheckMelody==null) {
-                                    i = new Intent(getApplicationContext(), HomeActivity.class);
+                                    i = new Intent(mActivity, HomeActivity.class);
                                     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     startActivity(i);
@@ -729,7 +755,8 @@ public class SignInActivity extends AppCompatActivity {
                                 fbEditor.commit();
                             }
 
-                            Intent i = new Intent(getApplicationContext(), HomeActivity.class);
+                            Intent i = new Intent(mActivity, HomeActivity.class);
+                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(i);
 
                         } catch (JSONException e) {
@@ -1036,6 +1063,173 @@ public class SignInActivity extends AppCompatActivity {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
+    private void initGmail(){
+        // [START configure_signin]
+        // Configure sign-in to request the user's ID, email address, and basic
+        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        // [END configure_signin]
+
+        // [START build_client]
+        // Build a GoogleApiClient with access to the Google Sign-In API and the
+        // options specified by gso.
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(SignInActivity.this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+        // [END build_client]
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d("GOOGLE", "onConnectionFailed:" + connectionResult);
+    }
+
+    private void signIn() {
+
+        /*OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+        if (opr.isDone()) {
+            // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
+            // and the GoogleSignInResult will be available instantly.
+//            Log.d(TAG, "Got cached sign-in");
+            AppHelper.sop("gmailEmail=if=OptionalPendingResult");
+            GoogleSignInResult result = opr.get();
+            handleSignInResult(result);
+        } else {
+            // If the user has not previously signed in on this device or the sign-in has expired,
+            // this asynchronous branch will attempt to sign in the user silently.  Cross-device
+            // single sign-on will occur in this branch.
+            AppHelper.sop("gmailEmail=else=OptionalPendingResult");
+            progressDialog.show();
+            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+                @Override
+                public void onResult(GoogleSignInResult googleSignInResult) {
+                    progressDialog.dismiss();
+                    handleSignInResult(googleSignInResult);
+                }
+            });
+        }*/
+
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    private void handleSignInResult(GoogleSignInResult result) {
+//        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+        if (result.isSuccess()) {
+            // Signed in successfully, show authenticated UI.
+            GoogleSignInAccount acct = result.getSignInAccount();
+            String gmailEmail=acct.getEmail();
+            AppHelper.sop("gmailEmail=="+gmailEmail);
+//            signOut();
+            registerGmailApi(result.getSignInAccount());
+        } else {
+            Toast.makeText(mActivity, "Some error. Please try again later.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void registerGmailApi(final GoogleSignInAccount signInAccount) {
+        signOut();
+        progressDialog.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String successmsg = response.toString();
+                        AppHelper.sop("response==="+response);
+                        try {
+                            JSONObject jsonObject = new JSONObject(successmsg);
+                            flag = jsonObject.getString("flag");
+                            if (flag.equals("success")) {
+                                JSONObject rspns = jsonObject.getJSONObject("response");
+
+                                SharedPreferences.Editor editor = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
+                                editor.putString("userId", rspns.getString("id"));
+                                editor.putString("userName", rspns.getString("username"));
+                                editor.putString("firstName", rspns.getString("f_name"));
+                                editor.putString("lastName", rspns.getString("l_name"));
+                                editor.putString("emailFinal", rspns.getString("email"));
+                                editor.putString("profilePic", rspns.getString("profilepic"));
+                                editor.putString("coverPic", rspns.getString("coverpic"));
+                                editor.putString("followers", rspns.getString("followers"));
+                                editor.putString("fans", rspns.getString("fans"));
+                                editor.putString("records", rspns.getString("records"));
+//                                editor.putString("dob", dob);
+//                                editor.putString("mobile", mobile);
+                                editor.putInt("status", 1);
+                                editor.putString("description", rspns.getString("discription"));
+                                editor.commit();
+                            }
+
+                            Intent intent = new Intent(mActivity, HomeActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        finally{
+                            progressDialog.dismiss();
+
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            errorMsg = "There is either no connection or it timed out.";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "ServerError";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "Network Error";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "ParseError";
+                        }
+                        progressDialog.dismiss();
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(KEY_FNAME, signInAccount.getGivenName());
+                params.put(KEY_LNAME, signInAccount.getFamilyName());
+                params.put(KEY_USERNAME, signInAccount.getDisplayName());
+                params.put(KEY_EMAIL_SIGN_UP, signInAccount.getEmail());
+                params.put(KEY_APP_ID, signInAccount.getId());
+                params.put(KEY_USER_TYPE, "4");
+                params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);
+                params.put(KEY_DEVICE_TYPE, "android");
+//                params.put(KEY_DOB, date);
+//                params.put(KEY_PHONE, phone);
+                params.put(KEY_PROFILE_PIC, signInAccount.getPhotoUrl()+"");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params==="+params+"\nURL=="+REGISTER);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
+
+    private void signOut() {
+        if (mGoogleApiClient!=null && mGoogleApiClient.isConnected()){
+            Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                    new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(Status status) {
+                            AppHelper.sop("signOut==status="+status);
+                        }});
+        }
+    }
 }
 
 
