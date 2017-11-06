@@ -3959,7 +3959,7 @@ public class StudioActivity extends AppCompatActivity {
 
         // Configure me!
         private static final int AUDIO_SOURCE = MediaRecorder.AudioSource.MIC;
-        private static final int SAMPLE_RATE = 44100; // Hz
+        private static final int SAMPLE_RATE = 44100; // Hz 8000 11025 22050 44100
         private static final int ENCODING = AudioFormat.ENCODING_PCM_16BIT;
         private static final int CHANNEL_MASK = AudioFormat.CHANNEL_IN_MONO;
         //
