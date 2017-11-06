@@ -80,7 +80,7 @@ public class AudioFragment extends Fragment {
     private String COUNT = "count";
     LinearLayoutManager linearLayoutManager;
 
-    private String limit="limit";
+    private String limit = "limit";
     String KEY_GENRE_NAME = "name";
     String KEY_GENRE_ID = "id";
     String KEY_FLAG = "flag";
@@ -98,11 +98,11 @@ public class AudioFragment extends Fragment {
     TabHost host = null;
     public static RecyclerView rv;
     RecyclerView.LayoutManager lm;
-    private String msgUnsuccess="No record found.";
+    private String msgUnsuccess = "No record found.";
     Activity mActivity;
-    private final int count=10;
-    private boolean isLoading=false;
-    private boolean isLastPage=false;
+    private final int count = 10;
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
 
 
     public AudioFragment() {
@@ -330,7 +330,7 @@ public class AudioFragment extends Fragment {
 
 
     public void fetchRecordings() {
-        if (!progressDialog.isShowing()){
+        if (!progressDialog.isShowing()) {
             progressDialog.show();
         }
 
@@ -343,18 +343,17 @@ public class AudioFragment extends Fragment {
                             String flag = jsonObject.getString("flag");
                             if (flag.equals("unsuccess")) {
                                 Toast.makeText(mActivity, msgUnsuccess, Toast.LENGTH_SHORT).show();
-                                isLastPage=true;
-                            }
-                            else {
-                                isLastPage=false;
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-                        AppHelper.sop("response=fetchRecordings="+response);
-                        if (recordingList.size()<=0){
+                        AppHelper.sop("response=fetchRecordings=" + response);
+                        if (recordingList.size() <= 0) {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
@@ -371,14 +370,14 @@ public class AudioFragment extends Fragment {
                                 progressDialog.dismiss();
                             }
                         }
-                        isLoading=false;
+                        isLoading = false;
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        isLoading=false;
-                        isLastPage=false;
+                        isLoading = false;
+                        isLastPage = false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -413,16 +412,16 @@ public class AudioFragment extends Fragment {
                     params.put(ID, userId);
                     params.put(KEY, STATION);
                     params.put(GENRE, genreString);
-                    params.put(limit, recordingList.size()+"");
+                    params.put(limit, recordingList.size() + "");
                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
 
                 } else {
                     params.put(KEY, STATION);
                     params.put(GENRE, genreString);
-                    params.put(limit, recordingList.size()+"");
+                    params.put(limit, recordingList.size() + "");
                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 }
-                AppHelper.sop("params=fetchRecordings="+params+"\nURL=="+RECORDINGS);
+                AppHelper.sop("params=fetchRecordings=" + params + "\nURL==" + RECORDINGS);
                 return params;
             }
         };
@@ -441,7 +440,7 @@ public class AudioFragment extends Fragment {
 
 
     public void fetchRecordingsFilter() {
-        if (!progressDialog.isShowing()){
+        if (!progressDialog.isShowing()) {
             progressDialog.show();
         }
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
@@ -453,18 +452,17 @@ public class AudioFragment extends Fragment {
                             String flag = jsonObject.getString("flag");
                             if (flag.equals("unsuccess")) {
                                 Toast.makeText(getActivity(), msgUnsuccess, Toast.LENGTH_SHORT).show();
-                                isLastPage=true;
-                            }
-                            else {
-                                isLastPage=false;
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-                        AppHelper.sop("response=filter="+response);
-                        if (recordingList.size()<=0){
+                        AppHelper.sop("response=filter=" + response);
+                        if (recordingList.size() <= 0) {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
@@ -477,14 +475,14 @@ public class AudioFragment extends Fragment {
                                 progressDialog.dismiss();
                             }
                         }
-                        isLoading=false;
+                        isLoading = false;
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        isLoading=false;
-                        isLastPage=false;
+                        isLoading = false;
+                        isLastPage = false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -513,10 +511,9 @@ public class AudioFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                if (userId!=null){
+                if (userId != null) {
                     params.put(ID, userId);
-                }
-                else {
+                } else {
                     params.put(ID, "");
                 }
                 params.put(KEY, STATION);
@@ -524,9 +521,9 @@ public class AudioFragment extends Fragment {
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
                 params.put(FILTER, "extrafilter");
-                params.put(limit, recordingList.size()+"");
+                params.put(limit, recordingList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=filter="+params+"\nURL=="+RECORDINGS);
+                AppHelper.sop("params=filter=" + params + "\nURL==" + RECORDINGS);
                 return params;
             }
         };
@@ -542,7 +539,7 @@ public class AudioFragment extends Fragment {
     }
 
     public void fetchSearchData() {
-        if (!progressDialog.isShowing()){
+        if (!progressDialog.isShowing()) {
             progressDialog.show();
         }
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
@@ -555,18 +552,17 @@ public class AudioFragment extends Fragment {
                             String flag = jsonObject.getString("flag");
                             if (flag.equals("unsuccess")) {
                                 Toast.makeText(getActivity(), msgUnsuccess, Toast.LENGTH_SHORT).show();
-                                isLastPage=true;
-                            }
-                            else {
-                                isLastPage=false;
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-                        AppHelper.sop("response=search="+response);
-                        if (recordingList.size()<=0){
+                        AppHelper.sop("response=search=" + response);
+                        if (recordingList.size() <= 0) {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
@@ -585,15 +581,15 @@ public class AudioFragment extends Fragment {
                             }
                         }
                         ClearSharedPref();
-                        isLoading=false;
+                        isLoading = false;
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
 
-                        isLoading=false;
-                        isLastPage=false;
+                        isLoading = false;
+                        isLastPage = false;
 
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
@@ -622,17 +618,16 @@ public class AudioFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                if (userId!=null){
+                if (userId != null) {
                     params.put(ID, userId);
-                }
-                else {
+                } else {
                     params.put(ID, "");
                 }
                 params.put(KEY, STATION);
                 params.put(KEY_SEARCH, strSearch);
-                params.put(limit, recordingList.size()+"");
+                params.put(limit, recordingList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=search="+params+"\nURL=="+RECORDINGS);
+                AppHelper.sop("params=search=" + params + "\nURL==" + RECORDINGS);
                 return params;
             }
         };
@@ -648,7 +643,7 @@ public class AudioFragment extends Fragment {
     }
 
     public void fetchRecordingsFilterArtist() {
-        if (!progressDialog.isShowing()){
+        if (!progressDialog.isShowing()) {
             progressDialog.show();
         }
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
@@ -660,18 +655,17 @@ public class AudioFragment extends Fragment {
                             String flag = jsonObject.getString("flag");
                             if (flag.equals("unsuccess")) {
                                 Toast.makeText(getActivity(), msgUnsuccess, Toast.LENGTH_SHORT).show();
-                                isLastPage=true;
-                            }
-                            else {
-                                isLastPage=false;
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-                        AppHelper.sop("response=artist="+response);
-                        if (recordingList.size()<=0){
+                        AppHelper.sop("response=artist=" + response);
+                        if (recordingList.size() <= 0) {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
@@ -683,14 +677,14 @@ public class AudioFragment extends Fragment {
                             }
                         }
                         ClearSharedPref();
-                        isLoading=false;
+                        isLoading = false;
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        isLoading=false;
-                        isLastPage=false;
+                        isLoading = false;
+                        isLastPage = false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -719,10 +713,9 @@ public class AudioFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                if (userId!=null){
+                if (userId != null) {
                     params.put(ID, userId);
-                }
-                else {
+                } else {
                     params.put(ID, "");
                 }
                 params.put(KEY, STATION);
@@ -731,9 +724,9 @@ public class AudioFragment extends Fragment {
                 params.put(FILTER_TYPE, strName);
                 params.put(USER_NAME, strArtist);
                 params.put(FILTER, "extrafilter");
-                params.put(limit, recordingList.size()+"");
+                params.put(limit, recordingList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=artist="+params+"\nURL=="+RECORDINGS);
+                AppHelper.sop("params=artist=" + params + "\nURL==" + RECORDINGS);
                 return params;
             }
         };
@@ -749,7 +742,7 @@ public class AudioFragment extends Fragment {
     }
 
     public void fetchRecordingsFilterInstruments() {
-        if (!progressDialog.isShowing()){
+        if (!progressDialog.isShowing()) {
             progressDialog.show();
         }
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
@@ -761,18 +754,17 @@ public class AudioFragment extends Fragment {
                             String flag = jsonObject.getString("flag");
                             if (flag.equals("unsuccess")) {
                                 Toast.makeText(getActivity(), msgUnsuccess, Toast.LENGTH_SHORT).show();
-                                isLastPage=true;
-                            }
-                            else {
-                                isLastPage=false;
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-                        AppHelper.sop("response=instrument="+response);
-                        if (recordingList.size()<=0){
+                        AppHelper.sop("response=instrument=" + response);
+                        if (recordingList.size() <= 0) {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
@@ -785,14 +777,14 @@ public class AudioFragment extends Fragment {
                             }
                         }
                         ClearSharedPref();
-                        isLoading=false;
+                        isLoading = false;
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        isLoading=false;
-                        isLastPage=false;
+                        isLoading = false;
+                        isLastPage = false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -821,10 +813,9 @@ public class AudioFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                if (userId!=null){
+                if (userId != null) {
                     params.put(ID, userId);
-                }
-                else {
+                } else {
                     params.put(ID, "");
                 }
                 params.put(KEY, STATION);
@@ -833,9 +824,9 @@ public class AudioFragment extends Fragment {
                 params.put(FILTER_TYPE, "Instruments");
                 params.put(COUNT, strInstruments);
                 params.put(FILTER, "extrafilter");
-                params.put(limit, recordingList.size()+"");
+                params.put(limit, recordingList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=instrument="+params+"\nURL=="+RECORDINGS);
+                AppHelper.sop("params=instrument=" + params + "\nURL==" + RECORDINGS);
                 return params;
             }
         };
@@ -851,7 +842,7 @@ public class AudioFragment extends Fragment {
     }
 
     public void fetchRecordingsFilterBPM() {
-        if (!progressDialog.isShowing()){
+        if (!progressDialog.isShowing()) {
             progressDialog.show();
         }
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
@@ -863,18 +854,17 @@ public class AudioFragment extends Fragment {
                             String flag = jsonObject.getString("flag");
                             if (flag.equals("unsuccess")) {
                                 Toast.makeText(getActivity(), msgUnsuccess, Toast.LENGTH_SHORT).show();
-                                isLastPage=true;
-                            }
-                            else {
-                                isLastPage=false;
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-                        AppHelper.sop("response=BPM="+response);
-                        if (recordingList.size()<=0){
+                        AppHelper.sop("response=BPM=" + response);
+                        if (recordingList.size() <= 0) {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
@@ -887,14 +877,14 @@ public class AudioFragment extends Fragment {
                             }
                         }
                         ClearSharedPref();
-                        isLoading=false;
+                        isLoading = false;
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        isLoading=false;
-                        isLastPage=false;
+                        isLoading = false;
+                        isLastPage = false;
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -923,10 +913,9 @@ public class AudioFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                if (userId!=null){
+                if (userId != null) {
                     params.put(ID, userId);
-                }
-                else {
+                } else {
                     params.put(ID, "");
                 }
                 params.put(KEY, STATION);
@@ -935,9 +924,9 @@ public class AudioFragment extends Fragment {
                 params.put(FILTER_TYPE, strName);
                 params.put(COUNT, strBPM);
                 params.put(FILTER, "extrafilter");
-                params.put(limit, recordingList.size()+"");
+                params.put(limit, recordingList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=BPM="+params+"\nURL=="+RECORDINGS);
+                AppHelper.sop("params=BPM=" + params + "\nURL==" + RECORDINGS);
                 return params;
             }
         };
@@ -995,8 +984,8 @@ public class AudioFragment extends Fragment {
                             if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount &&
                                     firstVisibleItemPosition >= 0 && totalItemCount >= count) {
 
-                                if(AppHelper.checkNetworkConnection(mActivity)){
-                                    isLoading=true;
+                                if (AppHelper.checkNetworkConnection(mActivity)) {
+                                    isLoading = true;
                                     callApi();
                                 }
                             }
@@ -1054,6 +1043,14 @@ public class AudioFragment extends Fragment {
                 }
             }
 
+        }
+        if (RecordingsCardAdapter.REQUEST_PROFILE_COMMENT == requestCode) {
+            if (resultCode == mActivity.RESULT_OK) {
+                recordingList.clear();
+                recordingsPools.clear();
+                callApi();
+                AppHelper.sop("onActivityResult==called=" + "resultCode==" + resultCode);
+            }
         }
     }
 
