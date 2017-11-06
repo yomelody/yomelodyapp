@@ -74,6 +74,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
     public static final int REQUEST_RECORDING_COMMENT = 711;
     public static final int REQUEST_JOIN_COMMENT = 712;
+    public static final int REQUEST_PROFILE_COMMENT = 713;
     String genreName, mpid, MelodyName, profile;
     static String instrumentFile;
     public static MediaPlayer mp=null;
@@ -429,7 +430,8 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         String showProfileUserId = recordingList.get(getAdapterPosition()).getAddedBy();
                         Intent intent = new Intent(view.getContext(), ProfileActivity.class);
                         intent.putExtra("showProfileUserId", showProfileUserId);
-                        view.getContext().startActivity(intent);
+                     //   view.getContext().startActivity(intent);
+                        mActivity.startActivityForResult(intent,REQUEST_PROFILE_COMMENT);
                     }
                 });
             }
