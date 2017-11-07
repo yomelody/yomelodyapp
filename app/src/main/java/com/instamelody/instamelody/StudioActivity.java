@@ -51,6 +51,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Chronometer;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -98,6 +99,7 @@ import com.instamelody.instamelody.Models.MelodyMixing;
 import com.instamelody.instamelody.Models.MixingData;
 import com.instamelody.instamelody.Models.ModelPlayAllMediaPlayer;
 import com.instamelody.instamelody.Models.RecordingsModel;
+import com.instamelody.instamelody.Models.SubscriptionPackage;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.utils.AppHelper;
 import com.instamelody.instamelody.utils.AudioDataReceivedListener;
@@ -150,6 +152,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.IsValidateSubP
 import static com.instamelody.instamelody.utils.Const.ServiceType.JOINED_USERS;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MixingAudio_InstrumentsAudio;
+import static com.instamelody.instamelody.utils.Const.ServiceType.PACKAGES;
 import static com.instamelody.instamelody.utils.Const.ServiceType.TOTAL_COUNT;
 import static com.instamelody.instamelody.utils.Const.ServiceType.UPLOAD_COVER_MELODY_FILE;
 
@@ -278,7 +281,7 @@ public class StudioActivity extends AppCompatActivity {
     public static RelativeLayout rlInviteButton, rlBase;
     public static TextView tvInstrumentLength, tvUserName, tvInstrumentName, tvBpmRate;
     public static ImageView userProfileImage, ivInstrumentCover, playAll, pauseAll;
-
+    ArrayList<SubscriptionPackage> subscriptionPackageArrayList = new ArrayList<>();
     public static MelodyMixing melodyMixing = new MelodyMixing();
     public static ArrayList<MixingData> list = new ArrayList<MixingData>();
 
@@ -330,6 +333,8 @@ public class StudioActivity extends AppCompatActivity {
     public static String IsExp;
     public static int LayerCount = 0;
     boolean IsValidPack = false;
+    int PackDuration=0;
+    String PackId=null;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -457,7 +462,11 @@ public class StudioActivity extends AppCompatActivity {
         } else {
             recordTask.setContext(this);
         }
-        IsValidateSubscription();
+        if(userId!=null) {
+            IsValidateSubscription();
+        }
+        //subscriptionPackage();
+
 //        joinRecordingId = intent.getExtras().getString("clickPositionJoin");
         SharedPreferences filterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE);
         joinRecordingId = filterPref.getString("instrumentsPos", null);
@@ -522,6 +531,7 @@ public class StudioActivity extends AppCompatActivity {
                 if (melodyPackId != null) {
 
                     fetchInstruments(melodyPackId);
+
                     JoinActivity.instrumentList.clear();
                     noMelodyNote.setVisibility(View.GONE);
                     recyclerViewInstruments.setVisibility(View.VISIBLE);
@@ -1341,9 +1351,14 @@ public class StudioActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (joinRecordingId == null) {
                     if (userId != null && melodyPackId != null) {
-                        openDialog();
-                        ivRecord.setVisibility(View.VISIBLE);
-                        ivRecord.setEnabled(true);
+                        if(Integer.parseInt(recordingDuration)>PackDuration && PackDuration!=0) {
+                            Toast.makeText(StudioActivity.this, "Your recording duration should be less then or eqal to your subscription pack.", Toast.LENGTH_SHORT).show();
+
+                        }else {
+                            openDialog();
+                            ivRecord.setVisibility(View.VISIBLE);
+                            ivRecord.setEnabled(true);
+                        }
                     } else if (userId == null) {
 
                         /*if (lstViewHolder.size() > 0) {
@@ -1416,10 +1431,14 @@ public class StudioActivity extends AppCompatActivity {
                     rlMelodyButton.setVisibility(View.VISIBLE);
                     StudioActivity.playAll.setVisibility(View.GONE);
                     StudioActivity.pauseAll.setVisibility(View.GONE);
-                    if (lstViewHolder.size() > 0) {
-                        lstViewHolder.clear();
-                    }
                     StudioActivity.this.recreate();
+                    if (lstViewHolder.size() > 0) {
+                        try {
+                            lstViewHolder.clear();
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
+                    }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -1730,8 +1749,8 @@ public class StudioActivity extends AppCompatActivity {
                     }
 
 
-                    stop_rec_time = SystemClock.elapsedRealtime() - StudioActivity.chrono.getBase();
-                    time_stop = formateMilliSeccond(StudioActivity.stop_rec_time);
+                    stop_rec_time = SystemClock.elapsedRealtime() - chrono.getBase();
+                    time_stop = formateMilliSeccond(stop_rec_time);
                     try {
                         recordingDuration = time_stop;
                     } catch (Throwable e) {
@@ -1773,6 +1792,7 @@ public class StudioActivity extends AppCompatActivity {
                                 ex.printStackTrace();
                             }
                             chrono.stop();
+
                             ivRecord_pause.setVisibility(View.INVISIBLE);
                             rlListeningButton.setVisibility(View.INVISIBLE);
                             ivRecord_play.setVisibility(View.VISIBLE);
@@ -1915,42 +1935,26 @@ public class StudioActivity extends AppCompatActivity {
         return true;
     }
 
-    private static String getDuration(File file) {
+   /* private static String getDuration(File file) {
         MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
         mediaMetadataRetriever.setDataSource(file.getAbsolutePath());
         String durationStr = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
         return formateMilliSeccond(Long.parseLong(durationStr));
-    }
+    }*/
 
-    public static String formateMilliSeccond(long milliseconds) {
+    public String formateMilliSeccond(long milliseconds) {
         String finalTimerString = "";
         String secondsString = "";
 
         // Convert total duration into time
-        int hours = (int) (milliseconds / (1000 * 60 * 60));
+        /*int hours = (int) (milliseconds / (1000 * 60 * 60));
         int minutes = (int) (milliseconds % (1000 * 60 * 60)) / (1000 * 60);
-        int seconds = (int) ((milliseconds % (1000 * 60 * 60)) % (1000 * 60) / 1000);
+        int seconds = (int) ((milliseconds % (1000 * 60 * 60)) % (1000 * 60) / 1000);*/
 
-        // Add hours if there
-        if (hours > 0) {
-            finalTimerString = hours + ":";
-        }
-
-        // Prepending 0 to seconds if it is one digit
-        if (seconds < 10) {
-            secondsString = "0" + seconds;
-        } else {
-            secondsString = "" + seconds;
-        }
-
-        finalTimerString = finalTimerString + minutes + ":" + secondsString;
-
-        //      return  String.format("%02d Min, %02d Sec",
-        //                TimeUnit.MILLISECONDS.toMinutes(milliseconds),
-        //                TimeUnit.MILLISECONDS.toSeconds(milliseconds) -
-        //                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliseconds)));
-
-        // return timer string
+        int hours = (int) (milliseconds / 3600000);
+        int minutes = (int) (milliseconds - hours * 3600000) / 60000;
+        // int seconds = (int) (milliseconds - hours * 3600000 - minutes * 60000) / 1000;
+        int seconds = (int) (milliseconds - hours * 3600000 * 60000) / 1000;
         return String.valueOf(seconds);
     }
 
@@ -2172,13 +2176,16 @@ public class StudioActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         Log.d("Instrument list Response", response);
-                        IsValidateSubscription();
+
+                        if(userId!=null) {
+                            IsValidateSubscription();
+                        }
+
                         instrumentList.clear();
                         new ParseContents(getApplicationContext()).parseInstrumentsAttached(response, instrumentList, mpid);
 
                         InstrumentCountSize = MelodyInstruments.getInstrumentCount();
                         adapter.notifyDataSetChanged();
-
 
                     }
                 },
@@ -4311,6 +4318,7 @@ public class StudioActivity extends AppCompatActivity {
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
                                 IsExp = jsonObject.getString("is_expired");
                                 LayerCount = Integer.parseInt(jsonObject.getString("layer"));
+                                PackDuration = Integer.parseInt(jsonObject.getString("duration"));
                                 if (IsExp == "false") {
                                     if(LayerCount == 0) {
 
@@ -4348,12 +4356,85 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(USER_ID, userId);
+                if(userId!=null) {
+                    params.put(USER_ID, userId);
+                }
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+    }
+
+    public void subscriptionPackage() {
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, PACKAGES,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("AdvertisementData", response);
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            String flag = jsonObject.getString("flag");
+                            if (flag.equals("success")) {
+                                try {
+                                    PackId =jsonObject.getString("subscribedPack");
+
+                                    if(PackId.equals("1")){
+                                        PackDuration=30;
+                                    }else if(PackId.equals("2")){
+                                        PackDuration=60;
+                                    }else if(PackId.equals("3")){
+                                        PackDuration=120;
+                                    }else if(PackId.equals("4")){
+                                        PackDuration=0;
+                                    }
+
+
+                                }catch (Exception ex){
+                                    ex.printStackTrace();
+                                }
+
+                            }
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(StudioActivity.this, error.toString(), Toast.LENGTH_LONG).show();
+                        String errorMsg = error.toString();
+                        Log.d("Error", errorMsg);
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                if(userId!=null) {
+                    params.put(USER_ID, userId);
+                }
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(StudioActivity.this);
         requestQueue.add(stringRequest);
     }
 

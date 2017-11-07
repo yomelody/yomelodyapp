@@ -8,10 +8,18 @@ import android.os.Parcelable;
  */
 
 public class SubscriptionPackage implements Parcelable {
-    String package_id, package_name, total_melody, recording_time, cost;
+    String package_id, package_name, total_melody, recording_time, cost,recordingtime;
 
     public SubscriptionPackage() {
 
+    }
+
+    public String getRecordingtime() {
+        return recordingtime;
+    }
+
+    public void setRecordingtime(String recordingtime) {
+        this.recordingtime = recordingtime;
     }
 
     public String getPackage_id() {

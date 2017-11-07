@@ -560,6 +560,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                     @Override
                     public void onResponse(String response) {
                         String successmsg = response.toString();
+                        AppHelper.sop("response==login=="+response);
                         //Toast.makeText(SignInActivity.this, "" + successmsg, Toast.LENGTH_SHORT).show();
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
@@ -1125,7 +1126,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
             String gmailEmail=acct.getEmail();
             AppHelper.sop("gmailEmail=="+gmailEmail);
 //            signOut();
-            registerGmailApi(result.getSignInAccount());
+            registerGmailApi(acct);
         } else {
             Toast.makeText(mActivity, "Some error. Please try again later.", Toast.LENGTH_SHORT).show();
         }
@@ -1200,9 +1201,25 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(KEY_FNAME, signInAccount.getGivenName());
-                params.put(KEY_LNAME, signInAccount.getFamilyName());
-                params.put(KEY_USERNAME, signInAccount.getDisplayName());
+                if (signInAccount.getGivenName()!=null){
+                    params.put(KEY_FNAME, signInAccount.getGivenName());
+                }
+                else {
+                    params.put(KEY_FNAME, "");
+                }
+                if (signInAccount.getFamilyName()!=null){
+                    params.put(KEY_LNAME, signInAccount.getFamilyName());
+                }
+                else {
+                    params.put(KEY_LNAME, "");
+                }
+                if (signInAccount.getDisplayName()!=null){
+                    params.put(KEY_USERNAME, signInAccount.getDisplayName());
+                }
+                else {
+                    params.put(KEY_USERNAME, "");
+                }
+
                 params.put(KEY_EMAIL_SIGN_UP, signInAccount.getEmail());
                 params.put(KEY_APP_ID, signInAccount.getId());
                 params.put(KEY_USER_TYPE, "4");
@@ -1210,7 +1227,13 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 params.put(KEY_DEVICE_TYPE, "android");
 //                params.put(KEY_DOB, date);
 //                params.put(KEY_PHONE, phone);
-                params.put(KEY_PROFILE_PIC, signInAccount.getPhotoUrl()+"");
+                if (signInAccount.getPhotoUrl()!=null){
+                    params.put(KEY_PROFILE_PIC, signInAccount.getPhotoUrl()+"");
+                }
+                else {
+                    params.put(KEY_PROFILE_PIC,"");
+                }
+
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 AppHelper.sop("params==="+params+"\nURL=="+REGISTER);
                 return params;

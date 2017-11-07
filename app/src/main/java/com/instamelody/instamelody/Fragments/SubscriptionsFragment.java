@@ -211,12 +211,12 @@ public class SubscriptionsFragment extends Fragment {
             Picasso.with(getActivity()).load(profilePicLogin).into(userProfileImage);
             tvUserUpgrade.setText("Upgrade" + " " + userNameLogin + "!");
 
-            switchFree.setChecked(true);
-            switchFree.setClickable(false);
+            /*switchFree.setChecked(true);
+            switchFree.setClickable(false);*/
         }else {
             switchStandard.setChecked(false);
             switchFree.setChecked(true);
-            switchFree.setClickable(false);
+            /*switchFree.setClickable(false);*/
             switchPremium.setChecked(false);
             switchProducer.setChecked(false);
         }
@@ -229,7 +229,7 @@ public class SubscriptionsFragment extends Fragment {
             Picasso.with(getActivity()).load(profileImageEditor.getString("ProfileImage", null)).into(userProfileImage);
         }
         if (profileEditor.getString("updateId", null) != null) {
-            switchFree.setChecked(true);
+            //switchFree.setChecked(true);
             tvUserUpgrade.setText("Upgrade" + " " + profileEditor.getString("updateUserName", null) + "!");
         }
 
@@ -273,7 +273,6 @@ public class SubscriptionsFragment extends Fragment {
                             switchProducer.setClickable(true);
                             if (packageId.equals("1")) {
                                 switchFree.setChecked(true);
-
                                 switchStandard.setChecked(false);
                                 switchPremium.setChecked(false);
                                 switchProducer.setChecked(false);
@@ -397,13 +396,13 @@ public class SubscriptionsFragment extends Fragment {
                                         }
                                     }
                                 });
-                               /* switchFree.setOnClickListener(new View.OnClickListener() {
+                                switchFree.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-
+                                        packageId="1";
 
                                     }
-                                });*/
+                                });
                                 switchStandard.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                                     @Override
                                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
