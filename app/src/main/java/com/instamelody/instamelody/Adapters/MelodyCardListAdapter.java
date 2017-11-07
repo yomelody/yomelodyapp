@@ -531,6 +531,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                             holder.rlSeekbarTracer.setVisibility(VISIBLE);
                             mediaPlayer.seekTo(length);
                             mediaPlayer.start();
+                            holder.progressDialog.dismiss();
                             duration = mediaPlayer.getDuration();
                             String play = holder.tvPlayCount.getText().toString().trim();
                             int playValue = Integer.parseInt(play) + 1;
@@ -540,17 +541,17 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                             holder.primarySeekBarProgressUpdater();
                         }
                     });
-                    mediaPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
-                        @Override
-                        public boolean onInfo(MediaPlayer mediaPlayer, int what, int extra) {
-                            if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
-                                holder.progressDialog.show();
-                            } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
-                                holder.progressDialog.dismiss();
-                            }
-                            return false;
-                        }
-                    });
+//                    mediaPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+//                        @Override
+//                        public boolean onInfo(MediaPlayer mediaPlayer, int what, int extra) {
+//                            if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
+//                                holder.progressDialog.show();
+//                            } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
+//                                holder.progressDialog.dismiss();
+//                            }
+//                            return false;
+//                        }
+//                    });
                     mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                         @Override
                         public boolean onError(MediaPlayer MediaPlayer, int what, int extra) {
