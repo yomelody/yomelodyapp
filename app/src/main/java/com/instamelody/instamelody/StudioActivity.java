@@ -1953,7 +1953,7 @@ public class StudioActivity extends AppCompatActivity {
 
         int hours = (int) (milliseconds / 3600000);
         int minutes = (int) (milliseconds - hours * 3600000) / 60000;
-       // int seconds = (int) (milliseconds - hours * 3600000 - minutes * 60000) / 1000;
+        // int seconds = (int) (milliseconds - hours * 3600000 - minutes * 60000) / 1000;
         int seconds = (int) (milliseconds - hours * 3600000 * 60000) / 1000;
         return String.valueOf(seconds);
     }
