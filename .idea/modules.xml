@@ -2,8 +2,14 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Ajay-Copy.iml" filepath="$PROJECT_DIR$/Ajay-Copy.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+      <module fileurl="file://$PROJECT_DIR$/instamelody_app.iml" filepath="$PROJECT_DIR$/instamelody_app.iml" />
+=======
+>>>>>>> Ajay-Copy
+>>>>>>> 6ba0804b6ce7bd1b79cc808d1336936949ab7210
       <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
     </modules>
   </component>

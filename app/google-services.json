@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "870917113323-910gomfcufsqkppjbtf4rjaa3akjlqc1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.instamelody.instamelody",
+            "certificate_hash": "7a58b3594cfd5043d9ae5051212b14682a8d3ad2"
+          }
+        },
+        {
           "client_id": "870917113323-n3b4m6so9hluqrabg2lode2aa08criit.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
