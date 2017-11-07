@@ -63,7 +63,6 @@ import java.util.List;
 import static android.content.Context.MODE_PRIVATE;
 import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.instamelody.instamelody.StudioActivity.bytes;
-import static com.instamelody.instamelody.StudioActivity.formateMilliSeccond;
 import static com.instamelody.instamelody.StudioActivity.rlBase;
 
 /**
@@ -1590,12 +1589,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         }
     }
 
-    private static String getDuration(File file) {
-        MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-        mediaMetadataRetriever.setDataSource(file.getAbsolutePath());
-        String durationStr = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-        return formateMilliSeccond(Long.parseLong(durationStr));
-    }
 
     private void LoadInstrumentData(int listPosition) {
         try {

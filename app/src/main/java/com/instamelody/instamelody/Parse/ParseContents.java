@@ -105,6 +105,7 @@ public class ParseContents {
     String SUBSCRIPTION_PACKAGE_NAME = "package_name";
     String SUBSCRIPTION_TOTAL_MELODY = "total_melody";
     String SUBSCRIPTION_RECORDING_TIME = "recording_time";
+    String SUBSCRIPTION_RECORDINGTIME = "RecordTime";
     String SUBSCRIPTION_COST = "cost";
     JSONArray audiosDetailsArray;
 
@@ -580,6 +581,7 @@ public class ParseContents {
                     subscriptionPackage.setPackage_name(subscriptionJson.getString(SUBSCRIPTION_PACKAGE_NAME));
                     subscriptionPackage.setTotal_melody(subscriptionJson.getString(SUBSCRIPTION_TOTAL_MELODY));
                     subscriptionPackage.setRecording_time(subscriptionJson.getString(SUBSCRIPTION_RECORDING_TIME));
+                    subscriptionPackage.setRecordingtime(subscriptionJson.getString(SUBSCRIPTION_RECORDINGTIME));
                     subscriptionPackage.setCost(subscriptionJson.getString(SUBSCRIPTION_COST));
                     subscriptionPackageArrayList.add(subscriptionPackage);
 
