@@ -327,6 +327,8 @@ public class ProfileActivity extends AppCompatActivity {
                             editorSearchString.apply();
                             sharePrefClearProfile();
                             builderInner.setTitle("Your Selected Item is");
+                            recordingList.clear();
+                            recordingsPools.clear();
                             fetchRecordingsFilter();
                         }
                     }
@@ -356,6 +358,8 @@ public class ProfileActivity extends AppCompatActivity {
                 SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
                 editorSearchString.putString("stringSearch", searchContent);
                 editorSearchString.apply();
+                recordingList.clear();
+                recordingsPools.clear();
                 fetchSearchData();
                 SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
                 editorFilterString.clear();
@@ -1114,9 +1118,7 @@ public class ProfileActivity extends AppCompatActivity {
                         new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                         isLoading = false;
-                        if (!progressDialog.isShowing()) {
-                            progressDialog.show();
-                        }
+                        progressDialog.dismiss();
                     }
                 },
                 new Response.ErrorListener() {
@@ -1140,9 +1142,7 @@ public class ProfileActivity extends AppCompatActivity {
                         }
 //                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                         Log.d("Error", errorMsg);
-                        if (!progressDialog.isShowing()) {
-                            progressDialog.show();
-                        }
+                        progressDialog.dismiss();
                     }
                 }) {
             @Override
@@ -1153,7 +1153,7 @@ public class ProfileActivity extends AppCompatActivity {
                 params.put(KEY_SEARCH, strSearch);
                 params.put(limit, recordingList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=filter=" + params + "\nURL=" + RECORDINGS);
+                AppHelper.sop("params=search=" + params + "\nURL=" + RECORDINGS);
                 return params;
             }
         };
@@ -1436,6 +1436,8 @@ public class ProfileActivity extends AppCompatActivity {
                 SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
                 editorFilterArtist.putString("stringFilterArtist", artistName);
                 editorFilterArtist.apply();
+                recordingList.clear();
+                recordingsPools.clear();
                 fetchRecordingsFilterArtist();
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtFilterName.getWindowToken(), 0);
@@ -1484,6 +1486,8 @@ public class ProfileActivity extends AppCompatActivity {
                 SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
                 editorFilterInstruments.putString("stringFilterInstruments", Instruments);
                 editorFilterInstruments.apply();
+                recordingList.clear();
+                recordingsPools.clear();
                 fetchRecordingsFilterInstruments();
 
 
@@ -1534,7 +1538,8 @@ public class ProfileActivity extends AppCompatActivity {
                 SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
                 editorFilterBPM.putString("stringFilterBPM", BPM);
                 editorFilterBPM.apply();
-
+                recordingList.clear();
+                recordingsPools.clear();
                 fetchRecordingsFilterBPM();
 
 

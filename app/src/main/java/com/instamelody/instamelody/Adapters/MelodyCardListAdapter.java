@@ -70,7 +70,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     public static final int REQUEST_MELODY_COMMENT = 001;
     String profile, cover;
     static ArrayList<MelodyCard> melodyList = new ArrayList<>();
-    ArrayList<MelodyInstruments> melodyInstrumentsArrayList=new ArrayList<>();
+    ArrayList<MelodyInstruments> melodyInstrumentsArrayList = new ArrayList<>();
     ArrayList<String> mpids = new ArrayList<>();
     private static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     ArrayList<UserMelodyCard> userMelodyCardArrayList = new ArrayList<>();
@@ -523,7 +523,6 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
                         public void onPrepared(MediaPlayer mediaPlayer) {
-                            holder.progressDialog.dismiss();
 //                        lastModifiedHoled.itemView.findViewById(R.id.ivPlay).setVisibility(GONE);
 //                        lastModifiedHoled.itemView.findViewById(R.id.ivPause).setVisibility(VISIBLE);
                             holder.ivPlay.setVisibility(GONE);
@@ -539,6 +538,17 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                             holder.tvPlayCount.setText(play);
                             fetchViewCount(userId, melody.getMelodyPackId());
                             holder.primarySeekBarProgressUpdater();
+                        }
+                    });
+                    mediaPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+                        @Override
+                        public boolean onInfo(MediaPlayer mediaPlayer, int what, int extra) {
+                            if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
+                                holder.progressDialog.show();
+                            } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
+                                holder.progressDialog.dismiss();
+                            }
+                            return false;
                         }
                     });
                     mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
@@ -657,7 +667,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 public void onStopTrackingTouch(SeekBar seekBar) {
                 }
             });
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 

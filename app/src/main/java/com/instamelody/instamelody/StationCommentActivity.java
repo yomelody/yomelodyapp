@@ -113,7 +113,7 @@ public class StationCommentActivity extends AppCompatActivity {
     String FILEID = "fileid";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";
-    int duration1,length;
+    int duration1, length;
 
     ArrayList<Comments> commentList = new ArrayList<>();
     private CommentsAdapter adapter;
@@ -346,7 +346,7 @@ public class StationCommentActivity extends AppCompatActivity {
         rlProfilePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (recordingsModel!=null){
+                if (recordingsModel != null) {
                     Intent intent = new Intent(mActivity, ProfileActivity.class);
                     intent.putExtra("showProfileUserId", recordingsModel.getAddedBy());
                     startActivity(intent);
@@ -426,7 +426,7 @@ public class StationCommentActivity extends AppCompatActivity {
 //                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(VISIBLE);
                             mp.seekTo(length);
                             mp.start();
-                            duration1=mp.getDuration();
+                            duration1 = mp.getDuration();
                             primarySeekBarProgressUpdater();
 
                         }
@@ -469,9 +469,9 @@ public class StationCommentActivity extends AppCompatActivity {
                 if (mp != null) {
 
                     mp.pause();
-                    length=mp.getCurrentPosition();
+                    length = mp.getCurrentPosition();
                 }
-               // seekBarRecordings.setProgress(0);
+                // seekBarRecordings.setProgress(0);
             }
         });
 
@@ -796,12 +796,13 @@ public class StationCommentActivity extends AppCompatActivity {
 
             tvUserName.setText(recordingsModel.getUserName());
             tvRecordingName.setText(recordingsModel.getRecordingName());
+            tvIncludedCount.setText("Included: "+recordingsModel.getJoinCount());
             tvRecordingGenres.setText("Genre:" + " " + recordingsModel.getGenreName());
             tvContributeLength.setText(DateUtils.formatElapsedTime(Long.parseLong(recordingsPool.getDuration())));
             tvContributeDate.setText(convertDate(recordingsPool.getDateAdded()));
 
             if (recordingsModel.getJoinCount() == null) {
-                totaljoincount = "(" + "0" + " of " + "1" + ")";
+                totaljoincount = "(" + "1" + " of " + "1" + ")";
             } else {
                 totaljoincount = CalJoinCount(Integer.parseInt(recordingsModel.getJoinCount()));
             }
@@ -899,7 +900,7 @@ public class StationCommentActivity extends AppCompatActivity {
                 jCount = "(" + String.valueOf(MinJoinCount) + " of " + String.valueOf((joincount + 1)) + ")";
             } else {
 
-                jCount = String.valueOf(MinJoinCount) + " of " + String.valueOf(joincount);
+                jCount = String.valueOf(MinJoinCount+1) + " of " + String.valueOf(joincount + 1);
             }
 
         } catch (Exception ex) {
@@ -998,7 +999,7 @@ public class StationCommentActivity extends AppCompatActivity {
     private void primarySeekBarProgressUpdater() {
         Handler mHandler1 = new Handler();
         try {
-        ///    duration1 = mp.getDuration();
+            ///    duration1 = mp.getDuration();
             seekBarRecordings.setProgress((int) (((float) mp.getCurrentPosition() / duration1) * 100));// This math construction give a percentage of "was playing"/"song length"
             if (mp.isPlaying()) {
                 Runnable notification = new Runnable() {

@@ -42,6 +42,7 @@ import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
 import com.instamelody.instamelody.utils.AppHelper;
+import com.instamelody.instamelody.utils.Const;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -997,8 +998,20 @@ public class RecordingsFragment extends Fragment {
         AppHelper.sop("onActivityResult==called=" + "requestCode==" + requestCode + "=resultCode=" + resultCode + "=data=" + data);
         if (RecordingsCardAdapter.REQUEST_RECORDING_COMMENT == requestCode) {
             if (resultCode == mActivity.RESULT_OK) {
+                recordingList.clear();
+                recordingsPools.clear();
                 callApi();
                 AppHelper.sop("onActivityResult==called=" + "resultCode==" + resultCode);
+            } else {
+                SharedPreferences socialStatusPref = mActivity.getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE);
+                if (socialStatusPref.getBoolean(Const.REC_SHARE_STATUS, false)) {
+                    SharedPreferences.Editor socialStatusPrefEditor = mActivity.getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE).edit();
+                    socialStatusPrefEditor.putBoolean(Const.REC_SHARE_STATUS, false);
+                    socialStatusPrefEditor.apply();
+                    recordingList.clear();
+                    recordingsPools.clear();
+                    callApi();
+                }
             }
 
         }

@@ -131,7 +131,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_station);
-        mActivity=StationActivity.this;
+        mActivity = StationActivity.this;
         clearSharePrefStation();
 
         message = (ImageView) findViewById(R.id.message);
@@ -546,7 +546,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         editorFilterString.apply();
         AudioFragment af = new AudioFragment();
         getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
-        search1.setQuery("",false);
+        search1.setQuery("", false);
         return false;
     }
 
@@ -780,6 +780,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
             try {
                 RecordingsCardAdapter.mp.reset();
                 RecordingsCardAdapter.mp.release();
+                StationActivity.this.recreate();
                 try {
                     //AudioFragment af = new AudioFragment();
                     //getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
@@ -795,7 +796,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        AppHelper.sop("onActivityResult=of=StationActivity=requestCode"+requestCode+"=resultCode="+resultCode+"=data="+data);
+        AppHelper.sop("onActivityResult=of=StationActivity=requestCode" + requestCode + "=resultCode=" + resultCode + "=data=" + data);
         if (af != null) {
             af.onActivityResult(requestCode, resultCode, data);
         }

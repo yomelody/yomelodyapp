@@ -4,6 +4,11 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Ajay-Copy.iml" filepath="$PROJECT_DIR$/Ajay-Copy.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+<<<<<<< HEAD
+=======
+      <module fileurl="file://$PROJECT_DIR$/instamelody_app.iml" filepath="$PROJECT_DIR$/instamelody_app.iml" />
+      <module fileurl="file://E:/Ajay Android Projects/Ajay-Copy/instamelody_app.iml" filepath="E:/Ajay Android Projects/Ajay-Copy/instamelody_app.iml" />
+>>>>>>> master
       <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
     </modules>
   </component>
