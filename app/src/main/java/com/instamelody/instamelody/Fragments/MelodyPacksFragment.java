@@ -257,7 +257,7 @@ public class MelodyPacksFragment extends Fragment {
                                         int currentTab = host.getCurrentTab();
                                         AppHelper.sop("Tab=change=" + arg0 + "=currentTab=" + currentTab);
                                         if (currentTab == 0) {
-                                            packId = "";
+                                            packId = "0";
                                         } else {
                                             packId = (genresArrayList.get(currentTab)).getId();
                                         }
