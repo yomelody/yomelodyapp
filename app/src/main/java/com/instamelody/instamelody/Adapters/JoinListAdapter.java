@@ -70,6 +70,8 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
  */
 
 public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyViewHolder> {
+    long timeWhenStopped = 0;
+    boolean startMp = false;
     Context context;
     String USER_TYPE = "user_type";
     String USER_ID = "user_id";
@@ -188,61 +190,61 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-        try{
-        final JoinedArtists joinArt = Joined_artist.get(position);
-        Log.d("Position", "" + position);
-        click = getItemCount() - 1;
-        viewHolder = new ViewHolder();
-        viewHolder.redCross = (ImageView) holder.redCross.findViewById(R.id.redCross);
-        viewHolder.join_image = (ImageView) holder.join_image.findViewById(R.id.ivImageName);
-        viewHolder.Join_usr_name = (TextView) holder.Join_usr_name.findViewById(R.id.tvUserName);
-        if (lstViewHolder.size() < getItemCount()) {
-            lstViewHolder.add(viewHolder);
-        }
-        JoinedArtists join = Joined_artist.get(0);
-        holder.Join_usr_name.setText(joinArt.getJoined_usr_name());
         try {
-            Picasso.with(holder.join_image.getContext()).load(joinArt.getJoined_image()).into(holder.join_image);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        try {
-
-            JoinActivity.play_count.setText(join.getPlay_counts());
-            JoinActivity.tvLikeCount.setText(join.getLike_counts());
-            JoinActivity.tvCommentCount.setText(join.getComment_counts());
-            JoinActivity.tvShareCount.setText(join.getShare_counts());
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-        //  tempUserID = joinArt.getUser_id();
-
-        SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-        SharedPreferences twitterPref = context.getSharedPreferences("TwitterPref", MODE_PRIVATE);
-        SharedPreferences fbPref = context.getSharedPreferences("MyFbPref", MODE_PRIVATE);
-
-        if (loginSharedPref.getString("userId", null) != null) {
-            userId = loginSharedPref.getString("userId", null);
-        } else if (fbPref.getString("userId", null) != null) {
-            userId = fbPref.getString("userId", null);
-        } else if (twitterPref.getString("userId", null) != null) {
-            userId = twitterPref.getString("userId", null);
-        }
-
-
-        if (getItemCount() == 1 && userId.equals(Joined_artist.get(0).getUser_id())) {
-            holder.redCross.setVisibility(VISIBLE);
-        }
-
-        JoinInstrumentListAdp.count = MelodyInstruments.getInstrumentCount();
-        if (position == 0 && checkSt == true) {
-            if (userId.equals(Joined_artist.get(0).getUser_id())) {
-                lstViewHolder.get(position).redCross.setVisibility(VISIBLE);
+            final JoinedArtists joinArt = Joined_artist.get(position);
+            Log.d("Position", "" + position);
+            click = getItemCount() - 1;
+            viewHolder = new ViewHolder();
+            viewHolder.redCross = (ImageView) holder.redCross.findViewById(R.id.redCross);
+            viewHolder.join_image = (ImageView) holder.join_image.findViewById(R.id.ivImageName);
+            viewHolder.Join_usr_name = (TextView) holder.Join_usr_name.findViewById(R.id.tvUserName);
+            if (lstViewHolder.size() < getItemCount()) {
+                lstViewHolder.add(viewHolder);
             }
-            lstViewHolder.get(position).join_image.setBackgroundColor(Color.parseColor("#656565"));
-            lstViewHolder.get(position).Join_usr_name.setTextColor(Color.parseColor("#FFFFFF"));
-            getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, click_pos);
-        }
+            JoinedArtists join = Joined_artist.get(0);
+            holder.Join_usr_name.setText(joinArt.getJoined_usr_name());
+            try {
+                Picasso.with(holder.join_image.getContext()).load(joinArt.getJoined_image()).into(holder.join_image);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            try {
+
+                JoinActivity.play_count.setText(join.getPlay_counts());
+                JoinActivity.tvLikeCount.setText(join.getLike_counts());
+                JoinActivity.tvCommentCount.setText(join.getComment_counts());
+                JoinActivity.tvShareCount.setText(join.getShare_counts());
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+            //  tempUserID = joinArt.getUser_id();
+
+            SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+            SharedPreferences twitterPref = context.getSharedPreferences("TwitterPref", MODE_PRIVATE);
+            SharedPreferences fbPref = context.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+
+            if (loginSharedPref.getString("userId", null) != null) {
+                userId = loginSharedPref.getString("userId", null);
+            } else if (fbPref.getString("userId", null) != null) {
+                userId = fbPref.getString("userId", null);
+            } else if (twitterPref.getString("userId", null) != null) {
+                userId = twitterPref.getString("userId", null);
+            }
+
+
+            if (getItemCount() == 1 && userId.equals(Joined_artist.get(0).getUser_id())) {
+                holder.redCross.setVisibility(VISIBLE);
+            }
+
+            JoinInstrumentListAdp.count = MelodyInstruments.getInstrumentCount();
+            if (position == 0 && checkSt == true) {
+                if (userId.equals(Joined_artist.get(0).getUser_id())) {
+                    lstViewHolder.get(position).redCross.setVisibility(VISIBLE);
+                }
+                lstViewHolder.get(position).join_image.setBackgroundColor(Color.parseColor("#656565"));
+                lstViewHolder.get(position).Join_usr_name.setTextColor(Color.parseColor("#FFFFFF"));
+                getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, click_pos);
+            }
 
 //        if (userId.equals(joinArt.getUser_id())) {
 //            holder.redCross.setVisibility(VISIBLE);
@@ -250,73 +252,73 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 //            holder.redCross.setVisibility(GONE);
 //        }
 
-        holder.join_image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (position != 0) {
-                    if (lstViewHolder.get(0).redCross.getVisibility() == VISIBLE) {
-                        lstViewHolder.get(0).redCross.setVisibility(GONE);
-                    }
-                    lstViewHolder.get(0).join_image.setBackgroundColor(Color.parseColor("#383838"));
-                    lstViewHolder.get(0).Join_usr_name.setTextColor(Color.parseColor("#275AAB"));
-                }
-                if (playSt == true) {
-                    lstViewHolder.get(lastPosition).Join_usr_name.setTextColor(Color.parseColor("#275AAB"));
-                    lstViewHolder.get(lastPosition).join_image.setBackgroundColor(Color.parseColor("#383838"));
-                    lstViewHolder.get(lastPosition).redCross.setVisibility(GONE);
-                }
-                JoinActivity.txtCount.setText(count + position + 1 + " of " + getItemCount());
-                realPosition = position;
-                String user_id = JoinActivity.listProfile.get(position).getUserId();
-                String status = JoinActivity.listProfile.get(position).getStatus();
-                if (getItemCount() == 1) {
-                    Intent intent = new Intent(v.getContext(), ProfileActivity.class);
-                    intent.putExtra("showProfileUserId", user_id);
-                    v.getContext().startActivity(intent);
-                    JoinActivity.listProfile.set(position, new JoinedUserProfile(user_id, "0"));
-                }
-                if (user_id.equals(joinArt.getUser_id()) && status.equals("0")) {
-
-                    posForStudio = position;
-                    if (lastModifiedHoled != null) {
-                        lastPosition = lastModifiedHoled.getAdapterPosition();
-                        if (userId.equals(Joined_artist.get(0).getUser_id())) {
-                            lastModifiedHoled.itemView.findViewById(R.id.redCross).setVisibility(GONE);
-                            holder.redCross.setVisibility(VISIBLE);
+            holder.join_image.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (position != 0) {
+                        if (lstViewHolder.get(0).redCross.getVisibility() == VISIBLE) {
+                            lstViewHolder.get(0).redCross.setVisibility(GONE);
                         }
-                        try {
-                            lastModifiedHoled.itemView.findViewById(R.id.ivImageName).setBackgroundColor(Color.parseColor("#383838"));
-                            lstViewHolder.get(lastPosition).Join_usr_name.setTextColor(Color.parseColor("#275AAB"));
-                            lstViewHolder.get(position).Join_usr_name.setTextColor(Color.parseColor("#FFFFFF"));
+                        lstViewHolder.get(0).join_image.setBackgroundColor(Color.parseColor("#383838"));
+                        lstViewHolder.get(0).Join_usr_name.setTextColor(Color.parseColor("#275AAB"));
+                    }
+                    if (playSt == true) {
+                        lstViewHolder.get(lastPosition).Join_usr_name.setTextColor(Color.parseColor("#275AAB"));
+                        lstViewHolder.get(lastPosition).join_image.setBackgroundColor(Color.parseColor("#383838"));
+                        lstViewHolder.get(lastPosition).redCross.setVisibility(GONE);
+                    }
+                    JoinActivity.txtCount.setText(count + position + 1 + " of " + getItemCount());
+                    realPosition = position;
+                    String user_id = JoinActivity.listProfile.get(position).getUserId();
+                    String status = JoinActivity.listProfile.get(position).getStatus();
+                    if (getItemCount() == 1) {
+                        Intent intent = new Intent(v.getContext(), ProfileActivity.class);
+                        intent.putExtra("showProfileUserId", user_id);
+                        v.getContext().startActivity(intent);
+                        JoinActivity.listProfile.set(position, new JoinedUserProfile(user_id, "0"));
+                    }
+                    if (user_id.equals(joinArt.getUser_id()) && status.equals("0")) {
+
+                        posForStudio = position;
+                        if (lastModifiedHoled != null) {
+                            lastPosition = lastModifiedHoled.getAdapterPosition();
+                            if (userId.equals(Joined_artist.get(0).getUser_id())) {
+                                lastModifiedHoled.itemView.findViewById(R.id.redCross).setVisibility(GONE);
+                                holder.redCross.setVisibility(VISIBLE);
+                            }
+                            try {
+                                lastModifiedHoled.itemView.findViewById(R.id.ivImageName).setBackgroundColor(Color.parseColor("#383838"));
+                                lstViewHolder.get(lastPosition).Join_usr_name.setTextColor(Color.parseColor("#275AAB"));
+                                lstViewHolder.get(position).Join_usr_name.setTextColor(Color.parseColor("#FFFFFF"));
+                                holder.join_image.setBackgroundColor(Color.parseColor("#656565"));
+                            } catch (Throwable e) {
+                                e.printStackTrace();
+                            }
+
+
+                            // notifyItemChanged(lastPosition);
+                        } else {
                             holder.join_image.setBackgroundColor(Color.parseColor("#656565"));
-                        } catch (Throwable e) {
+                            lstViewHolder.get(position).Join_usr_name.setTextColor(Color.parseColor("#FFFFFF"));
+                            if (userId.equals(Joined_artist.get(0).getUser_id())) {
+                                holder.redCross.setVisibility(VISIBLE);
+                            }
+
+
+                        }
+
+                        getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, position);
+                        JoinInstrumentListAdp.count = MelodyInstruments.getInstrumentCount();
+                        JoinActivity.listProfile.set(position, new JoinedUserProfile(user_id, "1"));
+                        try {
+                            if (position >= 0) {
+                                JoinActivity.listProfile.set(lastPosition, new JoinedUserProfile(JoinActivity.listProfile.get(lastPosition).getUserId(), "0"));
+                                checkSt = false;
+                            }
+
+                        } catch (IndexOutOfBoundsException e) {
                             e.printStackTrace();
                         }
-
-
-                        // notifyItemChanged(lastPosition);
-                    } else {
-                        holder.join_image.setBackgroundColor(Color.parseColor("#656565"));
-                        lstViewHolder.get(position).Join_usr_name.setTextColor(Color.parseColor("#FFFFFF"));
-                        if (userId.equals(Joined_artist.get(0).getUser_id())) {
-                            holder.redCross.setVisibility(VISIBLE);
-                        }
-
-
-                    }
-
-                    getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, position);
-                    JoinInstrumentListAdp.count = MelodyInstruments.getInstrumentCount();
-                    JoinActivity.listProfile.set(position, new JoinedUserProfile(user_id, "1"));
-                    try {
-                        if (position >= 0) {
-                            JoinActivity.listProfile.set(lastPosition, new JoinedUserProfile(JoinActivity.listProfile.get(lastPosition).getUserId(), "0"));
-                            checkSt = false;
-                        }
-
-                    } catch (IndexOutOfBoundsException e) {
-                        e.printStackTrace();
-                    }
 
 //                    try {
 //                        JoinActivity.listProfile.set(lastPosition, new JoinedUserProfile(user_id, "0"));
@@ -325,318 +327,190 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 //                    }
 
 
-                } else {
-                    String showProfileUserId = JoinActivity.addedBy;
-                    Intent intent = new Intent(v.getContext(), ProfileActivity.class);
-                    intent.putExtra("showProfileUserId", user_id);
-                    v.getContext().startActivity(intent);
-                    JoinActivity.listProfile.set(position, new JoinedUserProfile(user_id, "0"));
-                }
-
-                lastModifiedHoled = holder;
-
-            }
-
-
-        });
-
-
-        holder.redCross.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (position != 0) {
-
-                    StringRequest stringRequest = new StringRequest(Request.Method.POST, JOIN_DELETE,
-                            new Response.Listener<String>() {
-                                @Override
-                                public void onResponse(String response) {
-
-                                    Log.d("ReturnData", response);
-                                    try {
-                                        JSONObject json = new JSONObject(response);
-                                        if (json.getString("flag").equals("success")) {
-                                            Joined_artist.remove(position);
-                                            lstViewHolder.remove(position);
-                                            getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, click_pos);
-                                            notifyItemRemoved(position);
-                                            notifyItemRangeChanged(position, Joined_artist.size());
-                                            posForStudio = posForStudio - 1;
-                                            Toast.makeText(context, "Removed successfully", Toast.LENGTH_SHORT).show();
-                                        }
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-
-                                }
-                            },
-                            new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(VolleyError error) {
-
-                                    String errorMsg = "";
-                                    if (error instanceof TimeoutError) {
-                                        errorMsg = "Internet connection timed out";
-                                    } else if (error instanceof NoConnectionError) {
-                                        errorMsg = "There is no connection";
-                                    } else if (error instanceof AuthFailureError) {
-                                        errorMsg = "AuthFailureError";
-                                    } else if (error instanceof ServerError) {
-                                        errorMsg = "We are facing problem in connecting to server";
-                                    } else if (error instanceof NetworkError) {
-                                        errorMsg = "We are facing problem in connecting to network";
-                                    } else if (error instanceof ParseError) {
-                                        errorMsg = "ParseError";
-                                    }
-                                    Log.d("Error", errorMsg);
-                                }
-                            }) {
-                        @Override
-                        protected Map<String, String> getParams() {
-                            Map<String, String> params = new HashMap<String, String>();
-                            params.put(STATUS, "1");
-                            params.put(RECORDING_ID, joinArt.getRecording_id());
-                            params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                            return params;
-                        }
-                    };
-                    RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-                    requestQueue.add(stringRequest);
-
-
-                } else {
-                    Toast.makeText(context, "You can not remove yourself", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
-        JoinActivity.txtCount.setText(count + 1 + " of " + getItemCount());
-        JoinActivity.rlJoinButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //    String position = Integer.toString();
-                if (mp != null) {
-                    mp.reset();
-                }
-                if (JoinActivity.mVisualizer != null) {
-                    JoinActivity.mVisualizer.release();
-                }
-                if (JoinInstrumentListAdp.mp_start != null) {
-                    for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
-                        JoinInstrumentListAdp.mp_start.get(i).stop();
-
-                    }
-                }
-                if (JoinActivity.mediaPlayersAll != null) {
-                    for (int i = 0; i <= JoinActivity.mediaPlayersAll.size() - 1; i++) {
-                        JoinActivity.mediaPlayersAll.get(i).stop();
-                    }
-                    JoinActivity.mediaPlayersAll.clear();
-                    JoinActivity.lstViewHolder.clear();
-                }
-                // Toast.makeText(context, ""+posForStudio, Toast.LENGTH_SHORT).show();
-                StudioActivity.instrumentList.clear();
-                SharedPreferences.Editor editor = context.getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
-                editor.putString("instrumentsPos", String.valueOf(posForStudio));
-                editor.commit();
-                Intent intent = new Intent(v.getContext(), StudioActivity.class);
-                v.getContext().startActivity(intent);
-                StudioActivity.list.clear();
-            }
-        });
-
-        JoinActivity.ivRecordJoin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //    String position = Integer.toString();
-                if (mp != null) {
-                    mp.reset();
-                }
-                if (JoinActivity.mVisualizer != null) {
-                    JoinActivity.mVisualizer.release();
-                }
-                if (JoinInstrumentListAdp.mp_start != null) {
-                    for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
-                        JoinInstrumentListAdp.mp_start.get(i).stop();
-
-                    }
-                }
-                if (JoinActivity.mediaPlayersAll != null) {
-                    for (int i = 0; i <= JoinActivity.mediaPlayersAll.size() - 1; i++) {
-                        JoinActivity.mediaPlayersAll.get(i).stop();
-                    }
-                    JoinActivity.mediaPlayersAll.clear();
-                    JoinActivity.lstViewHolder.clear();
-                }
-                // Toast.makeText(context, ""+posForStudio, Toast.LENGTH_SHORT).show();
-                StudioActivity.instrumentList.clear();
-                SharedPreferences.Editor editor = context.getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
-                editor.putString("instrumentsPos", String.valueOf(posForStudio));
-                editor.commit();
-                Intent intent = new Intent(view.getContext(), StudioActivity.class);
-                view.getContext().startActivity(intent);
-                StudioActivity.list.clear();
-            }
-        });
-
-        JoinActivity.ivJoinPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                JoinActivity.ivJoinPlay.setVisibility(v.GONE);
-                JoinActivity.ivJoinPause.setVisibility(v.VISIBLE);
-                progressDialog = new ProgressDialog(v.getContext());
-                progressDialog.setMessage("Loading...");
-                progressDialog.show();
-                String play = JoinActivity.play_count.getText().toString().trim();
-                int playValue = Integer.parseInt(play) + 1;
-                String recording_id = joinArt.getRecording_id().trim();
-
-                if (!userId.equals("") && userId != null) {
-                    JoinActivity.play_count.setText(String.valueOf(playValue));
-                    fetchViewCount(userId, recording_id);
-                }
-                mp = new MediaPlayer();
-                mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                try {
-                    if (posForStudio != 0) {
-                        JoinedArtists join = Joined_artist.get(posForStudio);
-                        Uri url = Uri.parse(join.getRecording_url());
-                        mp.setDataSource(context, url);
-                        mp.prepareAsync();
                     } else {
-                        JoinedArtists join = Joined_artist.get(0);
-                        Uri url = Uri.parse(join.getRecording_url());
-                        mp.setDataSource(context, url);
-                        mp.prepareAsync();
+                        String showProfileUserId = JoinActivity.addedBy;
+                        Intent intent = new Intent(v.getContext(), ProfileActivity.class);
+                        intent.putExtra("showProfileUserId", user_id);
+                        v.getContext().startActivity(intent);
+                        JoinActivity.listProfile.set(position, new JoinedUserProfile(user_id, "0"));
                     }
-                } catch (Throwable e) {
-                    e.printStackTrace();
+
+                    lastModifiedHoled = holder;
+
                 }
 
-                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                    @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        progressDialog.dismiss();
-                        mp.start();
-                        JoinActivity.chrono.setBase(SystemClock.elapsedRealtime());
-                        JoinActivity.chrono.start();
-                        initAudio(mp);
-                        /*try {
-                            if (mRecordingThread == null) {
-                                mShouldContinue = true;
-                                mRecordingThread = new RecordingThread();
-                                mRecordingThread.start();
-                            } else if (!mRecordingThread.isAlive()) {
-                                try {
-                                    mShouldContinue = true;
-                                    mRecordingThread = new RecordingThread();
-                                    mRecordingThread.start();
-                                } catch (Throwable e) {
-                                    e.printStackTrace();
-                                }
 
-                            } else {
-                                mRecordingThread.stopRunning();
+            });
+
+
+            holder.redCross.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (position != 0) {
+
+                        StringRequest stringRequest = new StringRequest(Request.Method.POST, JOIN_DELETE,
+                                new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
+
+                                        Log.d("ReturnData", response);
+                                        try {
+                                            JSONObject json = new JSONObject(response);
+                                            if (json.getString("flag").equals("success")) {
+                                                Joined_artist.remove(position);
+                                                lstViewHolder.remove(position);
+                                                getJoined_users(JoinActivity.addedBy, JoinActivity.RecId, click_pos);
+                                                notifyItemRemoved(position);
+                                                notifyItemRangeChanged(position, Joined_artist.size());
+                                                posForStudio = posForStudio - 1;
+                                                Toast.makeText(context, "Removed successfully", Toast.LENGTH_SHORT).show();
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                    }
+                                },
+                                new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+
+                                        String errorMsg = "";
+                                        if (error instanceof TimeoutError) {
+                                            errorMsg = "Internet connection timed out";
+                                        } else if (error instanceof NoConnectionError) {
+                                            errorMsg = "There is no connection";
+                                        } else if (error instanceof AuthFailureError) {
+                                            errorMsg = "AuthFailureError";
+                                        } else if (error instanceof ServerError) {
+                                            errorMsg = "We are facing problem in connecting to server";
+                                        } else if (error instanceof NetworkError) {
+                                            errorMsg = "We are facing problem in connecting to network";
+                                        } else if (error instanceof ParseError) {
+                                            errorMsg = "ParseError";
+                                        }
+                                        Log.d("Error", errorMsg);
+                                    }
+                                }) {
+                            @Override
+                            protected Map<String, String> getParams() {
+                                Map<String, String> params = new HashMap<String, String>();
+                                params.put(STATUS, "1");
+                                params.put(RECORDING_ID, joinArt.getRecording_id());
+                                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                                return params;
                             }
-                        } catch (NullPointerException e) {
-                            e.printStackTrace();
-                        }*/
+                        };
+                        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+                        requestQueue.add(stringRequest);
 
 
+                    } else {
+                        Toast.makeText(context, "You can not remove yourself", Toast.LENGTH_SHORT).show();
                     }
-                });
-                mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                    @Override
-                    public boolean onError(MediaPlayer mp, int what, int extra) {
-                        progressDialog.dismiss();
-                        return false;
+
+                }
+            });
+            JoinActivity.txtCount.setText(count + 1 + " of " + getItemCount());
+            JoinActivity.rlJoinButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //    String position = Integer.toString();
+                    if (mp != null) {
+                        mp.reset();
                     }
-                });
-                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        JoinActivity.chrono.stop();
-                        if (JoinActivity.mVisualizer != null) {
-                            JoinActivity.mVisualizer.release();
+                    if (JoinActivity.mVisualizer != null) {
+                        JoinActivity.mVisualizer.release();
+                    }
+                    if (JoinInstrumentListAdp.mp_start != null) {
+                        for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
+                            JoinInstrumentListAdp.mp_start.get(i).stop();
+
                         }
-                        JoinActivity.ivJoinPlay.setVisibility(VISIBLE);
-                        JoinActivity.ivJoinPause.setVisibility(GONE);
-                        progressDialog.dismiss();
                     }
-                });
-
-            }
-        });
-
-        JoinActivity.ivPlayNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                realPosition++;
-                playSt = true;
-                if (realPosition > position) {
-                    // realPosition = 0;
-                    realPosition = realPosition - 1;
-                    JoinActivity.ivPlayNext.setEnabled(false);
-                    JoinActivity.ivPlayPre.setEnabled(true);
-
-                } else {
-                    JoinActivity.ivPlayPre.setEnabled(true);
-                    try {
-                        if (JoinActivity.mVisualizer != null) {
-                            JoinActivity.mVisualizer.release();
+                    if (JoinActivity.mediaPlayersAll != null) {
+                        for (int i = 0; i <= JoinActivity.mediaPlayersAll.size() - 1; i++) {
+                            JoinActivity.mediaPlayersAll.get(i).stop();
                         }
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
+                        JoinActivity.mediaPlayersAll.clear();
+                        JoinActivity.lstViewHolder.clear();
                     }
-                    lastPosition = realPosition;
-                    lstViewHolder.get(realPosition - 1).Join_usr_name.setTextColor(Color.parseColor("#275AAB"));
-                    lstViewHolder.get(realPosition - 1).join_image.setBackgroundColor(Color.parseColor("#383838"));
-                    lstViewHolder.get(realPosition - 1).redCross.setVisibility(GONE);
-                    lstViewHolder.get(realPosition).Join_usr_name.setTextColor(Color.parseColor("#FFFFFF"));
-                    lstViewHolder.get(realPosition).join_image.setBackgroundColor(Color.parseColor("#656565"));
-                    if (userId.equals(Joined_artist.get(0).getUser_id())) {
-                        lstViewHolder.get(realPosition).redCross.setVisibility(VISIBLE);
-                    }
+                    // Toast.makeText(context, ""+posForStudio, Toast.LENGTH_SHORT).show();
+                    StudioActivity.instrumentList.clear();
+                    SharedPreferences.Editor editor = context.getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
+                    editor.putString("instrumentsPos", String.valueOf(posForStudio));
+                    editor.commit();
+                    Intent intent = new Intent(v.getContext(), StudioActivity.class);
+                    v.getContext().startActivity(intent);
+                    StudioActivity.list.clear();
+                }
+            });
 
-                    JoinActivity.txtCount.setText(realPosition + 1 + " of " + getItemCount());
-                    JoinedArtists join = Joined_artist.get(realPosition);
-
-                    if (JoinActivity.ivJoinPlay.getVisibility() == VISIBLE) {
-                        JoinActivity.ivJoinPlay.setVisibility(v.GONE);
-                        JoinActivity.ivJoinPause.setVisibility(v.VISIBLE);
+            JoinActivity.ivRecordJoin.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //    String position = Integer.toString();
+                    if (mp != null) {
+                        mp.reset();
                     }
+                    if (JoinActivity.mVisualizer != null) {
+                        JoinActivity.mVisualizer.release();
+                    }
+                    if (JoinInstrumentListAdp.mp_start != null) {
+                        for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
+                            JoinInstrumentListAdp.mp_start.get(i).stop();
+
+                        }
+                    }
+                    if (JoinActivity.mediaPlayersAll != null) {
+                        for (int i = 0; i <= JoinActivity.mediaPlayersAll.size() - 1; i++) {
+                            JoinActivity.mediaPlayersAll.get(i).stop();
+                        }
+                        JoinActivity.mediaPlayersAll.clear();
+                        JoinActivity.lstViewHolder.clear();
+                    }
+                    // Toast.makeText(context, ""+posForStudio, Toast.LENGTH_SHORT).show();
+                    StudioActivity.instrumentList.clear();
+                    SharedPreferences.Editor editor = context.getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
+                    editor.putString("instrumentsPos", String.valueOf(posForStudio));
+                    editor.commit();
+                    Intent intent = new Intent(view.getContext(), StudioActivity.class);
+                    view.getContext().startActivity(intent);
+                    StudioActivity.list.clear();
+                }
+            });
+
+            JoinActivity.ivJoinPlay.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    JoinActivity.ivJoinPlay.setVisibility(v.GONE);
+                    JoinActivity.ivJoinPause.setVisibility(v.VISIBLE);
                     progressDialog = new ProgressDialog(v.getContext());
                     progressDialog.setMessage("Loading...");
+                    progressDialog.setCancelable(false);
                     progressDialog.show();
-
-                    if (mp != null) {
-                        try {
-
-                            mp.reset();
-                            mp.release();
-                            mp = null;
-
-
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-
                     String play = JoinActivity.play_count.getText().toString().trim();
                     int playValue = Integer.parseInt(play) + 1;
-                    String recording_id = join.getRecording_id().trim();
+                    String recording_id = joinArt.getRecording_id().trim();
 
                     if (!userId.equals("") && userId != null) {
                         JoinActivity.play_count.setText(String.valueOf(playValue));
                         fetchViewCount(userId, recording_id);
                     }
-
                     mp = new MediaPlayer();
                     mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
                     try {
-                        Uri url = Uri.parse(join.getRecording_url());
-                        mp.setDataSource(context, url);
-                        mp.prepareAsync();
+                        if (posForStudio != 0) {
+                            JoinedArtists join = Joined_artist.get(posForStudio);
+                            Uri url = Uri.parse(join.getRecording_url());
+                            mp.setDataSource(context, url);
+                            mp.prepareAsync();
+                        } else {
+                            JoinedArtists join = Joined_artist.get(0);
+                            Uri url = Uri.parse(join.getRecording_url());
+                            mp.setDataSource(context, url);
+                            mp.prepareAsync();
+                        }
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
@@ -644,19 +518,39 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
                         public void onPrepared(MediaPlayer mp) {
-                            progressDialog.dismiss();
                             mp.start();
-                            JoinActivity.chrono.setBase(SystemClock.elapsedRealtime());
-                            JoinActivity.chrono.start();
                             initAudio(mp);
-
 
                         }
                     });
+                    mp.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+                        @Override
+                        public boolean onInfo(MediaPlayer mediaPlayer, int what, int extra) {
+                            if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
+                                // show progress dialog
+                                progressDialog.show();
+                                if (startMp == true) {
+                                    timeWhenStopped = JoinActivity.chrono.getBase() - SystemClock.elapsedRealtime();
+                                    JoinActivity.chrono.stop();
+                                }
+                            } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
+                                // dismiss progress dialog
+                                progressDialog.dismiss();
+                                JoinActivity.chrono.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
+                                JoinActivity.chrono.start();
+                                startMp = true;
+                            }
+                            Log.d("MyMediaPlayer", "mediaplayer has info What and Ex" + what + "ex" + extra);
+                            return false;
+                        }
+                    });
+
                     mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                         @Override
                         public boolean onError(MediaPlayer mp, int what, int extra) {
                             progressDialog.dismiss();
+                            timeWhenStopped = 0;
+                            startMp = false;
                             return false;
                         }
                     });
@@ -667,47 +561,38 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                             if (JoinActivity.mVisualizer != null) {
                                 JoinActivity.mVisualizer.release();
                             }
+                            timeWhenStopped = 0;
+                            startMp = false;
                             JoinActivity.ivJoinPlay.setVisibility(VISIBLE);
                             JoinActivity.ivJoinPause.setVisibility(GONE);
                             progressDialog.dismiss();
-                            try {
-                                mp.stop();
-                                mp.release();
-                                mp = null;
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
                         }
                     });
+
                 }
-                Log.d("Next play", "" + realPosition);
+            });
 
-            }
-        });
-
-        JoinActivity.ivPlayPre.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (realPosition == 0) {
-                    JoinActivity.ivPlayPre.setEnabled(false);
-                    JoinActivity.ivPlayNext.setEnabled(true);
-                } else {
+            JoinActivity.ivPlayNext.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    timeWhenStopped = 0;
+                    startMp = false;
                     try {
-                        playSt = true;
-                        lastPosition = realPosition - 1;
-                        lstViewHolder.get(realPosition).Join_usr_name.setTextColor(Color.parseColor("#275AAB"));
-                        lstViewHolder.get(realPosition).join_image.setBackgroundColor(Color.parseColor("#383838"));
-                        lstViewHolder.get(realPosition).redCross.setVisibility(GONE);
-                        lstViewHolder.get(realPosition - 1).Join_usr_name.setTextColor(Color.parseColor("#FFFFFF"));
-                        lstViewHolder.get(realPosition - 1).join_image.setBackgroundColor(Color.parseColor("#656565"));
-                        if (userId.equals(Joined_artist.get(0).getUser_id())) {
-                            lstViewHolder.get(realPosition - 1).redCross.setVisibility(VISIBLE);
-                        }
+                        JoinActivity.chrono.stop();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
+                    realPosition++;
+                    playSt = true;
+                    if (realPosition > position) {
+                        // realPosition = 0;
                         realPosition = realPosition - 1;
-                        count = realPosition;
-                        JoinActivity.ivPlayNext.setEnabled(true);
+                        JoinActivity.ivPlayNext.setEnabled(false);
+                        JoinActivity.ivPlayPre.setEnabled(true);
+
+                    } else {
+                        JoinActivity.ivPlayPre.setEnabled(true);
                         try {
                             if (JoinActivity.mVisualizer != null) {
                                 JoinActivity.mVisualizer.release();
@@ -715,17 +600,26 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
+                        lastPosition = realPosition;
+                        lstViewHolder.get(realPosition - 1).Join_usr_name.setTextColor(Color.parseColor("#275AAB"));
+                        lstViewHolder.get(realPosition - 1).join_image.setBackgroundColor(Color.parseColor("#383838"));
+                        lstViewHolder.get(realPosition - 1).redCross.setVisibility(GONE);
+                        lstViewHolder.get(realPosition).Join_usr_name.setTextColor(Color.parseColor("#FFFFFF"));
+                        lstViewHolder.get(realPosition).join_image.setBackgroundColor(Color.parseColor("#656565"));
+                        if (userId.equals(Joined_artist.get(0).getUser_id())) {
+                            lstViewHolder.get(realPosition).redCross.setVisibility(VISIBLE);
+                        }
 
-                        JoinActivity.txtCount.setText(count + 1 + " of " + getItemCount());
+                        JoinActivity.txtCount.setText(realPosition + 1 + " of " + getItemCount());
                         JoinedArtists join = Joined_artist.get(realPosition);
 
                         if (JoinActivity.ivJoinPlay.getVisibility() == VISIBLE) {
                             JoinActivity.ivJoinPlay.setVisibility(v.GONE);
                             JoinActivity.ivJoinPause.setVisibility(v.VISIBLE);
                         }
-
                         progressDialog = new ProgressDialog(v.getContext());
                         progressDialog.setMessage("Loading...");
+                        progressDialog.setCancelable(false);
                         progressDialog.show();
 
                         if (mp != null) {
@@ -754,35 +648,50 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         mp = new MediaPlayer();
                         mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
                         try {
-                            Uri url=Uri.parse(join.getRecording_url());
-                            mp.setDataSource(context,url);
+                            Uri url = Uri.parse(join.getRecording_url());
+                            mp.setDataSource(context, url);
                             mp.prepareAsync();
                         } catch (Throwable e) {
                             e.printStackTrace();
                         }
 
-
                         mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                             @Override
                             public void onPrepared(MediaPlayer mp) {
-                                progressDialog.dismiss();
                                 mp.start();
-                                JoinActivity.chrono.setBase(SystemClock.elapsedRealtime());
-                                JoinActivity.chrono.start();
                                 initAudio(mp);
-
-
                             }
                         });
-
+                        mp.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+                            @Override
+                            public boolean onInfo(MediaPlayer mediaPlayer, int what, int extra) {
+                                if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
+                                    // show progress dialog
+                                    progressDialog.show();
+                                    if (startMp == true) {
+                                        timeWhenStopped = JoinActivity.chrono.getBase() - SystemClock.elapsedRealtime();
+                                        JoinActivity.chrono.stop();
+                                    }
+                                } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
+                                    // dismiss progress dialog
+                                    progressDialog.dismiss();
+                                    JoinActivity.chrono.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
+                                    JoinActivity.chrono.start();
+                                    startMp = true;
+                                }
+                                Log.d("MyMediaPlayer", "mediaplayer has info What and Ex" + what + "ex" + extra);
+                                return false;
+                            }
+                        });
                         mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                             @Override
                             public boolean onError(MediaPlayer mp, int what, int extra) {
                                 progressDialog.dismiss();
+                                startMp = false;
+                                timeWhenStopped = 0;
                                 return false;
                             }
                         });
-
                         mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                             @Override
                             public void onCompletion(MediaPlayer mp) {
@@ -790,83 +699,246 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                 if (JoinActivity.mVisualizer != null) {
                                     JoinActivity.mVisualizer.release();
                                 }
+
                                 JoinActivity.ivJoinPlay.setVisibility(VISIBLE);
                                 JoinActivity.ivJoinPause.setVisibility(GONE);
                                 progressDialog.dismiss();
                                 try {
+                                    startMp = false;
+                                    timeWhenStopped = 0;
                                     mp.stop();
                                     mp.release();
                                     mp = null;
                                 } catch (Exception ex) {
                                     ex.printStackTrace();
                                 }
-
                             }
                         });
+                    }
+                    Log.d("Next play", "" + realPosition);
 
-                    } catch (IndexOutOfBoundsException e) {
+                }
+            });
+
+            JoinActivity.ivPlayPre.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startMp = false;
+                    timeWhenStopped = 0;
+                    try {
+                        JoinActivity.chrono.stop();
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    if (realPosition == 0) {
+                        JoinActivity.ivPlayPre.setEnabled(false);
+                        JoinActivity.ivPlayNext.setEnabled(true);
+                    } else {
+                        try {
+                            playSt = true;
+                            lastPosition = realPosition - 1;
+                            lstViewHolder.get(realPosition).Join_usr_name.setTextColor(Color.parseColor("#275AAB"));
+                            lstViewHolder.get(realPosition).join_image.setBackgroundColor(Color.parseColor("#383838"));
+                            lstViewHolder.get(realPosition).redCross.setVisibility(GONE);
+                            lstViewHolder.get(realPosition - 1).Join_usr_name.setTextColor(Color.parseColor("#FFFFFF"));
+                            lstViewHolder.get(realPosition - 1).join_image.setBackgroundColor(Color.parseColor("#656565"));
+                            if (userId.equals(Joined_artist.get(0).getUser_id())) {
+                                lstViewHolder.get(realPosition - 1).redCross.setVisibility(VISIBLE);
+                            }
 
-                }
-                Log.d("Previous play", "" + realPosition);
+                            realPosition = realPosition - 1;
+                            count = realPosition;
+                            JoinActivity.ivPlayNext.setEnabled(true);
+                            try {
+                                if (JoinActivity.mVisualizer != null) {
+                                    JoinActivity.mVisualizer.release();
+                                }
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
+                            }
 
-            }
-        });
+                            JoinActivity.txtCount.setText(count + 1 + " of " + getItemCount());
+                            JoinedArtists join = Joined_artist.get(realPosition);
 
-        JoinActivity.ivJoinPause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                JoinActivity.ivJoinPlay.setVisibility(v.VISIBLE);
-                JoinActivity.ivJoinPause.setVisibility(v.GONE);
-                if (JoinActivity.mVisualizer != null) {
-                    JoinActivity.mVisualizer.release();
-                }
-                mp.pause();
-                JoinActivity.chrono.stop();
-            }
-        });
+                            if (JoinActivity.ivJoinPlay.getVisibility() == VISIBLE) {
+                                JoinActivity.ivJoinPlay.setVisibility(v.GONE);
+                                JoinActivity.ivJoinPause.setVisibility(v.VISIBLE);
+                            }
 
-        JoinActivity.rlLike.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!userId.equals("") && userId != null) {
-                    //Toast.makeText(context, "like", Toast.LENGTH_SHORT).show();
-                    //position = mpids.get(getAdapterPosition() + 1);
+                            progressDialog = new ProgressDialog(v.getContext());
+                            progressDialog.setMessage("Loading...");
+                            progressDialog.setCancelable(false);
+                            progressDialog.show();
 
+                            if (mp != null) {
+                                try {
 
-                    String RecordingName = joinArt.getRecording_name();
-                    String position = joinArt.getRecording_id();
-
-                    if (JoinActivity.ivDislikeButton.getVisibility() == VISIBLE) {
-                        JoinActivity.ivLikeButton.setVisibility(VISIBLE);
-                        JoinActivity.ivDislikeButton.setVisibility(GONE);
-                        String like = JoinActivity.tvLikeCount.getText().toString().trim();
-                        int likeValue = Integer.parseInt(like) - 1;
-                        like = String.valueOf(likeValue);
-                        JoinActivity.tvLikeCount.setText(like);
-                        fetchLikeState(userId, position, "0", RecordingName);
+                                    mp.reset();
+                                    mp.release();
+                                    mp = null;
 
 
-                    } else if (JoinActivity.ivDislikeButton.getVisibility() == GONE) {
-                        JoinActivity.ivLikeButton.setVisibility(GONE);
-                        JoinActivity.ivDislikeButton.setVisibility(VISIBLE);
-                        String like = JoinActivity.tvLikeCount.getText().toString().trim();
-                        int likeValue = Integer.parseInt(like) + 1;
-                        like = String.valueOf(likeValue);
-                        JoinActivity.tvLikeCount.setText(like);
-                        fetchLikeState(userId, position, "1", RecordingName);
+                                } catch (Throwable e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+
+                            String play = JoinActivity.play_count.getText().toString().trim();
+                            int playValue = Integer.parseInt(play) + 1;
+                            String recording_id = join.getRecording_id().trim();
+
+                            if (!userId.equals("") && userId != null) {
+                                JoinActivity.play_count.setText(String.valueOf(playValue));
+                                fetchViewCount(userId, recording_id);
+                            }
+
+                            mp = new MediaPlayer();
+                            mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                            try {
+                                Uri url = Uri.parse(join.getRecording_url());
+                                mp.setDataSource(context, url);
+                                mp.prepareAsync();
+                            } catch (Throwable e) {
+                                e.printStackTrace();
+                            }
+
+
+                            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                @Override
+                                public void onPrepared(MediaPlayer mp) {
+                                    mp.start();
+                                    initAudio(mp);
+                                }
+                            });
+                            mp.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+                                @Override
+                                public boolean onInfo(MediaPlayer mediaPlayer, int what, int extra) {
+                                    if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
+                                        // show progress dialog
+                                        progressDialog.show();
+                                        if (startMp == true) {
+                                            timeWhenStopped = JoinActivity.chrono.getBase() - SystemClock.elapsedRealtime();
+                                            JoinActivity.chrono.stop();
+                                        }
+                                    } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
+                                        // dismiss progress dialog
+                                        progressDialog.dismiss();
+                                        JoinActivity.chrono.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
+                                        JoinActivity.chrono.start();
+                                        startMp = true;
+                                    }
+                                    Log.d("MyMediaPlayer", "mediaplayer has info What and Ex" + what + "ex" + extra);
+                                    return false;
+                                }
+                            });
+
+                            mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                                @Override
+                                public boolean onError(MediaPlayer mp, int what, int extra) {
+                                    progressDialog.dismiss();
+                                    startMp = false;
+                                    timeWhenStopped = 0;
+                                    return false;
+                                }
+                            });
+
+                            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                @Override
+                                public void onCompletion(MediaPlayer mp) {
+                                    JoinActivity.chrono.stop();
+                                    if (JoinActivity.mVisualizer != null) {
+                                        JoinActivity.mVisualizer.release();
+                                    }
+                                    JoinActivity.ivJoinPlay.setVisibility(VISIBLE);
+                                    JoinActivity.ivJoinPause.setVisibility(GONE);
+                                    progressDialog.dismiss();
+                                    try {
+                                        startMp = false;
+                                        timeWhenStopped = 0;
+                                        mp.stop();
+                                        mp.release();
+                                        mp = null;
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
+
+                                }
+                            });
+
+                        } catch (IndexOutOfBoundsException e) {
+                            e.printStackTrace();
+                        }
+
                     }
-                } else {
-                    Toast.makeText(context, "Log in to like this Recording", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(context, SignInActivity.class);
-                    context.startActivity(intent);
+                    Log.d("Previous play", "" + realPosition);
+
                 }
+            });
 
-            }
-        });
+            JoinActivity.ivJoinPause.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    JoinActivity.ivJoinPlay.setVisibility(v.VISIBLE);
+                    JoinActivity.ivJoinPause.setVisibility(v.GONE);
+                    if (JoinActivity.mVisualizer != null) {
+                        JoinActivity.mVisualizer.release();
+                    }
+                    try {
+                        if (mp.isPlaying()) {
+                            mp.pause();
+                            JoinActivity.chrono.stop();
+                            timeWhenStopped = 0;
+                            startMp = false;
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
 
-        }catch (Exception ex){
+
+                }
+            });
+
+            JoinActivity.rlLike.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!userId.equals("") && userId != null) {
+                        //Toast.makeText(context, "like", Toast.LENGTH_SHORT).show();
+                        //position = mpids.get(getAdapterPosition() + 1);
+
+
+                        String RecordingName = joinArt.getRecording_name();
+                        String position = joinArt.getRecording_id();
+
+                        if (JoinActivity.ivDislikeButton.getVisibility() == VISIBLE) {
+                            JoinActivity.ivLikeButton.setVisibility(VISIBLE);
+                            JoinActivity.ivDislikeButton.setVisibility(GONE);
+                            String like = JoinActivity.tvLikeCount.getText().toString().trim();
+                            int likeValue = Integer.parseInt(like) - 1;
+                            like = String.valueOf(likeValue);
+                            JoinActivity.tvLikeCount.setText(like);
+                            fetchLikeState(userId, position, "0", RecordingName);
+
+
+                        } else if (JoinActivity.ivDislikeButton.getVisibility() == GONE) {
+                            JoinActivity.ivLikeButton.setVisibility(GONE);
+                            JoinActivity.ivDislikeButton.setVisibility(VISIBLE);
+                            String like = JoinActivity.tvLikeCount.getText().toString().trim();
+                            int likeValue = Integer.parseInt(like) + 1;
+                            like = String.valueOf(likeValue);
+                            JoinActivity.tvLikeCount.setText(like);
+                            fetchLikeState(userId, position, "1", RecordingName);
+                        }
+                    } else {
+                        Toast.makeText(context, "Log in to like this Recording", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(context, SignInActivity.class);
+                        context.startActivity(intent);
+                    }
+
+                }
+            });
+
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -1118,7 +1190,6 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
         //mpst.start();
 
     }
-
 
 
     private void setupVisualizerFxAndUI(MediaPlayer mpvis) {
