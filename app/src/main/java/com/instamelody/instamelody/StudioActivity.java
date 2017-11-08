@@ -411,7 +411,7 @@ public class StudioActivity extends AppCompatActivity {
                 }
             }
         };
-
+        switchPublic.setVisibility(View.VISIBLE);
         mVisualizerView = (VisualizerView) findViewById(R.id.myvisualizerview);
         TweeterSharingWork();
 
@@ -531,6 +531,7 @@ public class StudioActivity extends AppCompatActivity {
                 if (melodyPackId != null) {
 
                     fetchInstruments(melodyPackId);
+                    switchPublic.setVisibility(View.VISIBLE);
 
                     JoinActivity.instrumentList.clear();
                     noMelodyNote.setVisibility(View.GONE);
@@ -1432,7 +1433,7 @@ public class StudioActivity extends AppCompatActivity {
                     StudioActivity.playAll.setVisibility(View.GONE);
                     StudioActivity.pauseAll.setVisibility(View.GONE);
                     //recyclerViewInstruments.setRecycledViewPool(new RecyclerView.RecycledViewPool());
-                    recyclerViewInstruments.smoothScrollToPosition(0);
+                    //recyclerViewInstruments.scrollToPosition(0);
 
                     if (lstViewHolder.size() > 0) {
                         try {
@@ -1635,7 +1636,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    recyclerViewInstruments.smoothScrollToPosition(instrumentList.size());
+                    StudioActivity.recyclerViewInstruments.smoothScrollToPosition(instrumentList.size());
 
                     if (!IsValidPack || instrumentList.size()<=LayerCount) {
                         new PrepareInstruments().execute();
@@ -3772,7 +3773,7 @@ public class StudioActivity extends AppCompatActivity {
     private class PrepareInstruments extends AsyncTask<String, Void, Bitmap> {
 
         protected void onPreExecute() {
-            try {
+
                 try {
 
                     StudioActivity.ivBackButton.setEnabled(false);
@@ -3802,12 +3803,9 @@ public class StudioActivity extends AppCompatActivity {
 
                     }
 
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            }
         }
 
         protected Bitmap doInBackground(String... urls) {
@@ -3844,7 +3842,7 @@ public class StudioActivity extends AppCompatActivity {
                     IsRepeteReAll = true;
 
 
-                    StudioActivity.mpall.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    /*StudioActivity.mpall.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mp) {
 
@@ -3878,7 +3876,7 @@ public class StudioActivity extends AppCompatActivity {
 
 
                         }
-                    });
+                    });*/
                 }
 
 
@@ -3995,7 +3993,7 @@ public class StudioActivity extends AppCompatActivity {
 
         // Configure me!
         private static final int AUDIO_SOURCE = MediaRecorder.AudioSource.MIC;
-        private static final int SAMPLE_RATE = 44100; // Hz 8000 11025 22050 44100
+        private static final int SAMPLE_RATE = 11025; // Hz 8000 11025 22050 44100
         private static final int ENCODING = AudioFormat.ENCODING_PCM_16BIT;
         private static final int CHANNEL_MASK = AudioFormat.CHANNEL_IN_MONO;
         //

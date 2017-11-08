@@ -351,6 +351,7 @@
                             android:id="@+id/ivLikeButton"
                             android:layout_width="25dp"
                             android:layout_height="25dp"
+                            android:visibility="visible"
                             app:srcCompat="@drawable/hand_outline" />
 
                         <ImageView
