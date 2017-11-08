@@ -1556,6 +1556,7 @@ public class ChatActivity extends AppCompatActivity {
                 params.put("shared_by_user", userId);
                 params.put("shared_with", receiverId);
                 params.put("file_id", mRecordingsModel.getRecordingId());
+                params.put("share_topic", mRecordingsModel.getRecordingName());
                 params.put("file_type", fileType);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 AppHelper.sop("params==" + params + "\nURL==" + sharefile);

@@ -1352,7 +1352,7 @@ public class StudioActivity extends AppCompatActivity {
                 if (joinRecordingId == null) {
                     if (userId != null && melodyPackId != null) {
                         if(Integer.parseInt(recordingDuration)>PackDuration && PackDuration!=0) {
-                            Toast.makeText(StudioActivity.this, "Your recording duration should be less then or eqal to your subscription pack.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(StudioActivity.this, "Your recording duration should be less then or equal to your subscription pack.", Toast.LENGTH_SHORT).show();
 
                         }else {
                             openDialog();
@@ -1431,7 +1431,9 @@ public class StudioActivity extends AppCompatActivity {
                     rlMelodyButton.setVisibility(View.VISIBLE);
                     StudioActivity.playAll.setVisibility(View.GONE);
                     StudioActivity.pauseAll.setVisibility(View.GONE);
-                    StudioActivity.this.recreate();
+                    //recyclerViewInstruments.setRecycledViewPool(new RecyclerView.RecycledViewPool());
+                    recyclerViewInstruments.smoothScrollToPosition(0);
+
                     if (lstViewHolder.size() > 0) {
                         try {
                             lstViewHolder.clear();
@@ -1439,6 +1441,8 @@ public class StudioActivity extends AppCompatActivity {
                             ex.printStackTrace();
                         }
                     }
+                    StudioActivity.this.recreate();
+
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -1633,7 +1637,7 @@ public class StudioActivity extends AppCompatActivity {
                 try {
                     recyclerViewInstruments.smoothScrollToPosition(instrumentList.size());
 
-                    if (!IsValidPack) {
+                    if (!IsValidPack || instrumentList.size()<=LayerCount) {
                         new PrepareInstruments().execute();
                     }else {
                         if (IsExp == "false") {
@@ -1707,28 +1711,43 @@ public class StudioActivity extends AppCompatActivity {
 
                     try {
                         if (mpall != null) {
-                            mpall.stop();
-                            for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
-                                StudioActivity.PlayAllModel.get(i).setRepete(false);
-                                final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                                final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
-                                final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
-                                final TextView txtMutes = StudioActivity.lstViewHolder.get(i).TxtMuteViewHolder;
-                                final TextView txtSolos = StudioActivity.lstViewHolder.get(i).TxtSoloViewHolder;
-                                final RelativeLayout RlsRepets = StudioActivity.lstViewHolder.get(i).TempRlRepeats;
-                                seekBar.setProgress(0);
-                                holderPlay.setVisibility(View.VISIBLE);
-                                holderPause.setVisibility(View.GONE);
-                                txtMutes.setBackgroundColor(Color.TRANSPARENT);
-                                txtSolos.setBackgroundColor(Color.TRANSPARENT);
-                                RlsRepets.setBackgroundColor(Color.TRANSPARENT);
-                                holderPause.setEnabled(true);
-                                try {
-                                    mediaPlayersAll.get(i).stop();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
+                            try {
+                                mpall.stop();
+                                mpall.reset();
+                                mpall.release();
+                                mpall=null;
+                            }catch (Exception ex){
+                                ex.printStackTrace();
+                            }
+                            try {
+                                for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                                    PlayAllModel.get(i).setRepete(false);
+                                    if (i <= lstViewHolder.size() - 1) {
+                                        final ImageView holderPlay = lstViewHolder.get(i).holderPlay;
+                                        final ImageView holderPause = lstViewHolder.get(i).holderPause;
+                                        final SeekBar seekBar = lstViewHolder.get(i).seekBar;
+                                        final TextView txtMutes = lstViewHolder.get(i).TxtMuteViewHolder;
+                                        final TextView txtSolos = lstViewHolder.get(i).TxtSoloViewHolder;
+                                        final RelativeLayout RlsRepets = lstViewHolder.get(i).TempRlRepeats;
+                                        seekBar.setProgress(0);
+                                        holderPlay.setVisibility(View.VISIBLE);
+                                        holderPause.setVisibility(View.GONE);
+                                        txtMutes.setBackgroundColor(Color.TRANSPARENT);
+                                        txtSolos.setBackgroundColor(Color.TRANSPARENT);
+                                        RlsRepets.setBackgroundColor(Color.TRANSPARENT);
+                                        holderPause.setEnabled(true);
+                                        try {
+                                            mediaPlayersAll.get(i).stop();
+                                            mediaPlayersAll.get(i).reset();
+                                            mediaPlayersAll.get(i).release();
+                                        } catch (Exception ex) {
+                                            ex.printStackTrace();
+                                        }
+                                    }
 
+                                }
+                            }catch (Exception ex){
+                                ex.printStackTrace();
                             }
 
                         }
@@ -1788,6 +1807,9 @@ public class StudioActivity extends AppCompatActivity {
                         public void onCompletion(MediaPlayer mp) {
                             try {
                                 mediaPlayer.stop();
+                                mediaPlayer.reset();
+                                mediaPlayer.release();
+                                mediaPlayer=null;
                             }catch (Exception ex){
                                 ex.printStackTrace();
                             }
@@ -1828,8 +1850,8 @@ public class StudioActivity extends AppCompatActivity {
                         if (mediaPlayer != null) {
                             try {
                                 mediaPlayer.stop();
-                                mediaPlayer.release();
                                 mediaPlayer.reset();
+                                mediaPlayer.release();
                                 mediaPlayer = null;
                             }catch (Exception ex){
                                 ex.printStackTrace();
@@ -1840,6 +1862,7 @@ public class StudioActivity extends AppCompatActivity {
                             try {
                                 mpall.stop();
                                 mpall.reset();
+                                mpall.release();
                                 mpall = null;
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -1848,6 +1871,8 @@ public class StudioActivity extends AppCompatActivity {
                             for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                                 try {
                                     mediaPlayersAll.get(i).stop();
+                                    mediaPlayersAll.get(i).reset();
+                                    mediaPlayersAll.get(i).release();
                                 } catch (Exception ex) {
                                     ex.printStackTrace();
                                 }
@@ -3824,25 +3849,31 @@ public class StudioActivity extends AppCompatActivity {
                         public void onCompletion(MediaPlayer mp) {
 
                             if (MaxMpSessionID == mp.getAudioSessionId()) {
-                                StudioActivity.handler.removeCallbacksAndMessages(null);
-                                for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
+                                handler.removeCallbacksAndMessages(null);
+                                for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                                    try {
+                                        if(i<=lstViewHolder.size()-1) {
+                                            final ImageView holderPlay = lstViewHolder.get(i).holderPlay;
+                                            final ImageView holderPause = lstViewHolder.get(i).holderPause;
+                                            final SeekBar seekBar = lstViewHolder.get(i).seekBar;
+                                            final TextView txtMutes = lstViewHolder.get(i).TxtMuteViewHolder;
+                                            final TextView txtSolos = lstViewHolder.get(i).TxtSoloViewHolder;
+                                            final RelativeLayout RlsRepets = lstViewHolder.get(i).TempRlRepeats;
+                                            seekBar.setProgress(0);
+                                            holderPlay.setVisibility(View.VISIBLE);
+                                            holderPause.setVisibility(View.GONE);
+                                            txtMutes.setBackgroundColor(Color.TRANSPARENT);
+                                            txtSolos.setBackgroundColor(Color.TRANSPARENT);
+                                            RlsRepets.setBackgroundColor(Color.TRANSPARENT);
+                                            holderPause.setEnabled(true);
 
-                                    final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                                    final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
-                                    final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
-                                    final TextView txtMutes = StudioActivity.lstViewHolder.get(i).TxtMuteViewHolder;
-                                    final TextView txtSolos = StudioActivity.lstViewHolder.get(i).TxtSoloViewHolder;
-                                    final RelativeLayout RlsRepets = StudioActivity.lstViewHolder.get(i).TempRlRepeats;
-                                    seekBar.setProgress(0);
-                                    holderPlay.setVisibility(View.VISIBLE);
-                                    holderPause.setVisibility(View.GONE);
-                                    txtMutes.setBackgroundColor(Color.TRANSPARENT);
-                                    txtSolos.setBackgroundColor(Color.TRANSPARENT);
-                                    RlsRepets.setBackgroundColor(Color.TRANSPARENT);
-                                    holderPause.setEnabled(true);
-                                    StudioActivity.playAll.setVisibility(View.VISIBLE);
-                                    StudioActivity.pauseAll.setVisibility(View.GONE);
+                                        }
+                                    }catch (Exception ex){
+                                        ex.printStackTrace();
+                                    }
                                 }
+                                playAll.setVisibility(View.VISIBLE);
+                                pauseAll.setVisibility(View.GONE);
                             }
 
 
@@ -3882,24 +3913,22 @@ public class StudioActivity extends AppCompatActivity {
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-                    /*if (IsRepeat == true) {
-                        pts.setLooping(true);
-                    } else if (IsRepeat == false) {
-                        pts.setLooping(false);
-                    }*/
-                    //StudioActivity.waveform_view.setVisibility(View.VISIBLE);
-                    //StudioActivity.waveform_view.setEnabled(true);
-                    final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                    final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
+                    try {
+                        if(i<=lstViewHolder.size()-1) {
+                            final ImageView holderPlay = lstViewHolder.get(i).holderPlay;
+                            final ImageView holderPause = lstViewHolder.get(i).holderPause;
 
-                    holderPlay.setVisibility(View.GONE);
-                    holderPause.setVisibility(View.VISIBLE);
-                    holderPause.setEnabled(false);
+                            holderPlay.setVisibility(View.GONE);
+                            holderPause.setVisibility(View.VISIBLE);
+                            holderPause.setEnabled(false);
+                        }
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
 
                 }
                 initAudio(MaxMpSessionID);
                 frameProgress.setVisibility(View.GONE);
-                //recordAudio();
                 RunSeekbar();
 
                 if (ContextCompat.checkSelfPermission(StudioActivity.this, Manifest.permission.RECORD_AUDIO)
@@ -4268,15 +4297,34 @@ public class StudioActivity extends AppCompatActivity {
                     }
                 }, Visualizer.getMaxCaptureRate() / 2, true, false);
     }
+    /*private void primarySeekBarProgressUpdater() {
+        //Handler mHandler1 = new Handler();
+        try {
 
+            melodySlider.setProgress((int) (((float) mp.getCurrentPosition() / mp.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
+            if (mp != null) {
+                Runnable notification = new Runnable() {
+                    public void run() {
+                        primarySeekBarProgressUpdater();
+                    }
+                };
+                StudioActivity.handler.postDelayed(notification, 100);
+                //mHandler1.postDelayed(notification, 100);
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
+
+    }*/
     public void RunSeekbar() {
 
         try {
             for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+
                 final MediaPlayer pts;
                 //final SeekBar seekBarf;
                 pts = mediaPlayersAll.get(i);
-
                 final SeekBar seekBarf = lstViewHolder.get(i).seekBar;
 
                 Runnable runnable = new Runnable() {

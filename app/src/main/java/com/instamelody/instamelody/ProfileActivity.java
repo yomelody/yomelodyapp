@@ -864,8 +864,14 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, showProfileUserId);
-                params.put(KEY, "Myrecording");
+                params.put(ID, userId);
+                if(showProfileUserId.equals("")) {
+                    params.put(KEY, "Myrecording");
+                }else {
+                    params.put(KEY, "onUserProfile");
+                    params.put("ownersUserId", showProfileUserId);
+                }
+
                 params.put(GENRE, genreString);
                 params.put(limit, recordingList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
