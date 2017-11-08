@@ -354,6 +354,8 @@ public class DiscoverActivity extends AppCompatActivity {
                             editorSearchString.clear();
                             editorSearchString.apply();
                             builderInner.setTitle("Your Selected Item is");
+                            recordingList.clear();
+                            recordingsPools.clear();
                             fetchRecordingsFilter();
                         }
                     }
@@ -372,6 +374,8 @@ public class DiscoverActivity extends AppCompatActivity {
                 ((EditText) search2.findViewById(android.support.v7.appcompat.R.id.search_src_text))
                         .setHintTextColor(getResources().getColor(R.color.colorSearch));
                 btnCancel.setVisibility(View.VISIBLE);
+                appBarSearchDiscoverBtn.setVisibility(View.GONE);
+
             }
         });
 
@@ -384,6 +388,7 @@ public class DiscoverActivity extends AppCompatActivity {
                 ivFilterDiscover.setVisibility(View.VISIBLE);
                 search2.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
+                appBarSearchDiscoverBtn.setVisibility(View.VISIBLE);
 
             }
         });
@@ -395,6 +400,7 @@ public class DiscoverActivity extends AppCompatActivity {
                 ivHomeDiscover.setVisibility(View.VISIBLE);
                 appBarMainTextDiscover.setVisibility(View.VISIBLE);
                 ivFilterDiscover.setVisibility(View.VISIBLE);
+                appBarSearchDiscoverBtn.setVisibility(View.VISIBLE);
                 search2.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
                 search2.isSubmitButtonEnabled();
@@ -405,7 +411,10 @@ public class DiscoverActivity extends AppCompatActivity {
                 SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
                 editorFilterString.clear();
                 editorFilterString.apply();
+                recordingList.clear();
+                recordingsPools.clear();
                 fetchSearchData();
+                search2.setQuery("", false);
                 return false;
             }
 
@@ -543,7 +552,7 @@ public class DiscoverActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("AdvertisementData", response);
+                        AppHelper.sop("response=advertisePaging=" + response);
                         pagingDataArrayList.clear();
                         new ParseContents(getApplicationContext()).parseAdvertisePaging(response, pagingDataArrayList);
                         addBottomDots(0);
@@ -553,7 +562,7 @@ public class DiscoverActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
                         String errorMsg = error.toString();
                         Log.d("Error", errorMsg);
                     }
@@ -562,6 +571,7 @@ public class DiscoverActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params=advertisePaging=" + params+"\nURL="+ADVERTISEMENT);
                 return params;
             }
         };
@@ -739,6 +749,8 @@ public class DiscoverActivity extends AppCompatActivity {
                 SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
                 editorFilterArtist.putString("stringFilterArtist", artistName);
                 editorFilterArtist.apply();
+                recordingList.clear();
+                recordingsPools.clear();
                 fetchRecordingsFilterArtist();
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtFilterName.getWindowToken(), 0);
@@ -786,6 +798,8 @@ public class DiscoverActivity extends AppCompatActivity {
                 SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
                 editorFilterInstruments.putString("stringFilterInstruments", Instruments);
                 editorFilterInstruments.apply();
+                recordingList.clear();
+                recordingsPools.clear();
                 fetchRecordingsFilterInstruments();
 
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -835,9 +849,9 @@ public class DiscoverActivity extends AppCompatActivity {
                 SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
                 editorFilterBPM.putString("stringFilterBPM", BPM);
                 editorFilterBPM.apply();
-
+                recordingList.clear();
+                recordingsPools.clear();
                 fetchRecordingsFilterBPM();
-
 
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtFilterBPM.getWindowToken(), 0);
@@ -1195,68 +1209,6 @@ public class DiscoverActivity extends AppCompatActivity {
             }
         };
     }
-
-    /*private class LongOperation extends AsyncTask<String, Void, String> {
-        protected void onPreExecute() {
-            progressDialog = new ProgressDialog(DiscoverActivity.this);
-            progressDialog.setTitle("Processing...");
-            progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-
-        protected String doInBackground(String... params) {
-
-            try {
-                //Getting data from server
-
-                String filename = "myfile";
-                String outputString = "Hello world!";
-
-                URL aurl = new URL(RECORDINGS);
-
-                URLConnection connection = aurl.openConnection();
-                connection.connect();
-                // getting file length
-                int lengthOfFile = connection.getContentLength();
-
-                // input stream to read file - with 8k buffer
-                InputStream input = new BufferedInputStream(aurl.openStream(), 8192);
-
-                try {
-                    FileOutputStream outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                    outputStream.write(outputString.getBytes());
-                    outputStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    FileInputStream inputStream = openFileInput(filename);
-                    BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
-                    StringBuilder total = new StringBuilder();
-                    String line;
-                    while ((line = r.readLine()) != null) {
-                        total.append(line);
-                    }
-                    r.close();
-                    inputStream.close();
-                    Log.d("File", "File contents: " + total);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-
-            progressDialog.dismiss();
-        }
-
-    }*/
 
     private void clearSharedPref() {
         try {

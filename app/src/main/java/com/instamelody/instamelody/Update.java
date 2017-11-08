@@ -121,7 +121,6 @@ public class Update extends AppCompatActivity {
         progressDialog.setMessage("Please wait...");
         progressDialog.setCancelable(false);
 
-
         SharedPreferences profileEditor = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE);
         SharedPreferences profileImageEditor = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE);
 
@@ -576,6 +575,7 @@ public class Update extends AppCompatActivity {
 
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            progressDialog.dismiss();
                         }
 
                     }
@@ -704,61 +704,6 @@ public class Update extends AppCompatActivity {
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
-    }
-
-    private class LongOperation extends AsyncTask<String, Void, String> {
-        protected void onPreExecute() {
-
-            /*long delayInMillis = 5000;
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    progressDialog.dismiss();
-                }
-            }, delayInMillis);*/
-        }
-
-        protected String doInBackground(String... params) {
-            updateData();
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-            /*SharedPreferences profileEditor = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE);
-            SharedPreferences profileImageEditor = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE);
-            if (profileEditor.getString("updateId", null) != null) {
-                if (profileImageEditor.getString("ProfileImage", null) != null) {
-                    Picasso.with(Update.this).load(profileImageEditor.getString("ProfileImage", null)).into(userProfileImageUpdate);
-                }
-                etuFirstName.setText(profileEditor.getString("updateFirstName", null));
-                etuUsername.setText(profileEditor.getString("updateUserName", null));
-                etuLastName.setText(profileEditor.getString("updateLastName", null));
-                etuEmailUpdate.setText(profileEditor.getString("updateEmail", null));
-                etuPhone.setText(profileEditor.getString("updateMobile", null));
-                tvDobUpdate.setText(profileEditor.getString("updateDOB", null));
-            }*/
-
-
-            /*SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
-            editor.clear();
-            editor.apply();*/
-            /*SharedPreferences.Editor tEditor = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
-            tEditor.clear();
-            tEditor.apply();
-            SharedPreferences.Editor fbeditor = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
-            fbeditor.clear();
-            fbeditor.apply();*/
-            /*SharedPreferences.Editor profileEditor1 = getApplicationContext().getSharedPreferences("ProfileUpdate", MODE_PRIVATE).edit();
-            profileEditor1.clear();
-            profileEditor1.apply();
-            SharedPreferences.Editor profileImageEditor1 = getApplicationContext().getSharedPreferences("ProfileImage", MODE_PRIVATE).edit();
-            profileImageEditor1.clear();
-            profileImageEditor1.apply();*/
-
-
-        }
-
     }
 
     @Override
