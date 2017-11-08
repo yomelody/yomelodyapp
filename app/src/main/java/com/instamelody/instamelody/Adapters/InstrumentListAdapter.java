@@ -63,6 +63,7 @@ import java.util.List;
 import static android.content.Context.MODE_PRIVATE;
 import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.instamelody.instamelody.StudioActivity.bytes;
+import static com.instamelody.instamelody.StudioActivity.lstViewHolder;
 import static com.instamelody.instamelody.StudioActivity.rlBase;
 
 /**
@@ -154,7 +155,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     boolean IsPlaySoloAll = false, IsPlayMuteAll = false, IsRepeateRec = false;
     boolean TempIsPlaySoloAll = false, TempIsPlayMuteAll = false, AllSolo = false;
     ArrayList ArRepeate = new ArrayList();
-    private RecordingThread mRecordingThread;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -245,12 +245,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 }
             });*/
 
-            mRecordingThread = new RecordingThread(new AudioDataReceivedListener() {
-                @Override
-                public void onAudioDataReceived(byte[] data) {
-
-                }
-            });
 
             StudioActivity.playAll.setVisibility(View.GONE);
             audioFilePath =
@@ -364,7 +358,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         viewHolder.holderPlay = (ImageView) holder.ivPlay.findViewById(R.id.ivPlay);
         viewHolder.TxtMuteViewHolder = (TextView) holder.tvMButton.findViewById(R.id.tvMButton);
         viewHolder.TxtSoloViewHolder = (TextView) holder.tvSButton.findViewById(R.id.tvSButton);
-        StudioActivity.lstViewHolder.add(viewHolder);
+        if(lstViewHolder.size()<getItemCount()) {
+            StudioActivity.lstViewHolder.add(viewHolder);
+        }
         String aafs = FirebaseInstanceId.getInstance().getToken();
         final MelodyInstruments instruments = instrumentList.get(listPosition);
         String abc = instrumentList.get(listPosition).getInstrumentFile();
@@ -436,7 +432,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
                         if (i == holder.getAdapterPosition()) {
                             StudioActivity.mediaPlayersAll.get(i).stop();
-                            StudioActivity.mediaPlayersAll.get(i).release();
                         }
                     }
 
@@ -1041,6 +1036,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     }
                     IsPlaySoloAll = false;
                     IsPlayMuteAll = false;
+                    StudioActivity.recyclerViewInstruments.smoothScrollToPosition(0);
                     StudioActivity.pauseAll.setVisibility(View.GONE);
                     StudioActivity.playAll.setVisibility(View.VISIBLE);
                     StudioActivity.ivRecord.setEnabled(true);
@@ -1792,7 +1788,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 try {
                     StudioActivity.ivBackButton.setEnabled(false);
                     StudioActivity.ivHomeButton.setEnabled(false);
-                    for (int i = 0; i <= StudioActivity.lstViewHolder.size() - 1; i++) {
+                    for (int i = 0; i <= StudioActivity.lstViewHolder.size(); i++) {
                         try {
                             final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
                             final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
@@ -1853,25 +1849,27 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                                     for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
 
                                         StudioActivity.PlayAllModel.get(i).setRepete(false);
+                                        if (i <= lstViewHolder.size() - 1) {
+                                            final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
+                                            final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
+                                            final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
+                                            final TextView txtMutes = StudioActivity.lstViewHolder.get(i).TxtMuteViewHolder;
+                                            final TextView txtSolos = StudioActivity.lstViewHolder.get(i).TxtSoloViewHolder;
+                                            final RelativeLayout RlsRepets = StudioActivity.lstViewHolder.get(i).TempRlRepeats;
+                                            seekBar.setProgress(0);
+                                            holderPlay.setVisibility(View.VISIBLE);
+                                            holderPause.setVisibility(View.GONE);
+                                            txtMutes.setBackgroundColor(Color.TRANSPARENT);
+                                            txtSolos.setBackgroundColor(Color.TRANSPARENT);
+                                            RlsRepets.setBackgroundColor(Color.TRANSPARENT);
+                                            holderPause.setEnabled(false);
+                                            StudioActivity.playAll.setVisibility(View.VISIBLE);
+                                            StudioActivity.pauseAll.setVisibility(View.GONE);
 
-                                        final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                                        final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
-                                        final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
-                                        final TextView txtMutes = StudioActivity.lstViewHolder.get(i).TxtMuteViewHolder;
-                                        final TextView txtSolos = StudioActivity.lstViewHolder.get(i).TxtSoloViewHolder;
-                                        final RelativeLayout RlsRepets = StudioActivity.lstViewHolder.get(i).TempRlRepeats;
-                                        seekBar.setProgress(0);
-                                        holderPlay.setVisibility(View.VISIBLE);
-                                        holderPause.setVisibility(View.GONE);
-                                        txtMutes.setBackgroundColor(Color.TRANSPARENT);
-                                        txtSolos.setBackgroundColor(Color.TRANSPARENT);
-                                        RlsRepets.setBackgroundColor(Color.TRANSPARENT);
-                                        holderPause.setEnabled(false);
-                                        StudioActivity.playAll.setVisibility(View.VISIBLE);
-                                        StudioActivity.pauseAll.setVisibility(View.GONE);
+                                            StudioActivity.ivRecord.setEnabled(true);
+                                            InstrumentCountSize = 0;
 
-                                        StudioActivity.ivRecord.setEnabled(true);
-                                        InstrumentCountSize = 0;
+                                        }
                                         try {
                                             StudioActivity.mediaPlayersAll.get(i).stop();
                                             StudioActivity.mediaPlayersAll.get(i).release();
@@ -1922,12 +1920,18 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                             } else if (StudioActivity.IsRepeat == false) {
                                 StudioActivity.mediaPlayersAll.get(i).setLooping(false);
                             }
-                            final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                            final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
+                            if(i<=lstViewHolder.size()-1) {
+                                try {
+                                    final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
+                                    final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
 
-                            holderPlay.setVisibility(View.GONE);
-                            holderPause.setVisibility(View.VISIBLE);
-                            holderPause.setEnabled(false);
+                                    holderPlay.setVisibility(View.GONE);
+                                    holderPause.setVisibility(View.VISIBLE);
+                                    holderPause.setEnabled(false);
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
                         }
                         RunSeekbar();
                     }
