@@ -226,9 +226,6 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         editor.putString("likes", likes);
                         editor.putString("comments", comments);
                         editor.putString("shares", shares);
-//                    editor.putString("bitmapProfile", profile);
-//                    editor.putString("bitmapCover", cover);
-//                    editor.putString("melodyID", );
                         editor.putString("fileType", "admin_melody");
                         editor.commit();
 

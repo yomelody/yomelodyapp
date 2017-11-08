@@ -66,7 +66,7 @@ public class JoinActivity extends AppCompatActivity {
     public static ArrayList<JoinedArtists> Joined_artist = new ArrayList<>();
     public static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     RecyclerView.LayoutManager layoutManager;
-    String pos = "0";
+    String pos = "0", userId;
     public static Chronometer chrono;
     private static final int SAMPLING_RATE = 44100;
     public static RecyclerView recyclerView;
@@ -104,7 +104,7 @@ public class JoinActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join);
-        mActivity=JoinActivity.this;
+        mActivity = JoinActivity.this;
         progressDialog = new ProgressDialog(this);
         profile_image = (ImageView) findViewById(R.id.profile_image);
         artist_name = (TextView) findViewById(R.id.artist_name);
@@ -157,6 +157,16 @@ public class JoinActivity extends AppCompatActivity {
         recyclerView.setItemViewCacheSize(10);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+        SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+        SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+        SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+        if (loginSharedPref.getString("userId", null) != null) {
+            userId = loginSharedPref.getString("userId", null);
+        } else if (fbPref.getString("userId", null) != null) {
+            userId = fbPref.getString("userId", null);
+        } else if (twitterPref.getString("userId", null) != null) {
+            userId = twitterPref.getString("userId", null);
+        }
 
         rlIncluded.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -340,7 +350,7 @@ public class JoinActivity extends AppCompatActivity {
                         instrumentList.clear();
                         listProfile.clear();
                         new ParseContents(getApplicationContext()).parseJoin(response, Joined_artist);
-                        adapter = new JoinListAdapter(Joined_artist, getApplicationContext());
+                        adapter = new JoinListAdapter(Joined_artist, mActivity);
                         recyclerView.setAdapter(adapter);
                         if (progressDialog != null) {
                             if (progressDialog.isShowing()) {
@@ -389,6 +399,7 @@ public class JoinActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(USER_ID, addedBy);
                 params.put(RECORDING_ID, RecId);
+                params.put("Myloginid", userId);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 return params;
             }

@@ -1,5 +1,6 @@
 package com.instamelody.instamelody.Adapters;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -110,11 +111,13 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     int count = 0;
     boolean playSt = false;
     public static int click = 0;
+    boolean likest = false;
+    private Activity mActivity;
 
     public JoinListAdapter(ArrayList<JoinedArtists> Joined_artist, Context context) {
         this.Joined_artist = Joined_artist;
         this.context = context;
-
+        mActivity = (Activity) context;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -214,6 +217,13 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                 JoinActivity.tvLikeCount.setText(join.getLike_counts());
                 JoinActivity.tvCommentCount.setText(join.getComment_counts());
                 JoinActivity.tvShareCount.setText(join.getShare_counts());
+                if (join.getLike_status().equals("1")) {
+                    JoinActivity.ivDislikeButton.setVisibility(VISIBLE);
+                    JoinActivity.ivLikeButton.setVisibility(GONE);
+                } else {
+                    JoinActivity.ivDislikeButton.setVisibility(GONE);
+                    JoinActivity.ivLikeButton.setVisibility(VISIBLE);
+                }
             } catch (NullPointerException e) {
                 e.printStackTrace();
             }
@@ -519,29 +529,11 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         @Override
                         public void onPrepared(MediaPlayer mp) {
                             mp.start();
+                            progressDialog.dismiss();
+                            JoinActivity.chrono.setBase(SystemClock.elapsedRealtime());
+                            JoinActivity.chrono.start();
                             initAudio(mp);
 
-                        }
-                    });
-                    mp.setOnInfoListener(new MediaPlayer.OnInfoListener() {
-                        @Override
-                        public boolean onInfo(MediaPlayer mediaPlayer, int what, int extra) {
-                            if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
-                                // show progress dialog
-                                progressDialog.show();
-                                if (startMp == true) {
-                                    timeWhenStopped = JoinActivity.chrono.getBase() - SystemClock.elapsedRealtime();
-                                    JoinActivity.chrono.stop();
-                                }
-                            } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
-                                // dismiss progress dialog
-                                progressDialog.dismiss();
-                                JoinActivity.chrono.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
-                                JoinActivity.chrono.start();
-                                startMp = true;
-                            }
-                            Log.d("MyMediaPlayer", "mediaplayer has info What and Ex" + what + "ex" + extra);
-                            return false;
                         }
                     });
 
@@ -660,35 +652,15 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                             public void onPrepared(MediaPlayer mp) {
                                 mp.start();
                                 initAudio(mp);
-                            }
-                        });
-                        mp.setOnInfoListener(new MediaPlayer.OnInfoListener() {
-                            @Override
-                            public boolean onInfo(MediaPlayer mediaPlayer, int what, int extra) {
-                                if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
-                                    // show progress dialog
-                                    progressDialog.show();
-                                    if (startMp == true) {
-                                        timeWhenStopped = JoinActivity.chrono.getBase() - SystemClock.elapsedRealtime();
-                                        JoinActivity.chrono.stop();
-                                    }
-                                } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
-                                    // dismiss progress dialog
-                                    progressDialog.dismiss();
-                                    JoinActivity.chrono.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
-                                    JoinActivity.chrono.start();
-                                    startMp = true;
-                                }
-                                Log.d("MyMediaPlayer", "mediaplayer has info What and Ex" + what + "ex" + extra);
-                                return false;
+                                progressDialog.dismiss();
+                                JoinActivity.chrono.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
+                                JoinActivity.chrono.start();
                             }
                         });
                         mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                             @Override
                             public boolean onError(MediaPlayer mp, int what, int extra) {
                                 progressDialog.dismiss();
-                                startMp = false;
-                                timeWhenStopped = 0;
                                 return false;
                             }
                         });
@@ -704,8 +676,6 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                 JoinActivity.ivJoinPause.setVisibility(GONE);
                                 progressDialog.dismiss();
                                 try {
-                                    startMp = false;
-                                    timeWhenStopped = 0;
                                     mp.stop();
                                     mp.release();
                                     mp = null;
@@ -809,27 +779,9 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                 public void onPrepared(MediaPlayer mp) {
                                     mp.start();
                                     initAudio(mp);
-                                }
-                            });
-                            mp.setOnInfoListener(new MediaPlayer.OnInfoListener() {
-                                @Override
-                                public boolean onInfo(MediaPlayer mediaPlayer, int what, int extra) {
-                                    if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
-                                        // show progress dialog
-                                        progressDialog.show();
-                                        if (startMp == true) {
-                                            timeWhenStopped = JoinActivity.chrono.getBase() - SystemClock.elapsedRealtime();
-                                            JoinActivity.chrono.stop();
-                                        }
-                                    } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
-                                        // dismiss progress dialog
-                                        progressDialog.dismiss();
-                                        JoinActivity.chrono.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
-                                        JoinActivity.chrono.start();
-                                        startMp = true;
-                                    }
-                                    Log.d("MyMediaPlayer", "mediaplayer has info What and Ex" + what + "ex" + extra);
-                                    return false;
+                                    progressDialog.dismiss();
+                                    JoinActivity.chrono.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
+                                    JoinActivity.chrono.start();
                                 }
                             });
 
@@ -837,8 +789,6 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                 @Override
                                 public boolean onError(MediaPlayer mp, int what, int extra) {
                                     progressDialog.dismiss();
-                                    startMp = false;
-                                    timeWhenStopped = 0;
                                     return false;
                                 }
                             });
@@ -854,8 +804,6 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                     JoinActivity.ivJoinPause.setVisibility(GONE);
                                     progressDialog.dismiss();
                                     try {
-                                        startMp = false;
-                                        timeWhenStopped = 0;
                                         mp.stop();
                                         mp.release();
                                         mp = null;
@@ -888,8 +836,6 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         if (mp.isPlaying()) {
                             mp.pause();
                             JoinActivity.chrono.stop();
-                            timeWhenStopped = 0;
-                            startMp = false;
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -905,29 +851,29 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     if (!userId.equals("") && userId != null) {
                         //Toast.makeText(context, "like", Toast.LENGTH_SHORT).show();
                         //position = mpids.get(getAdapterPosition() + 1);
-
-
                         String RecordingName = joinArt.getRecording_name();
                         String position = joinArt.getRecording_id();
 
                         if (JoinActivity.ivDislikeButton.getVisibility() == VISIBLE) {
-                            JoinActivity.ivLikeButton.setVisibility(VISIBLE);
-                            JoinActivity.ivDislikeButton.setVisibility(GONE);
-                            String like = JoinActivity.tvLikeCount.getText().toString().trim();
-                            int likeValue = Integer.parseInt(like) - 1;
-                            like = String.valueOf(likeValue);
-                            JoinActivity.tvLikeCount.setText(like);
                             fetchLikeState(userId, position, "0", RecordingName);
-
-
+                            if (likest) {
+                                JoinActivity.ivLikeButton.setVisibility(VISIBLE);
+                                JoinActivity.ivDislikeButton.setVisibility(GONE);
+                                String like = JoinActivity.tvLikeCount.getText().toString().trim();
+                                int likeValue = Integer.parseInt(like) - 1;
+                                like = String.valueOf(likeValue);
+                                JoinActivity.tvLikeCount.setText(like);
+                            }
                         } else if (JoinActivity.ivDislikeButton.getVisibility() == GONE) {
-                            JoinActivity.ivLikeButton.setVisibility(GONE);
-                            JoinActivity.ivDislikeButton.setVisibility(VISIBLE);
-                            String like = JoinActivity.tvLikeCount.getText().toString().trim();
-                            int likeValue = Integer.parseInt(like) + 1;
-                            like = String.valueOf(likeValue);
-                            JoinActivity.tvLikeCount.setText(like);
                             fetchLikeState(userId, position, "1", RecordingName);
+                            if (likest) {
+                                JoinActivity.ivLikeButton.setVisibility(GONE);
+                                JoinActivity.ivDislikeButton.setVisibility(VISIBLE);
+                                String like = JoinActivity.tvLikeCount.getText().toString().trim();
+                                int likeValue = Integer.parseInt(like) + 1;
+                                like = String.valueOf(likeValue);
+                                JoinActivity.tvLikeCount.setText(like);
+                            }
                         }
                     } else {
                         Toast.makeText(context, "Log in to like this Recording", Toast.LENGTH_SHORT).show();
@@ -963,6 +909,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                             if (jsonObject.getString(KEY_FLAG).equals("success")) {
                                 respObject = jsonObject.getJSONObject(KEY_RESPONSE);
                                 String str = respObject.getString("play_count");
+                                Intent it = new Intent();
+                                mActivity.setResult(Activity.RESULT_OK, it);
                                 //      Toast.makeText(context, "" + str, Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
@@ -1003,6 +951,22 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         public void onResponse(String response) {
                             //Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
                             Log.d("Like status response----", response);
+                            try {
+                                JSONObject json = new JSONObject(response);
+                                String flag = json.getString("flag");
+                                if (flag.equals("success")) {
+                                    JSONObject res = json.getJSONObject("response");
+                                    String likes = res.getString("likes");
+                                    likest = true;
+                                    Intent it = new Intent();
+                                    mActivity.setResult(Activity.RESULT_OK, it);
+                                    progressDialog.dismiss();
+
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                progressDialog.dismiss();
+                            }
                         }
                     },
                     new Response.ErrorListener() {
