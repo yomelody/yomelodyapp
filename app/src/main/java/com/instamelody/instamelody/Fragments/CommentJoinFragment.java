@@ -53,6 +53,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
+import static android.view.View.GONE;
+import static com.instamelody.instamelody.JoinActivity.joinFooter;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.COMMENTS;
@@ -91,7 +93,7 @@ public class CommentJoinFragment extends Fragment {
         getActivity().getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         getComments();
-      //  Toast.makeText(getActivity(), ""+ JoinListAdapter.click, Toast.LENGTH_SHORT).show();
+        //  Toast.makeText(getActivity(), ""+ JoinListAdapter.click, Toast.LENGTH_SHORT).show();
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
         SharedPreferences fbPref = getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
@@ -104,8 +106,6 @@ public class CommentJoinFragment extends Fragment {
             userId = twitterPref.getString("userId", null);
         }
         adapter = new CommentsAdapter(getActivity(), commentList);
-
-
 
 
     }
@@ -162,8 +162,10 @@ public class CommentJoinFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 etComment.getText().clear();
-
+                joinFooter.setVisibility(View.VISIBLE);
                 closeKeyboard(getActivity(), tvCancel.getWindowToken());
+                getFragmentManager().beginTransaction()
+                        .remove(CommentJoinFragment.this).commit();
             }
         });
 
@@ -178,9 +180,9 @@ public class CommentJoinFragment extends Fragment {
                     String comment = etComment.getText().toString().trim();
                     etComment.getText().clear();
                     sendComment(comment, userId);
-                //    int commentCount = Integer.parseInt(tvCommentCount.getText().toString().trim()) + 1;
+                    //    int commentCount = Integer.parseInt(tvCommentCount.getText().toString().trim()) + 1;
 
-              //      tvCommentCount.setText(String.valueOf(commentCount));
+                    //      tvCommentCount.setText(String.valueOf(commentCount));
 
                 } else {
                     Toast.makeText(getActivity(), "Log in to comment", Toast.LENGTH_SHORT).show();
@@ -242,13 +244,13 @@ public class CommentJoinFragment extends Fragment {
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         requestQueue.add(stringRequest);
     }
+
     public static void closeKeyboard(Context c, IBinder windowToken) {
         InputMethodManager mgr = (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
         mgr.hideSoftInputFromWindow(windowToken, 0);
     }
 
     public void sendComment(final String cmnt, final String userId) {
-
 
         final StringRequest stringRequest = new StringRequest(Request.Method.POST, COMMENTS,
                 new Response.Listener<String>() {
@@ -257,6 +259,10 @@ public class CommentJoinFragment extends Fragment {
 
                         adapter.notifyDataSetChanged();
                         getComments();
+                        String count = tvCommentCount.getText().toString().trim();
+                        int count_val = Integer.parseInt(count);
+                        int count_final = count_val + 1;
+                        tvCommentCount.setText(String.valueOf(count_final));
                         recyclerViewComment.smoothScrollToPosition(adapter.getItemCount());
                         new ParseContents(getActivity()).parseComments(response, commentList);
                     }

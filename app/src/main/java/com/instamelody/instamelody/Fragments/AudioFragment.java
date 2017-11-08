@@ -1052,6 +1052,14 @@ public class AudioFragment extends Fragment {
                 AppHelper.sop("onActivityResult==called=" + "resultCode==" + resultCode);
             }
         }
+        if (RecordingsCardAdapter.REQUEST_JOIN_COMMENT == requestCode) {
+            if (resultCode == mActivity.RESULT_OK) {
+                recordingList.clear();
+                recordingsPools.clear();
+                callApi();
+                AppHelper.sop("onActivityResult==called=" + "resultCode==" + resultCode);
+            }
+        }
     }
 
 }
