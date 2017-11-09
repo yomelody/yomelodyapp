@@ -333,8 +333,8 @@ public class StudioActivity extends AppCompatActivity {
     public static String IsExp;
     public static int LayerCount = 0;
     boolean IsValidPack = false;
-    int PackDuration=0;
-    String PackId=null;
+    int PackDuration = 0;
+    String PackId = null;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -462,7 +462,7 @@ public class StudioActivity extends AppCompatActivity {
         } else {
             recordTask.setContext(this);
         }
-        if(userId!=null) {
+        if (userId != null) {
             IsValidateSubscription();
         }
         //subscriptionPackage();
@@ -773,6 +773,7 @@ public class StudioActivity extends AppCompatActivity {
                             StudioActivity.PlayAllModel.get(i).setRepete(false);
                         }
                     }
+
                     if (mVisualizer != null) {
                         mVisualizer.release();
                     }
@@ -875,65 +876,8 @@ public class StudioActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 try {
-                    if (StudioActivity.PlayAllModel.size() > 0) {
-                        for (int i = 0; i <= StudioActivity.PlayAllModel.size() - 1; i++) {
-                            StudioActivity.PlayAllModel.get(i).setRepete(false);
-                        }
-                    }
-                    handler.removeCallbacksAndMessages(null);
-                    if (mVisualizer != null) {
-                        mVisualizer.release();
-                    }
-                    if (lstViewHolder.size() > 0) {
-                        lstViewHolder.clear();
-                    }
-                    if (mediaPlayer != null) {
-                        try {
-                            mediaPlayer.stop();
-                            mediaPlayer.release();
-                            mediaPlayer = null;
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                    if (mp_start != null) {
-                        for (int i = 0; i <= mp_start.size() - 1; i++) {
-                            try {
-                                mp_start.get(i).stop();
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                        }
-                    }
-                    mp_start.clear();
-                    if (mpall != null) {
-                        try {
-                            mpall.stop();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                        if (mediaPlayersAll.size() > 0) {
-                            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                                try {
-                                    mediaPlayersAll.get(i).stop();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-                            }
-                        }
-                        mediaPlayersAll.clear();
-                    }
 
-                    if (mpInst != null) {
-                        try {
-                            mpInst.stop();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                    if (instrumentList.size() > 0) {
-                        instrumentList.clear();
-                    }
+                    CloseConnection();
                     PrepareInstruments prepareInstruments = new PrepareInstruments();
                     prepareInstruments.cancel(false);
                     if (!recordTask.isCancelled() && recordTask.getStatus() == AsyncTask.Status.RUNNING) {
@@ -952,64 +896,8 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    if (StudioActivity.PlayAllModel.size() > 0) {
-                        for (int i = 0; i <= StudioActivity.PlayAllModel.size() - 1; i++) {
-                            StudioActivity.PlayAllModel.get(i).setRepete(false);
-                        }
-                    }
-                    if (mVisualizer != null) {
-                        mVisualizer.release();
-                    }
-                    handler.removeCallbacksAndMessages(null);
-                    if (lstViewHolder.size() > 0) {
-                        lstViewHolder.clear();
-                    }
-                    if (mediaPlayer != null) {
-                        try {
-                            mediaPlayer.stop();
-                            mediaPlayer.release();
-                            mediaPlayer = null;
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                    if (mp_start != null) {
-                        for (int i = 0; i <= mp_start.size() - 1; i++) {
-                            try {
-                                mp_start.get(i).stop();
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                        }
-                    }
-                    mp_start.clear();
-                    if (mpall != null) {
-                        try {
-                            mpall.stop();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                        if (mediaPlayersAll.size() > 0) {
-                            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                                try {
-                                    mediaPlayersAll.get(i).stop();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-                            }
-                        }
-                        mediaPlayersAll.clear();
-                    }
-                    if (mpInst != null) {
-                        try {
-                            mpInst.stop();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                    if (instrumentList.size() > 0) {
-                        instrumentList.clear();
-                    }
+
+                    CloseConnection();
                     PrepareInstruments prepareInstruments = new PrepareInstruments();
                     prepareInstruments.cancel(true);
                     if (!recordTask.isCancelled() && recordTask.getStatus() == AsyncTask.Status.RUNNING) {
@@ -1031,66 +919,8 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    if (StudioActivity.PlayAllModel.size() > 0) {
-                        for (int i = 0; i <= StudioActivity.PlayAllModel.size() - 1; i++) {
-                            StudioActivity.PlayAllModel.get(i).setRepete(false);
-                        }
-                    }
-                    if (mVisualizer != null) {
-                        mVisualizer.release();
-                    }
-                    handler.removeCallbacksAndMessages(null);
-                    if (lstViewHolder.size() > 0) {
-                        lstViewHolder.clear();
-                    }
-                    if (mediaPlayer != null) {
-                        try {
-                            mediaPlayer.stop();
-                            mediaPlayer.release();
-                            mediaPlayer = null;
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                    if (mp_start != null) {
 
-                        for (int i = 0; i <= mp_start.size() - 1; i++) {
-                            try {
-                                mp_start.get(i).stop();
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-
-                        }
-                    }
-                    mp_start.clear();
-                    if (mpall != null) {
-                        try {
-                            mpall.stop();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                        if (mediaPlayersAll.size() > 0) {
-                            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                                try {
-                                    mediaPlayersAll.get(i).stop();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-                            }
-                        }
-                        mediaPlayersAll.clear();
-                    }
-                    if (mpInst != null) {
-                        try {
-                            mpInst.stop();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                    if (instrumentList.size() > 0) {
-                        instrumentList.clear();
-                    }
+                    CloseConnection();
                     PrepareInstruments prepareInstruments = new PrepareInstruments();
                     prepareInstruments.cancel(true);
                     if (!recordTask.isCancelled() && recordTask.getStatus() == AsyncTask.Status.RUNNING) {
@@ -1111,66 +941,8 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    if (StudioActivity.PlayAllModel.size() > 0) {
-                        for (int i = 0; i <= StudioActivity.PlayAllModel.size() - 1; i++) {
-                            StudioActivity.PlayAllModel.get(i).setRepete(false);
-                        }
-                    }
-                    if (mVisualizer != null) {
-                        mVisualizer.release();
-                    }
-                    handler.removeCallbacksAndMessages(null);
-                    if (lstViewHolder.size() > 0) {
-                        lstViewHolder.clear();
-                    }
-                    if (mediaPlayer != null) {
-                        try {
-                            mediaPlayer.stop();
-                            mediaPlayer.release();
-                            mediaPlayer = null;
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                    if (mp_start != null) {
 
-                        for (int i = 0; i <= mp_start.size() - 1; i++) {
-                            try {
-                                mp_start.get(i).stop();
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-
-                        }
-                    }
-                    mp_start.clear();
-                    if (mpall != null) {
-                        try {
-                            mpall.stop();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                        if (mediaPlayersAll.size() > 0) {
-                            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                                try {
-                                    mediaPlayersAll.get(i).stop();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-                            }
-                        }
-                        mediaPlayersAll.clear();
-                    }
-                    if (mpInst != null) {
-                        try {
-                            mpInst.stop();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                    if (instrumentList.size() > 0) {
-                        instrumentList.clear();
-                    }
+                    CloseConnection();
                     PrepareInstruments prepareInstruments = new PrepareInstruments();
                     prepareInstruments.cancel(true);
                     if (!recordTask.isCancelled() && recordTask.getStatus() == AsyncTask.Status.RUNNING) {
@@ -1191,66 +963,8 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    if (StudioActivity.PlayAllModel.size() > 0) {
-                        for (int i = 0; i <= StudioActivity.PlayAllModel.size() - 1; i++) {
-                            StudioActivity.PlayAllModel.get(i).setRepete(false);
-                        }
-                    }
-                    if (mVisualizer != null) {
-                        mVisualizer.release();
-                    }
-                    handler.removeCallbacksAndMessages(null);
-                    if (lstViewHolder.size() > 0) {
-                        lstViewHolder.clear();
-                    }
-                    if (mediaPlayer != null) {
-                        try {
-                            mediaPlayer.stop();
-                            mediaPlayer.release();
-                            mediaPlayer = null;
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                    if (mp_start != null) {
 
-                        for (int i = 0; i <= mp_start.size() - 1; i++) {
-                            try {
-                                mp_start.get(i).stop();
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-
-                        }
-                    }
-                    mp_start.clear();
-                    if (mpall != null) {
-                        try {
-                            mpall.stop();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                        if (mediaPlayersAll.size() > 0) {
-                            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                                try {
-                                    mediaPlayersAll.get(i).stop();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-                            }
-                        }
-                        mediaPlayersAll.clear();
-                    }
-                    if (mpInst != null) {
-                        try {
-                            mpInst.stop();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                    if (instrumentList.size() > 0) {
-                        instrumentList.clear();
-                    }
+                    CloseConnection();
                     PrepareInstruments prepareInstruments = new PrepareInstruments();
                     prepareInstruments.cancel(true);
                     if (!recordTask.isCancelled() && recordTask.getStatus() == AsyncTask.Status.RUNNING) {
@@ -1271,66 +985,8 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    if (StudioActivity.PlayAllModel.size() > 0) {
-                        for (int i = 0; i <= StudioActivity.PlayAllModel.size() - 1; i++) {
-                            StudioActivity.PlayAllModel.get(i).setRepete(false);
-                        }
-                    }
-                    if (mVisualizer != null) {
-                        mVisualizer.release();
-                    }
-                    handler.removeCallbacksAndMessages(null);
-                    if (lstViewHolder.size() > 0) {
-                        lstViewHolder.clear();
-                    }
-                    if (mediaPlayer != null) {
-                        try {
-                            mediaPlayer.stop();
-                            mediaPlayer.release();
-                            mediaPlayer = null;
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                    if (mp_start != null) {
 
-                        for (int i = 0; i <= mp_start.size() - 1; i++) {
-                            try {
-                                mp_start.get(i).stop();
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-
-                        }
-                    }
-                    mp_start.clear();
-                    if (mpall != null) {
-                        try {
-                            mpall.stop();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                        if (mediaPlayersAll.size() > 0) {
-                            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                                try {
-                                    mediaPlayersAll.get(i).stop();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-                            }
-                        }
-                        mediaPlayersAll.clear();
-                    }
-                    if (mpInst != null) {
-                        try {
-                            mpInst.stop();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                    if (instrumentList.size() > 0) {
-                        instrumentList.clear();
-                    }
+                    CloseConnection();
                     PrepareInstruments prepareInstruments = new PrepareInstruments();
                     prepareInstruments.cancel(true);
                     if (!recordTask.isCancelled() && recordTask.getStatus() == AsyncTask.Status.RUNNING) {
@@ -1352,54 +1008,15 @@ public class StudioActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (joinRecordingId == null) {
                     if (userId != null && melodyPackId != null) {
-                        if(Integer.parseInt(recordingDuration)>PackDuration && PackDuration!=0) {
+                        if (Integer.parseInt(recordingDuration) > PackDuration && PackDuration != 0) {
                             Toast.makeText(StudioActivity.this, "Your recording duration should be less then or equal to your subscription pack.", Toast.LENGTH_SHORT).show();
 
-                        }else {
+                        } else {
                             openDialog();
                             ivRecord.setVisibility(View.VISIBLE);
                             ivRecord.setEnabled(true);
                         }
                     } else if (userId == null) {
-
-                        /*if (lstViewHolder.size() > 0) {
-                            lstViewHolder.clear();
-                        }
-                        if (mp_start != null) {
-
-                            for (int i = 0; i <= mp_start.size() - 1; i++) {
-                                try {
-                                    mp_start.get(i).stop();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-
-                            }
-                        }
-                        mp_start.clear();
-
-                        if (mediaPlayersAll.size() > 0) {
-                            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                                try {
-                                    mediaPlayersAll.get(i).stop();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-                            }
-                            mediaPlayersAll.clear();
-                        }
-
-
-                        if (mpInst != null) {
-                            try {
-                                mpInst.stop();
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                        }
-                        if (instrumentList.size() > 0) {
-                            instrumentList.clear();
-                        }*/
 
                         Intent i = new Intent(getApplicationContext(), SignInActivity.class);
                         i.putExtra("StudioBack", "ReturnStudioScreen");
@@ -1410,10 +1027,6 @@ public class StudioActivity extends AppCompatActivity {
                 } else {
                     uploadRecordingsMixing();
                 }
-
-//                else if (melodyPackId == null) {
-//                    Toast.makeText(StudioActivity.this, "Add Melody Packs to save recording", Toast.LENGTH_SHORT).show();
-//                }
 
             }
         });
@@ -1432,13 +1045,11 @@ public class StudioActivity extends AppCompatActivity {
                     rlMelodyButton.setVisibility(View.VISIBLE);
                     StudioActivity.playAll.setVisibility(View.GONE);
                     StudioActivity.pauseAll.setVisibility(View.GONE);
-                    //recyclerViewInstruments.setRecycledViewPool(new RecyclerView.RecycledViewPool());
-                    //recyclerViewInstruments.scrollToPosition(0);
 
                     if (lstViewHolder.size() > 0) {
                         try {
                             lstViewHolder.clear();
-                        }catch (Exception ex){
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         }
                     }
@@ -1456,8 +1067,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                /* Intent photoCaptureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(photoCaptureIntent, requestCode);*/
+
                     showFileChooser();
 
                 } catch (Exception ex) {
@@ -1537,98 +1147,108 @@ public class StudioActivity extends AppCompatActivity {
         ivSound.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                try {
+                    LayoutInflater mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    View customView = mInflater.inflate(R.layout.view_master_vol, null, false);
+                    final Dialog alertDialog = new Dialog(StudioActivity.this);
+                    alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    alertDialog.setContentView(customView);
 
-                LayoutInflater mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                View customView = mInflater.inflate(R.layout.view_master_vol, null, false);
-                final Dialog alertDialog = new Dialog(StudioActivity.this);
-                alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                alertDialog.setContentView(customView);
+                    ImageView closeMasterVol = (ImageView) alertDialog.findViewById(R.id.closeMasterVol);
+                    com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar RecSeekbar = (com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar) alertDialog.findViewById(R.id.sbRec);
+                    com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar MelSeekbar = (com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar) alertDialog.findViewById(R.id.sbMelody);
 
-                ImageView closeMasterVol = (ImageView) alertDialog.findViewById(R.id.closeMasterVol);
-                com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar RecSeekbar = (com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar) alertDialog.findViewById(R.id.sbRec);
-                com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar MelSeekbar = (com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar) alertDialog.findViewById(R.id.sbMelody);
+                    audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+                    //set max progress according to volume
+                    //RecSeekbar.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+                    MelSeekbar.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+                    //get current volume
+                    RecSeekbar.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+                    MelSeekbar.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+                    //Set the seek bar progress to 1
+                    //RecSeekbar.setKeyProgressIncrement(1);
+                    MelSeekbar.setKeyProgressIncrement(1);
+                    //get max volume
+                    //RecmaxVolume=RecSeekbar.getMax();
+                    MelmaxVolume = MelSeekbar.getMax();
 
-                audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-                //set max progress according to volume
-                //RecSeekbar.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
-                MelSeekbar.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
-                //get current volume
-                RecSeekbar.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
-                MelSeekbar.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
-                //Set the seek bar progress to 1
-                //RecSeekbar.setKeyProgressIncrement(1);
-                MelSeekbar.setKeyProgressIncrement(1);
-                //get max volume
-                //RecmaxVolume=RecSeekbar.getMax();
-                MelmaxVolume = MelSeekbar.getMax();
-
-                alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                WindowManager.LayoutParams wmlp = alertDialog.getWindow().getAttributes();
-                wmlp.width = WindowManager.LayoutParams.MATCH_PARENT;
-                wmlp.height = WindowManager.LayoutParams.MATCH_PARENT;
-                alertDialog.show();
+                    alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    WindowManager.LayoutParams wmlp = alertDialog.getWindow().getAttributes();
+                    wmlp.width = WindowManager.LayoutParams.MATCH_PARENT;
+                    wmlp.height = WindowManager.LayoutParams.MATCH_PARENT;
+                    alertDialog.show();
 
 
-                closeMasterVol.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        alertDialog.dismiss();
-                    }
-                });
-                RecSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    closeMasterVol.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            alertDialog.dismiss();
+                        }
+                    });
+                    RecSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                            try {
+                                float volume = (float) (1 - (Math.log(100 - progress) / Math.log(100)));
+                                if (mediaPlayer != null) {
+                                    mediaPlayer.setVolume(volume, volume);
 
-                        float volume = (float) (1 - (Math.log(100 - progress) / Math.log(100)));
-                        if (mediaPlayer != null) {
-                            mediaPlayer.setVolume(volume, volume);
+                                }
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
 
                         }
 
-                    }
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {
 
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
+                        }
 
-                    }
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {
 
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        }
+                    });
+                    MelSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                            try {
+                                //Toast.makeText(StudioActivity.this, "Melody", Toast.LENGTH_SHORT).show();
+                                float volume = (float) (1 - (Math.log(100 - progress) / Math.log(100)));
+                                /*if(mediaPlayersAll.size()>0) {
+                                    for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
 
-                    }
-                });
-                MelSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        //Toast.makeText(StudioActivity.this, "Melody", Toast.LENGTH_SHORT).show();
-                        float volume = (float) (1 - (Math.log(100 - progress) / Math.log(100)));
-                        /*if(mediaPlayersAll.size()>0) {
-                            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                                        pts = new MediaPlayer();
+                                        // Create the Visualizer object and attach it to our media player.
+                                        pts = mediaPlayersAll.get(i);
+                                        try {
+                                            pts.setVolume(volume,volume);
+                                        } catch (Exception ex) {
+                                            ex.printStackTrace();
+                                        }
 
-                                pts = new MediaPlayer();
-                                // Create the Visualizer object and attach it to our media player.
-                                pts = mediaPlayersAll.get(i);
-                                try {
-                                    pts.setVolume(volume,volume);
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-
+                                    }
+                                }*/
+                                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
                             }
-                        }*/
-                        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
-                    }
+                        }
 
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {
 
-                    }
+                        }
 
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {
 
-                    }
-                });
+                        }
+                    });
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         });
 
@@ -1638,9 +1258,9 @@ public class StudioActivity extends AppCompatActivity {
                 try {
                     StudioActivity.recyclerViewInstruments.smoothScrollToPosition(instrumentList.size());
 
-                    if (!IsValidPack || instrumentList.size()<=LayerCount) {
+                    if (!IsValidPack || instrumentList.size() <= LayerCount) {
                         new PrepareInstruments().execute();
-                    }else {
+                    } else {
                         if (IsExp == "false") {
                             if (LayerCount < instrumentList.size() && LayerCount != 0) {
                                 Toast.makeText(StudioActivity.this, "You can add only " + LayerCount + " layers of instruments." + "please subscribed another pack.", Toast.LENGTH_SHORT).show();
@@ -1716,8 +1336,8 @@ public class StudioActivity extends AppCompatActivity {
                                 mpall.stop();
                                 mpall.reset();
                                 mpall.release();
-                                mpall=null;
-                            }catch (Exception ex){
+                                mpall = null;
+                            } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
                             try {
@@ -1747,7 +1367,7 @@ public class StudioActivity extends AppCompatActivity {
                                     }
 
                                 }
-                            }catch (Exception ex){
+                            } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
 
@@ -1810,8 +1430,8 @@ public class StudioActivity extends AppCompatActivity {
                                 mediaPlayer.stop();
                                 mediaPlayer.reset();
                                 mediaPlayer.release();
-                                mediaPlayer=null;
-                            }catch (Exception ex){
+                                mediaPlayer = null;
+                            } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
                             chrono.stop();
@@ -1843,7 +1463,7 @@ public class StudioActivity extends AppCompatActivity {
                         if (mVisualizer != null) {
                             try {
                                 mVisualizer.release();
-                            }catch (Exception ex){
+                            } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
                         }
@@ -1854,7 +1474,7 @@ public class StudioActivity extends AppCompatActivity {
                                 mediaPlayer.reset();
                                 mediaPlayer.release();
                                 mediaPlayer = null;
-                            }catch (Exception ex){
+                            } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
 
@@ -2125,29 +1745,11 @@ public class StudioActivity extends AppCompatActivity {
 
         builder2.setCustomTitle(title);
 
-//
-//        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
-//        builder2.setMessage("Would you like to save as an instrumental or recording");
-//        AlertDialog dialog = builder1.show();
-//        TextView messageText = (TextView) dialog.findViewById(android.R.id.message);
-//        messageText.setPadding(20, 20, 20, 20);
-//        messageText.setGravity(Gravity.CENTER);
-//        messageText.setTextColor(Color.WHITE);
-//        messageText.setTextSize(20);
-//        dialog.show();
-
-
         builder2.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 uploadRecordingsMixing();
-                // saveRecordings1();
 
-                //  new LongOperation().execute();
-
-                // getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-
-                //   dialog.cancel();
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtTopicName.getWindowToken(), 0);
             }
@@ -2203,7 +1805,7 @@ public class StudioActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         Log.d("Instrument list Response", response);
 
-                        if(userId!=null) {
+                        if (userId != null) {
                             IsValidateSubscription();
                         }
 
@@ -2294,181 +1896,7 @@ public class StudioActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
     }
-    // DownloadFileFromURL Modified by Abhishek
 
-    class DownloadFileFromURL extends AsyncTask<String, String, String> {
-
-        /**
-         * Before starting background thread
-         */
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            System.out.println("Starting download");
-
-            pDialog = new ProgressDialog(StudioActivity.this);
-            pDialog.setMessage("Loading melody Packs ...");
-            pDialog.setIndeterminate(false);
-            pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            pDialog.setCancelable(false);
-            pDialog.show();
-
-        }
-
-
-        /**
-         * Downloading file in background thread
-         */
-        @Override
-        protected String doInBackground(String... url) {
-            int count;
-            try {
-
-                URL aurl = new URL(MELODY);
-
-                URLConnection connection = aurl.openConnection();
-                connection.connect();
-                // getting file length
-                int lengthOfFile = connection.getContentLength();
-
-                // input stream to read file - with 8k buffer
-                InputStream input = new BufferedInputStream(aurl.openStream(), 8192);
-
-                Boolean isSDPresent = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
-
-                OutputStream output;
-                if (isSDPresent) {
-                    // yes SD-card is present
-                    //Code commented by Abhishek
-                    //output = new FileOutputStream("sdcard/InstaMelody/Downloads/Melodies/" + melodyName + "/" + instrumentName + ".mp3");
-                } else {
-
-                    //Code commented by Abhishek
-                    //   output = new FileOutputStream(getFilesDir() + "/InstaMelody/Downloads/Melodies/" + melodyName + "/" + instrumentName + ".mp3");
-                }
-
-                // Output stream to write file
-
-                byte data[] = new byte[1024];
-
-                long total = 0;
-                while ((count = input.read(data)) != -1) {
-                    total += count;
-
-//                    publishProgress(""+(int)((total*100)/lengthOfFile));
-
-                    // writing data to file
-                    //  output.write(data, 0, count);
-                }
-
-                // flushing output
-                //     output.flush();
-
-                // closing streams
-                //     output.close();
-                input.close();
-
-            } catch (Exception e) {
-                Log.d("Error: ", e.getMessage());
-            }
-            return null;
-        }
-
-        /**
-         * After completing background task
-         **/
-        @Override
-        protected void onPostExecute(String file_url) {
-            System.out.println("Downloaded");
-            pDialog.dismiss();
-            //frameTrans.setVisibility(View.GONE);
-//            frameSync.setVisibility(View.GONE);
-            // tvDone.setEnabled(true);
-        }
-    }
-
-    public String melodyName() {
-        return melodyName;
-    }
-
-    public String instrumentName() {
-        return instrumentName;
-    }
-
-    public void saveRecordings1() {
-        progressDialog = new ProgressDialog(StudioActivity.this);
-        progressDialog.setTitle("Processing...");
-        progressDialog.setMessage("Please wait...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, ADD_RECORDINGS,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        String successmsg = response.toString();
-                        try {
-                            JSONObject recordResponse = new JSONObject(successmsg);
-                            String flag = recordResponse.getString("flag");
-                            String msg1 = recordResponse.getString("msg");
-                            String response2 = recordResponse.getString("response");
-                            JSONObject recResponse = recordResponse.getJSONObject("response");
-                            JSONObject melodyData = recResponse.getJSONObject("melody_data");
-                            idUpload = melodyData.getString("id");
-                            packName = melodyData.getString("packname");
-                            addedByUser = melodyData.getString("added_by_user");
-                            recGenre = melodyData.getString("gener");
-                            bpm = melodyData.getString("bpm");
-                            likeCount = melodyData.getString("like_count");
-                            shareCount = melodyData.getString("share_count");
-                            commentCount = melodyData.getString("comment_count");
-                            playCount = melodyData.getString("play_count");
-
-                            addDate = melodyData.getString("add_date");
-                            melodyRecDuration = melodyData.getString("duration");
-                            Public = melodyData.getString("public");
-                            if (flag.equals("success")) {
-                                uploadRecordings(melodyData.getString("id"));
-                            } else {
-                                Toast.makeText(StudioActivity.this, response, Toast.LENGTH_SHORT).show();
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            String error = e.toString();
-                        }
-                    }
-
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(StudioActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
-                        String errormsg = error.toString();
-                        Log.d("Error", errormsg);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put(ADMIN_INSTRUMENT_ID, String.valueOf(MelodyInstruments.getInstrumentId()));
-                params.put(RECORDING_TYPE, value);
-                params.put(USER_ID, userId);
-                params.put(RECORDING_NAME, subEtTopicName.getText().toString().trim());
-                params.put(RECORDING_GENRE, selectedGenre);
-                params.put(RECORDING_DURATION, recordingDuration);
-                params.put(SHARE_PUBLIC, switchFlag);
-                params.put(RECORDING_BPM, "128");
-                return params;
-            }
-        };
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(600000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-    }
 
     public void uploadRecordingsMixing() {
         progressDialog.setTitle("Processing...");
@@ -2531,9 +1959,6 @@ public class StudioActivity extends AppCompatActivity {
                             switchFlag = "0";
                             frameProgress.refreshDrawableState();
 
-//                            SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
-//                            FilterPref.remove("instrumentsPos");
-//                            FilterPref.apply();
 
                         } else {
                             tvDone.setEnabled(false);
@@ -2560,10 +1985,7 @@ public class StudioActivity extends AppCompatActivity {
                             switchPublic.setChecked(false);
                             frameProgress.refreshDrawableState();
                             switchFlag = "0";
-//                            SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
-//                            FilterPref.remove("instrumentsPos");
-//                            FilterPref.apply();
-//                            Toast.makeText(StudioActivity.this, "Saved as Recording", Toast.LENGTH_SHORT).show();
+
                         }
                         handler.removeCallbacksAndMessages(null);
                         if (StudioActivity.lstViewHolder.size() > 0) {
@@ -2702,10 +2124,7 @@ public class StudioActivity extends AppCompatActivity {
                 JSONArray myarray = new JSONArray();
                 try {
                     for (int i = 0; i <= list.size() - 1; i++) {
-                        //arr[i]="questionId_"+i+"_"+"ans_"+i;
-                        //jsonObject.put("params_"+i,arr[i]);
-                        //obj.put("Id", id);
-                        //jsonObject.put(Mixrecording, list.get(i).toString());
+
                         JSONObject jsonObject = new JSONObject();
                         jsonObject.put("id", list.get(i).id);
                         jsonObject.put("Volume", list.get(i).volume);
@@ -2734,7 +2153,7 @@ public class StudioActivity extends AppCompatActivity {
                 }
                 params.put(Mixrecording, myarray.toString());
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params==="+params+"\n URL="+MixingAudio_InstrumentsAudio);
+                AppHelper.sop("params===" + params + "\n URL=" + MixingAudio_InstrumentsAudio);
                 return params;
             }
 
@@ -2742,11 +2161,11 @@ public class StudioActivity extends AppCompatActivity {
             protected Map<String, DataPart> getByteData() {
                 Map<String, DataPart> params = new HashMap<>();
                 params.put(Mixvocalsound, new DataPart("InstaMelody.mp3", soundBytes, "audio/amr"));
-                if (ivNewRecordCover.getDrawable()!=null){
-                    AppHelper.sop("param=DataPart=if=="+params);
+                if (ivNewRecordCover.getDrawable() != null) {
+                    AppHelper.sop("param=DataPart=if==" + params);
                     params.put("cover", new DataPart("CoverImg.jpg", AppHelper.getFileDataFromDrawable(getBaseContext(), ivNewRecordCover.getDrawable()), "image/jpeg"));
                 }
-                AppHelper.sop("param=DataPart==="+params);
+                AppHelper.sop("param=DataPart===" + params);
                 return params;
             }
 
@@ -2763,210 +2182,6 @@ public class StudioActivity extends AppCompatActivity {
         requestQueue.add(multipartRequest);
     }
 
-
-    public void uploadRecordings(final String id) {
-
-        VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPLOAD_COVER_MELODY_FILE, new Response.Listener<NetworkResponse>() {
-            @Override
-            public void onResponse(NetworkResponse response) {
-
-                String urlRecording;
-                String thumbNail;
-                String resultResponse = new String(response.data);
-                Log.d("Server Data", resultResponse);
-                SharedPreferences loginSharedPref = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-                String userName = loginSharedPref.getString("userName", null);
-                String recPic = loginSharedPref.getString("profilePic", null);
-
-                try {
-                    JSONObject response1 = new JSONObject(resultResponse);
-                    String flag = response1.getString("flag");
-                    String flag2 = response1.getString("response");
-                    Log.d("Result", flag2);
-                    JSONObject r1 = response1.getJSONObject("response");
-                    if (r1.has("melody")) {
-                        urlRecording = r1.getString("melody");
-                        thumbNail = r1.getString("thumbnail");
-                    } else {
-                        urlRecording = r1.getString("recording");
-                        thumbNail = r1.getString("thumbnail");
-                    }
-
-                    if (flag.equals("success")) {
-
-                        //adapter.notifyItemInserted(instrumentList.size()-1);
-                        if (r1.has("melody")) {
-                            tvDone.setEnabled(false);
-                            MelodyInstruments melodyInstruments = new MelodyInstruments();
-                            melodyInstruments.setInstrumentName(packName);
-                            melodyInstruments.setInstrumentBpm(bpm);
-                            melodyInstruments.setInstrumentFile("Blank");
-                            melodyInstruments.setInstrumentLength(melodyRecDuration);
-                            melodyInstruments.setUserProfilePic(recPic);
-                            melodyInstruments.setInstrumentCover("#00FDFE");
-                            melodyInstruments.setInstrumentCreated(addDate);
-                            melodyInstruments.setUserName(userName);
-                            melodyInstruments.setInstrumentFile(urlRecording);
-//                        melodyInstruments.setAudioType("recording");
-                            instrumentList.add(melodyInstruments);
-                            adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
-                            recyclerViewInstruments.setAdapter(adapter);
-                            adapter.notifyDataSetChanged();
-                            ivRecord_play.setVisibility(View.INVISIBLE);
-                            rlRedoButton.setVisibility(View.INVISIBLE);
-                            rlMelodyButton.setVisibility(View.VISIBLE);
-                            switchPublic.setChecked(false);
-                            switchFlag = "0";
-                        } else {
-
-                            tvDone.setEnabled(false);
-                            adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
-                            recyclerViewInstruments.setAdapter(adapter);
-                            adapter.notifyDataSetChanged();
-                            ivRecord_play.setVisibility(View.INVISIBLE);
-                            rlRedoButton.setVisibility(View.INVISIBLE);
-                            rlMelodyButton.setVisibility(View.VISIBLE);
-                            switchPublic.setChecked(false);
-                            switchFlag = "0";
-                            Toast.makeText(StudioActivity.this, "Saved as Recording", Toast.LENGTH_SHORT).show();
-                            //   StudioActivity.this.ivRecord.setVisibility(View.VISIBLE);
-                /*waveform_view.setVisibility(View.GONE);
-                recording_time.setText("00:00:00");*/
-                            // StudioActivity.this.recreate();
-                        }
-
-                        if (progressDialog != null) {
-                            if (progressDialog.isShowing()) {
-                                progressDialog.dismiss();
-                            }
-                        }
-//                        InputMethodManager inputManager = (InputMethodManager)
-//                                getSystemService(Context.INPUT_METHOD_SERVICE);
-//                        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-//                                InputMethodManager.HIDE_NOT_ALWAYS);
-
-                        SharedPreferences.Editor recEditor = getApplication().getSharedPreferences("Recording_MelodyDataResponse", MODE_PRIVATE).edit();
-                        recEditor.clear();
-                        recEditor.commit();
-
-                        SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("Url_recording", MODE_PRIVATE).edit();
-                        editor.putString("Recording_url", urlRecording);
-                        editor.commit();
-
-                        SharedPreferences.Editor editorT = getApplicationContext().getSharedPreferences("thumbnail_url", MODE_PRIVATE).edit();
-                        editorT.putString("thumbnailUrl", thumbNail);
-                        editorT.apply();
-
-
-                    }
-
-                    if (flag.equals("success")) {
-                        VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, UPLOAD_COVER_MELODY_FILE, new Response.Listener<NetworkResponse>() {
-                            @Override
-                            public void onResponse(NetworkResponse response) {
-//                                myTask = new LongOperation();
-//                                myTask.execute();
-                                // new LongOperation().execute();
-                                String resultResponse = new String(response.data);
-
-                                Toast.makeText(StudioActivity.this, "Cover also Uploaded", Toast.LENGTH_SHORT).show();
-//                                + resultResponse
-                                try {
-                                    JSONObject coverResponse = new JSONObject(resultResponse);
-                                    String flag = coverResponse.getString("flag");
-                                    JSONObject coverR1 = coverResponse.getJSONObject("response");
-                                    String coverPic = coverR1.getString("profilepic");
-
-                                    SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("cover response", MODE_PRIVATE).edit();
-                                    editor.putString("coverPicStudio", coverPic);
-                                    editor.commit();
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
-                                Log.d("return message", resultResponse);
-                            }
-                        }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-
-                                error.printStackTrace();
-
-//                                Toast.makeText(getApplicationContext(), "Cover is not Uploaded", Toast.LENGTH_SHORT).show();
-
-//                                +error.toString();
-                            }
-                        }) {
-                            @Override
-                            protected Map<String, String> getParams() {
-                                Map<String, String> params = new HashMap<>();
-                                params.put(FILE_TYPE, "2");
-                                params.put(IS_MELODY, value1);
-                                params.put(ID_MELODY_REC, id);
-                                params.put(USER_ID1, userId);
-
-                                return params;
-                            }
-
-                            @Override
-                            protected Map<String, DataPart> getByteData() {
-                                Map<String, DataPart> params = new HashMap<>();
-                                // file name could found file base or direct access from real path
-                                // for now just get bitmap data from ImageView
-                                params.put(FILE1, new DataPart("CoverImg.jpg", AppHelper.getFileDataFromDrawable(getBaseContext(), ivNewRecordCover.getDrawable()), "image/jpeg"));
-                                return params;
-                            }
-
-                        };
-
-                        VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
-
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-//                Toast.makeText(getApplicationContext(), resultResponse, Toast.LENGTH_LONG).show();
-                Log.d("return message", resultResponse);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-                error.printStackTrace();
-
-                Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
-                Log.d("error msg", error.toString());
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put(FILE_TYPE, "3");
-                params.put(IS_MELODY, value1);
-                params.put(ID_MELODY_REC, id);
-//                params.put(ID_MELODY_REC, "150");
-                params.put(USER_ID1, userId);
-
-                return params;
-            }
-
-            @Override
-            protected Map<String, DataPart> getByteData() {
-                Map<String, DataPart> params = new HashMap<>();
-
-//                params.put(FILE1, new DataPart("InstaMelody.mp3", audioFilePath.getBytes(), "audio/mpeg"));
-//                params.put(FILE1,new DataPart("InstaMelody.mp3",MediaExtractor(),"audio/mpeg"));
-                params.put(FILE1, new DataPart("InstaMelody.mp3", soundBytes, "audio/amr"));
-                return params;
-            }
-
-
-        };
-        VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
-
-    }
 
     public void fetchGenreNames() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
@@ -2998,9 +2213,7 @@ public class StudioActivity extends AppCompatActivity {
 
                                 }
                             }
-                            /*genresArrayList.remove(0);
-                            genresName.remove(0);
-                            genresId.remove(0);*/
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -3031,84 +2244,6 @@ public class StudioActivity extends AppCompatActivity {
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
-    }
-
-    public void playAudioRecycler() throws IOException {
-
-        /*for (int i = 0; i < InstrumentCountSize; i++) {
-            Log.d("Instrument url----------------:", "" + instrumentList.get(i).getInstrumentFile());
-            mp = new MediaPlayer();
-            mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mp.setDataSource(instrumentList.get(i).getInstrumentFile());
-            mp.prepare();
-            mps.add(mp);
-
-        }
-
-        for (MediaPlayer mp : mps) {
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-
-                }
-            });
-        }*/
-        try {
-
-            for (int i = 0; i < InstrumentCountSize; i++) {
-                mp = new MediaPlayer();
-                mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mp.setDataSource(instrumentList.get(i).getInstrumentFile());
-                mps.add(mp);
-
-            }
-
-            for (MediaPlayer mp : mps) {
-                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                    @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        mp.start();
-
-                    }
-                });
-            }
-
-
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }/*catch (Throwable e) {
-            e.printStackTrace();
-        }*/
-
-    }
-
-    public void killMediaPlayer() {
-        for (MediaPlayer mp : mps) {
-            try {
-                mp.stop();
-                mp.reset();
-                mp.release();
-                //     mp=null;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        mps.clear();
-    }
-
-    public void killMediaPlayer_fromInstrument() {
-        /*for (MediaPlayer mp : InstrumentListAdapter.mp_start) {
-            try {
-                mp.stop();
-                mp.reset();
-                mp.release();
-                //     mp=null;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        InstrumentListAdapter.mp_start.clear();*/
     }
 
 
@@ -3181,71 +2316,6 @@ public class StudioActivity extends AppCompatActivity {
         }
     }
 
-    public static void closeInput(final View caller) {
-        caller.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                InputMethodManager imm = (InputMethodManager) caller.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(caller.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-            }
-        }, 100);
-    }
-
-
-    public class LongOperation extends AsyncTask<String, Void, String> {
-        protected void onPreExecute() {
-            progressDialog = new ProgressDialog(StudioActivity.this);
-            progressDialog.setTitle("Processing...");
-            progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-
-        public String doInBackground(String... params) {
-            saveRecordings1();
-            //uploadRecordings(idUpload);
-            return null;
-        }
-
-        public void onPostExecute(String result) {
-            //    Toast.makeText(StudioActivity.this, value1 + "  " + "SAVE", Toast.LENGTH_SHORT).show();
-            adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
-            adapter.notifyDataSetChanged();
-            adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
-            adapter.notifyDataSetChanged();
-            rlSync.setVisibility(View.GONE);
-            progressDialog.dismiss();
-        }
-
-    }
-
-    public class LongOperation1 extends AsyncTask<String, Void, String> {
-        protected void onPreExecute() {
-            progressDialog = new ProgressDialog(StudioActivity.this);
-            progressDialog.setTitle("Processing...");
-            progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-
-        public String doInBackground(String... params) {
-            // saveRecordings1();
-            uploadRecordings(idUpload);
-            return null;
-        }
-
-        public void onPostExecute(String result) {
-            //    Toast.makeText(StudioActivity.this, value1 + "  " + "SAVE", Toast.LENGTH_SHORT).show();
-            adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
-            adapter.notifyDataSetChanged();
-            adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
-            adapter.notifyDataSetChanged();
-            rlSync.setVisibility(View.GONE);
-            progressDialog.dismiss();
-        }
-
-    }
-
     @Override
     protected void onDestroy() {
         try {
@@ -3271,22 +2341,6 @@ public class StudioActivity extends AppCompatActivity {
         }
     };
 
-    public void playNext() {
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                mp.reset();
-                for (int i = 0; i < instruments_count.size(); i++) {
-                    mp = MediaPlayer.create(StudioActivity.this, Uri.parse(instruments_count.get(++i)));
-                    mp.start();
-                    if (instruments_count.size() > i + 1) {
-                        playNext();
-                    }
-                }
-
-            }
-        }, mp.getDuration() + 100);
-    }
 
     public Class<ByteArrayPool> MediaExtractor() {
         File file = new File(audioFilePath);
@@ -3588,224 +2642,44 @@ public class StudioActivity extends AppCompatActivity {
         return shorts;
 
     }
-    /*public void executeAsyncTask()
-    {
-        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                Log.e("AsyncTask", "onPreExecute");
 
-                    try {
-
-                        InstrumentCountSize = 0;
-                        frameProgress.setVisibility(View.VISIBLE);
-                        if (PlayAllModel.size() > 0) {
-                            PlayAllModel.clear();
-                        }
-                        if (mediaPlayersAll.size() > 0) {
-                            mediaPlayersAll.clear();
-                        }
-                        handler.removeCallbacksAndMessages(null);
-
-                        for (int i = 0; i <= mp_start.size() - 1; i++) {
-                            try {
-
-                                if (mp_start.get(i) != null) {
-                                    mp_start.get(i).stop();
-                                    mp_start.get(i).release();
-                                }
-
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-
-                        }
-
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                    }
-
-            }
-
-            @Override
-            protected String doInBackground(Void... params) {
-                Log.v("AsyncTask", "doInBackground");
-                String msg = null;
-                // some calculation logic of msg variable
-                try {
-                    if (InstrumentCountSize == 0) {
-                        tmpduration = 0;
-                        Compdurations = 0;
-                        MaxMpSessionID = 0;
-
-                        InstrumentCountSize = instrumentList.size();
-                        for (int i = 0; i < InstrumentCountSize; i++) {
-                            Log.d("Instrument url----------------:", "" + instrumentList.get(i).getInstrumentFile());
-                            mpall = new MediaPlayer();
-                            mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                            mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
-                            try {
-
-                                mpall.prepare();
-
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                            mediaPlayersAll.add(StudioActivity.mpall);
-                            PlayAllModel.add(i, new ModelPlayAllMediaPlayer(false, false, false, StudioActivity.mpall));
-
-                            Compdurations = StudioActivity.mediaPlayersAll.get(i).getDuration();
-                            if (Compdurations > tmpduration) {
-                                tmpduration = Compdurations;
-                                MaxMpSessionID = StudioActivity.mediaPlayersAll.get(i).getAudioSessionId();
-                            }
-                        }
-
-
-                        StudioActivity.mpall.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                            @Override
-                            public void onCompletion(MediaPlayer mp) {
-
-                                if (MaxMpSessionID == mp.getAudioSessionId()) {
-                                    StudioActivity.handler.removeCallbacksAndMessages(null);
-                                    for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
-
-                                        final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                                        final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
-                                        final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
-                                        final TextView txtMutes = StudioActivity.lstViewHolder.get(i).TxtMuteViewHolder;
-                                        final TextView txtSolos = StudioActivity.lstViewHolder.get(i).TxtSoloViewHolder;
-                                        final RelativeLayout RlsRepets = StudioActivity.lstViewHolder.get(i).TempRlRepeats;
-                                        seekBar.setProgress(0);
-                                        holderPlay.setVisibility(View.VISIBLE);
-                                        holderPause.setVisibility(View.GONE);
-                                        txtMutes.setBackgroundColor(Color.TRANSPARENT);
-                                        txtSolos.setBackgroundColor(Color.TRANSPARENT);
-                                        RlsRepets.setBackgroundColor(Color.TRANSPARENT);
-                                        holderPause.setEnabled(true);
-                                        StudioActivity.playAll.setVisibility(View.VISIBLE);
-                                        StudioActivity.pauseAll.setVisibility(View.GONE);
-                                    }
-                                }
-
-
-                            }
-                        });
-                    }
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-                return msg;
-            }
-            @Override
-            protected void onPostExecute(String msg) {
-                Log.v("AsyncTask", "onPostExecute");
-                try {
-                    playAll.setVisibility(View.GONE);
-                    ivRecord.setVisibility(View.GONE);
-                    rlMelodyButton.setVisibility(View.GONE);
-                    ivRecord_stop.setVisibility(View.VISIBLE);
-                    rlRecordingButton.setVisibility(View.VISIBLE);
-                    pauseAll.setVisibility(View.VISIBLE);
-                    pauseAll.setEnabled(false);
-
-                    for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-
-                        pts = new MediaPlayer();
-                        // Create the Visualizer object and attach it to our media player.
-
-
-                        pts = mediaPlayersAll.get(i);
-                        initAudio(pts);
-                        try {
-                            pts.start();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    *//*if (IsRepeat == true) {
-                        pts.setLooping(true);
-                    } else if (IsRepeat == false) {
-                        pts.setLooping(false);
-                    }*//*
-                        //StudioActivity.waveform_view.setVisibility(View.VISIBLE);
-                        //StudioActivity.waveform_view.setEnabled(true);
-                        final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                        final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
-
-                        holderPlay.setVisibility(View.GONE);
-                        holderPause.setVisibility(View.VISIBLE);
-                        holderPause.setEnabled(false);
-
-                    }
-
-                    frameProgress.setVisibility(View.GONE);
-                    //recordAudio();
-                    RunSeekbar();
-
-                    if (ContextCompat.checkSelfPermission(StudioActivity.this, Manifest.permission.RECORD_AUDIO)
-                            != PackageManager.PERMISSION_GRANTED) {
-                        // Request permission
-                        ActivityCompat.requestPermissions(StudioActivity.this,
-                                new String[]{Manifest.permission.RECORD_AUDIO},
-                                PERMISSION_RECORD_AUDIO);
-                        return;
-                    }
-                    launchTask();
-
-
-                    chrono.setBase(SystemClock.elapsedRealtime());
-                    chrono.start();
-
-                } catch (IllegalStateException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        if(Build.VERSION.SDK_INT >= 18*//*HONEYCOMB*//*) {
-            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } else {
-            task.execute();
-        }
-    }*/
 
     private class PrepareInstruments extends AsyncTask<String, Void, Bitmap> {
 
         protected void onPreExecute() {
 
-                try {
+            try {
 
-                    StudioActivity.ivBackButton.setEnabled(false);
-                    StudioActivity.ivHomeButton.setEnabled(false);
-                    IsRepeteReAll = false;
-                    InstrumentCountSize = 0;
-                    frameProgress.setVisibility(View.VISIBLE);
-                    if (PlayAllModel.size() > 0) {
-                        PlayAllModel.clear();
-                    }
-                    if (mediaPlayersAll.size() > 0) {
-                        mediaPlayersAll.clear();
-                    }
-                    handler.removeCallbacksAndMessages(null);
+                StudioActivity.ivBackButton.setEnabled(false);
+                StudioActivity.ivHomeButton.setEnabled(false);
+                IsRepeteReAll = false;
+                InstrumentCountSize = 0;
+                frameProgress.setVisibility(View.VISIBLE);
+                if (PlayAllModel.size() > 0) {
+                    PlayAllModel.clear();
+                }
+                if (mediaPlayersAll.size() > 0) {
+                    mediaPlayersAll.clear();
+                }
+                handler.removeCallbacksAndMessages(null);
 
-                    for (int i = 0; i <= mp_start.size() - 1; i++) {
-                        try {
+                for (int i = 0; i <= mp_start.size() - 1; i++) {
+                    try {
 
-                            if (mp_start.get(i) != null) {
-                                mp_start.get(i).stop();
-                                mp_start.get(i).release();
-                            }
-
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
+                        if (mp_start.get(i) != null) {
+                            mp_start.get(i).stop();
+                            mp_start.get(i).release();
                         }
 
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
 
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         protected Bitmap doInBackground(String... urls) {
@@ -3912,7 +2786,7 @@ public class StudioActivity extends AppCompatActivity {
                         ex.printStackTrace();
                     }
                     try {
-                        if(i<=lstViewHolder.size()-1) {
+                        if (i <= lstViewHolder.size() - 1) {
                             final ImageView holderPlay = lstViewHolder.get(i).holderPlay;
                             final ImageView holderPause = lstViewHolder.get(i).holderPause;
 
@@ -3920,7 +2794,7 @@ public class StudioActivity extends AppCompatActivity {
                             holderPause.setVisibility(View.VISIBLE);
                             holderPause.setEnabled(false);
                         }
-                    }catch (Exception ex){
+                    } catch (Exception ex) {
                         ex.printStackTrace();
                     }
 
@@ -4295,26 +3169,8 @@ public class StudioActivity extends AppCompatActivity {
                     }
                 }, Visualizer.getMaxCaptureRate() / 2, true, false);
     }
-    /*private void primarySeekBarProgressUpdater() {
-        //Handler mHandler1 = new Handler();
-        try {
-
-            melodySlider.setProgress((int) (((float) mp.getCurrentPosition() / mp.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
-            if (mp != null) {
-                Runnable notification = new Runnable() {
-                    public void run() {
-                        primarySeekBarProgressUpdater();
-                    }
-                };
-                StudioActivity.handler.postDelayed(notification, 100);
-                //mHandler1.postDelayed(notification, 100);
-            }
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
 
 
-    }*/
     public void RunSeekbar() {
 
         try {
@@ -4366,10 +3222,10 @@ public class StudioActivity extends AppCompatActivity {
                                 LayerCount = Integer.parseInt(jsonObject.getString("layer"));
                                 PackDuration = Integer.parseInt(jsonObject.getString("duration"));
                                 if (IsExp == "false") {
-                                    if(LayerCount == 0) {
+                                    if (LayerCount == 0) {
 
-                                    }else{
-                                        if ( instrumentList.size()>LayerCount) {
+                                    } else {
+                                        if (instrumentList.size() > LayerCount) {
                                             Toast.makeText(StudioActivity.this, "You can add only " + LayerCount + " layers of instruments." + "please subscribed another pack.", Toast.LENGTH_SHORT).show();
                                             IsValidPack = true;
                                         }
@@ -4402,7 +3258,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                if(userId!=null) {
+                if (userId != null) {
                     params.put(USER_ID, userId);
                 }
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
@@ -4413,75 +3269,256 @@ public class StudioActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
-    public void subscriptionPackage() {
-        progressDialog.setTitle("Processing...");
-        progressDialog.setMessage("Please wait...");
-        progressDialog.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, PACKAGES,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("AdvertisementData", response);
-                        if (progressDialog != null) {
-                            if (progressDialog.isShowing()) {
-                                progressDialog.dismiss();
-                            }
-                        }
+
+    private void CloseConnection() {
+        try {
+
+            handler.removeCallbacksAndMessages(null);
+            if (mVisualizer != null) {
+                mVisualizer.release();
+            }
+            if (lstViewHolder.size() > 0) {
+                lstViewHolder.clear();
+            }
+            if (mediaPlayer != null) {
+                try {
+                    mediaPlayer.stop();
+                    mediaPlayer.release();
+                    mediaPlayer = null;
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            if (mp_start != null) {
+                for (int i = 0; i <= mp_start.size() - 1; i++) {
+                    try {
+                        mp_start.get(i).stop();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+            mp_start.clear();
+            if (mpall != null) {
+                try {
+                    mpall.stop();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                if (mediaPlayersAll.size() > 0) {
+                    for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                         try {
-                            JSONObject jsonObject = new JSONObject(response);
-                            String flag = jsonObject.getString("flag");
-                            if (flag.equals("success")) {
-                                try {
-                                    PackId =jsonObject.getString("subscribedPack");
-
-                                    if(PackId.equals("1")){
-                                        PackDuration=30;
-                                    }else if(PackId.equals("2")){
-                                        PackDuration=60;
-                                    }else if(PackId.equals("3")){
-                                        PackDuration=120;
-                                    }else if(PackId.equals("4")){
-                                        PackDuration=0;
-                                    }
-
-
-                                }catch (Exception ex){
-                                    ex.printStackTrace();
-                                }
-
-                            }
-
+                            mediaPlayersAll.get(i).stop();
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
                     }
+                }
+                mediaPlayersAll.clear();
+            }
 
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(StudioActivity.this, error.toString(), Toast.LENGTH_LONG).show();
-                        String errorMsg = error.toString();
-                        Log.d("Error", errorMsg);
-                        if (progressDialog != null) {
-                            if (progressDialog.isShowing()) {
-                                progressDialog.dismiss();
+            if (mpInst != null) {
+                try {
+                    mpInst.stop();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            if (instrumentList.size() > 0) {
+                instrumentList.clear();
+            }
+            chrono.stop();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+
+
+
+
+
+
+/*public void executeAsyncTask()
+    {
+        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                Log.e("AsyncTask", "onPreExecute");
+
+                    try {
+
+                        InstrumentCountSize = 0;
+                        frameProgress.setVisibility(View.VISIBLE);
+                        if (PlayAllModel.size() > 0) {
+                            PlayAllModel.clear();
+                        }
+                        if (mediaPlayersAll.size() > 0) {
+                            mediaPlayersAll.clear();
+                        }
+                        handler.removeCallbacksAndMessages(null);
+
+                        for (int i = 0; i <= mp_start.size() - 1; i++) {
+                            try {
+
+                                if (mp_start.get(i) != null) {
+                                    mp_start.get(i).stop();
+                                    mp_start.get(i).release();
+                                }
+
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+
+                        }
+
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+
+            }
+
+            @Override
+            protected String doInBackground(Void... params) {
+                Log.v("AsyncTask", "doInBackground");
+                String msg = null;
+                // some calculation logic of msg variable
+                try {
+                    if (InstrumentCountSize == 0) {
+                        tmpduration = 0;
+                        Compdurations = 0;
+                        MaxMpSessionID = 0;
+
+                        InstrumentCountSize = instrumentList.size();
+                        for (int i = 0; i < InstrumentCountSize; i++) {
+                            Log.d("Instrument url----------------:", "" + instrumentList.get(i).getInstrumentFile());
+                            mpall = new MediaPlayer();
+                            mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                            mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
+                            try {
+
+                                mpall.prepare();
+
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                            mediaPlayersAll.add(StudioActivity.mpall);
+                            PlayAllModel.add(i, new ModelPlayAllMediaPlayer(false, false, false, StudioActivity.mpall));
+
+                            Compdurations = StudioActivity.mediaPlayersAll.get(i).getDuration();
+                            if (Compdurations > tmpduration) {
+                                tmpduration = Compdurations;
+                                MaxMpSessionID = StudioActivity.mediaPlayersAll.get(i).getAudioSessionId();
                             }
                         }
+
+
+                        StudioActivity.mpall.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+
+                                if (MaxMpSessionID == mp.getAudioSessionId()) {
+                                    StudioActivity.handler.removeCallbacksAndMessages(null);
+                                    for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
+
+                                        final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
+                                        final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
+                                        final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
+                                        final TextView txtMutes = StudioActivity.lstViewHolder.get(i).TxtMuteViewHolder;
+                                        final TextView txtSolos = StudioActivity.lstViewHolder.get(i).TxtSoloViewHolder;
+                                        final RelativeLayout RlsRepets = StudioActivity.lstViewHolder.get(i).TempRlRepeats;
+                                        seekBar.setProgress(0);
+                                        holderPlay.setVisibility(View.VISIBLE);
+                                        holderPause.setVisibility(View.GONE);
+                                        txtMutes.setBackgroundColor(Color.TRANSPARENT);
+                                        txtSolos.setBackgroundColor(Color.TRANSPARENT);
+                                        RlsRepets.setBackgroundColor(Color.TRANSPARENT);
+                                        holderPause.setEnabled(true);
+                                        StudioActivity.playAll.setVisibility(View.VISIBLE);
+                                        StudioActivity.pauseAll.setVisibility(View.GONE);
+                                    }
+                                }
+
+
+                            }
+                        });
                     }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                if(userId!=null) {
-                    params.put(USER_ID, userId);
+                } catch (Throwable e) {
+                    e.printStackTrace();
                 }
-                params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                return params;
+                return msg;
+            }
+            @Override
+            protected void onPostExecute(String msg) {
+                Log.v("AsyncTask", "onPostExecute");
+                try {
+                    playAll.setVisibility(View.GONE);
+                    ivRecord.setVisibility(View.GONE);
+                    rlMelodyButton.setVisibility(View.GONE);
+                    ivRecord_stop.setVisibility(View.VISIBLE);
+                    rlRecordingButton.setVisibility(View.VISIBLE);
+                    pauseAll.setVisibility(View.VISIBLE);
+                    pauseAll.setEnabled(false);
+
+                    for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+
+                        pts = new MediaPlayer();
+                        // Create the Visualizer object and attach it to our media player.
+
+
+                        pts = mediaPlayersAll.get(i);
+                        initAudio(pts);
+                        try {
+                            pts.start();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    *//*if (IsRepeat == true) {
+                        pts.setLooping(true);
+                    } else if (IsRepeat == false) {
+                        pts.setLooping(false);
+                    }*//*
+                        //StudioActivity.waveform_view.setVisibility(View.VISIBLE);
+                        //StudioActivity.waveform_view.setEnabled(true);
+                        final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
+                        final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
+
+                        holderPlay.setVisibility(View.GONE);
+                        holderPause.setVisibility(View.VISIBLE);
+                        holderPause.setEnabled(false);
+
+                    }
+
+                    frameProgress.setVisibility(View.GONE);
+                    //recordAudio();
+                    RunSeekbar();
+
+                    if (ContextCompat.checkSelfPermission(StudioActivity.this, Manifest.permission.RECORD_AUDIO)
+                            != PackageManager.PERMISSION_GRANTED) {
+                        // Request permission
+                        ActivityCompat.requestPermissions(StudioActivity.this,
+                                new String[]{Manifest.permission.RECORD_AUDIO},
+                                PERMISSION_RECORD_AUDIO);
+                        return;
+                    }
+                    launchTask();
+
+
+                    chrono.setBase(SystemClock.elapsedRealtime());
+                    chrono.start();
+
+                } catch (IllegalStateException e) {
+                    e.printStackTrace();
+                }
             }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(StudioActivity.this);
-        requestQueue.add(stringRequest);
-    }
 
-}
+        if(Build.VERSION.SDK_INT >= 18*//*HONEYCOMB*//*) {
+            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else {
+            task.execute();
+        }
+    }*/

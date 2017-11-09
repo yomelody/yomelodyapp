@@ -261,7 +261,11 @@ public class MelodyPacksFragment extends Fragment {
                                         } else {
                                             packId = (genresArrayList.get(currentTab)).getId();
                                         }
-
+                                        melodyList.clear();
+                                        instrumentList.clear();
+                                        editor.putString("File_Tyoe","admin_melody");
+                                        editor.commit();
+                                        fetchMelodyPacks();
                                         if (currentTab == 6) {
                                             if (TextUtils.isEmpty(userId)) {
                                                 Toast.makeText(mActivity, "Log in to see your melody.", Toast.LENGTH_SHORT).show();

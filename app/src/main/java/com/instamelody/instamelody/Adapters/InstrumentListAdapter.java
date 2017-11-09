@@ -1617,173 +1617,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         }
     }
 
-    /*private class PrepareInstruments extends AsyncTask<String, Void, Bitmap> {
 
-        protected void onPreExecute() {
-            try {
-                try {
-
-                    for (int i = 0; i <= StudioActivity.lstViewHolder.size() - 1; i++) {
-                        try {
-                            final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                            final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
-                            final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
-                            holderPlay.setVisibility(View.VISIBLE);
-                            holderPause.setVisibility(View.GONE);
-                            seekBar.setProgress(0);
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                    StudioActivity.frameProgress.setVisibility(View.VISIBLE);
-                    if (StudioActivity.PlayAllModel.size() > 0) {
-                        StudioActivity.PlayAllModel.clear();
-                    }
-                    if (StudioActivity.mediaPlayersAll.size() > 0) {
-                        StudioActivity.mediaPlayersAll.clear();
-                    }
-                    StudioActivity.handler.removeCallbacksAndMessages(null);
-
-                    for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
-                        try {
-
-                            if (StudioActivity.mp_start.get(i) != null) {
-                                StudioActivity.mp_start.get(i).stop();
-                                StudioActivity.mp_start.get(i).release();
-                            }
-
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-
-                    }
-
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-
-            try {
-                if (InstrumentCountSize == 0) {
-                    tmpduration = 0;
-                    Compdurations = 0;
-                    MaxMpSessionID = 0;
-                    //InstrumentCountSize = MelodyInstruments.getInstrumentCount();
-
-                    InstrumentCountSize = instrumentList.size();
-                    for (int i = 0; i < InstrumentCountSize; i++) {
-                        Log.d("Instrument url----------------:", "" + instrumentList.get(i).getInstrumentFile());
-                        StudioActivity.mpall = new MediaPlayer();
-                        StudioActivity.mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                        StudioActivity.mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
-                        try {
-
-                            StudioActivity.mpall.prepare();
-
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                        StudioActivity.mediaPlayersAll.add(StudioActivity.mpall);
-                        StudioActivity.PlayAllModel.add(i, new ModelPlayAllMediaPlayer(false, false, false, StudioActivity.mpall));
-
-                        Compdurations = StudioActivity.mediaPlayersAll.get(i).getDuration();
-                        if (Compdurations > tmpduration) {
-                            tmpduration = Compdurations;
-                            MaxMpSessionID = StudioActivity.mediaPlayersAll.get(i).getAudioSessionId();
-                        }
-                    }
-
-
-                    StudioActivity.mpall.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-
-                            if (MaxMpSessionID == mp.getAudioSessionId()) {
-                                StudioActivity.handler.removeCallbacksAndMessages(null);
-                                for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
-
-                                    final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                                    final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
-                                    final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
-                                    final TextView txtMutes = StudioActivity.lstViewHolder.get(i).TxtMuteViewHolder;
-                                    final TextView txtSolos = StudioActivity.lstViewHolder.get(i).TxtSoloViewHolder;
-                                    final RelativeLayout RlsRepets = StudioActivity.lstViewHolder.get(i).TempRlRepeats;
-                                    seekBar.setProgress(0);
-                                    holderPlay.setVisibility(View.VISIBLE);
-                                    holderPause.setVisibility(View.GONE);
-                                    txtMutes.setBackgroundColor(Color.TRANSPARENT);
-                                    txtSolos.setBackgroundColor(Color.TRANSPARENT);
-                                    RlsRepets.setBackgroundColor(Color.TRANSPARENT);
-                                    holderPause.setEnabled(true);
-                                    StudioActivity.playAll.setVisibility(View.VISIBLE);
-                                    StudioActivity.pauseAll.setVisibility(View.GONE);
-                                    //StudioActivity.mediaPlayersAll.get(i).stop();
-                                }
-                            }
-
-                            //}
-                        }
-                    });
-                }
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            try {
-                StudioActivity.playAll.setVisibility(View.GONE);
-                StudioActivity.ivRecord.setVisibility(View.GONE);
-                StudioActivity.rlMelodyButton.setVisibility(View.GONE);
-                StudioActivity.ivRecord_stop.setVisibility(View.VISIBLE);
-                StudioActivity.rlRecordingButton.setVisibility(View.VISIBLE);
-                StudioActivity.pauseAll.setVisibility(View.VISIBLE);
-                StudioActivity.pauseAll.setEnabled(false);
-                for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
-                    final MediaPlayer pts;
-
-                    pts = StudioActivity.mediaPlayersAll.get(i);
-                    try {
-                        pts.start();
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                    if (IsRepeat == true) {
-                        pts.setLooping(true);
-                    } else if (IsRepeat == false) {
-                        pts.setLooping(false);
-                    }
-                    StudioActivity.waveform_view.setVisibility(View.VISIBLE);
-
-                    StudioActivity.waveform_view.setEnabled(true);
-                    final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                    final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
-
-                    holderPlay.setVisibility(View.GONE);
-                    holderPause.setVisibility(View.VISIBLE);
-                    holderPause.setEnabled(false);
-
-                }
-                StudioActivity.frameProgress.setVisibility(View.GONE);
-                //recordAudio();
-                RunSeekbar();
-
-
-                StudioActivity.chrono.setBase(SystemClock.elapsedRealtime());
-                StudioActivity.chrono.start();
-
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            }
-        }
-    }*/
 
     public void executeAsyncTaskPlayAll() {
         AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
@@ -2153,4 +1987,171 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     }
                 }, Visualizer.getMaxCaptureRate() / 2, true, false);
     }
+     /*private class PrepareInstruments extends AsyncTask<String, Void, Bitmap> {
+
+        protected void onPreExecute() {
+            try {
+                try {
+
+                    for (int i = 0; i <= StudioActivity.lstViewHolder.size() - 1; i++) {
+                        try {
+                            final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
+                            final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
+                            final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
+                            holderPlay.setVisibility(View.VISIBLE);
+                            holderPause.setVisibility(View.GONE);
+                            seekBar.setProgress(0);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                    StudioActivity.frameProgress.setVisibility(View.VISIBLE);
+                    if (StudioActivity.PlayAllModel.size() > 0) {
+                        StudioActivity.PlayAllModel.clear();
+                    }
+                    if (StudioActivity.mediaPlayersAll.size() > 0) {
+                        StudioActivity.mediaPlayersAll.clear();
+                    }
+                    StudioActivity.handler.removeCallbacksAndMessages(null);
+
+                    for (int i = 0; i <= StudioActivity.mp_start.size() - 1; i++) {
+                        try {
+
+                            if (StudioActivity.mp_start.get(i) != null) {
+                                StudioActivity.mp_start.get(i).stop();
+                                StudioActivity.mp_start.get(i).release();
+                            }
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+
+                    }
+
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+
+            try {
+                if (InstrumentCountSize == 0) {
+                    tmpduration = 0;
+                    Compdurations = 0;
+                    MaxMpSessionID = 0;
+                    //InstrumentCountSize = MelodyInstruments.getInstrumentCount();
+
+                    InstrumentCountSize = instrumentList.size();
+                    for (int i = 0; i < InstrumentCountSize; i++) {
+                        Log.d("Instrument url----------------:", "" + instrumentList.get(i).getInstrumentFile());
+                        StudioActivity.mpall = new MediaPlayer();
+                        StudioActivity.mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                        StudioActivity.mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
+                        try {
+
+                            StudioActivity.mpall.prepare();
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        StudioActivity.mediaPlayersAll.add(StudioActivity.mpall);
+                        StudioActivity.PlayAllModel.add(i, new ModelPlayAllMediaPlayer(false, false, false, StudioActivity.mpall));
+
+                        Compdurations = StudioActivity.mediaPlayersAll.get(i).getDuration();
+                        if (Compdurations > tmpduration) {
+                            tmpduration = Compdurations;
+                            MaxMpSessionID = StudioActivity.mediaPlayersAll.get(i).getAudioSessionId();
+                        }
+                    }
+
+
+                    StudioActivity.mpall.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+
+                            if (MaxMpSessionID == mp.getAudioSessionId()) {
+                                StudioActivity.handler.removeCallbacksAndMessages(null);
+                                for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
+
+                                    final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
+                                    final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
+                                    final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
+                                    final TextView txtMutes = StudioActivity.lstViewHolder.get(i).TxtMuteViewHolder;
+                                    final TextView txtSolos = StudioActivity.lstViewHolder.get(i).TxtSoloViewHolder;
+                                    final RelativeLayout RlsRepets = StudioActivity.lstViewHolder.get(i).TempRlRepeats;
+                                    seekBar.setProgress(0);
+                                    holderPlay.setVisibility(View.VISIBLE);
+                                    holderPause.setVisibility(View.GONE);
+                                    txtMutes.setBackgroundColor(Color.TRANSPARENT);
+                                    txtSolos.setBackgroundColor(Color.TRANSPARENT);
+                                    RlsRepets.setBackgroundColor(Color.TRANSPARENT);
+                                    holderPause.setEnabled(true);
+                                    StudioActivity.playAll.setVisibility(View.VISIBLE);
+                                    StudioActivity.pauseAll.setVisibility(View.GONE);
+                                    //StudioActivity.mediaPlayersAll.get(i).stop();
+                                }
+                            }
+
+                            //}
+                        }
+                    });
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            try {
+                StudioActivity.playAll.setVisibility(View.GONE);
+                StudioActivity.ivRecord.setVisibility(View.GONE);
+                StudioActivity.rlMelodyButton.setVisibility(View.GONE);
+                StudioActivity.ivRecord_stop.setVisibility(View.VISIBLE);
+                StudioActivity.rlRecordingButton.setVisibility(View.VISIBLE);
+                StudioActivity.pauseAll.setVisibility(View.VISIBLE);
+                StudioActivity.pauseAll.setEnabled(false);
+                for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
+                    final MediaPlayer pts;
+
+                    pts = StudioActivity.mediaPlayersAll.get(i);
+                    try {
+                        pts.start();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    if (IsRepeat == true) {
+                        pts.setLooping(true);
+                    } else if (IsRepeat == false) {
+                        pts.setLooping(false);
+                    }
+                    StudioActivity.waveform_view.setVisibility(View.VISIBLE);
+
+                    StudioActivity.waveform_view.setEnabled(true);
+                    final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
+                    final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
+
+                    holderPlay.setVisibility(View.GONE);
+                    holderPause.setVisibility(View.VISIBLE);
+                    holderPause.setEnabled(false);
+
+                }
+                StudioActivity.frameProgress.setVisibility(View.GONE);
+                //recordAudio();
+                RunSeekbar();
+
+
+                StudioActivity.chrono.setBase(SystemClock.elapsedRealtime());
+                StudioActivity.chrono.start();
+
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
+        }
+    }*/
 }
