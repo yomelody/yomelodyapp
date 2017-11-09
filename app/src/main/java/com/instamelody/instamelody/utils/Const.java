@@ -9,7 +9,7 @@ public class Const {
     public class ServiceType {
         public static final String HOST_URL = "http://52.89.220.199/";
         public static final String DEV_URL = "http://52.89.220.199/dev_api/";
-        public static final String BASE_URL = HOST_URL + "api/";//dev_api
+        public static final String BASE_URL = HOST_URL + "api/";//dev_api//api
         public static final String LOGIN = BASE_URL + "login.php";
         public static final String REGISTER = BASE_URL + "registration.php";
         public static final String GENERE = BASE_URL + "genere.php";
