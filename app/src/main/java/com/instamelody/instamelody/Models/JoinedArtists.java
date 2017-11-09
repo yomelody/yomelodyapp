@@ -1,10 +1,12 @@
 package com.instamelody.instamelody.Models;
 
+import java.io.Serializable;
+
 /**
  * Created by Shubhansh Jaiswal on 27/04/17.
  */
 
-public class JoinedArtists {
+public class JoinedArtists implements Serializable {
 
     String joined_image,joined_usr_name,user_id,joined_artists,recording_id,recording_name,
     recording_url,recording_duration,recording_date,like_status,play_counts,like_counts,share_counts,comment_counts;

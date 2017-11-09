@@ -2,12 +2,14 @@ package com.instamelody.instamelody.Fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.WindowManager;
 import android.os.IBinder;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -41,7 +43,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.Adapters.CommentsAdapter;
 import com.instamelody.instamelody.Adapters.JoinListAdapter;
+import com.instamelody.instamelody.ChatActivity;
 import com.instamelody.instamelody.JoinActivity;
+import com.instamelody.instamelody.MessengerActivity;
 import com.instamelody.instamelody.Models.Comments;
 import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Parse.ParseContents;
@@ -54,6 +58,8 @@ import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
+import static com.facebook.FacebookSdk.getApplicationContext;
+import static com.instamelody.instamelody.Adapters.JoinListAdapter.REQUEST_JOIN_TO_MESSANGER;
 import static com.instamelody.instamelody.JoinActivity.joinFooter;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
@@ -75,12 +81,15 @@ public class CommentJoinFragment extends Fragment {
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";
     String userId = "";
-    TextView tvPlayCount, tvLikeCount, tvCommentCount, tvShareCount;
+    public static TextView tvPlayCount, tvLikeCount, tvCommentCount, tvShareCount;
     RelativeLayout rlCommentSend;
     TextView tvCancel, tvSend;
     EditText etComment;
     String melodyID;
     String fileType = "user_recording";
+    ImageView ivShareButton;
+    Activity mActivity;
+    boolean check = false;
 
     public CommentJoinFragment() {
         // Required empty public constructor
@@ -90,6 +99,7 @@ public class CommentJoinFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mActivity = getActivity();
         getActivity().getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         getComments();
@@ -125,6 +135,7 @@ public class CommentJoinFragment extends Fragment {
         etComment.setHintTextColor(Color.parseColor("#7B888F"));
         tvCancel = (TextView) view.findViewById(R.id.tvCancel);
         tvSend = (TextView) view.findViewById(R.id.tvSend);
+        ivShareButton = (ImageView) view.findViewById(R.id.ivShareButton);
         RecyclerView.LayoutManager lm1 = new LinearLayoutManager(getActivity());
         recyclerViewComment = (RecyclerView) view.findViewById(R.id.recyclerViewComment);
         recyclerViewComment.setLayoutManager(lm1);
@@ -158,6 +169,43 @@ public class CommentJoinFragment extends Fragment {
             }
         });
 
+        ivShareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                final AlertDialog.Builder alertDialog = new AlertDialog.Builder(mActivity);
+                alertDialog.setTitle("Share with InstaMelody chat?");
+//                        alertDialog.setMessage("Choose yes to share in chat.");
+                alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
+                        JoinedArtists recording = JoinListAdapter.Joined_artist.get(0);
+                        editor.putString("recID", recording.getRecording_id());
+                        editor.apply();
+                        Intent intent = new Intent(mActivity, MessengerActivity.class);
+                        intent.putExtra("Previ", "join");
+                        intent.putExtra("share", JoinListAdapter.Joined_artist.get(0));
+                        intent.putExtra("file_type", "user_recording");
+                        mActivity.startActivityForResult(intent, REQUEST_JOIN_TO_MESSANGER);
+                    }
+                });
+                alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        Intent shareIntent = new Intent();
+                        shareIntent.setAction(Intent.ACTION_SEND);
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, JoinListAdapter.Joined_artist.get(0));
+                        shareIntent.setType("image/jpeg");
+                        shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mActivity.startActivity(Intent.createChooser(shareIntent, "Choose Sharing option!"));
+                    }
+                });
+                alertDialog.show();
+            }
+        });
+
         tvCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -166,6 +214,8 @@ public class CommentJoinFragment extends Fragment {
                 closeKeyboard(getActivity(), tvCancel.getWindowToken());
                 getFragmentManager().beginTransaction()
                         .remove(CommentJoinFragment.this).commit();
+                String count = tvCommentCount.getText().toString().trim();
+                JoinActivity.tvCommentCount.setText(count);
             }
         });
 
@@ -256,7 +306,6 @@ public class CommentJoinFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
                         adapter.notifyDataSetChanged();
                         getComments();
                         String count = tvCommentCount.getText().toString().trim();
@@ -265,6 +314,11 @@ public class CommentJoinFragment extends Fragment {
                         tvCommentCount.setText(String.valueOf(count_final));
                         recyclerViewComment.smoothScrollToPosition(adapter.getItemCount());
                         new ParseContents(getActivity()).parseComments(response, commentList);
+                        check = true;
+                        Intent it = new Intent();
+                        it.putExtra("comment", "success");
+                        mActivity.setResult(Activity.RESULT_OK, it);
+
                     }
                 },
                 new Response.ErrorListener() {

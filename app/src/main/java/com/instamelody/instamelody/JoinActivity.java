@@ -37,11 +37,14 @@ import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.vision.text.Text;
 import com.instamelody.instamelody.Adapters.JoinInstrumentListAdp;
 import com.instamelody.instamelody.Adapters.JoinListAdapter;
+import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Fragments.CommentJoinFragment;
 import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Models.JoinedUserProfile;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Parse.ParseContents;
+import com.instamelody.instamelody.utils.AppHelper;
+import com.instamelody.instamelody.utils.Const;
 import com.instamelody.instamelody.utils.VisualizerView;
 import com.squareup.picasso.Picasso;
 
@@ -99,6 +102,7 @@ public class JoinActivity extends AppCompatActivity {
     public static Visualizer mVisualizer;
     TextView tvDone;
     private Activity mActivity;
+    public static boolean check_frag = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,6 +172,7 @@ public class JoinActivity extends AppCompatActivity {
             userId = twitterPref.getString("userId", null);
         }
 
+
         rlIncluded.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -193,15 +198,9 @@ public class JoinActivity extends AppCompatActivity {
 
                 try {
                     joinFooter.setVisibility(GONE);
-                    //joincenter.setVisibility(GONE);
-                    //  recyclerViewInstruments.setVisibility(GONE);
                     CommentJoinFragment af = new CommentJoinFragment();
                     getFragmentManager().beginTransaction().replace(R.id.commentContainer, af).commit();
-
-//                    Intent intent = new Intent(context, JoinCommentActivity.class);
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                    intent.putExtra("Position", String.valueOf(position));
-//                    context.startActivity(intent);
+                    check_frag = true;
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
@@ -324,6 +323,7 @@ public class JoinActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+
         long date = System.currentTimeMillis();
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy");
         String dateString = sdf.format(date);
@@ -471,5 +471,37 @@ public class JoinActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        AppHelper.sop("JoinActivity onactivity Result" + "requestCode" + requestCode + ",resultCode" + resultCode + ",data" + data + "mActivity" + mActivity.RESULT_OK);
+        if (JoinListAdapter.REQUEST_JOIN_TO_MESSANGER == requestCode) {
+            if (resultCode == mActivity.RESULT_OK) {
+                AppHelper.sop("onActivityResult==called=" + "resultCode==" + resultCode);
+            } else {
+                SharedPreferences socialStatusPref = mActivity.getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE);
+                if (socialStatusPref.getBoolean(Const.REC_SHARE_STATUS, false)) {
+                    SharedPreferences.Editor socialStatusPrefEditor = mActivity.getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE).edit();
+                    socialStatusPrefEditor.putBoolean(Const.REC_SHARE_STATUS, false);
+                    socialStatusPrefEditor.apply();
+                    if (addedBy != null && RecId != null) {
+                        try {
+                            getJoined_users(addedBy, RecId);
+                            Intent it = new Intent();
+                            setResult(Activity.RESULT_OK, it);
+                            if (check_frag) {
+                                getFragmentManager().beginTransaction().remove(getFragmentManager().findFragmentById(R.id.commentContainer)).commit();
+                                joinFooter.setVisibility(View.VISIBLE);
+                            }
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                        }
+                    }
 
+                }
+            }
+
+        }
+
+    }
 }

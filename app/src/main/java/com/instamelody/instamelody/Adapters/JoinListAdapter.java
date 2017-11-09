@@ -3,6 +3,7 @@ package com.instamelody.instamelody.Adapters;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -14,6 +15,7 @@ import android.media.MediaRecorder;
 import android.media.audiofx.Visualizer;
 import android.net.Uri;
 import android.os.SystemClock;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,10 +38,13 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.instamelody.instamelody.Fragments.CommentJoinFragment;
 import com.instamelody.instamelody.JoinActivity;
+import com.instamelody.instamelody.MessengerActivity;
 import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Models.JoinedUserProfile;
 import com.instamelody.instamelody.Models.MelodyInstruments;
+import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
@@ -51,6 +56,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -113,6 +119,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     public static int click = 0;
     boolean likest = false;
     private Activity mActivity;
+    public static final int REQUEST_JOIN_TO_MESSANGER = 716;
 
     public JoinListAdapter(ArrayList<JoinedArtists> Joined_artist, Context context) {
         this.Joined_artist = Joined_artist;
@@ -152,24 +159,39 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
             JoinActivity.ivShareButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (!userId.equals("") && userId != null) {
 
-                        JoinedArtists joinArt = Joined_artist.get(getAdapterPosition());
-                        String RecordingURL = joinArt.getRecording_url();
-                        Intent shareIntent = new Intent();
-                        shareIntent.setAction(Intent.ACTION_SEND);
-                        shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                        shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt");
-                        shareIntent.putExtra(Intent.EXTRA_TEXT, RecordingURL);
-                        shareIntent.setType("image/jpeg");
-                        shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        v.getContext().startActivity(Intent.createChooser(shareIntent, "Choose Sharing option!"));
 
-                    } else {
-                        Toast.makeText(context, "Log in to Share this melody pack", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(context, SignInActivity.class);
-                        context.startActivity(intent);
-                    }
+                    final AlertDialog.Builder alertDialog = new AlertDialog.Builder(mActivity);
+                    alertDialog.setTitle("Share with InstaMelody chat?");
+//                        alertDialog.setMessage("Choose yes to share in chat.");
+                    alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
+                            JoinedArtists recording = Joined_artist.get(0);
+                            editor.putString("recID", recording.getRecording_id());
+                            editor.apply();
+                            Intent intent = new Intent(mActivity, MessengerActivity.class);
+                            intent.putExtra("Previ", "join");
+                            intent.putExtra("share", Joined_artist.get(0));
+                            intent.putExtra("file_type", "user_recording");
+                            mActivity.startActivityForResult(intent, REQUEST_JOIN_TO_MESSANGER);
+                        }
+                    });
+                    alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            Intent shareIntent = new Intent();
+                            shareIntent.setAction(Intent.ACTION_SEND);
+                            shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                            shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt");
+                            shareIntent.putExtra(Intent.EXTRA_TEXT, Joined_artist.get(0));
+                            shareIntent.setType("image/jpeg");
+                            shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            context.startActivity(Intent.createChooser(shareIntent, "Choose Sharing option!"));
+                        }
+                    });
+                    alertDialog.show();
+
 
                 }
             });
@@ -204,7 +226,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
             if (lstViewHolder.size() < getItemCount()) {
                 lstViewHolder.add(viewHolder);
             }
-            JoinedArtists join = Joined_artist.get(0);
+            final JoinedArtists join = Joined_artist.get(0);
             holder.Join_usr_name.setText(joinArt.getJoined_usr_name());
             try {
                 Picasso.with(holder.join_image.getContext()).load(joinArt.getJoined_image()).into(holder.join_image);
@@ -501,10 +523,11 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     progressDialog.show();
                     String play = JoinActivity.play_count.getText().toString().trim();
                     int playValue = Integer.parseInt(play) + 1;
-                    String recording_id = joinArt.getRecording_id().trim();
+                    String recording_id = join.getRecording_id().trim();
 
                     if (!userId.equals("") && userId != null) {
                         JoinActivity.play_count.setText(String.valueOf(playValue));
+                        CommentJoinFragment.tvPlayCount.setText(String.valueOf(playValue));
                         fetchViewCount(userId, recording_id);
                     }
                     mp = new MediaPlayer();
@@ -851,29 +874,14 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     if (!userId.equals("") && userId != null) {
                         //Toast.makeText(context, "like", Toast.LENGTH_SHORT).show();
                         //position = mpids.get(getAdapterPosition() + 1);
-                        String RecordingName = joinArt.getRecording_name();
-                        String position = joinArt.getRecording_id();
+                        String RecordingName = join.getRecording_name();
+                        String position = join.getRecording_id();
 
                         if (JoinActivity.ivDislikeButton.getVisibility() == VISIBLE) {
                             fetchLikeState(userId, position, "0", RecordingName);
-                            if (likest) {
-                                JoinActivity.ivLikeButton.setVisibility(VISIBLE);
-                                JoinActivity.ivDislikeButton.setVisibility(GONE);
-                                String like = JoinActivity.tvLikeCount.getText().toString().trim();
-                                int likeValue = Integer.parseInt(like) - 1;
-                                like = String.valueOf(likeValue);
-                                JoinActivity.tvLikeCount.setText(like);
-                            }
+
                         } else if (JoinActivity.ivDislikeButton.getVisibility() == GONE) {
                             fetchLikeState(userId, position, "1", RecordingName);
-                            if (likest) {
-                                JoinActivity.ivLikeButton.setVisibility(GONE);
-                                JoinActivity.ivDislikeButton.setVisibility(VISIBLE);
-                                String like = JoinActivity.tvLikeCount.getText().toString().trim();
-                                int likeValue = Integer.parseInt(like) + 1;
-                                like = String.valueOf(likeValue);
-                                JoinActivity.tvLikeCount.setText(like);
-                            }
                         }
                     } else {
                         Toast.makeText(context, "Log in to like this Recording", Toast.LENGTH_SHORT).show();
@@ -943,7 +951,10 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     }
 
     public void fetchLikeState(final String userId, final String pos, final String likeState, final String LikeRecordingName) {
-
+        progressDialog = new ProgressDialog(mActivity);
+        progressDialog.setTitle("Processing...");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
         try {
             StringRequest stringRequest = new StringRequest(Request.Method.POST, LIKESAPI,
                     new Response.Listener<String>() {
@@ -957,10 +968,26 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                 if (flag.equals("success")) {
                                     JSONObject res = json.getJSONObject("response");
                                     String likes = res.getString("likes");
-                                    likest = true;
                                     Intent it = new Intent();
                                     mActivity.setResult(Activity.RESULT_OK, it);
                                     progressDialog.dismiss();
+
+                                    if (JoinActivity.ivDislikeButton.getVisibility() == VISIBLE) {
+                                        JoinActivity.ivLikeButton.setVisibility(VISIBLE);
+                                        JoinActivity.ivDislikeButton.setVisibility(GONE);
+//                                            String like = JoinActivity.tvLikeCount.getText().toString().trim();
+//                                            int likeValue = Integer.parseInt(like) - 1;
+//                                            like = String.valueOf(likeValue);
+                                        JoinActivity.tvLikeCount.setText(likes);
+
+                                    } else if (JoinActivity.ivDislikeButton.getVisibility() == GONE) {
+                                        JoinActivity.ivLikeButton.setVisibility(GONE);
+                                        JoinActivity.ivDislikeButton.setVisibility(VISIBLE);
+//                                            String like = JoinActivity.tvLikeCount.getText().toString().trim();
+//                                            int likeValue = Integer.parseInt(like) + 1;
+//                                            like = String.valueOf(likeValue);
+                                        JoinActivity.tvLikeCount.setText(likes);
+                                    }
 
                                 }
                             } catch (JSONException e) {
@@ -998,7 +1025,6 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     }
 
     public void getJoined_users(final String addedBy, final String RecId, final int pos) {
-
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, JOINED_USERS,
                 new Response.Listener<String>() {

@@ -71,6 +71,7 @@ import com.instamelody.instamelody.Adapters.ChatAdapter;
 import com.instamelody.instamelody.Adapters.RecentImagesAdapter;
 import com.instamelody.instamelody.Fragments.viewImageFragment;
 import com.instamelody.instamelody.Models.AudioDetails;
+import com.instamelody.instamelody.Models.JoinedArtists;
 import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.RecentImagesModel;
 import com.instamelody.instamelody.Models.RecordingsModel;
@@ -184,6 +185,7 @@ public class ChatActivity extends AppCompatActivity {
     public static String flagFileType = "0"; // 0 = null, 1 = image file, 2 = station audio file , 3 = admin_melody audio file
     int updateGroupFlag = 0;
     RecordingsModel mRecordingsModel;
+    JoinedArtists mJoinedModel;
     Activity mActivity;
     public static String sender_name = "";
     ImageView songNext, songPre;
@@ -197,7 +199,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         mActivity = ChatActivity.this;
-        progressDialog=new ProgressDialog(ChatActivity.this);
+        progressDialog = new ProgressDialog(ChatActivity.this);
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
         SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
@@ -211,7 +213,16 @@ public class ChatActivity extends AppCompatActivity {
             userId = twitterPref.getString("userId", null);
             username = twitterPref.getString("userName", null);
         }
-        mRecordingsModel = (RecordingsModel) mActivity.getIntent().getSerializableExtra("share");
+        final Intent intent = getIntent();
+        if (intent != null) {
+            String val = intent.getStringExtra("commingForm");
+            if (val.equals("Joined")) {
+                mJoinedModel = (JoinedArtists) mActivity.getIntent().getSerializableExtra("share");
+            } else if (val.equals("Station")) {
+                mRecordingsModel = (RecordingsModel) mActivity.getIntent().getSerializableExtra("share");
+            }
+        }
+
         SharedPreferences prefs = getSharedPreferences("ContactsData", MODE_PRIVATE);
         senderId = prefs.getString("senderId", null);
         receiverId = prefs.getString("receiverId", null);
@@ -690,7 +701,7 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    private void beforeDestroyingWork(){
+    private void beforeDestroyingWork() {
         Intent it = getIntent();
         if (it != null) {
             try {
@@ -1038,13 +1049,12 @@ public class ChatActivity extends AppCompatActivity {
 //                            Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
                             try {
                                 JSONObject json = new JSONObject(str);
-                                String flag=json.getString("flag");
-                                if(flag.equals("success")){
+                                String flag = json.getString("flag");
+                                if (flag.equals("success")) {
                                     JSONObject jsonMsg = json.getJSONObject("usermsg");
                                     String chat_id = jsonMsg.getString("chat_id");
                                     getChatMsgs(chat_id);
-                                }
-                                else{
+                                } else {
                                     JSONObject jsonMsg = json.getJSONObject("usermsg");
                                     String chat_id = jsonMsg.getString("chat_id");
                                     getChatMsgs(chat_id);
@@ -1145,13 +1155,12 @@ public class ChatActivity extends AppCompatActivity {
 //                    Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
                     try {
                         JSONObject json = new JSONObject(response);
-                        String flag=json.getString("flag");
-                        if(flag.equals("success")){
+                        String flag = json.getString("flag");
+                        if (flag.equals("success")) {
                             JSONObject jsonMsg = json.getJSONObject("usermsg");
                             String chat_id = jsonMsg.getString("chat_id");
                             getChatMsgs(chat_id);
-                        }
-                        else{
+                        } else {
                             JSONObject jsonMsg = json.getJSONObject("usermsg");
                             String chat_id = jsonMsg.getString("chat_id");
                             getChatMsgs(chat_id);
@@ -1167,16 +1176,23 @@ public class ChatActivity extends AppCompatActivity {
                     if (getIntent() != null && getIntent().hasExtra("share")) {
 
                         AppHelper.sop("mRecordingsModel==" + mRecordingsModel);
-                        if (mRecordingsModel != null) {
-                            shareCountApi(getIntent().getStringExtra("file_type"));
-                            /*AppHelper.sop("getRecordingUrl="+mRecordingsModel.getrecordingurl());
-                            AppHelper.sop("file_type="+mActivity.getIntent().getStringExtra("file_type"));
-                            AppHelper.sop("shared_by_user="+user_Id);
-                            AppHelper.sop("receiverId="+receiverId);*/
+                        AppHelper.sop("mJoinedModel==" + mJoinedModel);
+                        final Intent intent = getIntent();
 
+                        String val = intent.getStringExtra("commingForm");
+                        if (val.equals("Joined")) {
+                            if (mJoinedModel != null) {
+                                shareCountApi(getIntent().getStringExtra("file_type"));
+                            }
+                        } else if (val.equals("Station")) {
+                            if (mRecordingsModel != null) {
+                                shareCountApi(getIntent().getStringExtra("file_type"));
+                            }
                         }
 
+
                     }
+
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -1253,6 +1269,7 @@ public class ChatActivity extends AppCompatActivity {
             RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
             requestQueue.add(stringRequest);
         }
+
     }
 
     public void getGalleryImages() {
@@ -1534,12 +1551,12 @@ public class ChatActivity extends AppCompatActivity {
                         AppHelper.sop("response=shareCountApi=" + response);
                         Intent intent = new Intent();
                         intent.putExtra("share", "share");
-                        setResult(Activity.RESULT_OK, intent);
                         SharedPreferences.Editor socialStatusPrefEditor = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE).edit();
                         socialStatusPrefEditor.putBoolean(Const.REC_SHARE_STATUS, true);
                         socialStatusPrefEditor.apply();
-                        mRecordingsModel=null;
-
+                        mRecordingsModel = null;
+                        mJoinedModel = null;
+                        setResult(Activity.RESULT_OK, intent);
                     }
                 },
                 new Response.ErrorListener() {
@@ -1555,8 +1572,14 @@ public class ChatActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("shared_by_user", userId);
                 params.put("shared_with", receiverId);
-                params.put("file_id", mRecordingsModel.getRecordingId());
-                params.put("share_topic", mRecordingsModel.getRecordingName());
+                if (mActivity.getIntent().hasExtra("commingForm")) {
+                    params.put("file_id", mJoinedModel.getRecording_id());
+                    params.put("share_topic", mJoinedModel.getRecording_name());
+                } else {
+                    params.put("file_id", mRecordingsModel.getRecordingId());
+                    params.put("share_topic", mRecordingsModel.getRecordingName());
+                }
+
                 params.put("file_type", fileType);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 AppHelper.sop("params==" + params + "\nURL==" + sharefile);
