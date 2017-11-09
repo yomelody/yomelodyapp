@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "870917113323-8dl1fgu81ng0g79jhn6k9gk2cab5ikdm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.instamelody.instamelody",
+            "certificate_hash": "6b2edd93675a6e3ab4aedb94dd414f3a6b7ce66d"
+          }
+        },
+        {
+          "client_id": "870917113323-ln5ge7ps8i9ps7pjrl7r9kf5hn4pa1gb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.instamelody.instamelody",
+            "certificate_hash": "8d48d3716853e827a4486bdb3beb5d87d057049a"
+          }
+        },
+        {
           "client_id": "870917113323-910gomfcufsqkppjbtf4rjaa3akjlqc1.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
