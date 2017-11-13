@@ -45,6 +45,7 @@ import com.android.volley.toolbox.Volley;
 import com.crashlytics.android.Crashlytics;
 import com.instamelody.instamelody.Adapters.CommentsAdapter;
 import com.instamelody.instamelody.Models.Comments;
+import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.utils.AppHelper;
 import com.squareup.picasso.Picasso;
@@ -76,6 +77,10 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.PLAY_COUNT;
 
 public class CommentsActivity extends AppCompatActivity {
 
+    private ArrayList<MelodyInstruments> melodyInstrumentsArrayList = new ArrayList<>();
+    private ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
+    private ArrayList<MediaPlayer> mediaPlayersAll = new ArrayList<MediaPlayer>();
+
     TextView tvUserName, tvMelodyName, tvMelodyLength, tvBpmRate, tvInstrumentsUsed, tvMelodyGenre, tvMelodyDate, tv7, tv8, tv9;
     TextView tvPlayCount, tvLikeCount, tvCommentCount, tvShareCount;
     ImageView userProfileImage, ivMelodyCover, ivPlay, ivPause, ivLikeButton, ivDislikeButton, ivPlayButton;
@@ -98,7 +103,8 @@ public class CommentsActivity extends AppCompatActivity {
     EditText etComment;
 
 
-    String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments, shares, profilePic, cover, melodyID, fileType, RecordingURL, LikeStatus, CoverUrl;
+    String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments,
+            shares, profilePic, cover, melodyID, fileType, RecordingURL, LikeStatus, CoverUrl;
     static ArrayList<Comments> commentList = new ArrayList<>();
     String COMMENT = "comment";
     String FILE_TYPE = "file_type";
@@ -112,6 +118,9 @@ public class CommentsActivity extends AppCompatActivity {
     Activity mActivity;
     private MediaPlayer mediaPlayer;
     private String adapterPosition;
+    int instCount = 1;
+    int durationForSeek, length;
+    private boolean isPausePressed=false;
 
 
     @Override
@@ -361,7 +370,7 @@ public class CommentsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                progressDialog = new ProgressDialog(v.getContext());
+                progressDialog = new ProgressDialog(mActivity);
                 progressDialog.setMessage("Loading...");
                 progressDialog.show();
 
@@ -369,55 +378,129 @@ public class CommentsActivity extends AppCompatActivity {
                 melodySlider.setVisibility(VISIBLE);
                 rlSeekbarTracer.setVisibility(VISIBLE);
 
-                String position;
+                final String position;
                 position = melodyID;
 
-                String play = tvPlayCount.getText().toString().trim();
-                int playValue = Integer.parseInt(play) + 1;
-                play = String.valueOf(playValue);
-                tvPlayCount.setText(play);
-
-                fetchViewCount(userId, position);
                 ParseContents pc = new ParseContents(mActivity);
+                instrumentList = pc.getInstruments();
 
-                mediaPlayer = new MediaPlayer();
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                try {
-                    mediaPlayer.setDataSource(RecordingURL);
+                instCount = 1;
 
-                } catch (IOException e) {
-                    e.printStackTrace();
+                melodyInstrumentsArrayList.clear();
+                for (int i = 0; i < instrumentList.size(); i++) {
+                    if (position.equalsIgnoreCase("" + instrumentList.get(i).getMelodyPacksId())) {
+                        melodyInstrumentsArrayList.add(instrumentList.get(i));
+                    }
                 }
-                mediaPlayer.prepareAsync();
-                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                    @Override
-                    public void onPrepared(MediaPlayer mediaPlayer) {
-                        progressDialog.dismiss();
-                        ivPlay.setVisibility(GONE);
-                        ivPause.setVisibility(VISIBLE);
-                        mediaPlayer.start();
-                        primarySeekBarProgressUpdater();
+
+                AppHelper.sop("=melodyInstrumentsArrayList=size=" + melodyInstrumentsArrayList.size() + "=position=" + position);
+
+                mediaPlayersAll.clear();
+                for (int i = 0; i < melodyInstrumentsArrayList.size(); i++) {
+                    try {
+                        MediaPlayer mpall = new MediaPlayer();
+                        mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                        mpall.setDataSource(melodyInstrumentsArrayList.get(i).getInstrumentFile());
+                        mpall.prepareAsync();
+                        mediaPlayersAll.add(mpall);
+//                            AppHelper.sop("inst=len="+melodyInstrumentsArrayList.get(i).getInstrumentLength());
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
-                });
-                mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                    @Override
-                    public boolean onError(MediaPlayer MediaPlayer, int what, int extra) {
-                        progressDialog.dismiss();
-                        return false;
-                    }
-                });
-                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mediaPlayer) {
-//                        duration = mediaPlayer.getDuration();
-                        ivPause.setVisibility(GONE);
-                        ivPlay.setVisibility(VISIBLE);
-                        melodySlider.setVisibility(GONE);
-                        rlSeekbarTracer.setVisibility(GONE);
-                        melodySlider.setProgress(0);
-                        progressDialog.dismiss();
-                    }
-                });
+                }
+
+                for (int i=0; i<mediaPlayersAll.size(); i++) {
+                    final MediaPlayer mediaPlayer = mediaPlayersAll.get(i);
+                    // duration = mediaPlayer.getDuration();
+                    final int finalI = i;
+
+                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mMediaPlayer) {
+
+                            if (finalI == 0){
+                                ivPlay.setVisibility(GONE);
+                                ivPause.setVisibility(VISIBLE);
+                                melodySlider.setVisibility(VISIBLE);
+                                rlSeekbarTracer.setVisibility(VISIBLE);
+                                durationForSeek = mediaPlayersAll.get(0).getDuration();
+                                mediaPlayersAll.get(0).seekTo(length);
+                                if (!isPausePressed){
+                                    String play = tvPlayCount.getText().toString().trim();
+                                    int playValue = Integer.parseInt(play) + 1;
+                                    play = String.valueOf(playValue);
+                                    tvPlayCount.setText(play);
+
+                                    fetchViewCount(userId, position);
+                                }
+
+                            }
+                            if (finalI==mediaPlayersAll.size()-1){
+                                progressDialog.dismiss();
+                            }
+                            mMediaPlayer.start();
+                            if (finalI == 0){
+                                primarySeekBarProgressUpdater();
+                            }
+
+                        }
+                    });
+                    /*mediaPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+//                        @Override
+//                        public boolean onInfo(MediaPlayer mediaPlayer, int what, int extra) {
+//                            if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
+//                                holder.progressDialog.show();
+//                            } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
+//                                holder.progressDialog.dismiss();
+//                            }
+//                            return false;
+//                        }
+                    });*/
+                    mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                        @Override
+                        public boolean onError(MediaPlayer MediaPlayer, int what, int extra) {
+                            progressDialog.dismiss();
+                            instCount++;
+                            if (instCount == mediaPlayersAll.size()){
+                                melodySlider.setProgress(0);
+                                durationForSeek = 0;
+                                length = 0;
+                                isPausePressed=false;
+                                ivPause.setVisibility(GONE);
+                                ivPlay.setVisibility(VISIBLE);
+                                melodySlider.setVisibility(GONE);
+                                rlSeekbarTracer.setVisibility(GONE);
+                                melodySlider.setProgress(0);
+                                AppHelper.sop("setOnErrorListener==if=" + instCount);
+                                killMediaPlayer();
+                            }
+
+                            AppHelper.sop("setOnErrorListener==");
+                            return false;
+                        }
+                    });
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mMediaPlayer) {
+                            AppHelper.sop("setOnCompletionListener=instCount=" + instCount + "=melodyInstrumentsArrayList=size=" + melodyInstrumentsArrayList.size());
+//                            tempDuration=mMediaPlayer.getDuration();
+                            if (instCount == mediaPlayersAll.size()){
+                                melodySlider.setProgress(0);
+                                durationForSeek = 0;
+                                length = 0;
+                                isPausePressed=false;
+                                ivPause.setVisibility(GONE);
+                                ivPlay.setVisibility(VISIBLE);
+                                melodySlider.setVisibility(GONE);
+                                rlSeekbarTracer.setVisibility(GONE);
+                                melodySlider.setProgress(0);
+                                AppHelper.sop("setOnCompletionListener=instCount=if=" + instCount + "=melodyInstrumentsArrayList=size=" + melodyInstrumentsArrayList.size());
+                                killMediaPlayer();
+                            }
+                            instCount++;
+                        }
+                    });
+                }
 
             }
         });
@@ -425,15 +508,20 @@ public class CommentsActivity extends AppCompatActivity {
         ivPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ivPlay.setVisibility(VISIBLE);
-                ivPause.setVisibility(GONE);
-                try {
-                    mediaPlayer.pause();
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
 
-                melodySlider.setProgress(0);
+                for (MediaPlayer mediaPlayer: mediaPlayersAll) {
+                    try {
+                        ivPlay.setVisibility(VISIBLE);
+                        ivPause.setVisibility(GONE);
+                        if (mediaPlayer.isPlaying()){
+                            mediaPlayer.pause();
+                        }
+                        length = mediaPlayersAll.get(0).getCurrentPosition();
+                        isPausePressed=true;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         });
 
@@ -442,11 +530,11 @@ public class CommentsActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
-                if (mediaPlayer != null && fromUser) {
+                if (fromUser) {
                     try {
-                        int playPositionInMilliseconds = mediaPlayer.getDuration() / 100 * melodySlider.getProgress();
-                        mediaPlayer.seekTo(playPositionInMilliseconds);
-                    } catch (IllegalStateException e) {
+                        int playPositionInMilliseconds = mediaPlayersAll.get(0).getDuration() / 100 * melodySlider.getProgress();
+                        mediaPlayersAll.get(0).seekTo(playPositionInMilliseconds);
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 
@@ -481,6 +569,9 @@ public class CommentsActivity extends AppCompatActivity {
                     }
 
                 }
+                sendBroadcast(new Intent("finish_activity_melody"));
+                finish();
+
             }
         });
 
@@ -489,15 +580,23 @@ public class CommentsActivity extends AppCompatActivity {
     private void primarySeekBarProgressUpdater() {
         Handler mHandler1 = new Handler();
         try {
-            melodySlider.setProgress((int) (((float) mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration()) * 100));// This math construction give a percentage of "was playing"/"song length"
-            if (mediaPlayer.isPlaying()) {
-                Runnable notification = new Runnable() {
-                    public void run() {
-                        primarySeekBarProgressUpdater();
-                    }
-                };
-                mHandler1.postDelayed(notification, 100);
+            if (mediaPlayersAll.size()>0 ){
+                int prog = (int) (((float) mediaPlayersAll.get(0).getCurrentPosition() / durationForSeek) * 100);
+                melodySlider.setProgress(prog);// This math construction give a percentage of "was playing"/"song length"
+//                AppHelper.sop("prog="+prog+"=duration="+duration+"=cur=Pos="+tempMediaPlayer.getCurrentPosition()+
+//                "=isPlaying="+tempMediaPlayer.isPlaying());
+                if (mediaPlayersAll.get(0).isPlaying()) {
+                    Runnable notification = new Runnable() {
+                        public void run() {
+                            primarySeekBarProgressUpdater();
+                        }
+                    };
+                    mHandler1.postDelayed(notification, 100);
+//                    AppHelper.sop("prog="+prog+"=duration="+duration+"=cur=Pos="+mediaPlayersAll.get(0).getCurrentPosition()+
+//                "=isPlaying="+mediaPlayersAll.get(0).isPlaying());
+                }
             }
+
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -730,16 +829,26 @@ public class CommentsActivity extends AppCompatActivity {
         }
     }
 
+    public void killMediaPlayer() {
+
+        for (MediaPlayer mediaPlayer: mediaPlayersAll) {
+            try {
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.reset();
+                }
+                mediaPlayer.release();
+//                mediaPlayer = null;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        mediaPlayersAll.clear();
+        isPausePressed=false;
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mediaPlayer != null) {
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.stop();
-            }
-            mediaPlayer.reset();
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
+        killMediaPlayer();
     }
 }

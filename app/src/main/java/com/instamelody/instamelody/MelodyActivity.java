@@ -105,6 +105,8 @@ public class MelodyActivity extends AppCompatActivity {
     BroadcastReceiver mRegistrationBroadcastReceiver;
     int totalCount = 0;
     private Activity mActivity;
+    private BroadcastReceiver broadcast_reciever_kill;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -411,6 +413,20 @@ public class MelodyActivity extends AppCompatActivity {
             }
         });
 
+
+        broadcast_reciever_kill = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context arg0, Intent intent) {
+                String action = intent.getAction();
+                if (action.equals("finish_activity_melody")) {
+                    finish();
+                }
+            }
+        };
+
+        registerReceiver(broadcast_reciever_kill, new IntentFilter("finish_activity_melody"));
+
     }
 
     @Override
@@ -429,7 +445,7 @@ public class MelodyActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         clearSharePrefMelody();
-
+        unregisterReceiver(broadcast_reciever_kill);
     }
 
     @Override

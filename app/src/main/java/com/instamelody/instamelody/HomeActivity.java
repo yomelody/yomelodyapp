@@ -1,6 +1,7 @@
 package com.instamelody.instamelody;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -103,6 +104,8 @@ public class HomeActivity extends AppCompatActivity {
     int totalCount = 0;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     String joinRecordingId;
+    private Activity mActivity;
+
 
     @TargetApi(16)
     @Override
@@ -113,6 +116,7 @@ public class HomeActivity extends AppCompatActivity {
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
 //        Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_home);
+        mActivity=HomeActivity.this;
         if (checkPermissions()) {
 
         } else {
@@ -255,31 +259,22 @@ public class HomeActivity extends AppCompatActivity {
         SignOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences.Editor editor = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
-                editor.clear();
-                editor.commit();
-                SharedPreferences.Editor tEditor = getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
-                tEditor.clear();
-                tEditor.commit();
-                SharedPreferences.Editor fbeditor = getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
-                fbeditor.clear();
-                fbeditor.commit();
-                SharedPreferences.Editor profileEditor1 = getSharedPreferences("ProfileUpdate", MODE_PRIVATE).edit();
-                profileEditor1.clear();
-                profileEditor1.commit();
-                SharedPreferences.Editor profileImageEditor1 = getSharedPreferences("ProfileImage", MODE_PRIVATE).edit();
-                profileImageEditor1.clear();
-                profileImageEditor1.commit();
 
-                SharedPreferences.Editor socialStatusPreff = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE).edit();
-                socialStatusPreff.clear();
-                socialStatusPreff.commit();
-
-                LoginManager.getInstance().logOut();
-                SignOut.setVisibility(View.INVISIBLE);
-                SignIn.setVisibility(View.VISIBLE);
-                logOut();
-                HomeActivity.this.recreate();
+                new AlertDialog.Builder(mActivity)
+                        .setMessage("Are you sure you want to sign out?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                clearPreff();
+                                LoginManager.getInstance().logOut();
+                                SignOut.setVisibility(View.INVISIBLE);
+                                SignIn.setVisibility(View.VISIBLE);
+                                logOut();
+                                HomeActivity.this.recreate();
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
             }
         });
 
@@ -628,6 +623,28 @@ public class HomeActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+    }
+
+    private void clearPreff(){
+        SharedPreferences.Editor editor = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
+        editor.clear();
+        editor.commit();
+        SharedPreferences.Editor tEditor = getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
+        tEditor.clear();
+        tEditor.commit();
+        SharedPreferences.Editor fbeditor = getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
+        fbeditor.clear();
+        fbeditor.commit();
+        SharedPreferences.Editor profileEditor1 = getSharedPreferences("ProfileUpdate", MODE_PRIVATE).edit();
+        profileEditor1.clear();
+        profileEditor1.commit();
+        SharedPreferences.Editor profileImageEditor1 = getSharedPreferences("ProfileImage", MODE_PRIVATE).edit();
+        profileImageEditor1.clear();
+        profileImageEditor1.commit();
+
+        SharedPreferences.Editor socialStatusPreff = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE).edit();
+        socialStatusPreff.clear();
+        socialStatusPreff.commit();
     }
 }
 

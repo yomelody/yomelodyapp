@@ -54,6 +54,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -82,8 +84,8 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     ArrayList<MelodyInstruments> melodyInstrumentsArrayList = new ArrayList<>();
     ArrayList<String> mpids = new ArrayList<>();
     private static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
-    ArrayList<UserMelodyCard> userMelodyCardArrayList = new ArrayList<>();
-    ArrayList<UserMelodyPlay> userMelodyPlays = new ArrayList<>();
+//    ArrayList<UserMelodyCard> userMelodyCardArrayList = new ArrayList<>();
+//    ArrayList<UserMelodyPlay> userMelodyPlays = new ArrayList<>();
     String melodyName, fetchRecordingUrl;
     RecyclerView.LayoutManager layoutManager;
     String USER_TYPE = "user_type";
@@ -109,22 +111,29 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
     private Activity mActivity;
     String position, audioUrl;
     private RecyclerView.ViewHolder lastModifiedHoled = null;
-    int instCount = 0;
-    public static ArrayList<MediaPlayer> mediaPlayersAll = new ArrayList<MediaPlayer>();
-    public static MediaPlayer mpall;
+    int instCount = 1;
+    private ArrayList<MediaPlayer> mediaPlayersAll = new ArrayList<MediaPlayer>();
+//    private MediaPlayer mpall;
+    private int tempDuration = -1;
+    private boolean isPausePressed=false;
+//    private MediaPlayer tempMediaPlayer;
+    private Handler mHandler1 ;
+
+
 
     public MelodyCardListAdapter(ArrayList<MelodyCard> melodyList, Context context) {
         this.melodyList = melodyList;
 
         this.context = context;
         mActivity = (Activity) context;
+        mHandler1 = new Handler();
     }
 
-    public MelodyCardListAdapter(ArrayList<UserMelodyCard> melodyList, ArrayList<UserMelodyPlay> melodyPools, Context context) {
+    /*public MelodyCardListAdapter(ArrayList<UserMelodyCard> melodyList, ArrayList<UserMelodyPlay> melodyPools, Context context) {
         this.userMelodyCardArrayList = melodyList;
         this.userMelodyPlays = melodyPools;
         this.context = context;
-    }
+    }*/
 
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -278,6 +287,9 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 @Override
                 public void onClick(View view) {
                     if (!userId.equals("") && userId != null) {
+                        ivPlay.setVisibility(VISIBLE);
+                        ivPause.setVisibility(GONE);
+                        melodySlider.setProgress(0);
                         if (mediaPlayer != null) {
                             try {
                                 ivPlay.setVisibility(VISIBLE);
@@ -288,7 +300,6 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                                     e.printStackTrace();
                                 }
 
-                                melodySlider.setProgress(0);
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
@@ -390,17 +401,25 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         }
 
         private void primarySeekBarProgressUpdater() {
-            Handler mHandler1 = new Handler();
+
             try {
-                melodySlider.setProgress((int) (((float) mediaPlayer.getCurrentPosition() / duration) * 100));// This math construction give a percentage of "was playing"/"song length"
-                if (mediaPlayer.isPlaying()) {
-                    Runnable notification = new Runnable() {
-                        public void run() {
-                            primarySeekBarProgressUpdater();
-                        }
-                    };
-                    mHandler1.postDelayed(notification, 100);
+                if (mediaPlayersAll.size()>0 ){
+                    int prog = (int) (((float) mediaPlayersAll.get(0).getCurrentPosition() / duration) * 100);
+                    melodySlider.setProgress(prog);// This math construction give a percentage of "was playing"/"song length"
+//                AppHelper.sop("prog="+prog+"=duration="+duration+"=cur=Pos="+tempMediaPlayer.getCurrentPosition()+
+//                "=isPlaying="+tempMediaPlayer.isPlaying());
+                    if (mediaPlayersAll.get(0).isPlaying()) {
+                        Runnable notification = new Runnable() {
+                            public void run() {
+                                primarySeekBarProgressUpdater();
+                            }
+                        };
+                        mHandler1.postDelayed(notification, 100);
+//                    AppHelper.sop("prog="+prog+"=duration="+duration+"=cur=Pos="+mediaPlayersAll.get(0).getCurrentPosition()+
+//                "=isPlaying="+mediaPlayersAll.get(0).isPlaying());
+                    }
                 }
+
             } catch (Throwable e) {
                 e.printStackTrace();
             }
@@ -465,14 +484,13 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                     holder.progressDialog.show();
                     // holder.ivPause.setVisibility(VISIBLE);
                     position = melodyList.get(listPosition).getMelodyPackId();
-//                melodyInstrumentsArrayList = melodyList.get(listPosition).getMelodyInstrumentsList();
 
                     ParseContents pc = new ParseContents(context);
                     instrumentList = pc.getInstruments();
                     if (listPosition < instrumentList.size()) {
                         audioUrl = melody.getMelodyURL();
                     }
-                    instCount = 0;
+                    instCount = 1;
 
                     melodyInstrumentsArrayList.clear();
                     for (int i = 0; i < instrumentList.size(); i++) {
@@ -485,72 +503,92 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         audioUrl = melodyInstrumentsArrayList.get(0).getInstrumentFile();
                     }
 
-                    AppHelper.sop("=melodyInstrumentsArrayList=size=" + melodyInstrumentsArrayList.size() + "=position=" + position + "=listPosition=" + listPosition);
-                    //      if (mediaPlayer != null) {
-                    try {
-                        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                            duration = 0;
-                            length = 0;
-                            mediaPlayer.stop();
-                            mediaPlayer.reset();
-                            mediaPlayer.release();
-                            // mediaPlayer = null;
-                            //holder.ivPause.setVisibility(GONE);
-                            if (lastModifiedHoled != null) {
-                                int lastPosition = lastModifiedHoled.getAdapterPosition();
-                                lastModifiedHoled.itemView.findViewById(R.id.ivPlay).setVisibility(VISIBLE);
-                                lastModifiedHoled.itemView.findViewById(R.id.ivPause).setVisibility(GONE);
-                                lastModifiedHoled.itemView.findViewById(R.id.melodySlider).setVisibility(GONE);
-                                lastModifiedHoled.itemView.findViewById(R.id.rlSeekbarTracer).setVisibility(GONE);
-                           /* lastModifiedHoled.itemView.setBackgroundColor(Color.TRANSPARENT);
-                            lastModifiedHoled.txtIndustry.setTextColor(context.getResources().getColor(R.color.text_color_blue));*/
-                                // notifyItemChanged(lastPosition);
-                            }
-                        /*View view = null;
-                        holder.ivPause.setVisibility(VISIBLE);
-                        view = holder.recyclerView.getChildAt(1);
-                        holder.ivPause = (ImageView) view.findViewById(R.id.ivPause);
-                        holder.ivPause.setVisibility(VISIBLE);*/
+                    /*Collections.sort(melodyInstrumentsArrayList, new Comparator<MelodyInstruments>(){
+                        public int compare(MelodyInstruments s1, MelodyInstruments s2) {
+                            int s1int=Integer.parseInt(s1.getInstrumentLength());
+                            int s2int=(Integer.parseInt(s2.getInstrumentLength()));
+                            // -1 - less than, 1 - greater than, 0 - equal, all inversed for descending
+                            return s1int > s2int ? -1 : (s1int < s2int) ? 1 : 0;
+//                            return s1int.compareTo(s2int);
                         }
-                    } catch (Throwable e) {
-                        e.printStackTrace();
+                    });*/
+
+                    AppHelper.sop("=melodyInstrumentsArrayList=size=" + melodyInstrumentsArrayList.size() + "=position=" + position + "=listPosition=" + listPosition);
+
+
+                    for (MediaPlayer mp: mediaPlayersAll) {
+                        try {
+                            if (mp != null && mp.isPlaying()) {
+                                duration = 0;
+                                length = 0;
+                                mp.stop();
+                                mp.reset();
+                                mp.release();
+//                                AppHelper.sop("lastModifiedHoled=="+lastModifiedHoled);
+                                if (lastModifiedHoled != null) {
+                                    lastModifiedHoled.itemView.findViewById(R.id.ivPlay).setVisibility(VISIBLE);
+                                    lastModifiedHoled.itemView.findViewById(R.id.ivPause).setVisibility(GONE);
+                                    lastModifiedHoled.itemView.findViewById(R.id.melodySlider).setVisibility(GONE);
+                                    lastModifiedHoled.itemView.findViewById(R.id.rlSeekbarTracer).setVisibility(GONE);
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
 
-
-                    //   }
-
-
-                    mediaPlayer = new MediaPlayer();
-                    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                    try {
-                        mediaPlayer.setDataSource(audioUrl);
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    mediaPlayersAll.clear();
+                    for (int i = 0; i < melodyInstrumentsArrayList.size(); i++) {
+                        try {
+                            MediaPlayer mpall = new MediaPlayer();
+                            mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                            mpall.setDataSource(melodyInstrumentsArrayList.get(i).getInstrumentFile());
+                            mpall.prepareAsync();
+                            mediaPlayersAll.add(mpall);
+//                            AppHelper.sop("inst=len="+melodyInstrumentsArrayList.get(i).getInstrumentLength());
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
-                    mediaPlayer.prepareAsync();
-                    // duration = mediaPlayer.getDuration();
-                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(MediaPlayer mediaPlayer) {
+
+                    for (int i=0; i<mediaPlayersAll.size(); i++) {
+                        final MediaPlayer mediaPlayer = mediaPlayersAll.get(i);
+                        // duration = mediaPlayer.getDuration();
+                        final int finalI = i;
+
+                        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                            @Override
+                            public void onPrepared(MediaPlayer mMediaPlayer) {
 //                        lastModifiedHoled.itemView.findViewById(R.id.ivPlay).setVisibility(GONE);
 //                        lastModifiedHoled.itemView.findViewById(R.id.ivPause).setVisibility(VISIBLE);
-                            holder.ivPlay.setVisibility(GONE);
-                            holder.ivPause.setVisibility(VISIBLE);
-                            holder.melodySlider.setVisibility(VISIBLE);
-                            holder.rlSeekbarTracer.setVisibility(VISIBLE);
-                            mediaPlayer.seekTo(length);
-                            mediaPlayer.start();
-                            holder.progressDialog.dismiss();
-                            duration = mediaPlayer.getDuration();
-                            String play = holder.tvPlayCount.getText().toString().trim();
-                            int playValue = Integer.parseInt(play) + 1;
-                            play = String.valueOf(playValue);
-                            holder.tvPlayCount.setText(play);
-                            fetchViewCount(userId, melody.getMelodyPackId());
-                            holder.primarySeekBarProgressUpdater();
-                        }
-                    });
+
+                                if (finalI == 0){
+                                    holder.ivPlay.setVisibility(GONE);
+                                    holder.ivPause.setVisibility(VISIBLE);
+                                    holder.melodySlider.setVisibility(VISIBLE);
+                                    holder.rlSeekbarTracer.setVisibility(VISIBLE);
+                                    duration = mediaPlayersAll.get(0).getDuration();
+                                    mediaPlayersAll.get(0).seekTo(length);
+                                    if (!isPausePressed){
+                                        String play = holder.tvPlayCount.getText().toString().trim();
+                                        int playValue = Integer.parseInt(play) + 1;
+                                        play = String.valueOf(playValue);
+                                        holder.tvPlayCount.setText(play);
+                                        fetchViewCount(userId, melody.getMelodyPackId());
+                                    }
+
+
+                                }
+                                if (finalI==mediaPlayersAll.size()-1){
+                                    holder.progressDialog.dismiss();
+                                }
+                                mMediaPlayer.start();
+                                if (finalI == 0){
+                                    holder.primarySeekBarProgressUpdater();
+                                }
+
+                            }
+                        });
                     /*mediaPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
 //                        @Override
 //                        public boolean onInfo(MediaPlayer mediaPlayer, int what, int extra) {
@@ -562,58 +600,54 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 //                            return false;
 //                        }
                     });*/
-                    mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                        @Override
-                        public boolean onError(MediaPlayer MediaPlayer, int what, int extra) {
-                            holder.progressDialog.dismiss();
-                            return false;
-                        }
-                    });
-                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mMediaPlayer) {
-                            holder.melodySlider.setProgress(0);
-                            duration = 0;
-                            length = 0;
-                            instCount++;
-                            AppHelper.sop("setOnCompletionListener=instCount=" + instCount + "=melodyInstrumentsArrayList=size=" + melodyInstrumentsArrayList.size());
-                            try {
-                                if (instCount < melodyInstrumentsArrayList.size()) {
-                                    holder.progressDialog.show();
-                                    mediaPlayer.reset();
-                                    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                                    mediaPlayer.setDataSource(melodyInstrumentsArrayList.get(instCount).getInstrumentFile());
-                                    mediaPlayer.prepareAsync();
-                                } else {
+                        mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                            @Override
+                            public boolean onError(MediaPlayer MediaPlayer, int what, int extra) {
+                                holder.progressDialog.dismiss();
+                                instCount++;
+                                if (instCount == mediaPlayersAll.size()){
+                                    holder.melodySlider.setProgress(0);
+                                    duration = 0;
+                                    length = 0;
+                                    isPausePressed=false;
                                     lastModifiedHoled.itemView.findViewById(R.id.ivPlay).setVisibility(VISIBLE);
                                     lastModifiedHoled.itemView.findViewById(R.id.ivPause).setVisibility(GONE);
                                     lastModifiedHoled.itemView.findViewById(R.id.melodySlider).setVisibility(GONE);
                                     lastModifiedHoled.itemView.findViewById(R.id.rlSeekbarTracer).setVisibility(GONE);
+                                    AppHelper.sop("setOnErrorListener==if=" + instCount);
+                                    mHandler1.removeCallbacksAndMessages(null);
+                                    killMediaPlayer();
                                 }
-                            } catch (Exception e) {
-                                e.printStackTrace();
+
+                                AppHelper.sop("setOnErrorListener==");
+                                return false;
                             }
+                        });
+                        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mMediaPlayer) {
+                                AppHelper.sop("setOnCompletionListener=instCount=" + instCount + "=melodyInstrumentsArrayList=size=" + melodyInstrumentsArrayList.size());
+                                tempDuration=mMediaPlayer.getDuration();
+                                if (instCount == mediaPlayersAll.size()){
+                                    holder.melodySlider.setProgress(0);
+                                    duration = 0;
+                                    length = 0;
+                                    isPausePressed=false;
+                                    lastModifiedHoled.itemView.findViewById(R.id.ivPlay).setVisibility(VISIBLE);
+                                    lastModifiedHoled.itemView.findViewById(R.id.ivPause).setVisibility(GONE);
+                                    lastModifiedHoled.itemView.findViewById(R.id.melodySlider).setVisibility(GONE);
+                                    lastModifiedHoled.itemView.findViewById(R.id.rlSeekbarTracer).setVisibility(GONE);
+                                    AppHelper.sop("setOnCompletionListener=instCount=if=" + instCount + "=melodyInstrumentsArrayList=size=" + melodyInstrumentsArrayList.size());
+                                    mHandler1.removeCallbacksAndMessages(null);
+                                    killMediaPlayer();
+                                }
+                                instCount++;
+                            }
+                        });
+                    }
 
-
-                        }
-                    });
 
                     lastModifiedHoled = holder;
-
-                    //        mediaPlayer.seekTo(length);
-                    //      mediaPlayer.start();
-//                    if (mediaPlayer.equals(duration)) {
-//                        try {
-//                            playAudio(audioUrl);
-//                            primarySeekBarProgressUpdater();
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-//
-//                    }
-
 
                 }
             });
@@ -622,14 +656,20 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             holder.ivPause.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    holder.ivPlay.setVisibility(VISIBLE);
-                    holder.ivPause.setVisibility(GONE);
-                    try {
-                        mediaPlayer.pause();
-                    } catch (Throwable e) {
-                        e.printStackTrace();
+
+                    for (MediaPlayer mediaPlayer: mediaPlayersAll) {
+                        try {
+                            holder.ivPlay.setVisibility(VISIBLE);
+                            holder.ivPause.setVisibility(GONE);
+                            if (mediaPlayer.isPlaying()){
+                                mediaPlayer.pause();
+                            }
+                            length = mediaPlayersAll.get(0).getCurrentPosition();
+                            isPausePressed=true;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
-                    length = mediaPlayer.getCurrentPosition();
                 }
             });
             holder.melodySlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -637,37 +677,18 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
-//                    int sliderSize = melodySlider.getWidth();
-//                    int rlivSize = rlSeekbarTracer.getWidth();
-//
-//                    tv7.setText(Integer.toString(sliderSize));
-//                    tv8.setText(Integer.toString(progress));
-//                    tv9.setText(Integer.toString(rlivSize));
-//
-//                    int maxProgress = melodySlider.getMax();
-//                    int rate = (sliderSize - 20) / maxProgress;
-//
-//                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) rlSeekbarTracer.getLayoutParams();
-//                    params.width = (40 + (progress * rate));
-//                    rlSeekbarTracer.setLayoutParams(params);
 
-//                    int mCurrentPosition = mediaPlayer.getCurrentPosition() / 1000;
-//                    int mDuration = mediaPlayer.getDuration() / 1000;
-                    //   UtilsRecording utilRecording = new UtilsRecording();
-                    //   int progress1 = utilRecording.getProgressPercentage(mCurrentPosition, mDuration);
-
-                    if (mediaPlayer != null && fromUser) {
-                        try {
-                            int playPositionInMilliseconds = mediaPlayer.getDuration() / 100 * holder.melodySlider.getProgress();
-                            mediaPlayer.seekTo(playPositionInMilliseconds);
-                        } catch (IllegalStateException e) {
-                            e.printStackTrace();
-                        }
-
-//                        seekBar.setProgress(progress);
-                    } else {
-                        // the event was fired from code and you shouldn't call player.seekTo()
+                    if (fromUser) {
+//                        for (MediaPlayer mediaPlayer: mediaPlayersAll) {
+                            try {
+                                int playPositionInMilliseconds = mediaPlayersAll.get(0).getDuration() / 100 * holder.melodySlider.getProgress();
+                                mediaPlayersAll.get(0).seekTo(playPositionInMilliseconds);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+//                        }
                     }
+
                 }
 
                 @Override
@@ -738,7 +759,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        //       Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
+                        AppHelper.sop("response=fetchViewCount="+response);
                         JSONObject jsonObject, respObject;
 
                         try {
@@ -770,6 +791,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 //    params.put(TYPE, "admin_melody");
                 params.put(TYPE, "melody");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params=fetchViewCount="+params+"\nURL="+PLAY_COUNT);
                 return params;
             }
         };
@@ -777,38 +799,22 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         requestQueue1.add(stringRequest);
     }
 
-    private void playAudio(String url) throws Exception {
-        killMediaPlayer();
-
-        mediaPlayer = new MediaPlayer();
-        //    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mediaPlayer.setDataSource(url);
-        mediaPlayer.prepare();
-        mediaPlayer.start();
-//        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-//            @Override
-//            public void onPrepared(MediaPlayer mp) {
-//                mp.start();
-//            }
-//        });
-        mediaPlayer.seekTo(playerPos);
-        //  mediaPlayer.start();
-        duration = mediaPlayer.getDuration();
-    }
 
     public void killMediaPlayer() {
-        if (mediaPlayer != null) {
+
+        for (MediaPlayer mediaPlayer: mediaPlayersAll) {
             try {
                 if (mediaPlayer.isPlaying()) {
                     mediaPlayer.reset();
                 }
                 mediaPlayer.release();
-                mediaPlayer = null;
+//                mediaPlayer = null;
             } catch (Exception e) {
                 e.printStackTrace();
-//                Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
             }
         }
+        mediaPlayersAll.clear();
+        isPausePressed=false;
     }
 
     public static ArrayList<MelodyCard> returnMelodyList() {
@@ -857,67 +863,4 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         requestQueue1.add(stringRequest);
     }
 
-    private class PrepareInstruments extends AsyncTask<String, Void, Bitmap> {
-
-        protected void onPreExecute() {
-            try {
-                try {
-
-                    if (mediaPlayersAll.size() > 0) {
-                        mediaPlayersAll.clear();
-                    }
-
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-
-            try {
-                melodyInstrumentsArrayList.get(0).getInstrumentFile();
-                    for (int i = 0; i < melodyInstrumentsArrayList.size()-1; i++) {
-                        Log.d("Instrument url-:", "" + melodyInstrumentsArrayList.get(i).getInstrumentFile());
-                        mpall = new MediaPlayer();
-                        mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                        mpall.setDataSource(melodyInstrumentsArrayList.get(i).getInstrumentFile());
-                        try {
-
-                            mpall.prepare();
-
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                        mediaPlayersAll.add(mpall);
-                    }
-
-
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            try {
-                for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-
-                    try {
-                        mediaPlayersAll.get(i).start();
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-
-                }
-
-
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }
