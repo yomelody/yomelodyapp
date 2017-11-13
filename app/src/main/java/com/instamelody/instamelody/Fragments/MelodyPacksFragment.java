@@ -963,10 +963,17 @@ public class MelodyPacksFragment extends Fragment {
         };
     }
 
-
-    @Override
+    /*@Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (adapter!=null){
+            ((MelodyCardListAdapter)adapter).killMediaPlayer();
+        }
+    }*/
+
+    @Override
+    public void onStop() {
+        super.onStop();
         if (adapter!=null){
             ((MelodyCardListAdapter)adapter).killMediaPlayer();
         }

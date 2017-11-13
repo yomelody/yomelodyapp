@@ -279,33 +279,25 @@ public class SettingsActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
 
-                    SharedPreferences.Editor editor = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
-                    editor.clear();
-                    editor.commit();
-                    SharedPreferences.Editor tEditor = getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
-                    tEditor.clear();
-                    tEditor.commit();
-                    SharedPreferences.Editor fbeditor = getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
-                    fbeditor.clear();
-                    fbeditor.commit();
-                    SharedPreferences.Editor profileEditor = getSharedPreferences("ProfileUpdate", MODE_PRIVATE).edit();
-                    profileEditor.clear();
-                    profileEditor.commit();
-                    SharedPreferences.Editor profileImageEditor = getSharedPreferences("ProfileImage", MODE_PRIVATE).edit();
-                    profileImageEditor.clear();
-                    profileImageEditor.commit();
 
-                    SharedPreferences.Editor socialStatusPreff = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE).edit();
-                    socialStatusPreff.clear();
-                    socialStatusPreff.commit();
 
-                    LoginManager.getInstance().logOut();
-                    HomeActivity.SignOut.setVisibility(View.INVISIBLE);
-                    HomeActivity.SignIn.setVisibility(View.VISIBLE);
-                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    SettingsActivity.this.recreate();
+                    new android.support.v7.app.AlertDialog.Builder(mActivity)
+                            .setMessage("Are you sure you want to sign out?")
+                            .setCancelable(false)
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    clearPreff();
+                                    LoginManager.getInstance().logOut();
+                                    HomeActivity.SignOut.setVisibility(View.INVISIBLE);
+                                    HomeActivity.SignIn.setVisibility(View.VISIBLE);
+                                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
+//                                    SettingsActivity.this.recreate();
+                                }
+                            })
+                            .setNegativeButton("No", null)
+                            .show();
                 }
             });
 
@@ -475,6 +467,28 @@ public class SettingsActivity extends AppCompatActivity {
 //        });
 
         }
+    }
+
+    private void clearPreff(){
+        SharedPreferences.Editor editor = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
+        editor.clear();
+        editor.commit();
+        SharedPreferences.Editor tEditor = getSharedPreferences("TwitterPref", MODE_PRIVATE).edit();
+        tEditor.clear();
+        tEditor.commit();
+        SharedPreferences.Editor fbeditor = getSharedPreferences("MyFbPref", MODE_PRIVATE).edit();
+        fbeditor.clear();
+        fbeditor.commit();
+        SharedPreferences.Editor profileEditor1 = getSharedPreferences("ProfileUpdate", MODE_PRIVATE).edit();
+        profileEditor1.clear();
+        profileEditor1.commit();
+        SharedPreferences.Editor profileImageEditor1 = getSharedPreferences("ProfileImage", MODE_PRIVATE).edit();
+        profileImageEditor1.clear();
+        profileImageEditor1.commit();
+
+        SharedPreferences.Editor socialStatusPreff = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE).edit();
+        socialStatusPreff.clear();
+        socialStatusPreff.commit();
     }
 
     @Override

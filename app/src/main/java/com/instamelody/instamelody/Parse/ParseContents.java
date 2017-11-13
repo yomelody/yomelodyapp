@@ -165,7 +165,7 @@ public class ParseContents {
 //                    AppHelper.sop("=instrumentArray=size="+instrumentArray.length());
                     card.setInstrumentCount(instrumentArray.length()+"");
                     card.setMelodyInstrumentsList(instrumentsListLocal);
-
+                    card.setMelodyLength(instrumentArray.getJSONObject(0).getString(KEY_INSTRUMENT_DURATION));
                     instrumentsList = instrumentList;
                     melodyList.add(card);
 
