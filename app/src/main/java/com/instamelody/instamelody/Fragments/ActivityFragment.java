@@ -72,7 +72,7 @@ public class ActivityFragment extends Fragment {
     private final int count = 30;
     private boolean isLoading = false;
     private boolean isLastPage = false;
-    private String limit = "limit";
+    private String limit = "limit",strSearch=null;
 
     public ActivityFragment() {
     }
@@ -101,6 +101,8 @@ public class ActivityFragment extends Fragment {
         adapter = new ActivityCardAdapter(arraylist, mActivity);
         recyclerView.setAdapter(adapter);
         String position;
+        SharedPreferences searchPref = getActivity().getSharedPreferences("SearchPref", MODE_PRIVATE);
+        strSearch = searchPref.getString("stringSearch", null);
         SharedPreferences loginSharedPref = getActivity().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
         SharedPreferences fbPref = getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
@@ -116,7 +118,7 @@ public class ActivityFragment extends Fragment {
         }
 
         if (!userId.equals("") && userId != null) {
-            fetchActivityData(userId);
+            fetchActivityData(userId,strSearch);
 
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
@@ -140,7 +142,7 @@ public class ActivityFragment extends Fragment {
 
                             if (AppHelper.checkNetworkConnection(mActivity)) {
                                 isLoading = true;
-                                fetchActivityData(userId);
+                                fetchActivityData(userId,strSearch);
                             }
                         }
                     }
@@ -156,7 +158,7 @@ public class ActivityFragment extends Fragment {
     }
 
 
-    public void fetchActivityData(final String userId) {
+    public void fetchActivityData(final String userId,final String IsSearch) {
         progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, ACTIVITY,
                 new Response.Listener<String>() {
@@ -251,6 +253,9 @@ public class ActivityFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(USER_ID, userId);
+                if(strSearch!=null){
+                    params.put("searchKey", strSearch);
+                }
                 params.put(limit, arraylist.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 AppHelper.sop("params==" + params + "\nURL==" + ACTIVITY);

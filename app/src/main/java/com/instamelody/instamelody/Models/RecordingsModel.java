@@ -1,6 +1,7 @@
 package com.instamelody.instamelody.Models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by Saurabh Singh on 20/03/2017.

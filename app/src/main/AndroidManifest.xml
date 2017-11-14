@@ -163,7 +163,7 @@
             android:name=".JoinActivity"
             android:label="@string/title_activity_join"
             android:windowSoftInputMode="adjustResize|stateHidden"
-            android:theme="@style/AppTheme" />
+            />
         <activity
             android:name=".Update"
             android:configChanges="orientation"

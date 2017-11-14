@@ -154,7 +154,6 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.MELODY;
 import static com.instamelody.instamelody.utils.Const.ServiceType.MixingAudio_InstrumentsAudio;
 import static com.instamelody.instamelody.utils.Const.ServiceType.PACKAGES;
 import static com.instamelody.instamelody.utils.Const.ServiceType.TOTAL_COUNT;
-import static com.instamelody.instamelody.utils.Const.ServiceType.UPLOAD_COVER_MELODY_FILE;
 
 /**
  * Created by Shubhansh Jaiswal on 11/29/2016.
@@ -2035,6 +2034,14 @@ public class StudioActivity extends AppCompatActivity {
                         } else if (socialStatusPref.getBoolean(Const.TWITTER_STATUS, false)) {
                             TweetShare();
                         }
+                        /*if (joinRecordingId != null) {
+                            Intent intent = new Intent(StudioActivity.this, JoinActivity.class);
+                            startActivity(intent);
+                        } else {
+                            Intent intent = new Intent(StudioActivity.this, StationActivity.class);
+                            startActivity(intent);
+                        }*/
+
 
                     }
 

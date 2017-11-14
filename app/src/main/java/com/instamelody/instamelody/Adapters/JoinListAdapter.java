@@ -143,8 +143,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
             SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
             SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
             SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
-
-            JoinActivity.tvIncluded.setText("Included : " + getItemCount());
+            int count = getItemCount() - 1;
+            JoinActivity.tvIncluded.setText("Included : " + count);
             mBufferSize = AudioRecord.getMinBufferSize(SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO,
                     AudioFormat.ENCODING_PCM_16BIT);
             mAudioBuffer = new short[mBufferSize / 2];
@@ -527,7 +527,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
                     if (!userId.equals("") && userId != null) {
                         JoinActivity.play_count.setText(String.valueOf(playValue));
-                        CommentJoinFragment.tvPlayCount.setText(String.valueOf(playValue));
+                        //CommentJoinFragment.tvPlayCount.setText(String.valueOf(playValue));
                         fetchViewCount(userId, recording_id);
                     }
                     mp = new MediaPlayer();
