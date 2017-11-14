@@ -372,6 +372,7 @@ public class CommentsActivity extends AppCompatActivity {
 
                 progressDialog = new ProgressDialog(mActivity);
                 progressDialog.setMessage("Loading...");
+                progressDialog.setCancelable(false);
                 progressDialog.show();
 
                 ivPause.setVisibility(VISIBLE);

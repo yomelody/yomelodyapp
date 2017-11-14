@@ -312,7 +312,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 editor.putString("recID", recording.getRecordingId());
                                 editor.apply();
                                 Intent intent = new Intent(mActivity, MessengerActivity.class);
-                                intent.putExtra("Previous", "station");
+                                intent.putExtra("commingForm", "Station");
                                 intent.putExtra("share", recordingList.get(getAdapterPosition()));
                                 intent.putExtra("file_type", "user_recording");
                                 mActivity.startActivityForResult(intent,REQUEST_RECORDING_COMMENT);

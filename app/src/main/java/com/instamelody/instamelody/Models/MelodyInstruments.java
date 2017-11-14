@@ -1,10 +1,12 @@
 package com.instamelody.instamelody.Models;
 
+import java.io.Serializable;
+
 /**
  * Created by Shubhansh Jaiswal on 09/02/17.
  */
 
-public class MelodyInstruments {
+public class MelodyInstruments implements Serializable {
 
     //Used for storing instruments details
 

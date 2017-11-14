@@ -1,12 +1,13 @@
 package com.instamelody.instamelody.Models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by Shubhansh Jaiswal on 12/2/2016.
  */
 
-public class MelodyCard {
+public class MelodyCard implements Serializable {
 
     //Used for storing melody details.
     int addedBy, playCount, likeCount, shareCount, commentCount;
