@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -16,6 +17,7 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,9 +38,11 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.CommentsActivity;
 import com.instamelody.instamelody.Fragments.MelodyPacksFragment;
+import com.instamelody.instamelody.MessengerActivity;
 import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.ModelPlayAllMediaPlayer;
+import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Models.UserMelodyCard;
 import com.instamelody.instamelody.Models.UserMelodyPlay;
@@ -236,21 +240,50 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 public void onClick(View v) {
                     if (!userId.equals("") && userId != null) {
 
-                        MelodyCard melody = melodyList.get(getAdapterPosition());
-                        MelodyName = melody.getMelodyName();
 
-                        MelodyCard recording = melodyList.get(getAdapterPosition());
-                        String RecordingURL = recording.getMelodyURL();
 
-                        Intent shareIntent = new Intent();
-                        shareIntent.setAction(Intent.ACTION_SEND);
-                        shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                        shareIntent.setType("text/plain");
-                        shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt" + "\n" + RecordingURL);
 
-                        shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(Intent.createChooser(shareIntent, "Hello."));
-                        SetMelodyShare("", "", "");
+                        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+                        alertDialog.setTitle("Share with InstaMelody chat?");
+//                        alertDialog.setMessage("Choose yes to share in chat.");
+                        alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
+                                MelodyCard melody = melodyList.get(getAdapterPosition());
+                                editor.putString("recID", melody.getMelodyPackId());
+                                editor.apply();
+                                Intent intent = new Intent(mActivity, MessengerActivity.class);
+                                intent.putExtra("commingForm", "Melody");
+                                intent.putExtra("share", melodyList.get(getAdapterPosition()));
+                                intent.putExtra("file_type", "admin_melody");
+                                mActivity.startActivityForResult(intent,MelodyCardListAdapter.REQUEST_MELODY_COMMENT);
+                            }
+                        });
+                        alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                                MelodyCard melody = melodyList.get(getAdapterPosition());
+                                MelodyName = melody.getMelodyName();
+
+                                MelodyCard recording = melodyList.get(getAdapterPosition());
+                                String RecordingURL = recording.getMelodyURL();
+
+                                Intent shareIntent = new Intent();
+                                shareIntent.setAction(Intent.ACTION_SEND);
+                                shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                                shareIntent.setType("text/plain");
+                                shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt" + "\n" + RecordingURL);
+
+                                shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                context.startActivity(Intent.createChooser(shareIntent, "Hello."));
+                                SetMelodyShare("", "", "");
+                            }
+                        });
+                        alertDialog.show();
+
+
+
                     } else {
                         Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(context, SignInActivity.class);

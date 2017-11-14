@@ -72,6 +72,7 @@ import com.instamelody.instamelody.Adapters.RecentImagesAdapter;
 import com.instamelody.instamelody.Fragments.viewImageFragment;
 import com.instamelody.instamelody.Models.AudioDetails;
 import com.instamelody.instamelody.Models.JoinedArtists;
+import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.Message;
 import com.instamelody.instamelody.Models.RecentImagesModel;
 import com.instamelody.instamelody.Models.RecordingsModel;
@@ -184,8 +185,9 @@ public class ChatActivity extends AppCompatActivity {
     String sendGroupImageName = "";
     public static String flagFileType = "0"; // 0 = null, 1 = image file, 2 = station audio file , 3 = admin_melody audio file
     int updateGroupFlag = 0;
-    RecordingsModel mRecordingsModel;
-    JoinedArtists mJoinedModel;
+    private RecordingsModel mRecordingsModel;
+    private JoinedArtists mJoinedModel;
+    private MelodyCard melody;
     Activity mActivity;
     public static String sender_name = "";
     ImageView songNext, songPre;
@@ -214,14 +216,19 @@ public class ChatActivity extends AppCompatActivity {
             username = twitterPref.getString("userName", null);
         }
         final Intent intent = getIntent();
+        AppHelper.sop("intent==chatActivity="+intent);
         if (intent != null) {
             String val = intent.getStringExtra("commingForm");
-            if(val != null){
-                if (val.equals("Joined")) {
+            AppHelper.sop("val==chatActivity="+val);
+            if (val!=null && val.equals("Joined")) {
                     mJoinedModel = (JoinedArtists) mActivity.getIntent().getSerializableExtra("share");
-                } else if (val.equals("Station")) {
+            }
+            else if (val!=null && val.equals("Station")) {
                     mRecordingsModel = (RecordingsModel) mActivity.getIntent().getSerializableExtra("share");
                 }
+            }
+            else if (val!=null && val.equals("Melody")) {
+                melody = (MelodyCard) mActivity.getIntent().getSerializableExtra("share");
             }
         }
 
@@ -949,7 +956,7 @@ public class ChatActivity extends AppCompatActivity {
 
                         }
 
-                        cAdapter.notifyDataSetChanged();
+
                         JSONObject jsonObject;
                         JSONArray resultArray, audiosDetailsArray, sharedAudiosArray;
                         try {
@@ -997,6 +1004,7 @@ public class ChatActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        cAdapter.notifyDataSetChanged();
                     }
                 },
                 new Response.ErrorListener() {
@@ -1175,25 +1183,23 @@ public class ChatActivity extends AppCompatActivity {
                     flagFileType = "0";
                     //service for comment count.
 
-                    if (getIntent() != null && getIntent().hasExtra("share")) {
+//                    if (getIntent() != null && getIntent().hasExtra("share")) {
 
                         AppHelper.sop("mRecordingsModel==" + mRecordingsModel);
                         AppHelper.sop("mJoinedModel==" + mJoinedModel);
-                        final Intent intent = getIntent();
+                        AppHelper.sop("melody==" + melody);
 
-                        String val = intent.getStringExtra("commingForm");
-                        if (val.equals("Joined")) {
-                            if (mJoinedModel != null) {
-                                shareCountApi(getIntent().getStringExtra("file_type"));
-                            }
-                        } else if (val.equals("Station")) {
-                            if (mRecordingsModel != null) {
-                                shareCountApi(getIntent().getStringExtra("file_type"));
-                            }
+                        if (mJoinedModel != null) {
+                            shareCountApi(getIntent().getStringExtra("file_type"));
+                        } else if (mRecordingsModel != null) {
+                            shareCountApi(getIntent().getStringExtra("file_type"));
+                        }
+                        else if (melody != null) {
+                            shareCountApi(getIntent().getStringExtra("file_type"));
                         }
 
 
-                    }
+//                    }
 
                 }
             }, new Response.ErrorListener() {
@@ -1558,6 +1564,7 @@ public class ChatActivity extends AppCompatActivity {
                         socialStatusPrefEditor.apply();
                         mRecordingsModel = null;
                         mJoinedModel = null;
+                        melody = null;
                         setResult(Activity.RESULT_OK, intent);
                     }
                 },
@@ -1574,12 +1581,15 @@ public class ChatActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("shared_by_user", userId);
                 params.put("shared_with", receiverId);
-                if (mActivity.getIntent().hasExtra("commingForm")) {
+                if (mJoinedModel!=null) {
                     params.put("file_id", mJoinedModel.getRecording_id());
                     params.put("share_topic", mJoinedModel.getRecording_name());
-                } else {
+                } else if (mRecordingsModel!=null) {
                     params.put("file_id", mRecordingsModel.getRecordingId());
                     params.put("share_topic", mRecordingsModel.getRecordingName());
+                } else if (melody!=null) {
+                    params.put("file_id", melody.getMelodyPackId());
+                    params.put("share_topic", melody.getMelodyName());
                 }
 
                 params.put("file_type", fileType);

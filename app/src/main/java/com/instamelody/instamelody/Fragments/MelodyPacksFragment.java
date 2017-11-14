@@ -50,6 +50,7 @@ import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
 import com.instamelody.instamelody.StudioActivity;
 import com.instamelody.instamelody.utils.AppHelper;
+import com.instamelody.instamelody.utils.Const;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -112,7 +113,7 @@ public class MelodyPacksFragment extends Fragment {
     Activity mActivity;
     RecyclerView rv;
     private String msgUnsuccess = "No record found.";
-    private final int count = 10;
+    private final int count = 7;
     private boolean isLoading = false;
     private boolean isLastPage = false;
     SharedPreferences.Editor editor;
@@ -993,6 +994,18 @@ public class MelodyPacksFragment extends Fragment {
                 instrumentList.clear();
                 getDataApi();
                 AppHelper.sop("onActivityResult==called=" + "resultCode==" + resultCode);
+            }
+
+            else {
+                SharedPreferences socialStatusPref = mActivity.getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE);
+                if (socialStatusPref.getBoolean(Const.REC_SHARE_STATUS, false)) {
+                    SharedPreferences.Editor socialStatusPrefEditor = mActivity.getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE).edit();
+                    socialStatusPrefEditor.putBoolean(Const.REC_SHARE_STATUS, false);
+                    socialStatusPrefEditor.apply();
+                    melodyList.clear();
+                    instrumentList.clear();
+                    getDataApi();
+                }
             }
 
         }

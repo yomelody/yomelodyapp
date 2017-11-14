@@ -16,10 +16,12 @@ import com.instamelody.instamelody.ChatActivity;
 import com.instamelody.instamelody.MessengerActivity;
 import com.instamelody.instamelody.Models.Chat;
 import com.instamelody.instamelody.Models.JoinedArtists;
+import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
+import com.instamelody.instamelody.utils.AppHelper;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -104,17 +106,24 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
                     intent.putExtra("from", "MessengerActivity");
 
                     if (mActivity.getIntent() != null && mActivity.getIntent().hasExtra("share")) {
+                        AppHelper.sop("MessengerAdapter=");
                         if (mActivity.getIntent().hasExtra("Previ")) {
                             JoinedArtists mJoinModel = (JoinedArtists) mActivity.getIntent().getSerializableExtra("share");
                             intent.putExtra("share", mJoinModel);
                             intent.putExtra("file_type", mActivity.getIntent().getStringExtra("file_type"));
                             intent.putExtra("commingForm","Joined");
-                        } else {
-                            RecordingsModel mRecordingsModel = (RecordingsModel) mActivity.getIntent().getSerializableExtra("share");
-                            intent.putExtra("share", mRecordingsModel);
-                            intent.putExtra("file_type", mActivity.getIntent().getStringExtra("file_type"));
-                            intent.putExtra("commingForm","Join");
-                            intent.putExtra("commingForm","Station");
+                        } else if (mActivity.getIntent().hasExtra("commingForm")) {
+                            AppHelper.sop("MessengerAdapter=commingForm="+mActivity.getIntent().getStringExtra("commingForm"));
+                            if (mActivity.getIntent().getStringExtra("commingForm").equalsIgnoreCase("Station")){
+                                intent.putExtra("share", mActivity.getIntent().getSerializableExtra("share"));
+                                intent.putExtra("file_type", mActivity.getIntent().getStringExtra("file_type"));
+                                intent.putExtra("commingForm", mActivity.getIntent().getStringExtra("commingForm"));
+                            }
+                            else if (mActivity.getIntent().getStringExtra("commingForm").equalsIgnoreCase("Melody")){
+                                intent.putExtra("share", mActivity.getIntent().getSerializableExtra("share"));
+                                intent.putExtra("file_type", mActivity.getIntent().getStringExtra("file_type"));
+                                intent.putExtra("commingForm", mActivity.getIntent().getStringExtra("commingForm"));
+                            }
                         }
 
                     }
