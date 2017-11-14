@@ -221,11 +221,10 @@ public class ChatActivity extends AppCompatActivity {
             String val = intent.getStringExtra("commingForm");
             AppHelper.sop("val==chatActivity="+val);
             if (val!=null && val.equals("Joined")) {
-                    mJoinedModel = (JoinedArtists) mActivity.getIntent().getSerializableExtra("share");
+                mJoinedModel = (JoinedArtists) mActivity.getIntent().getSerializableExtra("share");
             }
             else if (val!=null && val.equals("Station")) {
-                    mRecordingsModel = (RecordingsModel) mActivity.getIntent().getSerializableExtra("share");
-                }
+                mRecordingsModel = (RecordingsModel) mActivity.getIntent().getSerializableExtra("share");
             }
             else if (val!=null && val.equals("Melody")) {
                 melody = (MelodyCard) mActivity.getIntent().getSerializableExtra("share");
@@ -1185,18 +1184,18 @@ public class ChatActivity extends AppCompatActivity {
 
 //                    if (getIntent() != null && getIntent().hasExtra("share")) {
 
-                        AppHelper.sop("mRecordingsModel==" + mRecordingsModel);
-                        AppHelper.sop("mJoinedModel==" + mJoinedModel);
-                        AppHelper.sop("melody==" + melody);
+                    AppHelper.sop("mRecordingsModel==" + mRecordingsModel);
+                    AppHelper.sop("mJoinedModel==" + mJoinedModel);
+                    AppHelper.sop("melody==" + melody);
 
-                        if (mJoinedModel != null) {
-                            shareCountApi(getIntent().getStringExtra("file_type"));
-                        } else if (mRecordingsModel != null) {
-                            shareCountApi(getIntent().getStringExtra("file_type"));
-                        }
-                        else if (melody != null) {
-                            shareCountApi(getIntent().getStringExtra("file_type"));
-                        }
+                    if (mJoinedModel != null) {
+                        shareCountApi(getIntent().getStringExtra("file_type"));
+                    } else if (mRecordingsModel != null) {
+                        shareCountApi(getIntent().getStringExtra("file_type"));
+                    }
+                    else if (melody != null) {
+                        shareCountApi(getIntent().getStringExtra("file_type"));
+                    }
 
 
 //                    }
