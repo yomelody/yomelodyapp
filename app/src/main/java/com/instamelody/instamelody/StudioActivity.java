@@ -3203,7 +3203,7 @@ public class StudioActivity extends AppCompatActivity {
                         }
                     }
                 };
-                handler.postDelayed(runnable, 1000);
+                //handler.postDelayed(runnable, 1000);
             }
 
 

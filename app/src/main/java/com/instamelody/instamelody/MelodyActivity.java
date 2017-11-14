@@ -31,7 +31,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -106,7 +108,8 @@ public class MelodyActivity extends AppCompatActivity {
     int totalCount = 0;
     private Activity mActivity;
     private BroadcastReceiver broadcast_reciever_kill;
-
+    public static FrameLayout frameProgress;
+    public static ProgressBar frameprog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,6 +160,8 @@ public class MelodyActivity extends AppCompatActivity {
         appBarMelody = (AppBarLayout) findViewById(R.id.appBarMelody);
         ivMelodyFilter = (ImageView) findViewById(R.id.ivMelodyFilter);
         message_count = (TextView) findViewById(R.id.message_count);
+        frameProgress = (FrameLayout) findViewById(R.id.frameProgress);
+        frameprog = (ProgressBar) findViewById(R.id.frameProg);
         //  tab1 = (LinearLayout) findViewById(R.id.tab1);
         // llFragSubs = (LinearLayout) findViewById(R.id.llFragSubs);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewMelody);
