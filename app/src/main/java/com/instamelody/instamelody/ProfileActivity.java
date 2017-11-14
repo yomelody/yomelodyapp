@@ -551,6 +551,7 @@ public class ProfileActivity extends AppCompatActivity {
                 editor.putString("chatType", "single");
                 editor.commit();
                 Intent i = new Intent(ProfileActivity.this, ChatActivity.class);
+                i.putExtra("commingForm", "ProfileActivity");
                 i.putExtra("clickFromProfile", "click");
                 startActivityForResult(i, PROFILE_TO_MESSANGER);
                 //  startActivity(i);

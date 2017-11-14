@@ -511,7 +511,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         try {
             RecordingsModel recording = recordingList.get(listPosition);
             lazycount = lazycount + 1;
-            int includedCount = Integer.parseInt(recordingList.get(listPosition).getJoinCount())+1;
+            int includedCount = Integer.parseInt(recordingList.get(listPosition).getJoinCount());
             holder.tvIncludedCount.setText("Included: " + includedCount);
 
             mpid = recording.getRecordingId();

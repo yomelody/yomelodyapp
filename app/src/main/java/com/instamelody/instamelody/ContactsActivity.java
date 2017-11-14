@@ -454,6 +454,7 @@ public class ContactsActivity extends AppCompatActivity {
                             editor.putString("groupImage", group_pick);
                             editor.commit();
                             Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+                            intent.putExtra("commingForm", "ContactsActivity");
                             intent.putExtra("from", "ContactsActivity");
                             startActivity(intent);
 

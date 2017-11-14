@@ -155,6 +155,7 @@ public class AudioFragment extends Fragment {
         if (rv != null) {
             rv.setAdapter(adapter);
         }
+
         fetchGenreNames();
 //        callApi();
 
@@ -282,6 +283,8 @@ public class AudioFragment extends Fragment {
                                 }
 
                             });
+
+
                         } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
@@ -556,8 +559,11 @@ public class AudioFragment extends Fragment {
                             } else {
                                 isLastPage = false;
                             }
+                            strSearch="";
+                            ClearSharedPref();
 
                         } catch (JSONException e) {
+                            ClearSharedPref();
                             e.printStackTrace();
                         }
 
@@ -587,7 +593,7 @@ public class AudioFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                        ClearSharedPref();
                         isLoading = false;
                         isLastPage = false;
 

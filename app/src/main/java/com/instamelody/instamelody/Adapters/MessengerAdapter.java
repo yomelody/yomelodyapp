@@ -99,6 +99,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
                     editor.putString("chatId", chatID);
                     editor.commit();
                     Intent intent = new Intent(context, ChatActivity.class);
+                    intent.putExtra("commingForm","MessengerActivity");
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.putExtra("from", "MessengerActivity");
 
@@ -112,6 +113,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
                             RecordingsModel mRecordingsModel = (RecordingsModel) mActivity.getIntent().getSerializableExtra("share");
                             intent.putExtra("share", mRecordingsModel);
                             intent.putExtra("file_type", mActivity.getIntent().getStringExtra("file_type"));
+                            intent.putExtra("commingForm","Join");
                             intent.putExtra("commingForm","Station");
                         }
 

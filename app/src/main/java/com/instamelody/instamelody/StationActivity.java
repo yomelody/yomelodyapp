@@ -80,7 +80,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
     Button btnActivity, btnAudio, btnCancel;
     RelativeLayout rlFragmentActivity, rlPartStation, rlSearch;
-    public static ImageView ivBackButton, ivHomeButton, discover, message, ivProfile, audio_feed, ivStationSearch, ivMelodyStation, ivFilter;
+    public static ImageView ivBackButton, ivHomeButton, discover, message, ivProfile, audio_feed, ivStationSearch,ivStationSearchActivity, ivMelodyStation, ivFilter;
     EditText subEtFilterName, subEtFilterInstruments, subEtFilterBPM;
     TextView message_count;
     TabHost host;
@@ -126,6 +126,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     BroadcastReceiver mRegistrationBroadcastReceiver;
     int totalCount = 0;
     Activity mActivity;
+    public static boolean IsActivity=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +142,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
         audio_feed = (ImageView) findViewById(R.id.audio_feed);
         ivStationSearch = (ImageView) findViewById(R.id.ivStationSearch);
+        ivStationSearchActivity = (ImageView) findViewById(R.id.ivStationSearchActivity);
         ivMelodyStation = (ImageView) findViewById(R.id.ivMelodyStation);
         ivFilter = (ImageView) findViewById(R.id.ivFilter);
         btnActivity = (Button) findViewById(R.id.btnActivity);
@@ -171,7 +173,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         } else if (statusTwitter == 1) {
             userId = userIdTwitter;
         }
-
+        IsActivity=false;
         getTotalCount();
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -186,16 +188,18 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
         btnActivity.setBackgroundColor(Color.parseColor("#E4E4E4"));
         btnAudio.setBackgroundColor(Color.parseColor("#FFFFFF"));
-        btnAudio.setEnabled(false);
-        btnActivity.setEnabled(true);
-
+        //btnAudio.setEnabled(false);
+        //btnActivity.setEnabled(true);
+        ivStationSearchActivity.setVisibility(View.GONE);
         btnAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 btnActivity.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnAudio.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                btnAudio.setEnabled(false);
-                btnActivity.setEnabled(true);
+                //btnAudio.setEnabled(false);
+                //btnActivity.setEnabled(true);
+                IsActivity=false;
+                ivStationSearchActivity.setVisibility(View.VISIBLE);
 
                 //new FetchActivityDetails().execute(userId);
                 clearSharePrefStation();
@@ -213,13 +217,14 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
                 btnAudio.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnActivity.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                btnActivity.setEnabled(false);
-                btnAudio.setEnabled(true);
-
+                //btnActivity.setEnabled(false);
+                //btnAudio.setEnabled(true);
+                IsActivity=true;
                 clearSharePrefStation();
                 ivFilter.setVisibility(View.GONE);
                 ActivityFragment actf = new ActivityFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_station, actf).commit();
+
 
             }
         });
@@ -270,8 +275,30 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
                 editorFilterInstruments.putString("stringFilterInstruments", Instruments);
                 editorFilterInstruments.apply();
-                AudioFragment af = new AudioFragment();
-                getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
+                if(IsActivity){
+                    btnAudio.setBackgroundColor(Color.parseColor("#E4E4E4"));
+                    btnActivity.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    //btnActivity.setEnabled(false);
+                    //btnAudio.setEnabled(true);
+                    //IsActivity=false;
+                    ivFilter.setVisibility(View.GONE);
+                    search1.setQuery("", false);
+                    search1.clearFocus();
+                    search1.setIconified(true);
+                    ActivityFragment actf = new ActivityFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.activity_station, actf).commit();
+                }else {
+                    search1.setQuery("", false);
+                    search1.clearFocus();
+                    search1.setIconified(true);
+                    //IsActivity=false;
+                    btnActivity.setBackgroundColor(Color.parseColor("#E4E4E4"));
+                    btnAudio.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    //btnAudio.setEnabled(false);
+                    //btnActivity.setEnabled(true);
+                    AudioFragment af = new AudioFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
+                }
                 return false;
 
             }
@@ -453,6 +480,24 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                             builderInner.setTitle("Your Selected Item is");
                             AudioFragment af = new AudioFragment();
                             getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
+                            /*if(IsActivity){
+                                btnAudio.setBackgroundColor(Color.parseColor("#E4E4E4"));
+                                btnActivity.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                                btnActivity.setEnabled(false);
+                                btnAudio.setEnabled(true);
+                                IsActivity=false;
+                                search1.setQuery("",false);
+                                search1.setQueryHint("search...");
+                                search1.clearFocus();
+                                clearSharePrefStation();
+                                ivFilter.setVisibility(View.GONE);
+                                ActivityFragment actf = new ActivityFragment();
+                                getFragmentManager().beginTransaction().replace(R.id.activity_station, actf).commit();
+                            }else {
+                                AudioFragment af = new AudioFragment();
+                                getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
+
+                            }*/
                         }
                     }
                 });
@@ -544,9 +589,26 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
         editorFilterString.clear();
         editorFilterString.apply();
-        AudioFragment af = new AudioFragment();
-        getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
-        search1.setQuery("", false);
+        if(IsActivity){
+            btnAudio.setBackgroundColor(Color.parseColor("#E4E4E4"));
+            btnActivity.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            //btnActivity.setEnabled(false);
+            //btnAudio.setEnabled(true);
+            IsActivity=false;
+            search1.setQuery("", false);
+            search1.clearFocus();
+            search1.setIconified(true);
+            ivFilter.setVisibility(View.GONE);
+            ActivityFragment actf = new ActivityFragment();
+            getFragmentManager().beginTransaction().replace(R.id.activity_station, actf).commit();
+        }else {
+            IsActivity=false;
+            search1.setQuery("", false);
+            search1.clearFocus();
+            search1.setIconified(true);
+            AudioFragment af = new AudioFragment();
+            getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
+        }
         return false;
     }
 
