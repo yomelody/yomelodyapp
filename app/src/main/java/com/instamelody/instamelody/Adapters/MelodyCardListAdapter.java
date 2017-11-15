@@ -240,18 +240,30 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 public void onClick(View v) {
                     if (!userId.equals("") && userId != null) {
 
+                        MelodyCard melody = melodyList.get(getAdapterPosition());
+                        MelodyName = melody.getMelodyName();
 
+                        MelodyCard recording = melodyList.get(getAdapterPosition());
+                        String RecordingURL = recording.getMelodyURL();
 
+                        Intent shareIntent = new Intent();
+                        shareIntent.setAction(Intent.ACTION_SEND);
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                        shareIntent.setType("text/plain");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt" + "\n" + RecordingURL);
 
-                        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+                        shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(Intent.createChooser(shareIntent, "Hello."));
+                        SetMelodyShare("", "", "");
+
+                        /*final AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
                         alertDialog.setTitle("Share with InstaMelody chat?");
-//                        alertDialog.setMessage("Choose yes to share in chat.");
                         alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
 
                                 SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
                                 MelodyCard melody = melodyList.get(getAdapterPosition());
-                                editor.putString("recID", melody.getMelodyPackId());
+                                editor.putString("melodyID", melody.getMelodyPackId());
                                 editor.apply();
                                 Intent intent = new Intent(mActivity, MessengerActivity.class);
                                 intent.putExtra("commingForm", "Melody");
@@ -280,10 +292,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                                 SetMelodyShare("", "", "");
                             }
                         });
-                        alertDialog.show();
-
-
-
+                        alertDialog.show();*/
                     } else {
                         Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(context, SignInActivity.class);
@@ -398,6 +407,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         PreviousActivity.putString("PreviousActivityName", "MelodyActivity.class");
                         PreviousActivity.commit();
                         Intent intent = new Intent(context, CommentsActivity.class);
+                        intent.putExtra("melody_card",melodyList.get(getAdapterPosition()));
                         mActivity = (Activity) context;
                         mActivity.startActivityForResult(intent, REQUEST_MELODY_COMMENT);
                     } else {

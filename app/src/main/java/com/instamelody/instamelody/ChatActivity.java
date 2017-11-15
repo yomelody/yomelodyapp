@@ -312,6 +312,13 @@ public class ChatActivity extends AppCompatActivity {
                 getChatId(senderId, receiverId);
             }
         }
+        else if (audioShareData.getString("melodyID", null) != null) {
+            flagFileType = "3";
+            sendMessage("Audio", userId);
+            if (chatId.equals("")) {
+                getChatId(senderId, receiverId);
+            }
+        }
 
 
         SharedPreferences packPref = getSharedPreferences("PackData", MODE_PRIVATE);
@@ -925,6 +932,7 @@ public class ChatActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(String response) {
+                        AppHelper.sop("response=getChatMsgs="+response);
                         try {
                             if (ChatAdapter.sharedAudioList.size() > 0) {
                                 ChatAdapter.sharedAudioList.clear();
@@ -1039,6 +1047,7 @@ public class ChatActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(CHAT_ID_, chat_Id);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params=getChatMsgs="+params+"\nURL="+MESSAGE_LIST);
                 return params;
             }
         };
@@ -1159,7 +1168,7 @@ public class ChatActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(String response) {
                     String str = response;
-                    AppHelper.sop("Chat.php Response normal :- " + str);
+                    AppHelper.sop("response=sendMessage=else=case=" + response);
                     //  Log.d("Chat.php Response normal :-",str);
 //                    Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
                     try {
@@ -1262,6 +1271,13 @@ public class ChatActivity extends AppCompatActivity {
                         params.put(FILE, recID);
                         params.put(FILE_TYPE, "station");
                     } else if (flagFileType.equals("3")) {
+                        String melodyID;
+                        SharedPreferences audioShareData = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE);
+                        melodyID = audioShareData.getString("melodyID", null);
+                        SharedPreferences.Editor editor = getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
+                        editor.putString("melodyID", null);
+                        editor.apply();
+                        params.put(FILE, melodyID);
                         params.put(FILE_TYPE, "admin_melody");
                     }
                     params.put(SENDER_ID, user_Id);
@@ -1270,6 +1286,7 @@ public class ChatActivity extends AppCompatActivity {
                     params.put(MESSAGE, message);
                     params.put(IS_READ, "0");
                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                    AppHelper.sop("params=sendMessage=else=case="+params+"\nURL="+CHAT);
                     return params;
                 }
             };

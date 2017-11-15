@@ -273,10 +273,14 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                 for (int j = 0; j < audiosDetailsArray.length(); j++) {
                     try {
                         JSONObject detailsJson = audiosDetailsArray.getJSONObject(j);
-                        holder.tvMelodyName.setText(detailsJson.getString("recording_topic"));
-                        String s = "@" + detailsJson.getString("user_name");
-                        holder.tvUserName.setText(s);
-
+                        if (detailsJson.has("melodypackid")){
+                            holder.tvMelodyName.setText(detailsJson.getString("name"));
+                            holder.tvUserName.setText(detailsJson.getString("username"));
+                        }else {
+                            holder.tvMelodyName.setText(detailsJson.getString("recording_topic"));
+                            String s = "@" + detailsJson.getString("user_name");
+                            holder.tvUserName.setText(s);
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
