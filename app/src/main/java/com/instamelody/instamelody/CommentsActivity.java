@@ -3,6 +3,7 @@ package com.instamelody.instamelody;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
@@ -13,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -44,8 +46,11 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.crashlytics.android.Crashlytics;
 import com.instamelody.instamelody.Adapters.CommentsAdapter;
+import com.instamelody.instamelody.Adapters.MelodyCardListAdapter;
 import com.instamelody.instamelody.Models.Comments;
+import com.instamelody.instamelody.Models.MelodyCard;
 import com.instamelody.instamelody.Models.MelodyInstruments;
+import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Parse.ParseContents;
 import com.instamelody.instamelody.utils.AppHelper;
 import com.squareup.picasso.Picasso;
@@ -64,6 +69,7 @@ import io.fabric.sdk.android.Fabric;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.instamelody.instamelody.utils.Const.ServiceType.COMMENTS;
@@ -121,6 +127,7 @@ public class CommentsActivity extends AppCompatActivity {
     int instCount = 1;
     int durationForSeek, length;
     private boolean isPausePressed=false;
+    private MelodyCard melody;
 
 
     @Override
@@ -309,6 +316,8 @@ public class CommentsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!userId.equals("") && userId != null) {
+
+
                     Intent shareIntent = new Intent();
                     shareIntent.setAction(Intent.ACTION_SEND);
                     shareIntent.putExtra(Intent.EXTRA_STREAM, "");
@@ -318,6 +327,44 @@ public class CommentsActivity extends AppCompatActivity {
 
                     shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(Intent.createChooser(shareIntent, "Hello."));
+
+                    /*final AlertDialog.Builder alertDialog = new AlertDialog.Builder(mActivity);
+                    alertDialog.setTitle("Share with InstaMelody chat?");
+                    alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (getIntent() != null && getIntent().hasExtra("melody_card")) {
+                                melody = (MelodyCard) getIntent().getSerializableExtra("melody_card");
+                                SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
+                                editor.putString("recID", melody.getMelodyPackId());
+                                editor.apply();
+                                Intent intent = new Intent(mActivity, MessengerActivity.class);
+                                intent.putExtra("commingForm", "Melody");
+                                intent.putExtra("share", melody);
+                                intent.putExtra("file_type", "admin_melody");
+                                startActivityForResult(intent, MelodyCardListAdapter.REQUEST_MELODY_COMMENT);
+                                finish();
+                            }
+                            else {
+                                Toast.makeText(getApplicationContext(), "Please try again.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                    alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            Intent shareIntent = new Intent();
+                            shareIntent.setAction(Intent.ACTION_SEND);
+                            shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                            shareIntent.setType("text/plain");
+                            shareIntent.putExtra(Intent.EXTRA_TEXT, "Melody Songs" + "\n" + CoverUrl + "\n" + RecordingURL);
+                            shareIntent.putExtra(Intent.EXTRA_TEXT, "Melody Songs" + "\n" + RecordingURL);
+
+                            shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(Intent.createChooser(shareIntent, "Hello."));
+                        }
+                    });
+                    alertDialog.show();*/
+
                 } else {
                     Toast.makeText(getApplicationContext(), "Log in to comment", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
