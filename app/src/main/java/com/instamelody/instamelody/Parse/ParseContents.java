@@ -528,6 +528,7 @@ public class ParseContents {
                     melodyInstruments.setInstrumentCreated(instrumentsJson.getString("uploadeddate"));
                     melodyInstruments.setUserProfilePic(instrumentsJson.getString("profilepic"));
                     melodyInstruments.setInstrumentCover(instrumentsJson.getString("coverpic"));
+                    melodyInstruments.setUserName(instrumentsJson.getString("username"));
                     instrumentList.add(melodyInstruments);
                     StudioActivity.list.add(j, new MixingData(String.valueOf(instrumentsJson.getInt("instrument_id")), "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", instrumentsJson.getString(KEY_INSTRUMENT_URL).replace(BASE_URL, ""), String.valueOf(j)));
                 }

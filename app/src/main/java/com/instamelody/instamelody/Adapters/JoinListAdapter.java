@@ -50,6 +50,7 @@ import com.instamelody.instamelody.ProfileActivity;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.SignInActivity;
 import com.instamelody.instamelody.StudioActivity;
+import com.instamelody.instamelody.utils.AppHelper;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -120,11 +121,20 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     boolean likest = false;
     private Activity mActivity;
     public static final int REQUEST_JOIN_TO_MESSANGER = 716;
+    private String hideProfImg="";
 
     public JoinListAdapter(ArrayList<JoinedArtists> Joined_artist, Context context) {
         this.Joined_artist = Joined_artist;
         this.context = context;
         mActivity = (Activity) context;
+    }
+
+    public void setHideProfImg(String property){
+        hideProfImg=property;
+    }
+
+    public String getHideProfImg(){
+        return hideProfImg;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -140,11 +150,13 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
             join_image = (ImageView) itemView.findViewById(R.id.ivImageName);
             Join_usr_name = (TextView) itemView.findViewById(R.id.tvUserName);
             redCross = (ImageView) itemView.findViewById(R.id.redCross);
+            joined_profile = (RelativeLayout) itemView.findViewById(R.id.joined_profile);
+
             SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
             SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
             SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
-
-            JoinActivity.tvIncluded.setText("Included : " + getItemCount());
+            int count = getItemCount();
+            JoinActivity.tvIncluded.setText("Included : " + count);
             mBufferSize = AudioRecord.getMinBufferSize(SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO,
                     AudioFormat.ENCODING_PCM_16BIT);
             mAudioBuffer = new short[mBufferSize / 2];
@@ -227,7 +239,13 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                 lstViewHolder.add(viewHolder);
             }
             final JoinedArtists join = Joined_artist.get(0);
-            holder.Join_usr_name.setText(joinArt.getJoined_usr_name());
+            holder.Join_usr_name.setText("@"+joinArt.getJoined_usr_name());
+            if (hideProfImg.equalsIgnoreCase("hide")){
+                holder.joined_profile.setVisibility(GONE);
+            }
+            else {
+                holder.joined_profile.setVisibility(VISIBLE);
+            }
             try {
                 Picasso.with(holder.join_image.getContext()).load(joinArt.getJoined_image()).into(holder.join_image);
             } catch (Exception ex) {
@@ -527,7 +545,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
                     if (!userId.equals("") && userId != null) {
                         JoinActivity.play_count.setText(String.valueOf(playValue));
-                        CommentJoinFragment.tvPlayCount.setText(String.valueOf(playValue));
+                        //CommentJoinFragment.tvPlayCount.setText(String.valueOf(playValue));
                         fetchViewCount(userId, recording_id);
                     }
                     mp = new MediaPlayer();
@@ -1033,7 +1051,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
 //                        Toast.makeText(getApplicationContext(), ""+response, Toast.LENGTH_SHORT).show();
 
-                        Log.d("ReturnData", response);
+                        Log.d("ReturnData=getJoined_users=", response);
                         JoinActivity.instrumentList.clear();
                         //     JoinActivity.listProfile.clear();
 //                        if (click_pos == 0) {
@@ -1089,6 +1107,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                 params.put("userid", addedBy);
                 params.put("rid", RecId);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params=getJoined_users="+params+"\nURL==="+JOINED_USERS);
                 return params;
             }
         };
