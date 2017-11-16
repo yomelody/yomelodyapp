@@ -84,7 +84,7 @@
             android:id="@+id/rlSelectedImage"
             android:layout_width="wrap_content"
             android:layout_height="200dp"
-            android:layout_above="@+id/relativeLayout3"
+
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:visibility="gone">

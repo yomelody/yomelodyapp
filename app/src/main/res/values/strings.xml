@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">InstaMelody</string>
+    <string name="app_name">YoMelody</string>
     <string name="search_hint">search...</string>
     <string name="title_activity_studio">StudioActivity</string>
     <string name="title_activity_station">StationActivity</string>

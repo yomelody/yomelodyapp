@@ -777,17 +777,21 @@ public class ProfileActivity extends AppCompatActivity {
                         host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
                             @Override
                             public void onTabChanged(String arg0) {
-                                genreString = arg0;
-                                int currentTab = host.getCurrentTab();
-                                if (currentTab == 0) {
-                                    genreString = "";
-                                } else {
-                                    genreString = genresArrayList.get(currentTab).getId();
-                                }
+                                try {
+                                    genreString = arg0;
+                                    int currentTab = host.getCurrentTab();
+                                    if (currentTab == 0) {
+                                        genreString = "";
+                                    } else {
+                                        genreString = genresArrayList.get(currentTab).getId();
+                                    }
 //                                fetchRecordings();
-                                recordingList.clear();
-                                recordingsPools.clear();
-                                callApi();
+                                    recordingList.clear();
+                                    recordingsPools.clear();
+                                    callApi();
+                                }catch (Exception ex){
+                                    ex.printStackTrace();
+                                }
                             }
                         });
                     }
@@ -971,22 +975,24 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override
                     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                         super.onScrolled(recyclerView, dx, dy);
-                        int visibleItemCount = linearLayoutManager.getChildCount();
-                        int totalItemCount = linearLayoutManager.getItemCount();
-                        int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
+
+                            int visibleItemCount = linearLayoutManager.getChildCount();
+                            int totalItemCount = linearLayoutManager.getItemCount();
+                            int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
 //                        AppHelper.sop("onScrolled==visibleItemCount"+visibleItemCount+"=totalItemCount="+
 //                                totalItemCount+ "=firstVisibleItemPosition="+firstVisibleItemPosition);
-                        if (!isLoading && !isLastPage) {
+                            if (!isLoading && !isLastPage) {
 //                            AppHelper.sop("isLoading==isLastPage");
 
-                            if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount &&
-                                    firstVisibleItemPosition >= 0 && totalItemCount >= count) {
-                                if (AppHelper.checkNetworkConnection(mActivity)) {
-                                    isLoading = true;
-                                    callApi();
+                                if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount &&
+                                        firstVisibleItemPosition >= 0 && totalItemCount >= count) {
+                                    if (AppHelper.checkNetworkConnection(mActivity)) {
+                                        isLoading = true;
+                                        callApi();
+                                    }
                                 }
                             }
-                        }
+
                     }
                 });
 
@@ -996,18 +1002,22 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void callApi() {
-        if (strName == null && strSearch == null) {
-            fetchRecordings();
-        } else if (strSearch != null) {
-            fetchSearchData();
-        } else if (strArtist != null) {
-            fetchRecordingsFilterArtist();
-        } else if (strInstruments != null && strName.equals("# of Instruments")) {
-            fetchRecordingsFilterInstruments();
-        } else if (strBPM != null && strName.equals("BPM")) {
-            fetchRecordingsFilterBPM();
-        } else {
-            fetchRecordingsFilter();
+        try {
+            if (strName == null && strSearch == null) {
+                fetchRecordings();
+            } else if (strSearch != null) {
+                fetchSearchData();
+            } else if (strArtist != null) {
+                fetchRecordingsFilterArtist();
+            } else if (strInstruments != null && strName.equals("# of Instruments")) {
+                fetchRecordingsFilterInstruments();
+            } else if (strBPM != null && strName.equals("BPM")) {
+                fetchRecordingsFilterBPM();
+            } else {
+                fetchRecordingsFilter();
+            }
+        }catch (Exception ex){
+            ex.printStackTrace();
         }
     }
 
@@ -1077,7 +1087,12 @@ public class ProfileActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(KEY, "Myrecording");
+                if(showProfileUserId.equals("")) {
+                    params.put(KEY, "Myrecording");
+                }else {
+                    params.put(KEY, "onUserProfile");
+                    params.put("ownersUserId", showProfileUserId);
+                }
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
@@ -1156,7 +1171,12 @@ public class ProfileActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(KEY, "Myrecording");
+                if(showProfileUserId.equals("")) {
+                    params.put(KEY, "Myrecording");
+                }else {
+                    params.put(KEY, "onUserProfile");
+                    params.put("ownersUserId", showProfileUserId);
+                }
                 params.put(KEY_SEARCH, strSearch);
                 params.put(limit, recordingList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
@@ -1233,7 +1253,12 @@ public class ProfileActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(KEY, "Myrecording");
+                if(showProfileUserId.equals("")) {
+                    params.put(KEY, "Myrecording");
+                }else {
+                    params.put(KEY, "onUserProfile");
+                    params.put("ownersUserId", showProfileUserId);
+                }
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
@@ -1315,7 +1340,12 @@ public class ProfileActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(KEY, "Myrecording");
+                if(showProfileUserId.equals("")) {
+                    params.put(KEY, "Myrecording");
+                }else {
+                    params.put(KEY, "onUserProfile");
+                    params.put("ownersUserId", showProfileUserId);
+                }
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, "Instruments");
@@ -1398,7 +1428,12 @@ public class ProfileActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(ID, userId);
-                params.put(KEY, "Myrecording");
+                if(showProfileUserId.equals("")) {
+                    params.put(KEY, "Myrecording");
+                }else {
+                    params.put(KEY, "onUserProfile");
+                    params.put("ownersUserId", showProfileUserId);
+                }
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
                 params.put(FILTER_TYPE, strName);
