@@ -384,6 +384,7 @@ public class ParseContents {
                     comments.setTvUsername(commentJson.getString("user_name"));
                     comments.setTvMsg(commentJson.getString("comment_text"));
                     comments.setTvTime(commentJson.getString("comment_time"));
+                    comments.setDisplay_time(commentJson.getString("display_time"));
                     comments.setUserProfileImage(commentJson.getString("user_profile_url"));
                     commentList.add(comments);
                 }

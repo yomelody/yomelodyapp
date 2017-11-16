@@ -112,7 +112,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -188,6 +188,18 @@
                             android:text="Sing to Me"
                             android:textColor="#FFFFFF"
                             android:textSize="14sp"
+                            android:textStyle="normal|bold" />
+                        <TextView
+                            android:id="@+id/TemptvNamePlayer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:maxLength="25"
+                            android:text="Sing to Me"
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp"
+                            android:visibility="gone"
                             android:textStyle="normal|bold" />
 
                         <TextView

@@ -74,7 +74,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MyView
             Picasso.with(holder.userProfileImage.getContext()).load(comments.getUserProfileImage()).into(holder.userProfileImage);
             holder.tvRealName.setText(comments.getTvRealName());
             holder.tvUsername.setText("@" + comments.getTvUsername());
-            holder.tvTime.setText(DateTime(comments.getTvTime()));
+            //holder.tvTime.setText(DateTime(comments.getTvTime()));
+            holder.tvTime.setText(comments.getDisplay_time());
             holder.tvMsg.setText(comments.getTvMsg());
             //DateTime(c.getString(comments.getTvTime())
         } catch (Exception ex) {

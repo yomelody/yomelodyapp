@@ -99,7 +99,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView chatMessage, chatImageName, timeStamp, tvUserName, tvMelodyName, tvNum;
+        TextView chatMessage, chatImageName, timeStamp, tvUserName, tvMelodyName, tvNum,TemptvMelodyName;
         ImageView userProfileImage, chatImage, ivPlay, ivSettings, ivTick, ivDoubleTick;
         RelativeLayout rlChatImage, rlBelowImage;
         SeekBar seekBarChat;
@@ -123,6 +123,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             ivTick = (ImageView) itemView.findViewById(R.id.tick);
             ivDoubleTick = (ImageView) itemView.findViewById(R.id.doubleTick);
             tvNum = (TextView) itemView.findViewById(R.id.tvNum);
+            TemptvMelodyName = (TextView) itemView.findViewById(R.id.TemptvMelodyName);
         }
 
         private void primarySeekBarProgressUpdater() {
@@ -277,7 +278,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                         if (detailsJson.has("melodypackid")){
                             holder.tvMelodyName.setText(detailsJson.getString("name"));
                             holder.tvUserName.setText(detailsJson.getString("username"));
+                            holder.TemptvMelodyName.setText(detailsJson.getString("name"));
                         }else {
+                            holder.TemptvMelodyName.setText(detailsJson.getString("name"));
                             holder.tvMelodyName.setText(detailsJson.getString("recording_topic"));
                             String s = "@" + detailsJson.getString("user_name");
                             holder.tvUserName.setText(s);
@@ -313,6 +316,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                             ivPausePlayer.setVisibility(VISIBLE);
                             ChatActivity.tvAudioNamePlayer.setText(holder.tvMelodyName.getText().toString().trim());
                             ChatActivity.tvNumPlayer.setText(holder.tvNum.getText().toString().trim());
+                            ChatActivity.tvNamePlayer.setText(holder.TemptvMelodyName.getText().toString().trim());
+                            ChatActivity.tvUserNamePlayer.setText(holder.tvUserName.getText().toString().trim());
                             str = "(1" + " of " + ParseContents.sharedAudioList.size() + ")";
                             holder.tvNum.setText(str);
                             try {

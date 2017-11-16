@@ -6,7 +6,15 @@ package com.instamelody.instamelody.Models;
 
 public class Comments {
 
-    String comment_id, user_id, userProfileImage, tvRealName, tvUsername, tvMsg, tvTime;
+    String comment_id, user_id, userProfileImage, tvRealName, tvUsername, tvMsg, tvTime,display_time;
+
+    public String getDisplay_time() {
+        return display_time;
+    }
+
+    public void setDisplay_time(String display_time) {
+        this.display_time = display_time;
+    }
 
     public String getComment_id() {
         return comment_id;

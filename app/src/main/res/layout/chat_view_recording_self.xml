@@ -148,6 +148,16 @@
                                 android:textColor="#FFFFFF"
                                 android:textSize="16sp"
                                 android:textStyle="normal|bold" />
+                            <TextView
+                                android:id="@+id/TemptvMelodyName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:maxLength="25"
+                                android:textColor="#FFFFFF"
+                                android:textSize="16sp"
+                                android:visibility="gone"
+                                android:textStyle="normal|bold" />
 
                             <TextView
                                 android:id="@+id/tvUserName"
