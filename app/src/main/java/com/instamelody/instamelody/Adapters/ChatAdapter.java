@@ -449,7 +449,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                             progressDialog.show();
 
                             try {
-                                Log.d("Shared audio URL :-------", "" + ParseContents.sharedAudioList.get(count).getRecordingUrl());
+                                Log.d("Shared audio URL:", "" + ParseContents.sharedAudioList.get(count).getRecordingUrl());
                             } catch (Throwable e) {
                                 e.printStackTrace();
                             }
@@ -550,7 +550,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                             progressDialog.setCancelable(false);
                             progressDialog.show();
                             try {
-                                Log.d("Shared audio URL :-------", "" + ParseContents.sharedAudioList.get(count).getRecordingUrl());
+                                Log.d("Shared audio URL :--", "" + ParseContents.sharedAudioList.get(count).getRecordingUrl());
                             } catch (Throwable e) {
                                 e.printStackTrace();
                             }

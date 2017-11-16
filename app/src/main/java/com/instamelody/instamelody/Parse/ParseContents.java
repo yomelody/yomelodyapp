@@ -419,6 +419,7 @@ public class ParseContents {
                     card.setLikeStatus(cardJson.getInt("like_status"));
                     card.setJoinCount(cardJson.getString("join_count"));
                     card.setThumnailUrl(cardJson.getString("thumbnail_url"));
+
                     if (cardJson.isNull("recording_url")) {
                         card.setrecordingurl("");
                     } else {
@@ -429,6 +430,23 @@ public class ParseContents {
                     card.setRecordingCover(cardJson.getString("cover_url"));
                     card.setUserProfilePic(cardJson.getString("profile_url"));
                     card.setGenreName(cardJson.getString("genre_name"));
+
+                    ArrayList arrayList=new ArrayList();
+
+
+                    JoinedArray = cardJson.getJSONArray("joined");
+
+                    if(JoinedArray.length()>0) {
+                        for (int j = 0; j < JoinedArray.length(); j++) {
+                            JSONObject jsonObject1=new JSONObject(JoinedArray.get(j).toString());
+
+                            //JSONArray jsonArray1=new JSONArray(jsonObject1.getJSONArray(jsonObject1));
+
+                            arrayList.add(jsonObject1.get("recording_url"));
+                        }
+                        card.setJoinUrl(arrayList);
+                    }
+
                     if (cardJson.isNull("recordings")) {
                         Log.d("Error", "pls check");
                     } else {
@@ -450,6 +468,7 @@ public class ParseContents {
                             recordingsPools.add(rp);
                         }
                     }
+
 
 
                     recordingList.add(card);

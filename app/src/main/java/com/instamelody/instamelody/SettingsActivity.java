@@ -243,7 +243,7 @@ public class SettingsActivity extends AppCompatActivity {
                     startActivity(Intent.createChooser(intent, "Share"));*/
 
                     AlertDialog.Builder builder1 = new AlertDialog.Builder(SettingsActivity.this);
-                    builder1.setMessage("Wants to invite existing InstaMelody Artist from your contact list ?");
+                    builder1.setMessage("Wants to invite existing YoMelody Artist from your contact list ?");
                     builder1.setCancelable(true);
 
                     builder1.setPositiveButton(
@@ -317,7 +317,7 @@ public class SettingsActivity extends AppCompatActivity {
             rlInviteContacts.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(SettingsActivity.this, "Sign in Share InstaMelody Application", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SettingsActivity.this, "Sign in Share YoMelody Application", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
                     startActivity(intent);
                 }

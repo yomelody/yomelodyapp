@@ -23,6 +23,15 @@ public class RecordingsModel implements Serializable{
     String joinCount;
 
     String thumnailUrl;
+    ArrayList joinUrl;
+
+    public ArrayList getJoinUrl() {
+        return joinUrl;
+    }
+
+    public void setJoinUrl(ArrayList joinUrl) {
+        this.joinUrl = joinUrl;
+    }
 
     public String getJoinCount() {
         return joinCount;

@@ -1,6 +1,7 @@
 package com.instamelody.instamelody.Models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by CBPC 41 on 6/22/2017.
@@ -16,6 +17,7 @@ public class RecordingsPool implements Serializable{
     String duration;
     String recordingUrl;
     String instruments;
+
 
     public String getAddedById() {
         return addedById;

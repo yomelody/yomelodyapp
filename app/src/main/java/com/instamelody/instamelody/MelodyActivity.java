@@ -27,6 +27,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -143,7 +144,7 @@ public class MelodyActivity extends AppCompatActivity {
                 }
             }
         };
-
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         search1 = (SearchView) findViewById(R.id.searchMelody);
         btnMelodyPacks = (Button) findViewById(R.id.btnMelodyPacks);
         melodySearchButton = (Button) findViewById(R.id.melodySearchButton);
@@ -729,8 +730,7 @@ public class MelodyActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         getTotalCount();
-        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-                new IntentFilter(Const.PUSH_NOTIFICATION));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver, new IntentFilter(Const.PUSH_NOTIFICATION));
         NotificationUtils.clearNotifications(getApplicationContext());
     }
 
