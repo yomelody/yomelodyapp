@@ -30,6 +30,7 @@ import com.instamelody.instamelody.Models.MelodyInstruments;
 import com.instamelody.instamelody.Models.ModelPlayAllMediaPlayer;
 import com.instamelody.instamelody.R;
 import com.instamelody.instamelody.StudioActivity;
+import com.instamelody.instamelody.utils.AppHelper;
 import com.instamelody.instamelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
@@ -251,16 +252,18 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
                 holder.tvUserName.setText("@" + userName);
             } else if (fbName != null) {
                 holder.tvUserName.setText("@" + fbName);
-            } else
+            } else{
                 holder.tvUserName.setText(instruments.getUserName());
+            }
+
             holder.tvInstrumentName.setText(instruments.getInstrumentName());
 
             holder.tvInstrumentLength.setText(instruments.getInstrumentLength());
             instrumentFile = instruments.getInstrumentFile();
             instrument_url_count.add(instrumentFile);
 //        Toast.makeText(context, "" + instrumentFile, Toast.LENGTH_SHORT).show();
-            Log.d("Instruments size", "" + instrumentFile);
-
+//            Log.d("Instruments size", "" + instrumentFile);
+            AppHelper.sop("tvUserName="+userName+"=fbName=="+fbName+"=instruments="+instruments.getUserName());
 
             //StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo),String.valueOf(threshold),String.valueOf(ratio),String.valueOf(attack),String.valueOf(release),String.valueOf(makeup),String.valueOf(knee),String.valueOf(mix),InstaURL,PositionId));
 

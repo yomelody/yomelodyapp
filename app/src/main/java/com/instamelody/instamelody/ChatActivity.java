@@ -111,6 +111,7 @@ import static android.os.Environment.isExternalStorageEmulated;
 import static android.os.Environment.isExternalStorageRemovable;
 //import static com.instamelody.instamelody.Adapters.ChatAdapter.tvNum;
 import static com.instamelody.instamelody.Adapters.RecentImagesAdapter.pos;
+import static com.instamelody.instamelody.JoinActivity.RecordingName;
 import static com.instamelody.instamelody.utils.Const.PUSH_NOTIFICATION;
 import static com.instamelody.instamelody.utils.Const.READ_NOTIFICATION;
 import static com.instamelody.instamelody.utils.Const.SHARED_PREF;
@@ -700,8 +701,29 @@ public class ChatActivity extends AppCompatActivity {
         ivJoin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
-                startActivity(intent);
+                /*Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
+                startActivity(intent);*/
+                Message message=cAdapter.getmMessage();
+                if (message!=null && message.getAudioDetails()!=null && message.getAudioDetails().length()>0){
+                    try {
+                        JSONObject json = (JSONObject) message.getAudioDetails().get(0);
+                        if (json.has("recording_id")){
+                            SharedPreferences.Editor record = getSharedPreferences("RecordingData", MODE_PRIVATE).edit();
+                            record.putString("AddedBy", json.getString("added_by"));
+                            record.putString("Recording_id", json.getString("recording_id"));
+                            record.putString("UserNameRec", json.getString("user_name"));
+                            record.putString("RecordingName", json.getString("recording_topic"));
+                            record.putString("UserProfile", message.getProfilePic());
+                            record.commit();
+                            Intent intent = new Intent(mActivity, JoinActivity.class);
+                            startActivity(intent);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
             }
         });
 

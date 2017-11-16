@@ -133,7 +133,7 @@
 
                             </RelativeLayout>
 
-                            <RelativeLayout
+                            <LinearLayout
                                 android:id="@+id/rlIncluded"
                                 android:layout_width="105dp"
                                 android:layout_height="match_parent"
@@ -144,14 +144,21 @@
                                     android:id="@+id/tvIncluded"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_centerVertical="true"
-                                    android:layout_toLeftOf="@+id/switchFree"
-                                    android:text="Included : 15"
+                                    android:layout_gravity="center_vertical"
+                                    android:text="Included:1"
                                     android:textColor="@color/cardview_dark_background"
                                     android:textSize="13sp"
                                     android:visibility="visible" />
 
-                            </RelativeLayout>
+                                <ImageView
+                                    android:id="@+id/arrowIv"
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:layout_marginLeft="5dp"
+                                    android:layout_gravity="center_vertical"
+                                    android:src="@drawable/down_arrow_img"/>
+
+                            </LinearLayout>
                         </RelativeLayout>
                     </LinearLayout>
 

@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.Chronometer;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -74,7 +75,7 @@ public class JoinActivity extends AppCompatActivity {
     private static final int SAMPLING_RATE = 44100;
     public static RecyclerView recyclerView;
     public static RecyclerView recyclerViewInstruments;
-    RelativeLayout rlIncluded;
+    LinearLayout rlIncluded;
     public static TextView recording_date, melody_date;
     public static RelativeLayout rlJoinButton;
     private String USER_ID = "userid";
@@ -103,6 +104,7 @@ public class JoinActivity extends AppCompatActivity {
     TextView tvDone;
     private Activity mActivity;
     public static boolean check_frag = false;
+    private ImageView arrowIv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +126,7 @@ public class JoinActivity extends AppCompatActivity {
         ivRecordJoin = (ImageView) findViewById(R.id.ivRecordJoin);
         playAll = (ImageView) findViewById(R.id.playAll);
         pauseAll = (ImageView) findViewById(R.id.pauseAll);
+        arrowIv = (ImageView) findViewById(R.id.arrowIv);
 
         mVisualizerView = (VisualizerView) findViewById(R.id.myvisualizerview);
         mDecibelView = (TextView) findViewById(R.id.decibel_view);
@@ -141,7 +144,7 @@ public class JoinActivity extends AppCompatActivity {
         chrono = (Chronometer) findViewById(R.id.chrono);
         tvDone = (TextView) findViewById(R.id.tvDone);
         rlComment = (RelativeLayout) findViewById(R.id.rlComment);
-        rlIncluded = (RelativeLayout) findViewById(R.id.rlIncluded);
+        rlIncluded = (LinearLayout) findViewById(R.id.rlIncluded);
         rlJoinButton = (RelativeLayout) findViewById(R.id.rlJoinButton);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewArtists);
         joinFooter = (RelativeLayout) findViewById(R.id.joinFooter);
@@ -176,11 +179,26 @@ public class JoinActivity extends AppCompatActivity {
         rlIncluded.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (recyclerView.getVisibility() == View.VISIBLE) {
-                    recyclerView.setVisibility(View.GONE);
-                } else {
-                    recyclerView.setVisibility(View.VISIBLE);
+//                recyclerView.getVisibility() == View.VISIBLE
+                if (adapter != null) {
+                    if (((JoinListAdapter) adapter).getHideProfImg().equalsIgnoreCase("hide")) {
+//                    recyclerView.setVisibility(View.GONE);
+
+                        ((JoinListAdapter) adapter).setHideProfImg("");
+                        arrowIv.setImageResource(R.drawable.down_arrow_img);
+                        recyclerView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 180));
+                        adapter.notifyDataSetChanged();
+
+
+                    } else {
+//                    recyclerView.setVisibility(View.VISIBLE);
+                        ((JoinListAdapter) adapter).setHideProfImg("hide");
+                        arrowIv.setImageResource(R.drawable.right_arrow_img);
+                        recyclerView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 40));
+                        adapter.notifyDataSetChanged();
+                    }
                 }
+
             }
         });
 

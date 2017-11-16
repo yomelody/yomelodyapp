@@ -91,6 +91,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     String parentRec;
     public static int origCount = 0;
     int pos;
+    private Message mMessage;
 
     public ChatAdapter(Context context, ArrayList<Message> chatList) {
         this.chatList = chatList;
@@ -294,6 +295,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                     progressDialog.setMessage("Loading...");
                     progressDialog.setCancelable(false);
                     progressDialog.show();
+                    mMessage=chatList.get(position);
                     if (ParseContents.sharedAudioList.size() > 0) {
                         ParseContents.sharedAudioList.clear();
                     }
@@ -314,7 +316,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                             str = "(1" + " of " + ParseContents.sharedAudioList.size() + ")";
                             holder.tvNum.setText(str);
                             try {
-                                if (mp.isPlaying()) {
+                                if (mp!=null && mp.isPlaying()) {
                                     try {
                                         mp.reset();
                                         mp.release();
@@ -695,6 +697,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     @Override
     public int getItemCount() {
         return chatList.size();
+    }
+
+    public Message getmMessage(){
+        return mMessage;
     }
 
     public void fetchPlayJoinAudio(final String RecId) {
