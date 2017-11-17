@@ -188,16 +188,16 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
         btnActivity.setBackgroundColor(Color.parseColor("#E4E4E4"));
         btnAudio.setBackgroundColor(Color.parseColor("#FFFFFF"));
-        //btnAudio.setEnabled(false);
-        //btnActivity.setEnabled(true);
+        btnAudio.setEnabled(false);
+        btnActivity.setEnabled(true);
         ivStationSearchActivity.setVisibility(View.GONE);
         btnAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 btnActivity.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnAudio.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                //btnAudio.setEnabled(false);
-                //btnActivity.setEnabled(true);
+                btnAudio.setEnabled(false);
+                btnActivity.setEnabled(true);
                 IsActivity=false;
                 ivStationSearchActivity.setVisibility(View.VISIBLE);
 
@@ -217,8 +217,8 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
                 btnAudio.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnActivity.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                //btnActivity.setEnabled(false);
-                //btnAudio.setEnabled(true);
+                btnActivity.setEnabled(false);
+                btnAudio.setEnabled(true);
                 IsActivity=true;
                 clearSharePrefStation();
                 ivFilter.setVisibility(View.GONE);
@@ -313,18 +313,6 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         ivBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (RecordingsCardAdapter.mp != null) {
-                    try {
-
-                        RecordingsCardAdapter.mp.reset();
-                        RecordingsCardAdapter.mp.release();
-
-
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                }
                 finish();
             }
         });
@@ -332,18 +320,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         ivHomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (RecordingsCardAdapter.mp != null) {
-                    try {
 
-                        RecordingsCardAdapter.mp.reset();
-                        RecordingsCardAdapter.mp.release();
-
-
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                }
                 Intent intent = new Intent(mActivity, HomeActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
@@ -353,18 +330,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         discover.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (RecordingsCardAdapter.mp != null) {
-                    try {
 
-                        RecordingsCardAdapter.mp.reset();
-                        RecordingsCardAdapter.mp.release();
-
-
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                }
                 Intent intent = new Intent(getApplicationContext(), DiscoverActivity.class);
                 startActivity(intent);
             }
@@ -373,18 +339,6 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         message.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (RecordingsCardAdapter.mp != null) {
-                    try {
-
-                        RecordingsCardAdapter.mp.reset();
-                        RecordingsCardAdapter.mp.release();
-
-
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                }
                 Intent intent = new Intent(getApplicationContext(), MessengerActivity.class);
                 startActivity(intent);
             }
@@ -401,16 +355,6 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         audio_feed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (RecordingsCardAdapter.mp != null) {
-                    try {
-
-                        RecordingsCardAdapter.mp.reset();
-                        RecordingsCardAdapter.mp.release();
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                }
                 Intent i = new Intent(StationActivity.this, StationActivity.class);
                 startActivity(i);
             }
@@ -527,15 +471,11 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        clearSharePrefStation();
-
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        clearSharePrefStation();
-
     }
 
     private TabHost.TabContentFactory createTabContent() {
@@ -838,7 +778,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     protected void onPause() {
         super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-        if (RecordingsCardAdapter.mp != null) {
+        /*if (RecordingsCardAdapter.mp != null) {
             try {
                 RecordingsCardAdapter.mp.reset();
                 RecordingsCardAdapter.mp.release();
@@ -852,7 +792,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
             } catch (Throwable e) {
                 e.printStackTrace();
             }
-        }
+        }*/
     }
 
     @Override

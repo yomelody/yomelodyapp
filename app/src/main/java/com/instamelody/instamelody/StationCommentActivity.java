@@ -121,6 +121,7 @@ public class StationCommentActivity extends AppCompatActivity {
     String COMMENT = "comment";
     String FILE_TYPE = "file_type";
     String TOPIC = "topic";
+    private Handler mHandler1;
 
 
     @Override
@@ -997,11 +998,11 @@ public class StationCommentActivity extends AppCompatActivity {
     }
 
     private void primarySeekBarProgressUpdater() {
-        Handler mHandler1 = new Handler();
+        mHandler1 = new Handler();
         try {
             ///    duration1 = mp.getDuration();
             seekBarRecordings.setProgress((int) (((float) mp.getCurrentPosition() / duration1) * 100));// This math construction give a percentage of "was playing"/"song length"
-            if (mp.isPlaying()) {
+            if (mp!=null && mp.isPlaying()) {
                 Runnable notification = new Runnable() {
                     public void run() {
                         primarySeekBarProgressUpdater();
@@ -1250,13 +1251,20 @@ public class StationCommentActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mp != null) {
-            if (mp.isPlaying()) {
-                mp.stop();
+        try{
+            if (mp != null) {
+                if (mp.isPlaying()) {
+                    mp.stop();
+                }
+                mp.reset();
+                mp.release();
+                mp = null;
+                if (mHandler1!=null){
+                    mHandler1.removeCallbacksAndMessages(null);
+                }
             }
-            mp.reset();
-            mp.release();
-            mp = null;
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

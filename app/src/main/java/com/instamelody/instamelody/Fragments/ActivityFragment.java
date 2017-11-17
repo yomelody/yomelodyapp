@@ -199,7 +199,9 @@ public class ActivityFragment extends Fragment {
                                     adapter.notifyDataSetChanged();
                                     isLastPage = false;
                                 } else {
-                                    Norecord.setVisibility(View.VISIBLE);
+                                    if (arraylist.size()<=0){
+                                        Norecord.setVisibility(View.VISIBLE);
+                                    }
                                     //  StationActivity.ivStationSearch.setVisibility(View.GONE);
                                     // Toast.makeText(mActivity, msgUnsuccess, Toast.LENGTH_SHORT).show();
                                     isLastPage = true;

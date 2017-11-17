@@ -127,6 +127,9 @@ public class MelodyPacksFragment extends Fragment {
         progressDialog.setMessage("Please wait...");
         progressDialog.setCancelable(false);
         editor = getActivity().getSharedPreferences("FileType", MODE_PRIVATE).edit();
+        editor.putString("File_Tyoe","admin_melody");
+        editor.commit();
+
         SharedPreferences filterPref = getActivity().getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
         SharedPreferences searchPref = getActivity().getSharedPreferences("SearchPref", MODE_PRIVATE);

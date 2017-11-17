@@ -258,7 +258,7 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
 
             holder.tvInstrumentName.setText(instruments.getInstrumentName());
 
-            holder.tvInstrumentLength.setText(instruments.getInstrumentLength());
+            holder.tvInstrumentLength.setText(CalInstLen(instruments.getInstrumentLength()));
             instrumentFile = instruments.getInstrumentFile();
             instrument_url_count.add(instrumentFile);
 //        Toast.makeText(context, "" + instrumentFile, Toast.LENGTH_SHORT).show();
@@ -420,6 +420,20 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
         }
     }
 
+    public String CalInstLen(String instlen) {
+        try {
+            if (instlen != null) {
+                int minutes = Integer.parseInt(instlen) / 60;
+                int seconds = Integer.parseInt(instlen) % 60;
+                instlen = String.valueOf(minutes) + ":" + String.valueOf(seconds);
+
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return instlen;
+    }
 
     @Override
     public int getItemCount() {

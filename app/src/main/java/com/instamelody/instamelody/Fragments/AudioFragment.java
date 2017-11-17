@@ -1068,4 +1068,12 @@ public class AudioFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (adapter!=null){
+            ((RecordingsCardAdapter)adapter).releaseMediaPlayer();
+        }
+    }
+
 }

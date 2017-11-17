@@ -704,27 +704,28 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View view) {
                 /*Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
                 startActivity(intent);*/
-                Message message=cAdapter.getmMessage();
-                if (message!=null && message.getAudioDetails()!=null && message.getAudioDetails().length()>0){
-                    try {
-                        JSONObject json = (JSONObject) message.getAudioDetails().get(0);
-                        if (json.has("recording_id")){
-                            SharedPreferences.Editor record = getSharedPreferences("RecordingData", MODE_PRIVATE).edit();
-                            record.putString("AddedBy", json.getString("added_by"));
-                            record.putString("Recording_id", json.getString("recording_id"));
-                            record.putString("UserNameRec", json.getString("user_name"));
-                            record.putString("RecordingName", json.getString("recording_topic"));
-                            record.putString("UserProfile", message.getProfilePic());
-                            record.commit();
-                            Intent intent = new Intent(mActivity, JoinActivity.class);
-                            startActivity(intent);
+                if (rlChatPlayer.getVisibility() == View.VISIBLE) {
+                    Message message=cAdapter.getmMessage();
+                    if (message!=null && message.getAudioDetails()!=null && message.getAudioDetails().length()>0){
+                        try {
+                            JSONObject json = (JSONObject) message.getAudioDetails().get(0);
+                            if (json.has("recording_id")){
+                                SharedPreferences.Editor record = getSharedPreferences("RecordingData", MODE_PRIVATE).edit();
+                                record.putString("AddedBy", json.getString("added_by"));
+                                record.putString("Recording_id", json.getString("recording_id"));
+                                record.putString("UserNameRec", json.getString("user_name"));
+                                record.putString("RecordingName", json.getString("recording_topic"));
+                                record.putString("UserProfile", message.getProfilePic());
+                                record.commit();
+                                Intent intent = new Intent(mActivity, JoinActivity.class);
+                                startActivity(intent);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+
                     }
-
                 }
-
             }
         });
 
