@@ -578,7 +578,13 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         PlayCounter = 0;
                         MinJoinCount = 1;
                         if (lastModifiedHoled != null) {
-                            mHandler1.removeCallbacksAndMessages(null);
+                            try {
+                                if(mHandler1!=null) {
+                                    mHandler1.removeCallbacksAndMessages(null);
+                                }
+                            }catch (Exception ex){
+                                ex.printStackTrace();
+                            }
                             lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
                             lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
                             SeekBar seekBar = lastModifiedHoled.itemView.findViewById(R.id.seekBarRecordings);
@@ -893,10 +899,14 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 mp = null;
                                 duration1 = 0;
                                 length = 0;
+                                if(mHandler1!=null) {
+                                    mHandler1.removeCallbacksAndMessages(null);
+                                }
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
-                            mHandler1.removeCallbacksAndMessages(null);
+
+
                             if (lastModifiedHoled != null) {
                                 lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
                                 lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
@@ -956,7 +966,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     public boolean onError(MediaPlayer mp, int what, int extra) {
                         progressDialog.dismiss();
                         try {
-                            mHandler1.removeCallbacksAndMessages(null);
+                            if(mHandler1!=null) {
+                                mHandler1.removeCallbacksAndMessages(null);
+                            }
                             lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
                             lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
                             SeekBar seekBar = lastModifiedHoled.itemView.findViewById(R.id.seekBarRecordings);
@@ -971,7 +983,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     @Override
                     public void onCompletion(MediaPlayer mp) {
 
-                        mHandler1.removeCallbacksAndMessages(null);
+                        if(mHandler1!=null) {
+                            mHandler1.removeCallbacksAndMessages(null);
+                        }
                         lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
                         lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
                         SeekBar seekBar = lastModifiedHoled.itemView.findViewById(R.id.seekBarRecordings);
@@ -991,6 +1005,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             ex.printStackTrace();
         }
     }
+
 
     private void primarySeekBarProgressUpdater() {
         mHandler1 = new Handler();

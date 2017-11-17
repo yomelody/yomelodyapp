@@ -776,7 +776,9 @@ public class StudioActivity extends AppCompatActivity {
                     if (mVisualizer != null) {
                         mVisualizer.release();
                     }
-                    handler.removeCallbacksAndMessages(null);
+                    if(handler!=null) {
+                        handler.removeCallbacksAndMessages(null);
+                    }
 
                     if (lstViewHolder.size() > 0) {
                         lstViewHolder.clear();
@@ -830,7 +832,9 @@ public class StudioActivity extends AppCompatActivity {
 
                     if (isRecording) {
                         // ivRecord.setEnabled(false);
-                        handler.removeCallbacksAndMessages(null);
+                        if(handler!=null) {
+                            handler.removeCallbacksAndMessages(null);
+                        }
                         try {
                             recorder.release();
                             recorder = null;
@@ -1037,7 +1041,9 @@ public class StudioActivity extends AppCompatActivity {
                 try {
                     IsHomeMeloduId = null;
                     IscheckMelody = null;
-                    handler.removeCallbacksAndMessages(null);
+                    if(handler!=null) {
+                        handler.removeCallbacksAndMessages(null);
+                    }
                     ivRecord_play.setVisibility(View.INVISIBLE);
                     rlRedoButton.setVisibility(View.INVISIBLE);
                     ivRecord.setVisibility(View.VISIBLE);
@@ -1316,7 +1322,9 @@ public class StudioActivity extends AppCompatActivity {
                     frameProgress.setVisibility(View.GONE);
 
 
-                    handler.removeCallbacksAndMessages(null);
+                    if(handler!=null) {
+                        handler.removeCallbacksAndMessages(null);
+                    }
                     if (isRecording) {
 
 
@@ -1986,7 +1994,9 @@ public class StudioActivity extends AppCompatActivity {
                             switchFlag = "0";
 
                         }
-                        handler.removeCallbacksAndMessages(null);
+                        if(handler!=null) {
+                            handler.removeCallbacksAndMessages(null);
+                        }
                         if (StudioActivity.lstViewHolder.size() > 0) {
                             StudioActivity.lstViewHolder.clear();
                         }
@@ -2398,7 +2408,9 @@ public class StudioActivity extends AppCompatActivity {
         super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
         try {
-            handler.removeCallbacksAndMessages(null);
+            if(handler!=null) {
+                handler.removeCallbacksAndMessages(null);
+            }
 
             if (mVisualizer != null) {
                 mVisualizer.release();
@@ -2668,7 +2680,9 @@ public class StudioActivity extends AppCompatActivity {
                 if (mediaPlayersAll.size() > 0) {
                     mediaPlayersAll.clear();
                 }
-                handler.removeCallbacksAndMessages(null);
+                if(handler!=null) {
+                    handler.removeCallbacksAndMessages(null);
+                }
 
                 for (int i = 0; i <= mp_start.size() - 1; i++) {
                     try {
@@ -3279,8 +3293,9 @@ public class StudioActivity extends AppCompatActivity {
 
     private void CloseConnection() {
         try {
-
-            handler.removeCallbacksAndMessages(null);
+            if(handler!=null) {
+                handler.removeCallbacksAndMessages(null);
+            }
             if (mVisualizer != null) {
                 mVisualizer.release();
             }

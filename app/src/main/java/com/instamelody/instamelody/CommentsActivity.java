@@ -59,6 +59,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -461,7 +462,9 @@ public class CommentsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    mHandler1.removeCallbacksAndMessages(null);
+                    if(mHandler1!=null) {
+                        mHandler1.removeCallbacksAndMessages(null);
+                    }
                     for (MediaPlayer mediaPlayer : mediaPlayersAll) {
                         try {
                             ivPlay.setVisibility(VISIBLE);
@@ -864,7 +867,13 @@ public class CommentsActivity extends AppCompatActivity {
                             @Override
                             public void onCompletion(MediaPlayer mp) {
                                 if (MaxMpSessionID == mp.getAudioSessionId()) {
-                                    mHandler1.removeCallbacksAndMessages(null);
+                                    if(mHandler1!=null) {
+                                        try {
+                                            mHandler1.removeCallbacksAndMessages(null);
+                                        } catch (Exception ex){
+                                            ex.printStackTrace();
+                                        }
+                                    }
                                     melodySlider.setProgress(0);
                                     ivPlay.setVisibility(VISIBLE);
                                     ivPause.setVisibility(GONE);

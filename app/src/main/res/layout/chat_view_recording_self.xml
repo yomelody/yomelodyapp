@@ -159,6 +159,7 @@
                                 android:visibility="gone"
                                 android:textStyle="normal|bold" />
 
+
                             <TextView
                                 android:id="@+id/tvUserName"
                                 android:layout_width="match_parent"
