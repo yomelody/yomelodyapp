@@ -782,6 +782,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
             try {
                 RecordingsCardAdapter.mp.reset();
                 RecordingsCardAdapter.mp.release();
+                RecordingsCardAdapter.mp=null;
                 StationActivity.this.recreate();
                 try {
                     //AudioFragment af = new AudioFragment();

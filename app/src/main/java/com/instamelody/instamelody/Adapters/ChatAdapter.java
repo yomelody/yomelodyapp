@@ -233,6 +233,30 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                 holder.ivTick.setVisibility(VISIBLE);
             }
 
+
+
+            JSONArray audiosDetailsArray = message.getAudioDetails();
+            if (audiosDetailsArray != null && audiosDetailsArray.length() > 0) {
+                for (int j = 0; j < audiosDetailsArray.length(); j++) {
+                    try {
+                        JSONObject detailsJson = audiosDetailsArray.getJSONObject(j);
+                        if (detailsJson.has("melodypackid")){
+                            holder.tvMelodyName.setText(detailsJson.getString("name"));
+                            holder.tvUserName.setText(detailsJson.getString("username"));
+                            holder.TemptvMelodyName.setText(detailsJson.getString("name"));
+
+                        }else {
+                            holder.tvMelodyName.setText(detailsJson.getString("recording_topic"));
+                            String s = "@" + detailsJson.getString("user_name");
+                            holder.tvUserName.setText(s);
+                            holder.TemptvMelodyName.setText(detailsJson.getString("name"));
+
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
             seekBarChata.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -269,27 +293,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
                 }
             });
-
-            JSONArray audiosDetailsArray = message.getAudioDetails();
-            if (audiosDetailsArray != null && audiosDetailsArray.length() > 0) {
-                for (int j = 0; j < audiosDetailsArray.length(); j++) {
-                    try {
-                        JSONObject detailsJson = audiosDetailsArray.getJSONObject(j);
-                        if (detailsJson.has("melodypackid")){
-                            holder.tvMelodyName.setText(detailsJson.getString("name"));
-                            holder.tvUserName.setText(detailsJson.getString("username"));
-                            holder.TemptvMelodyName.setText(detailsJson.getString("name"));
-                        }else {
-                            holder.TemptvMelodyName.setText(detailsJson.getString("name"));
-                            holder.tvMelodyName.setText(detailsJson.getString("recording_topic"));
-                            String s = "@" + detailsJson.getString("user_name");
-                            holder.tvUserName.setText(s);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
             ivPrev.setEnabled(false);
             ivNext.setEnabled(false);
             holder.ivPlay.setOnClickListener(new View.OnClickListener() {
@@ -318,6 +321,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                             ChatActivity.tvNumPlayer.setText(holder.tvNum.getText().toString().trim());
                             ChatActivity.tvNamePlayer.setText(holder.TemptvMelodyName.getText().toString().trim());
                             ChatActivity.tvUserNamePlayer.setText(holder.tvUserName.getText().toString().trim());
+                            if(ParseContents.sharedAudioList.get(0).getProfileUrl().toString()!="") {
+                                Picasso.with(ChatActivity.userProfileImagePlayer.getContext()).load(ParseContents.sharedAudioList.get(0).getProfileUrl()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(ChatActivity.userProfileImagePlayer);
+                            }
+                            //ParseContents.sharedAudioList.get(0).getProfileUrl()
                             str = "(1" + " of " + ParseContents.sharedAudioList.size() + ")";
                             holder.tvNum.setText(str);
                             try {
@@ -342,12 +349,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                             } catch (NullPointerException e) {
                                 e.printStackTrace();
                             }
-                            // String url=ParseContents.sharedAudioList.get(count).getRecordingUrl();
+
                             mp.setDataSource(context, uri);
                             mp.prepareAsync();
-//                            mp.start();
-//                            progressDialog.dismiss();
-//                            holder.primarySeekBarProgressUpdater();
                             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                                 @Override
                                 public void onPrepared(MediaPlayer mediaPlayer) {
@@ -375,39 +379,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                 }
                             });
 
-//                            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-//                                @Override
-//                                public void onPrepared(MediaPlayer mp) {
-//                                    mp.start();
-//                                    holder.progressDialog.dismiss();
-//                                    holder.primarySeekBarProgressUpdater();
-//                                }
-//                            });
-//                            mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-//                                @Override
-//                                public boolean onError(MediaPlayer mp, int what, int extra) {
-//                                    if (mp != null) {
-//                                        try {
-//                                            mp.stop();
-//                                            mp.release();
-//                                        } catch (Exception ex) {
-//                                            ex.printStackTrace();
-//                                        }
-//                                    }
-//                                    holder.progressDialog.dismiss();
-//                                    return false;
-//                                }
-//                            });
-//                            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//                                @Override
-//                                public void onCompletion(MediaPlayer mp) {
-//                                    mHandler1.removeCallbacksAndMessages(null);
-//                                    seekBarChata.setProgress(0);
-//                                    holder.progressDialog.dismiss();
-//                                    mp.stop();
-//                                    mp.release();
-//                                }
-//                            });
+
                         }
                     } catch (Exception ex) {
                         progressDialog.dismiss();

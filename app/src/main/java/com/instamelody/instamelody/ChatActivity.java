@@ -130,7 +130,7 @@ import static com.instamelody.instamelody.utils.Const.ServiceType.sharefile;
 
 public class ChatActivity extends AppCompatActivity {
 
-    public static TextView tvUserName, tvNamePlayer,TemptvNamePlayer, tvUserNamePlayer, tvAudioNamePlayer, tvNumPlayer;
+    public static TextView tvUserName, tvNamePlayer, tvUserNamePlayer, tvAudioNamePlayer, tvNumPlayer;
     public static ImageView ivPausePlayer, ivPlayPlayer, userProfileImagePlayer;
     public static RelativeLayout rlChatPlayer, rlNothing;
     public static FrameLayout flSeekbar;
@@ -272,7 +272,6 @@ public class ChatActivity extends AppCompatActivity {
         seekBarChata = (SeekBar) findViewById(R.id.seekBarChata);
         tvNamePlayer = (TextView) findViewById(R.id.tvNamePlayer);
         tvUserNamePlayer = (TextView) findViewById(R.id.tvUserNamePlayer);
-        TemptvNamePlayer = (TextView) findViewById(R.id.TemptvNamePlayer);
         tvAudioNamePlayer = (TextView) findViewById(R.id.tvAudioNamePlayer);
         tvNumPlayer = (TextView) findViewById(R.id.tvNumPlayer);
         rlPrevPlayer = (RelativeLayout) findViewById(R.id.rlPrevPlayer);
