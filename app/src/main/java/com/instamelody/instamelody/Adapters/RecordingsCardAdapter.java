@@ -309,7 +309,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     if (!userId.equals("") && userId != null) {
 
                         final AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
-                        alertDialog.setTitle(mActivity.getString(R.string.share_with_YoMelody));
+                        alertDialog.setTitle("Share with InstaMelody chat?");
 //                        alertDialog.setMessage("Choose yes to share in chat.");
                         alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -337,7 +337,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 Intent shareIntent = new Intent();
                                 shareIntent.setAction(Intent.ACTION_SEND);
                                 shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                                shareIntent.putExtra(Intent.EXTRA_TEXT, mActivity.getString(R.string.yomelody_music));
+                                shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt");
                                 shareIntent.putExtra(Intent.EXTRA_TEXT, recording.getThumnailUrl());
                                 shareIntent.setType("image/jpeg");
                                 shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -588,10 +588,10 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         MinJoinCount = 1;
                         if (lastModifiedHoled != null) {
                             try {
-                                if (mHandler1 != null) {
+                                if(mHandler1!=null) {
                                     mHandler1.removeCallbacksAndMessages(null);
                                 }
-                            } catch (Exception ex) {
+                            }catch (Exception ex){
                                 ex.printStackTrace();
                             }
                             lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
@@ -633,7 +633,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         mp.reset();
                         mp.release();
                         mp = null;
-                        if (mHandler1 != null) {
+                        if (mHandler1!=null){
                             mHandler1.removeCallbacksAndMessages(null);
                         }
                         length = mp.getCurrentPosition();
@@ -877,11 +877,11 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 }
                 mp.release();
                 mp = null;
-                if (mHandler1 != null) {
+                if (mHandler1!=null){
                     mHandler1.removeCallbacksAndMessages(null);
                 }
             }
-        } catch (Exception e) {
+        }catch (Exception e){
             e.printStackTrace();
         }
     }
@@ -908,17 +908,29 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             if (instrumentFile != "") {
                 try {
                     if (mp != null) {
-                        mp.stop();
-                        mp.release();
-                        mp = null;
-                        duration1 = 0;
-                        length = 0;
-                        if (mHandler1 != null) {
-                            mHandler1.removeCallbacksAndMessages(null);
-                        }
-                        if (lastModifiedHoled != null) {
-                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
-                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
+                        try {
+
+                            try {
+                                mp.stop();
+                                mp.release();
+                                mp = null;
+                                duration1 = 0;
+                                length = 0;
+
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                            if(mHandler1!=null) {
+                                mHandler1.removeCallbacksAndMessages(null);
+                            }
+
+                            if (lastModifiedHoled != null) {
+                                lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
+                                lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
+                            }
+
+                        } catch (Throwable e) {
+                            e.printStackTrace();
                         }
                     }
                 } catch (Throwable e) {
@@ -940,38 +952,42 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(MediaPlayer mp) {
+                        try {
+                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(GONE);
+                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(VISIBLE);
+                            mp.seekTo(length);
+                            mp.start();
+                            fetchViewCount(userId, position);
+                            progressDialog.dismiss();
+                            duration1 = mp.getDuration();
+                            primarySeekBarProgressUpdater();
 
-                        lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(GONE);
-                        lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(VISIBLE);
-                        mp.seekTo(length);
-                        mp.start();
-                        fetchViewCount(userId, position);
-                        progressDialog.dismiss();
-                        duration1 = mp.getDuration();
-                        primarySeekBarProgressUpdater();
+                            if (Type == "main") {
 
-                        if (Type == "main") {
+                                //MinJoinCount = MinJoinCount + 1;
+                            } else if (Type == "next") {
 
-                            //MinJoinCount = MinJoinCount + 1;
-                        } else if (Type == "next") {
+                                MinJoinCount = MinJoinCount + 1;
+                                TextView tvIncludedCount = lastModifiedHoled.itemView.findViewById(R.id.txtJoinCount);
+                                tvIncludedCount.setText(UpdateCalJoinCount(TempJoinCount));
+                            } else if (Type == "pre") {
 
-                            MinJoinCount = MinJoinCount + 1;
-                            TextView tvIncludedCount = lastModifiedHoled.itemView.findViewById(R.id.txtJoinCount);
-                            tvIncludedCount.setText(UpdateCalJoinCount(TempJoinCount));
-                        } else if (Type == "pre") {
-
-                            MinJoinCount = MinJoinCount - 1;
-                            TextView tvIncludedCount = lastModifiedHoled.itemView.findViewById(R.id.txtJoinCount);
-                            tvIncludedCount.setText(UpdateCalJoinCount(TempJoinCount));
+                                MinJoinCount = MinJoinCount - 1;
+                                TextView tvIncludedCount = lastModifiedHoled.itemView.findViewById(R.id.txtJoinCount);
+                                tvIncludedCount.setText(UpdateCalJoinCount(TempJoinCount));
+                            }
+                        }catch (Exception ex){
+                            ex.printStackTrace();
                         }
                     }
                 });
                 mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                     @Override
                     public boolean onError(MediaPlayer mp, int what, int extra) {
-                        progressDialog.dismiss();
+
                         try {
-                            if (mHandler1 != null) {
+                            progressDialog.dismiss();
+                            if(mHandler1!=null) {
                                 mHandler1.removeCallbacksAndMessages(null);
                             }
                             lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
@@ -987,16 +1003,19 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
-
-                        if (mHandler1 != null) {
-                            mHandler1.removeCallbacksAndMessages(null);
+                        try {
+                            if (mHandler1 != null) {
+                                mHandler1.removeCallbacksAndMessages(null);
+                            }
+                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
+                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
+                            SeekBar seekBar = lastModifiedHoled.itemView.findViewById(R.id.seekBarRecordings);
+                            seekBar.setProgress(0);
+                            length = 0;
+                            duration1 = 0;
+                        }catch (Exception ex){
+                            ex.printStackTrace();
                         }
-                        lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
-                        lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
-                        SeekBar seekBar = lastModifiedHoled.itemView.findViewById(R.id.seekBarRecordings);
-                        seekBar.setProgress(0);
-                        length = 0;
-                        duration1 = 0;
 
                     }
                 });
@@ -1018,7 +1037,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             SeekBar seekBar = lastModifiedHoled.itemView.findViewById(R.id.seekBarRecordings);
             seekBar.setProgress(0);
             seekBar.setProgress((int) (((float) mp.getCurrentPosition() / duration1) * 100));// This math construction give a percentage of "was playing"/"song length"
-            if (mp != null && mp.isPlaying()) {
+            if (mp!=null && mp.isPlaying()) {
                 Runnable notification = new Runnable() {
                     public void run() {
                         primarySeekBarProgressUpdater();

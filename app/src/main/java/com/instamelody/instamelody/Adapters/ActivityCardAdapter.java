@@ -73,27 +73,30 @@ public class ActivityCardAdapter extends RecyclerView.Adapter<ActivityCardAdapte
 
     @Override
     public void onBindViewHolder(final ActivityCardAdapter.MyViewHolder holder, final int listPosition) {
-        TextView tvmsg = holder.tvmsg;
-        TextView tvtopic = holder.tvtopic;
-        TextView tvtime = holder.tvtime;
-        TextView tvfrom=holder.tvfFirst;
-        TextView tvsecond=holder.tvSecond;
-        ImageView userprofileimage = holder.userprofileimage;
-        userprofileimage.setImageResource(R.drawable.profile1);
+        try {
+            TextView tvmsg = holder.tvmsg;
+            TextView tvtopic = holder.tvtopic;
+            TextView tvtime = holder.tvtime;
+            TextView tvfrom = holder.tvfFirst;
+            TextView tvsecond = holder.tvSecond;
+            ImageView userprofileimage = holder.userprofileimage;
+            userprofileimage.setImageResource(R.drawable.profile1);
 
-        ActivityModel am = activityList.get(listPosition);
-        String url=activityList.get(listPosition).getUserImgURL();
-        if(url.equals(null) || url.equals("")) {
+            ActivityModel am = activityList.get(listPosition);
+            String url = activityList.get(listPosition).getUserImgURL();
+            if (url.equals(null) || url.equals("")) {
 
+            } else {
+                Picasso.with(holder.userprofileimage.getContext()).load(am.getUserImgURL()).into(holder.userprofileimage);
+            }
+            tvmsg.setText(activityList.get(listPosition).getTvmsg());
+            tvtopic.setText(activityList.get(listPosition).gettvtopic());
+            tvtime.setText(activityList.get(listPosition).getTvtime());
+            tvfrom.setText(activityList.get(listPosition).getMsgsecond_user());
+            tvsecond.setText(activityList.get(listPosition).getMsgfirst_user());
+        }catch (Exception ex){
+            ex.printStackTrace();
         }
-        else {
-            Picasso.with(holder.userprofileimage.getContext()).load(am.getUserImgURL()).into(holder.userprofileimage);
-        }
-        tvmsg.setText(activityList.get(listPosition).getTvmsg());
-        tvtopic.setText(activityList.get(listPosition).gettvtopic());
-        tvtime.setText(activityList.get(listPosition).getTvtime());
-        tvfrom.setText(activityList.get(listPosition).getMsgsecond_user());
-        tvsecond.setText(activityList.get(listPosition).getMsgfirst_user());
     }
 
     @Override

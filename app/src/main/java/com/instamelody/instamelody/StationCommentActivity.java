@@ -91,7 +91,6 @@ public class StationCommentActivity extends AppCompatActivity {
     ProgressDialog progressDialog;
     RecordingsModel recordingsModel;
     RecordingsPool recordingsPool;
-    int MinJoinCount = 0;
     private String userId;
     private Activity mActivity;
     RecyclerView recyclerView;
@@ -102,7 +101,7 @@ public class StationCommentActivity extends AppCompatActivity {
     String LIKES = "likes";
     String TYPE = "type";
 
-    MediaPlayer mp;
+    MediaPlayer mp=null;
     String instrumentFile;
     String position;
     //    public static ArrayList<JoinRecordingModel> JoinList = new ArrayList<JoinRecordingModel>();
@@ -122,6 +121,12 @@ public class StationCommentActivity extends AppCompatActivity {
     String FILE_TYPE = "file_type";
     String TOPIC = "topic";
     private Handler mHandler1;
+
+    private String totaljoincount = "";
+    private int MinJoinCount = 1, HolderJoinCount = 1;
+    private int PlayCounter = 0;
+    private int PreviousAdapterIndex = 0, CurrentAdapterIndex = 0, FirstIndex = 0;
+    int includedCount = 1, TempJoinCount = 0;
 
 
     @Override
@@ -295,7 +300,7 @@ public class StationCommentActivity extends AppCompatActivity {
                 if (!userId.equals("") && userId != null) {
 
                     final AlertDialog.Builder alertDialog = new AlertDialog.Builder(mActivity);
-                    alertDialog.setTitle(mActivity.getString(R.string.share_with_YoMelody));
+                    alertDialog.setTitle("Share with InstaMelody chat?");
 //                        alertDialog.setMessage("Choose yes to share in chat.");
                     alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
@@ -324,7 +329,7 @@ public class StationCommentActivity extends AppCompatActivity {
                                 Intent shareIntent = new Intent();
                                 shareIntent.setAction(Intent.ACTION_SEND);
                                 shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                                shareIntent.putExtra(Intent.EXTRA_TEXT, mActivity.getString(R.string.yomelody_music));
+                                shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt");
                                 shareIntent.putExtra(Intent.EXTRA_TEXT, recording.getThumnailUrl());
                                 shareIntent.setType("image/jpeg");
                                 shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -358,107 +363,50 @@ public class StationCommentActivity extends AppCompatActivity {
         ivStationPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressDialog = new ProgressDialog(v.getContext());
-                progressDialog.setMessage("Loading...");
-                progressDialog.show();
-
-                fetchPlayJoinAudio(recordingsModel.getRecordingId());
-                ivStationPause.setVisibility(View.VISIBLE);
-
-                instrumentFile = recordingsModel.getrecordingurl();
-//                Integer s = listPosition + 1;
-
-                if (instrumentFile != "") {
-
-                    /*if (mp != null) {
-                        try {
-                            if (mp.isPlaying()) {
-                                mp.stop();
-                                mp.release();
-                                mp = null;
-                                if (lastModifiedHoled != null) {
-                                    int lastPosition = lastModifiedHoled.getAdapterPosition();
-                                    lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
-                                    lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
-                                    notifyItemChanged(lastPosition);
-                                }
-
-                            }
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                    if (ivStationPause.getVisibility() == VISIBLE) {
-                        try {
-                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
-                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
-                        } catch (NullPointerException e) {
-                            e.printStackTrace();
-                        }
-
-                    }*/
-
-                    mp = new MediaPlayer();
-                    try {
-                        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                    }
-
-                    try {
-                        mp.setDataSource(instrumentFile);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    String play = tvViewCount.getText().toString().trim();
-                    int playValue = Integer.parseInt(play) + 1;
-                    play = String.valueOf(playValue);
-                    tvViewCount.setText(play);
-
-                    position = recordingsModel.getRecordingId();
-                    fetchViewCount(userId, position);
-                    mp.prepareAsync();
-                    mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(MediaPlayer mp) {
-                            progressDialog.dismiss();
-//                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(GONE);
-//                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(VISIBLE);
-                            mp.seekTo(length);
-                            mp.start();
-                            duration1 = mp.getDuration();
-                            primarySeekBarProgressUpdater();
-
-                        }
-                    });
-                    mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                        @Override
-                        public boolean onError(MediaPlayer mp, int what, int extra) {
-                            progressDialog.dismiss();
-                            mp.stop();
-                            return false;
-                        }
-                    });
-                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-
-                            progressDialog.dismiss();
-                            seekBarRecordings.setProgress(0);
-                            ivStationPause.setVisibility(GONE);
-                            ivStationPlay.setVisibility(VISIBLE);
-
-                        }
-                    });
 
 
-                } else {
-                    progressDialog.dismiss();
-                    Toast.makeText(mActivity, "Recording URL not found", Toast.LENGTH_SHORT).show();
-
+                if (FirstIndex == 0) {
+                    FirstIndex = 1;
+                    TempJoinCount = recordingsModel.getJoinUrl().size();
                 }
-//                lastModifiedHoled = holder;
+
+                if (PreviousAdapterIndex != CurrentAdapterIndex) {
+                    PlayCounter = 0;
+                    MinJoinCount = 1;
+
+                        try {
+                            if(mHandler1!=null) {
+                                mHandler1.removeCallbacksAndMessages(null);
+                            }
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
+                        /*lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
+                        lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
+                        SeekBar seekBar = lastModifiedHoled.itemView.findViewById(R.id.seekBarRecordings);
+                        seekBar.setProgress(0);*/
+
+
+                    PreviousAdapterIndex = CurrentAdapterIndex;
+                    TempJoinCount = recordingsModel.getJoinUrl().size();
+                }
+
+                try {
+                    if (PlayCounter >= 0) {
+                        progressDialog = new ProgressDialog(v.getContext());
+                        progressDialog.setMessage("Loading...");
+                        progressDialog.show();
+                        //lastModifiedHoled = holder;
+
+                        PlayAudio(0, "main");
+                        //lastModifiedHoled = holder;
+
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+
             }
         });
 
@@ -469,7 +417,9 @@ public class StationCommentActivity extends AppCompatActivity {
                 ivStationPause.setVisibility(v.GONE);
                 if (mp != null) {
 
-                    mp.pause();
+                    mp.stop();
+                    mp.reset();
+                    mp=null;
                     length = mp.getCurrentPosition();
                 }
                 // seekBarRecordings.setProgress(0);
@@ -481,103 +431,16 @@ public class StationCommentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                        if (PlayCounter <= TempJoinCount - 1 && PlayCounter != 0) {
+                            progressDialog = new ProgressDialog(v.getContext());
+                            progressDialog.setMessage("Loading...");
+                            progressDialog.show();
+                            //lastModifiedHoled = holder;
+                            PlayCounter = PlayCounter - 1;
+                            PlayAudio(0, "pre");
+                            //lastModifiedHoled = holder;
 
-                    MinJoinCount = MinJoinCount - 1;
-
-                    int NxtCount = Integer.parseInt(TemptxtJoinCount.getText().toString());
-
-                    if (MinJoinCount < NxtCount && MinJoinCount >= 0) {
-                        fetchPlayJoinAudio(recordingsModel.getRecordingId());
-                        if (JoinMp != null) {
-                            if (JoinMp.size() > 0) {
-                                try {
-                                    if (mp != null) {
-                                        if (mp.isPlaying()) {
-                                            mp.stop();
-                                        }
-                                    }
-
-
-                                } catch (Throwable e) {
-                                    e.printStackTrace();
-                                }
-
-
-                                progressDialog = new ProgressDialog(v.getContext());
-                                progressDialog.setMessage("Loading...");
-                                progressDialog.setCancelable(false);
-                                progressDialog.show();
-                                mp = new MediaPlayer();
-                                try {
-                                    mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                                } catch (NullPointerException e) {
-                                    e.printStackTrace();
-                                }
-                                //currentSongIndex = currentSongIndex - 1;
-
-                                for (int i = 0; i <= JoinMp.size() - 1; i++) {
-
-                                    if (MinJoinCount == i) {
-
-                                        mp = JoinMp.get(i);
-
-
-                                    }
-                                }
-                                mp.prepareAsync();
-                                txtJoinCount.setText(CalJoinCountPrevRec(NxtCount));
-
-                                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                    @Override
-                                    public void onPrepared(MediaPlayer mp) {
-                                        mp.start();
-                                        progressDialog.dismiss();
-//                                        lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(GONE);
-//                                        lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(VISIBLE);
-
-                                        primarySeekBarProgressUpdater();
-
-                                    }
-                                });
-                                mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                                    @Override
-                                    public boolean onError(MediaPlayer mp, int what, int extra) {
-                                        if (mp != null) {
-                                            mp.stop();
-                                        }
-                                        for (int i = 0; i <= JoinMp.size() - 1; i++) {
-                                            if (JoinMp.get(i).isPlaying()) {
-                                                JoinMp.get(i).stop();
-                                            }
-                                        }
-                                        progressDialog.dismiss();
-
-                                        return false;
-                                    }
-                                });
-                                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                    @Override
-                                    public void onCompletion(MediaPlayer mp) {
-                                        if (mp != null) {
-                                            mp.stop();
-                                        }
-                                        for (int i = 0; i <= JoinMp.size() - 1; i++) {
-                                            if (JoinMp.get(i).isPlaying()) {
-                                                JoinMp.get(i).stop();
-                                            }
-                                        }
-                                        progressDialog.dismiss();
-                                        seekBarRecordings.setProgress(0);
-                                        ivStationPause.setVisibility(GONE);
-                                        ivStationPlay.setVisibility(VISIBLE);
-
-                                    }
-                                });
-                            }
-                        }
                     }
-
-
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -589,104 +452,16 @@ public class StationCommentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-
-                    if (MinJoinCount < 0) {
-                        MinJoinCount = 0;
-                    }
-                    int NxtCount = Integer.parseInt(TemptxtJoinCount.getText().toString());
-                    if (MinJoinCount < NxtCount && MinJoinCount >= 0) {
-                        fetchPlayJoinAudio(recordingsModel.getRecordingId());
-                        if (JoinMp != null) {
-                            if (JoinMp.size() > 0) {
-                                try {
-                                    if (mp != null) {
-                                        if (mp.isPlaying()) {
-                                            mp.stop();
-
-                                        }
-
-                                    }
-
-                                } catch (Throwable e) {
-                                    e.printStackTrace();
-                                }
-                                progressDialog = new ProgressDialog(v.getContext());
-                                progressDialog.setMessage("Loading...");
-                                progressDialog.setCancelable(false);
-                                progressDialog.show();
-                                mp = new MediaPlayer();
-                                try {
-                                    mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                                } catch (NullPointerException e) {
-                                    e.printStackTrace();
-                                }
-
-                                for (int i = 0; i <= JoinMp.size() - 1; i++) {
-
-                                    if (MinJoinCount == i) {
-
-                                        //currentSongIndex = currentSongIndex + 1;
-
-                                        mp = JoinMp.get(i);
-
-
-                                    }
-                                }
-                                mp.prepareAsync();
-                                txtJoinCount.setText(CalJoinCountNextRec(NxtCount));
-
-
-                                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                    @Override
-                                    public void onPrepared(MediaPlayer mp) {
-                                        mp.start();
-                                        progressDialog.dismiss();
-//                                        lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(GONE);
-//                                        lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(VISIBLE);
-
-                                        primarySeekBarProgressUpdater();
-
-                                    }
-                                });
-                                mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                                    @Override
-                                    public boolean onError(MediaPlayer mp, int what, int extra) {
-
-                                        if (mp != null) {
-                                            mp.stop();
-                                        }
-                                        for (int i = 0; i <= JoinMp.size() - 1; i++) {
-                                            if (JoinMp.get(i).isPlaying()) {
-                                                JoinMp.get(i).stop();
-                                            }
-                                        }
-                                        progressDialog.dismiss();
-                                        return false;
-                                    }
-                                });
-                                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                    @Override
-                                    public void onCompletion(MediaPlayer mp) {
-                                        if (mp != null) {
-                                            mp.stop();
-                                        }
-                                        for (int i = 0; i <= JoinMp.size() - 1; i++) {
-                                            if (JoinMp.get(i).isPlaying()) {
-                                                JoinMp.get(i).stop();
-                                            }
-                                        }
-                                        progressDialog.dismiss();
-                                        seekBarRecordings.setProgress(0);
-                                        ivStationPause.setVisibility(GONE);
-                                        ivStationPlay.setVisibility(VISIBLE);
-
-                                    }
-                                });
-
-
-                            }
+                        if (PlayCounter < TempJoinCount - 1) {
+                            progressDialog = new ProgressDialog(v.getContext());
+                            progressDialog.setMessage("Loading...");
+                            progressDialog.show();
+                            //lastModifiedHoled = holder;
+                            PlayCounter = PlayCounter + 1;
+                            PlayAudio(0, "next");
+                            //lastModifiedHoled = holder;
                         }
-                    }
+
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -898,10 +673,10 @@ public class StationCommentActivity extends AppCompatActivity {
         try {
             if (joincount == 0) {
                 //currentSongIndex=1;
-                jCount = "(" + String.valueOf(MinJoinCount) + " of " + String.valueOf((joincount)) + ")";
+                jCount = "(" + String.valueOf(HolderJoinCount) + " of " + String.valueOf((joincount)) + ")";
             } else {
 
-                jCount = String.valueOf(MinJoinCount+1) + " of " + String.valueOf(joincount);
+                jCount = String.valueOf(HolderJoinCount) + " of " + String.valueOf(joincount);
             }
 
         } catch (Exception ex) {
@@ -1266,6 +1041,141 @@ public class StationCommentActivity extends AppCompatActivity {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+
+    private void PlayAudio(int pisition, final String Type) {
+        try {
+
+            instrumentFile = recordingsModel.getJoinUrl().get(PlayCounter).toString();// recordingList.get(pisition).getJoinUrl().get(PlayCounter).toString();
+
+            if (instrumentFile != "") {
+                try {
+                    if (mp != null) {
+                        try {
+
+                            try {
+                                mp.stop();
+                                mp.release();
+                                mp = null;
+                                duration1 = 0;
+                                length = 0;
+
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                            if(mHandler1!=null) {
+                                mHandler1.removeCallbacksAndMessages(null);
+                            }
+
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+                mp = new MediaPlayer();
+                try {
+                    mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    mp.setDataSource(instrumentFile);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                mp.prepareAsync();
+                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        try {
+
+                            mp.seekTo(length);
+                            mp.start();
+                            fetchViewCount(userId, position);
+                            progressDialog.dismiss();
+                            duration1 = mp.getDuration();
+                            primarySeekBarProgressUpdater();
+
+                            if (Type == "main") {
+
+                                //MinJoinCount = MinJoinCount + 1;
+                            } else if (Type == "next") {
+
+                                MinJoinCount = MinJoinCount + 1;
+
+                                tvIncludedCount.setText(UpdateCalJoinCount(TempJoinCount));
+                            } else if (Type == "pre") {
+
+                                MinJoinCount = MinJoinCount - 1;
+
+                                tvIncludedCount.setText(UpdateCalJoinCount(TempJoinCount));
+                            }
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
+                    }
+                });
+                mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                    @Override
+                    public boolean onError(MediaPlayer mp, int what, int extra) {
+
+                        try {
+                            progressDialog.dismiss();
+                            if(mHandler1!=null) {
+                                mHandler1.removeCallbacksAndMessages(null);
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        return false;
+                    }
+                });
+                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        try {
+                            if (mHandler1 != null) {
+                                mHandler1.removeCallbacksAndMessages(null);
+                            }
+                            seekBarRecordings.setProgress(0);
+                            length = 0;
+                            duration1 = 0;
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
+
+                    }
+                });
+
+
+            } else {
+                Toast.makeText(StationCommentActivity.this, "Recording URL not found", Toast.LENGTH_SHORT).show();
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private String UpdateCalJoinCount(int joincount) {
+        String jCount = "";
+        try {
+            if (joincount == 0) {
+                //currentSongIndex=1;
+                jCount = "(" + String.valueOf(MinJoinCount) + " of " + String.valueOf((joincount)) + ")";
+            } else {
+
+                jCount = String.valueOf(MinJoinCount) + " of " + String.valueOf(joincount);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return jCount;
     }
 
 }

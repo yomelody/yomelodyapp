@@ -712,11 +712,15 @@ public class MelodyActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         AppHelper.sop("onActivityResult=of=Activity");
-        if (mpf != null) {
-            mpf.onActivityResult(requestCode, resultCode, data);
-        }
-        if (rf != null) {
-            rf.onActivityResult(requestCode, resultCode, data);
+        try {
+            if (mpf != null) {
+                mpf.onActivityResult(requestCode, resultCode, data);
+            }
+            if (rf != null) {
+                rf.onActivityResult(requestCode, resultCode, data);
+            }
+        }catch (Exception ex){
+            ex.printStackTrace();
         }
     }
 
