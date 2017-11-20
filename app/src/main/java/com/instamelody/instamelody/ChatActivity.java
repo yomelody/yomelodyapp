@@ -1198,6 +1198,7 @@ public class ChatActivity extends AppCompatActivity {
                             JSONObject jsonMsg = json.getJSONObject("usermsg");
                             String chat_id = jsonMsg.getString("chat_id");
                             chatId = chat_id;
+                            
                             getChatMsgs(chat_id);
                         } else {
                             JSONObject jsonMsg = json.getJSONObject("usermsg");
