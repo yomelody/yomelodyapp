@@ -432,12 +432,7 @@ public class StudioActivity extends AppCompatActivity {
         fetchRecordingUrl = loginSharedPref1.getString("Recording_url", null);
         pauseAll.setVisibility(View.GONE);
         fetchGenreNames();
-        elapsedMillis = SystemClock.elapsedRealtime() - chrono.getBase();
-        int hours = (int) (timeElapsed / 3600000);
-        int minutes = (int) (timeElapsed - hours * 3600000) / 60000;
-        int seconds = (int) (timeElapsed - hours * 3600000 - minutes * 60000) / 1000;
 
-        final String formate = "" + hours + "" + minutes + "" + seconds;
 
         long date = System.currentTimeMillis();
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy");
@@ -762,6 +757,19 @@ public class StudioActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        chrono.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener(){
+            @Override
+            public void onChronometerTick(Chronometer chronometer) {
+                long time = SystemClock.elapsedRealtime() - chronometer.getBase();
+                int h   = (int)(time /3600000);
+                int m = (int)(time - h*3600000)/60000;
+                int s= (int)(time - h*3600000- m*60000)/1000 ;
+                String t = (h < 10 ? "0"+h: h)+":"+(m < 10 ? "0"+m: m)+":"+ (s < 10 ? "0"+s: s);
+                chronometer.setText(t);
+            }
+        });
+        chrono.setBase(SystemClock.elapsedRealtime());
+        chrono.setText("00:00:00");
         rlMelodyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1050,15 +1058,20 @@ public class StudioActivity extends AppCompatActivity {
                     rlMelodyButton.setVisibility(View.VISIBLE);
                     StudioActivity.playAll.setVisibility(View.GONE);
                     StudioActivity.pauseAll.setVisibility(View.GONE);
+                    rlPublic.setVisibility(View.GONE);
+                    playAll.setEnabled(true);
+                    tvDone.setEnabled(false);
+                    ivRecord.setVisibility(View.VISIBLE);
+                    playAll.setVisibility(View.VISIBLE);
+                    chrono.setBase(SystemClock.elapsedRealtime());
+                    chrono.stop();
+                    chrono.setText("00:00:00");
+                    mVisualizerView.clearFocus();
+                    if (mVisualizer != null) {
+                        mVisualizer.release();
 
-                    if (lstViewHolder.size() > 0) {
-                        try {
-                            lstViewHolder.clear();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
                     }
-                    StudioActivity.this.recreate();
+                    //StudioActivity.this.recreate();
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -1301,6 +1314,9 @@ public class StudioActivity extends AppCompatActivity {
 
                     if (mVisualizer != null) {
                         mVisualizer.release();
+                        mVisualizerView.clearAnimation();
+                        mVisualizerView.clearFocus();
+
                     }
 
                     InstrumentCountSize = 0;
@@ -1373,6 +1389,7 @@ public class StudioActivity extends AppCompatActivity {
                                             ex.printStackTrace();
                                         }
                                     }
+
 
                                 }
                             } catch (Exception ex) {
@@ -2736,43 +2753,8 @@ public class StudioActivity extends AppCompatActivity {
                         }
                     }
                     IsRepeteReAll = true;
+                    playAll.setEnabled(false);
 
-
-                    /*StudioActivity.mpall.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-
-                            if (MaxMpSessionID == mp.getAudioSessionId()) {
-                                handler.removeCallbacksAndMessages(null);
-                                for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                                    try {
-                                        if(i<=lstViewHolder.size()-1) {
-                                            final ImageView holderPlay = lstViewHolder.get(i).holderPlay;
-                                            final ImageView holderPause = lstViewHolder.get(i).holderPause;
-                                            final SeekBar seekBar = lstViewHolder.get(i).seekBar;
-                                            final TextView txtMutes = lstViewHolder.get(i).TxtMuteViewHolder;
-                                            final TextView txtSolos = lstViewHolder.get(i).TxtSoloViewHolder;
-                                            final RelativeLayout RlsRepets = lstViewHolder.get(i).TempRlRepeats;
-                                            seekBar.setProgress(0);
-                                            holderPlay.setVisibility(View.VISIBLE);
-                                            holderPause.setVisibility(View.GONE);
-                                            txtMutes.setBackgroundColor(Color.TRANSPARENT);
-                                            txtSolos.setBackgroundColor(Color.TRANSPARENT);
-                                            RlsRepets.setBackgroundColor(Color.TRANSPARENT);
-                                            holderPause.setEnabled(true);
-
-                                        }
-                                    }catch (Exception ex){
-                                        ex.printStackTrace();
-                                    }
-                                }
-                                playAll.setVisibility(View.VISIBLE);
-                                pauseAll.setVisibility(View.GONE);
-                            }
-
-
-                        }
-                    });*/
                 }
 
 
