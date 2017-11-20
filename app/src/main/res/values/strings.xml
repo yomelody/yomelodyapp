@@ -149,6 +149,8 @@ and social conversations.    We collect information from you when you \n registe
     <string name="paypal_billing_agreement">Billing Agreement</string>
     <string name="paypal_payment_type">Payment Type</string>
     <string name="description"><u>Description:</u></string>
+    <string name="share_with_YoMelody">Share with YoMelody chat?</string>
+    <string name="yomelody_music">YoMelody Music Hunt</string>
 
 
 </resources>

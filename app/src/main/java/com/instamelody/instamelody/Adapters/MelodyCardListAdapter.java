@@ -256,7 +256,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         SetMelodyShare("", "", "");
 
                         /*final AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
-                        alertDialog.setTitle("Share with InstaMelody chat?");
+                        alertDialog.setTitle(mActivity.getString(R.string.share_with_YoMelody));
                         alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
 
@@ -284,7 +284,8 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                                 shareIntent.setAction(Intent.ACTION_SEND);
                                 shareIntent.putExtra(Intent.EXTRA_STREAM, "");
                                 shareIntent.setType("text/plain");
-                                shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt" + "\n" + RecordingURL);
+                                shareIntent.putExtra(Intent.EXTRA_TEXT, mActivity.getString(R.string.yomelody_music)
+                                + "\n" + RecordingURL);
 
                                 shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 context.startActivity(Intent.createChooser(shareIntent, "Hello."));

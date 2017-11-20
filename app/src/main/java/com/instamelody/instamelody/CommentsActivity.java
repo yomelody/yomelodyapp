@@ -331,7 +331,7 @@ public class CommentsActivity extends AppCompatActivity {
                     startActivity(Intent.createChooser(shareIntent, "Hello."));
 
                     /*final AlertDialog.Builder alertDialog = new AlertDialog.Builder(mActivity);
-                    alertDialog.setTitle("Share with InstaMelody chat?");
+                    alertDialog.setTitle(mActivity.getString(R.string.share_with_YoMelody));
                     alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             if (getIntent() != null && getIntent().hasExtra("melody_card")) {

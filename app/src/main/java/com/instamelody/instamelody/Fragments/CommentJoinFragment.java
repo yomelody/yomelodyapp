@@ -174,7 +174,7 @@ public class CommentJoinFragment extends Fragment {
             public void onClick(View view) {
 
                 final AlertDialog.Builder alertDialog = new AlertDialog.Builder(mActivity);
-                alertDialog.setTitle("Share with InstaMelody chat?");
+                alertDialog.setTitle(mActivity.getString(R.string.share_with_YoMelody));
 //                        alertDialog.setMessage("Choose yes to share in chat.");
                 alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -195,7 +195,7 @@ public class CommentJoinFragment extends Fragment {
                         Intent shareIntent = new Intent();
                         shareIntent.setAction(Intent.ACTION_SEND);
                         shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                        shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, mActivity.getString(R.string.yomelody_music));
                         shareIntent.putExtra(Intent.EXTRA_TEXT, JoinListAdapter.Joined_artist.get(0));
                         shareIntent.setType("image/jpeg");
                         shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
