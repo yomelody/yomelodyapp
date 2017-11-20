@@ -217,17 +217,15 @@ public class ChatActivity extends AppCompatActivity {
             username = twitterPref.getString("userName", null);
         }
         final Intent intent = getIntent();
-        AppHelper.sop("intent==chatActivity="+intent);
+        AppHelper.sop("intent==chatActivity=" + intent);
         if (intent != null) {
             String val = intent.getStringExtra("commingForm");
-            AppHelper.sop("val==chatActivity="+val);
-            if (val!=null && val.equals("Joined")) {
+            AppHelper.sop("val==chatActivity=" + val);
+            if (val != null && val.equals("Joined")) {
                 mJoinedModel = (JoinedArtists) mActivity.getIntent().getSerializableExtra("share");
-            }
-            else if (val!=null && val.equals("Station")) {
+            } else if (val != null && val.equals("Station")) {
                 mRecordingsModel = (RecordingsModel) mActivity.getIntent().getSerializableExtra("share");
-            }
-            else if (val!=null && val.equals("Melody")) {
+            } else if (val != null && val.equals("Melody")) {
                 melody = (MelodyCard) mActivity.getIntent().getSerializableExtra("share");
             }
         }
@@ -312,8 +310,7 @@ public class ChatActivity extends AppCompatActivity {
             if (chatId.equals("")) {
                 getChatId(senderId, receiverId);
             }
-        }
-        else if (audioShareData.getString("melodyID", null) != null) {
+        } else if (audioShareData.getString("melodyID", null) != null) {
             flagFileType = "3";
             sendMessage("Audio", userId);
             if (chatId.equals("")) {
@@ -704,11 +701,11 @@ public class ChatActivity extends AppCompatActivity {
                 /*Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
                 startActivity(intent);*/
                 if (rlChatPlayer.getVisibility() == View.VISIBLE) {
-                    Message message=cAdapter.getmMessage();
-                    if (message!=null && message.getAudioDetails()!=null && message.getAudioDetails().length()>0){
+                    Message message = cAdapter.getmMessage();
+                    if (message != null && message.getAudioDetails() != null && message.getAudioDetails().length() > 0) {
                         try {
                             JSONObject json = (JSONObject) message.getAudioDetails().get(0);
-                            if (json.has("recording_id")){
+                            if (json.has("recording_id")) {
                                 SharedPreferences.Editor record = getSharedPreferences("RecordingData", MODE_PRIVATE).edit();
                                 record.putString("AddedBy", json.getString("added_by"));
                                 record.putString("Recording_id", json.getString("recording_id"));
@@ -955,7 +952,7 @@ public class ChatActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response=getChatMsgs="+response);
+                        AppHelper.sop("response=getChatMsgs=" + response);
                         try {
                             if (ChatAdapter.sharedAudioList.size() > 0) {
                                 ChatAdapter.sharedAudioList.clear();
@@ -1070,7 +1067,7 @@ public class ChatActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(CHAT_ID_, chat_Id);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=getChatMsgs="+params+"\nURL="+MESSAGE_LIST);
+                AppHelper.sop("params=getChatMsgs=" + params + "\nURL=" + MESSAGE_LIST);
                 return params;
             }
         };
@@ -1200,6 +1197,7 @@ public class ChatActivity extends AppCompatActivity {
                         if (flag.equals("success")) {
                             JSONObject jsonMsg = json.getJSONObject("usermsg");
                             String chat_id = jsonMsg.getString("chat_id");
+                            chatId = chat_id;
                             getChatMsgs(chat_id);
                         } else {
                             JSONObject jsonMsg = json.getJSONObject("usermsg");
@@ -1224,8 +1222,7 @@ public class ChatActivity extends AppCompatActivity {
                         shareCountApi(getIntent().getStringExtra("file_type"));
                     } else if (mRecordingsModel != null) {
                         shareCountApi(getIntent().getStringExtra("file_type"));
-                    }
-                    else if (melody != null) {
+                    } else if (melody != null) {
                         shareCountApi(getIntent().getStringExtra("file_type"));
                     }
 
@@ -1309,7 +1306,7 @@ public class ChatActivity extends AppCompatActivity {
                     params.put(MESSAGE, message);
                     params.put(IS_READ, "0");
                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                    AppHelper.sop("params=sendMessage=else=case="+params+"\nURL="+CHAT);
+                    AppHelper.sop("params=sendMessage=else=case=" + params + "\nURL=" + CHAT);
                     return params;
                 }
             };
@@ -1620,13 +1617,13 @@ public class ChatActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("shared_by_user", userId);
                 params.put("shared_with", receiverId);
-                if (mJoinedModel!=null) {
+                if (mJoinedModel != null) {
                     params.put("file_id", mJoinedModel.getRecording_id());
                     params.put("share_topic", mJoinedModel.getRecording_name());
-                } else if (mRecordingsModel!=null) {
+                } else if (mRecordingsModel != null) {
                     params.put("file_id", mRecordingsModel.getRecordingId());
                     params.put("share_topic", mRecordingsModel.getRecordingName());
-                } else if (melody!=null) {
+                } else if (melody != null) {
                     params.put("file_id", melody.getMelodyPackId());
                     params.put("share_topic", melody.getMelodyName());
                 }
