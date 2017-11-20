@@ -149,18 +149,21 @@ public class JoinInstrumentListAdp extends RecyclerView.Adapter<JoinInstrumentLi
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    try {
+                        int mCurrentPosition = currentPosition / 1000;
+                        int mDuration = duration1 / 1000;
+                        UtilsRecording utilRecording = new UtilsRecording();
+                        int progress1 = utilRecording.getProgressPercentage(mCurrentPosition, mDuration);
 
-                    int mCurrentPosition = currentPosition / 1000;
-                    int mDuration = duration1 / 1000;
-                    UtilsRecording utilRecording = new UtilsRecording();
-                    int progress1 = utilRecording.getProgressPercentage(mCurrentPosition, mDuration);
-
-                    if (mp != null && fromUser) {
-                        int playPositionInMilliseconds = duration1 / 100 * melodySlider.getProgress();
-                        mp.seekTo(playPositionInMilliseconds);
+                        if (mp != null && fromUser) {
+                            int playPositionInMilliseconds = duration1 / 100 * melodySlider.getProgress();
+                            mp.seekTo(playPositionInMilliseconds);
 //                        seekBar.setProgress(progress);
-                    } else {
-                        // the event was fired from code and you shouldn't call player.seekTo()
+                        } else {
+                            // the event was fired from code and you shouldn't call player.seekTo()
+                        }
+                    }catch (Exception ex){
+                        ex.printStackTrace();
                     }
 //
                 }

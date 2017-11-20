@@ -264,40 +264,44 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             rlLike.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String position;
+                    try {
+                        String position;
 
-                    String MelodyName;
-                    if (!userId.equals("") && userId != null) {
-                        //Toast.makeText(context, "like", Toast.LENGTH_SHORT).show();
-                        //position = mpids.get(getAdapterPosition() + 1);
+                        String MelodyName;
+                        if (!userId.equals("") && userId != null) {
+                            //Toast.makeText(context, "like", Toast.LENGTH_SHORT).show();
+                            //position = mpids.get(getAdapterPosition() + 1);
 
-                        RecordingsModel recording = recordingList.get(getAdapterPosition());
-                        MelodyName = recording.getRecordingName();
-                        position = recording.getRecordingId();
+                            RecordingsModel recording = recordingList.get(getAdapterPosition());
+                            MelodyName = recording.getRecordingName();
+                            position = recording.getRecordingId();
 
-                        if (ivDislikeButton.getVisibility() == VISIBLE) {
-                            ivLikeButton.setVisibility(VISIBLE);
-                            ivDislikeButton.setVisibility(GONE);
-                            String like = tvLikeCount.getText().toString().trim();
-                            int likeValue = Integer.parseInt(like) - 1;
-                            like = String.valueOf(likeValue);
-                            tvLikeCount.setText(like);
-                            fetchLikeState(userId, position, "0", MelodyName);
+                            if (ivDislikeButton.getVisibility() == VISIBLE) {
+                                ivLikeButton.setVisibility(VISIBLE);
+                                ivDislikeButton.setVisibility(GONE);
+                                String like = tvLikeCount.getText().toString().trim();
+                                int likeValue = Integer.parseInt(like) - 1;
+                                like = String.valueOf(likeValue);
+                                tvLikeCount.setText(like);
+                                fetchLikeState(userId, position, "0", MelodyName);
 
 
-                        } else if (ivDislikeButton.getVisibility() == GONE) {
-                            ivLikeButton.setVisibility(GONE);
-                            ivDislikeButton.setVisibility(VISIBLE);
-                            String like = tvLikeCount.getText().toString().trim();
-                            int likeValue = Integer.parseInt(like) + 1;
-                            like = String.valueOf(likeValue);
-                            tvLikeCount.setText(like);
-                            fetchLikeState(userId, position, "1", MelodyName);
+                            } else if (ivDislikeButton.getVisibility() == GONE) {
+                                ivLikeButton.setVisibility(GONE);
+                                ivDislikeButton.setVisibility(VISIBLE);
+                                String like = tvLikeCount.getText().toString().trim();
+                                int likeValue = Integer.parseInt(like) + 1;
+                                like = String.valueOf(likeValue);
+                                tvLikeCount.setText(like);
+                                fetchLikeState(userId, position, "1", MelodyName);
+                            }
+                        } else {
+                            Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(context, SignInActivity.class);
+                            context.startActivity(intent);
                         }
-                    } else {
-                        Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(context, SignInActivity.class);
-                        context.startActivity(intent);
+                    }catch (Exception ex){
+                        ex.printStackTrace();
                     }
                 }
             });
@@ -306,50 +310,54 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                 @Override
                 public void onClick(View v) {
-                    if (!userId.equals("") && userId != null) {
+                    try {
+                        if (!userId.equals("") && userId != null) {
 
-                        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
-                        alertDialog.setTitle(mActivity.getString(R.string.share_with_YoMelody));
+                            final AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+                            alertDialog.setTitle(mActivity.getString(R.string.share_with_YoMelody));
 //                        alertDialog.setMessage("Choose yes to share in chat.");
-                        alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
+                            alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
 
-                                SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
-                                RecordingsModel recording = recordingList.get(getAdapterPosition());
-                                editor.putString("recID", recording.getRecordingId());
-                                editor.apply();
-                                Intent intent = new Intent(mActivity, MessengerActivity.class);
-                                intent.putExtra("commingForm", "Station");
-                                intent.putExtra("share", recordingList.get(getAdapterPosition()));
-                                intent.putExtra("file_type", "user_recording");
-                                mActivity.startActivityForResult(intent, REQUEST_RECORDING_COMMENT);
-                                releaseMediaPlayer();
-                                ivStationPlay.setVisibility(VISIBLE);
-                                ivStationPause.setVisibility(GONE);
-                                seekBarRecordings.setProgress(0);
-                            }
-                        });
-                        alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                                RecordingsModel recording = recordingList.get(getAdapterPosition());
-                                String RecordingURL = recording.getrecordingurl();
-                                Intent shareIntent = new Intent();
-                                shareIntent.setAction(Intent.ACTION_SEND);
-                                shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                                shareIntent.putExtra(Intent.EXTRA_TEXT, mActivity.getString(R.string.yomelody_music));
-                                shareIntent.putExtra(Intent.EXTRA_TEXT, recording.getThumnailUrl());
-                                shareIntent.setType("image/jpeg");
-                                shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                context.startActivity(Intent.createChooser(shareIntent, "Choose Sharing option!"));
-                            }
-                        });
-                        alertDialog.show();
+                                    SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
+                                    RecordingsModel recording = recordingList.get(getAdapterPosition());
+                                    editor.putString("recID", recording.getRecordingId());
+                                    editor.apply();
+                                    Intent intent = new Intent(mActivity, MessengerActivity.class);
+                                    intent.putExtra("commingForm", "Station");
+                                    intent.putExtra("share", recordingList.get(getAdapterPosition()));
+                                    intent.putExtra("file_type", "user_recording");
+                                    mActivity.startActivityForResult(intent, REQUEST_RECORDING_COMMENT);
+                                    releaseMediaPlayer();
+                                    ivStationPlay.setVisibility(VISIBLE);
+                                    ivStationPause.setVisibility(GONE);
+                                    seekBarRecordings.setProgress(0);
+                                }
+                            });
+                            alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                    RecordingsModel recording = recordingList.get(getAdapterPosition());
+                                    String RecordingURL = recording.getrecordingurl();
+                                    Intent shareIntent = new Intent();
+                                    shareIntent.setAction(Intent.ACTION_SEND);
+                                    shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                                    shareIntent.putExtra(Intent.EXTRA_TEXT, mActivity.getString(R.string.yomelody_music));
+                                    shareIntent.putExtra(Intent.EXTRA_TEXT, recording.getThumnailUrl());
+                                    shareIntent.setType("image/jpeg");
+                                    shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    context.startActivity(Intent.createChooser(shareIntent, "Choose Sharing option!"));
+                                }
+                            });
+                            alertDialog.show();
 
-                    } else {
-                        Toast.makeText(context, "Log in to Share this melody pack", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(context, SignInActivity.class);
-                        context.startActivity(intent);
+                        } else {
+                            Toast.makeText(context, "Log in to Share this melody pack", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(context, SignInActivity.class);
+                            context.startActivity(intent);
+                        }
+                    }catch (Exception ex){
+                        ex.printStackTrace();
                     }
 
                 }
@@ -357,66 +365,67 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             ivCommentButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (!userId.equals("") && userId != null) {
-                        releaseMediaPlayer();
-                        ivStationPlay.setVisibility(VISIBLE);
-                        ivStationPause.setVisibility(GONE);
-                        seekBarRecordings.setProgress(0);
+                    try {
+                        if (!userId.equals("") && userId != null) {
+                            releaseMediaPlayer();
+                            ivStationPlay.setVisibility(VISIBLE);
+                            ivStationPause.setVisibility(GONE);
+                            seekBarRecordings.setProgress(0);
 
-                        //Toast.makeText(context, "comment", Toast.LENGTH_SHORT).show();
-                        String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes,
-                                comments, shares, melodyID, RecordingURL, CoverUrl, LikeStatus, ProfilePick;
+                            //Toast.makeText(context, "comment", Toast.LENGTH_SHORT).show();
+                            String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes,
+                                    comments, shares, melodyID, RecordingURL, CoverUrl, LikeStatus, ProfilePick;
 
-                        RecordingsModel recording = recordingList.get(getAdapterPosition());
+                            RecordingsModel recording = recordingList.get(getAdapterPosition());
 
-                        if (ivDislikeButton.getVisibility() == VISIBLE) {
-                            LikeStatus = "1";
-                        } else {
-                            LikeStatus = "0";
-                        }
-                        genre = tvRecordingGenres.getText().toString().trim();
-                        melodyName = tvRecordingName.getText().toString().trim();
-                        userName = tvUserName.getText().toString().trim();
-                        duration = tvContributeLength.getText().toString().trim();
-                        date = tvRecordingDate.getText().toString().trim();
-                        plays = tvViewCount.getText().toString().trim();
-                        likes = tvLikeCount.getText().toString().trim();
-                        comments = tvCommentCount.getText().toString().trim();
-                        shares = tvShareCount.getText().toString().trim();
-                        int pos = getAdapterPosition();
-                        melodyID = mpids.get(pos);
-                        RecordingURL = recording.getrecordingurl();
-                        CoverUrl = recording.getRecordingCover();
-                        ProfilePick = recording.getUserProfilePic();
-                        SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
-                        editor.putString("instruments", "0");
-                        editor.putString("bpm", "0");
-                        editor.putString("genre", genre);
-                        editor.putString("melodyName", melodyName);
-                        editor.putString("userName", userName);
-                        editor.putString("duration", duration);
-                        editor.putString("date", date);
-                        editor.putString("plays", plays);
-                        editor.putString("likes", likes);
-                        editor.putString("comments", comments);
-                        editor.putString("shares", shares);
-                        editor.putString("bitmapProfile", ProfilePick);
-                        editor.putString("melodyID", melodyID);
-                        editor.putString("fileType", "user_recording");
-                        editor.putString("RecordingURL", RecordingURL);
-                        editor.putString("CoverUrl", CoverUrl);
-                        editor.putString("LikeStatus", LikeStatus);
-                        editor.commit();
+                            if (ivDislikeButton.getVisibility() == VISIBLE) {
+                                LikeStatus = "1";
+                            } else {
+                                LikeStatus = "0";
+                            }
+                            genre = tvRecordingGenres.getText().toString().trim();
+                            melodyName = tvRecordingName.getText().toString().trim();
+                            userName = tvUserName.getText().toString().trim();
+                            duration = tvContributeLength.getText().toString().trim();
+                            date = tvRecordingDate.getText().toString().trim();
+                            plays = tvViewCount.getText().toString().trim();
+                            likes = tvLikeCount.getText().toString().trim();
+                            comments = tvCommentCount.getText().toString().trim();
+                            shares = tvShareCount.getText().toString().trim();
+                            int pos = getAdapterPosition();
+                            melodyID = mpids.get(pos);
+                            RecordingURL = recording.getrecordingurl();
+                            CoverUrl = recording.getRecordingCover();
+                            ProfilePick = recording.getUserProfilePic();
+                            SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
+                            editor.putString("instruments", "0");
+                            editor.putString("bpm", "0");
+                            editor.putString("genre", genre);
+                            editor.putString("melodyName", melodyName);
+                            editor.putString("userName", userName);
+                            editor.putString("duration", duration);
+                            editor.putString("date", date);
+                            editor.putString("plays", plays);
+                            editor.putString("likes", likes);
+                            editor.putString("comments", comments);
+                            editor.putString("shares", shares);
+                            editor.putString("bitmapProfile", ProfilePick);
+                            editor.putString("melodyID", melodyID);
+                            editor.putString("fileType", "user_recording");
+                            editor.putString("RecordingURL", RecordingURL);
+                            editor.putString("CoverUrl", CoverUrl);
+                            editor.putString("LikeStatus", LikeStatus);
+                            editor.commit();
 
-                        Intent intent = new Intent(context, StationCommentActivity.class);
-                        intent.putExtra("likes", likes);
-                        intent.putExtra("LikeStatus", LikeStatus);
-                        intent.putExtra("play_count", plays);
-                        intent.putExtra("recording_modle", recording);
-                        intent.putExtra("recording_pool", recordingsPools.get(getAdapterPosition()));
+                            Intent intent = new Intent(context, StationCommentActivity.class);
+                            intent.putExtra("likes", likes);
+                            intent.putExtra("LikeStatus", LikeStatus);
+                            intent.putExtra("play_count", plays);
+                            intent.putExtra("recording_modle", recording);
+                            intent.putExtra("recording_pool", recordingsPools.get(getAdapterPosition()));
 //                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-                        mActivity.startActivityForResult(intent, REQUEST_RECORDING_COMMENT);
+                            mActivity.startActivityForResult(intent, REQUEST_RECORDING_COMMENT);
 
                         /*if(context instanceof StationActivity){
 
@@ -427,10 +436,13 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             context.startActivity(intent);
                         }*/
 
-                    } else {
-                        Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(context, SignInActivity.class);
-                        context.startActivity(intent);
+                        } else {
+                            Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(context, SignInActivity.class);
+                            context.startActivity(intent);
+                        }
+                    }catch (Exception ex){
+                        ex.printStackTrace();
                     }
 
                 }
@@ -440,12 +452,15 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 rlProfilePic.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
-                        String showProfileUserId = recordingList.get(getAdapterPosition()).getAddedBy();
-                        Intent intent = new Intent(view.getContext(), ProfileActivity.class);
-                        intent.putExtra("showProfileUserId", showProfileUserId);
-                        //view.getContext().startActivity(intent);
-                        mActivity.startActivityForResult(intent, REQUEST_RECORDING_COMMENT);
+                        try {
+                            String showProfileUserId = recordingList.get(getAdapterPosition()).getAddedBy();
+                            Intent intent = new Intent(view.getContext(), ProfileActivity.class);
+                            intent.putExtra("showProfileUserId", showProfileUserId);
+                            //view.getContext().startActivity(intent);
+                            mActivity.startActivityForResult(intent, REQUEST_RECORDING_COMMENT);
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
                     }
                 });
             }
@@ -570,52 +585,55 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 @Override
                 public void onClick(View v) {
 
-
-                    String play = holder.tvViewCount.getText().toString().trim();
-                    int playValue = Integer.parseInt(play) + 1;
-                    play = String.valueOf(playValue);
-                    holder.tvViewCount.setText(play);
-                    position = recordingList.get(listPosition).getRecordingId();
-                    CurrentAdapterIndex = holder.getAdapterPosition();
-                    if (FirstIndex == 0) {
-                        FirstIndex = 1;
-                        lastModifiedHoled = holder;
-                        TempJoinCount = Integer.parseInt(recordingList.get(listPosition).getJoinCount());
-                    }
-
-                    if (PreviousAdapterIndex != CurrentAdapterIndex) {
-                        PlayCounter = 0;
-                        MinJoinCount = 1;
-                        if (lastModifiedHoled != null) {
-                            try {
-                                if(mHandler1!=null) {
-                                    mHandler1.removeCallbacksAndMessages(null);
-                                }
-                            }catch (Exception ex){
-                                ex.printStackTrace();
-                            }
-                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
-                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
-                            SeekBar seekBar = lastModifiedHoled.itemView.findViewById(R.id.seekBarRecordings);
-                            seekBar.setProgress(0);
-                        }
-                        lastModifiedHoled = holder;
-                        PreviousAdapterIndex = CurrentAdapterIndex;
-                        TempJoinCount = Integer.parseInt(recordingList.get(listPosition).getJoinCount());
-                    }
-
                     try {
-                        if (PlayCounter >= 0) {
-                            progressDialog = new ProgressDialog(v.getContext());
-                            progressDialog.setMessage("Loading...");
-                            progressDialog.show();
-                            //lastModifiedHoled = holder;
-
-                            PlayAudio(holder.getAdapterPosition(), "main");
-                            //lastModifiedHoled = holder;
-
+                        String play = holder.tvViewCount.getText().toString().trim();
+                        int playValue = Integer.parseInt(play) + 1;
+                        play = String.valueOf(playValue);
+                        holder.tvViewCount.setText(play);
+                        position = recordingList.get(listPosition).getRecordingId();
+                        CurrentAdapterIndex = holder.getAdapterPosition();
+                        if (FirstIndex == 0) {
+                            FirstIndex = 1;
+                            lastModifiedHoled = holder;
+                            TempJoinCount = Integer.parseInt(recordingList.get(listPosition).getJoinCount());
                         }
-                    } catch (Exception ex) {
+
+                        if (PreviousAdapterIndex != CurrentAdapterIndex) {
+                            PlayCounter = 0;
+                            MinJoinCount = 1;
+                            if (lastModifiedHoled != null) {
+                                try {
+                                    if (mHandler1 != null) {
+                                        mHandler1.removeCallbacksAndMessages(null);
+                                    }
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                                lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
+                                lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
+                                SeekBar seekBar = lastModifiedHoled.itemView.findViewById(R.id.seekBarRecordings);
+                                seekBar.setProgress(0);
+                            }
+                            lastModifiedHoled = holder;
+                            PreviousAdapterIndex = CurrentAdapterIndex;
+                            TempJoinCount = Integer.parseInt(recordingList.get(listPosition).getJoinCount());
+                        }
+
+                        try {
+                            if (PlayCounter >= 0) {
+                                progressDialog = new ProgressDialog(v.getContext());
+                                progressDialog.setMessage("Loading...");
+                                progressDialog.show();
+                                //lastModifiedHoled = holder;
+
+                                PlayAudio(holder.getAdapterPosition(), "main");
+                                //lastModifiedHoled = holder;
+
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }catch (Exception ex){
                         ex.printStackTrace();
                     }
 

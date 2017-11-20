@@ -48,11 +48,14 @@ public class ActivityCardAdapter extends RecyclerView.Adapter<ActivityCardAdapte
             userprofileimage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
-                    String showProfileUserId = activityList.get(getAdapterPosition()).getCreatedByUserId();
-                    Intent intent = new Intent(view.getContext(), ProfileActivity.class);
-                    intent.putExtra("showProfileUserId", showProfileUserId);
-                    view.getContext().startActivity(intent);
+                    try {
+                        String showProfileUserId = activityList.get(getAdapterPosition()).getCreatedByUserId();
+                        Intent intent = new Intent(view.getContext(), ProfileActivity.class);
+                        intent.putExtra("showProfileUserId", showProfileUserId);
+                        view.getContext().startActivity(intent);
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                 }
             });
         }

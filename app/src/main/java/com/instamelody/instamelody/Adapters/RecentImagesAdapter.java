@@ -147,12 +147,16 @@ public class RecentImagesAdapter extends RecyclerView.Adapter<RecentImagesAdapte
     @TargetApi(19)
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int listPosition) {
-        Bitmap sendImageBitmap;
-        ImageCompressor ic = new ImageCompressor(context);
-        sendImageBitmap = ic.compressImage(fileList.get(listPosition).getFilepath());
-        ChatActivity.fileInfo.get(listPosition).setBitmap(sendImageBitmap);
-        holder.galleryImages.setImageBitmap(sendImageBitmap);
+        try {
+            Bitmap sendImageBitmap;
+            ImageCompressor ic = new ImageCompressor(context);
+            sendImageBitmap = ic.compressImage(fileList.get(listPosition).getFilepath());
+            ChatActivity.fileInfo.get(listPosition).setBitmap(sendImageBitmap);
+            holder.galleryImages.setImageBitmap(sendImageBitmap);
 //        Picasso.with(context).load(new File(fileList.get(listPosition).getFilepath())).into(holder.galleryImages);
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
     }
 
     @Override

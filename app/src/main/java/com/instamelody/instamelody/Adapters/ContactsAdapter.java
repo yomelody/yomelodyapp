@@ -83,6 +83,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
 
         public MyViewHolder(final View itemView) {
             super(itemView);
+
             getItemCount();
             rsList = new String[contactsList.size()];
             userProfileImage = (ImageView) itemView.findViewById(R.id.userProfileImage);
@@ -95,106 +96,109 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
             rlComplete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    try {
+                        String userId = "";
+                        SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+                        SharedPreferences fbPref = context.getSharedPreferences("MyFbPref", MODE_PRIVATE);
+                        SharedPreferences twitterPref = context.getSharedPreferences("TwitterPref", MODE_PRIVATE);
+                        if (loginSharedPref.getString("userId", null) != null) {
+                            userId = loginSharedPref.getString("userId", null);
+                        } else if (fbPref.getString("userId", null) != null) {
+                            userId = fbPref.getString("userId", null);
+                        } else if (twitterPref.getString("userId", null) != null) {
+                            userId = twitterPref.getString("userId", null);
+                        }
+                        senderID = userId;
 
-                    String userId = "";
-                    SharedPreferences loginSharedPref = context.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
-                    SharedPreferences fbPref = context.getSharedPreferences("MyFbPref", MODE_PRIVATE);
-                    SharedPreferences twitterPref = context.getSharedPreferences("TwitterPref", MODE_PRIVATE);
-                    if (loginSharedPref.getString("userId", null) != null) {
-                        userId = loginSharedPref.getString("userId", null);
-                    } else if (fbPref.getString("userId", null) != null) {
-                        userId = fbPref.getString("userId", null);
-                    } else if (twitterPref.getString("userId", null) != null) {
-                        userId = twitterPref.getString("userId", null);
-                    }
-                    senderID = userId;
+                        if (grey_circle.getVisibility() == View.VISIBLE) {
+                            grey_circle.setVisibility(View.GONE);
+                            blue_circle.setVisibility(View.VISIBLE);
+                            Count = Count + 1;
+                            recieverId = contactsList.get(getAdapterPosition()).getUser_id();
+                            rsList[getAdapterPosition()] = recieverId;
+                            recId = "";
 
-                    if (grey_circle.getVisibility() == View.VISIBLE) {
-                        grey_circle.setVisibility(View.GONE);
-                        blue_circle.setVisibility(View.VISIBLE);
-                        Count = Count + 1;
-                        recieverId = contactsList.get(getAdapterPosition()).getUser_id();
-                        rsList[getAdapterPosition()] = recieverId;
-                        recId = "";
-
-                        for (int i = 0; i < rsList.length; i++) {
-                            if (rsList[i] != null) {
-                                recId = recId + "," + rsList[i];
+                            for (int i = 0; i < rsList.length; i++) {
+                                if (rsList[i] != null) {
+                                    recId = recId + "," + rsList[i];
+                                }
                             }
-                        }
 
-                        if (recId.contains(",null")) {
-                            String REGEX = ",null";
-                            Pattern p = Pattern.compile(REGEX);
-                            Matcher m = p.matcher(recId);
-                            recId = m.replaceAll("");
-                        }
+                            if (recId.contains(",null")) {
+                                String REGEX = ",null";
+                                Pattern p = Pattern.compile(REGEX);
+                                Matcher m = p.matcher(recId);
+                                recId = m.replaceAll("");
+                            }
 
-                        if (recId.startsWith(",")) {
-                            recId = recId.substring(1, recId.length());
-                        }
+                            if (recId.startsWith(",")) {
+                                recId = recId.substring(1, recId.length());
+                            }
 
-                        String fname = contactsList.get(getAdapterPosition()).getfName();
-                        String lname = contactsList.get(getAdapterPosition()).getlName();
-                        recieverName = fname + " " + lname;
-                        recieverImage = contactsList.get(getAdapterPosition()).getUserProfileImage();
+                            String fname = contactsList.get(getAdapterPosition()).getfName();
+                            String lname = contactsList.get(getAdapterPosition()).getlName();
+                            recieverName = fname + " " + lname;
+                            recieverImage = contactsList.get(getAdapterPosition()).getUserProfileImage();
 
-                        if (Count > 0) {
-                            ContactsActivity.btnCancel.setVisibility(View.GONE);
-                            ContactsActivity.btnOK.setVisibility(View.VISIBLE);
-                            SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
-                            if (Count > 1) {
+                            if (Count > 0) {
+                                ContactsActivity.btnCancel.setVisibility(View.GONE);
+                                ContactsActivity.btnOK.setVisibility(View.VISIBLE);
+                                SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                                if (Count > 1) {
 //                                recieverName = "New Group";
 //                                editor.putString("receiverName", recieverName);
-                                editor.putString("chatType", "group");
-                            } else {
-                                editor.putString("chatType", "single");
+                                    editor.putString("chatType", "group");
+                                } else {
+                                    editor.putString("chatType", "single");
+                                }
+                                editor.commit();
                             }
+
+                        } else {
+                            blue_circle.setVisibility(View.GONE);
+                            grey_circle.setVisibility(View.VISIBLE);
+                            Count = Count - 1;
+
+                            rsList[getAdapterPosition()] = "null";
+
+                            recId = "";
+                            for (int i = 0; i < rsList.length; i++) {
+                                if (rsList[i] != "null") {
+                                    recId = recId + "," + rsList[i];
+                                }
+                            }
+
+                            if (recId.contains(",null")) {
+                                String REGEX = ",null";
+                                Pattern p = Pattern.compile(REGEX);
+                                Matcher m = p.matcher(recId);
+                                recId = m.replaceAll("");
+                            }
+
+                            if (recId.startsWith(",")) {
+                                recId = recId.substring(1, recId.length());
+                            }
+
+                            if (Count < 1) {
+                                ContactsActivity.btnOK.setVisibility(View.GONE);
+                                ContactsActivity.btnCancel.setVisibility(View.VISIBLE);
+                            }
+
+                            SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                            editor.putString("chatId", "");
                             editor.commit();
                         }
 
-                    } else {
-                        blue_circle.setVisibility(View.GONE);
-                        grey_circle.setVisibility(View.VISIBLE);
-                        Count = Count - 1;
-
-                        rsList[getAdapterPosition()] = "null";
-
-                        recId = "";
-                        for (int i = 0; i < rsList.length; i++) {
-                            if (rsList[i] != "null") {
-                                recId = recId + "," + rsList[i];
-                            }
-                        }
-
-                        if (recId.contains(",null")) {
-                            String REGEX = ",null";
-                            Pattern p = Pattern.compile(REGEX);
-                            Matcher m = p.matcher(recId);
-                            recId = m.replaceAll("");
-                        }
-
-                        if (recId.startsWith(",")) {
-                            recId = recId.substring(1, recId.length());
-                        }
-
-                        if (Count < 1) {
-                            ContactsActivity.btnOK.setVisibility(View.GONE);
-                            ContactsActivity.btnCancel.setVisibility(View.VISIBLE);
-                        }
-
-                        SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
-                        editor.putString("chatId", "");
-                        editor.commit();
-                    }
-
 //                    Toast.makeText(context, recId, Toast.LENGTH_SHORT).show();
-                    SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
-                    editor.putString("senderId", senderID);
-                    editor.putString("receiverId", recId);
+                        SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                        editor.putString("senderId", senderID);
+                        editor.putString("receiverId", recId);
 //                    editor.putString("receiverName", recieverName);
-                    editor.putString("receiverImage", recieverImage);
-                    editor.commit();
+                        editor.putString("receiverImage", recieverImage);
+                        editor.commit();
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                 }
             });
 

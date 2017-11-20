@@ -77,80 +77,85 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.MyVi
             rlComplete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    try {
+                        senderId = chatList.get(getAdapterPosition()).getSenderID();
+                        receiverId = chatList.get(getAdapterPosition()).getReceiverID();
+                        receiverName = chatList.get(getAdapterPosition()).getReceiverName();
+                        groupName = chatList.get(getAdapterPosition()).getGroupName();
+                        receiverImage = chatList.get(getAdapterPosition()).getProfilePic();
+                        chatID = chatList.get(getAdapterPosition()).getChatID();
+                        groupImage = chatList.get(getAdapterPosition()).getGroupPic();
+                        SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                        if (receiverId.contains(",")) {
+                            editor.putString("chatType", "group");
+                            editor.putString("receiverName", groupName);
+                            editor.putString("groupImage", groupImage);
+                        } else {
+                            editor.putString("chatType", "single");
+                            editor.putString("receiverName", receiverName);
+                            editor.putString("receiverImage", receiverImage);
+                        }
+                        editor.commit();
+                        editor.putString("senderId", senderId);
+                        editor.putString("receiverId", receiverId);
+                        editor.putString("chatId", chatID);
+                        editor.commit();
+                        Intent intent = new Intent(context, ChatActivity.class);
+                        intent.putExtra("commingForm", "MessengerActivity");
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra("from", "MessengerActivity");
 
-                    senderId = chatList.get(getAdapterPosition()).getSenderID();
-                    receiverId = chatList.get(getAdapterPosition()).getReceiverID();
-                    receiverName = chatList.get(getAdapterPosition()).getReceiverName();
-                    groupName = chatList.get(getAdapterPosition()).getGroupName();
-                    receiverImage = chatList.get(getAdapterPosition()).getProfilePic();
-                    chatID = chatList.get(getAdapterPosition()).getChatID();
-                    groupImage = chatList.get(getAdapterPosition()).getGroupPic();
-                    SharedPreferences.Editor editor = context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
-                    if (receiverId.contains(",")) {
-                        editor.putString("chatType", "group");
-                        editor.putString("receiverName", groupName);
-                        editor.putString("groupImage", groupImage);
-                    } else {
-                        editor.putString("chatType", "single");
-                        editor.putString("receiverName", receiverName);
-                        editor.putString("receiverImage", receiverImage);
-                    }
-                    editor.commit();
-                    editor.putString("senderId", senderId);
-                    editor.putString("receiverId", receiverId);
-                    editor.putString("chatId", chatID);
-                    editor.commit();
-                    Intent intent = new Intent(context, ChatActivity.class);
-                    intent.putExtra("commingForm","MessengerActivity");
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra("from", "MessengerActivity");
+                        if (mActivity.getIntent() != null && mActivity.getIntent().hasExtra("share")) {
+                            AppHelper.sop("MessengerAdapter=");
+                            if (mActivity.getIntent().hasExtra("Previ")) {
+                                JoinedArtists mJoinModel = (JoinedArtists) mActivity.getIntent().getSerializableExtra("share");
+                                intent.putExtra("share", mJoinModel);
+                                intent.putExtra("file_type", mActivity.getIntent().getStringExtra("file_type"));
+                                intent.putExtra("commingForm", "Joined");
+                            } else if (mActivity.getIntent().hasExtra("commingForm")) {
+                                AppHelper.sop("MessengerAdapter=commingForm=" + mActivity.getIntent().getStringExtra("commingForm"));
+                                if (mActivity.getIntent().getStringExtra("commingForm").equalsIgnoreCase("Station")) {
+                                    intent.putExtra("share", mActivity.getIntent().getSerializableExtra("share"));
+                                    intent.putExtra("file_type", mActivity.getIntent().getStringExtra("file_type"));
+                                    intent.putExtra("commingForm", mActivity.getIntent().getStringExtra("commingForm"));
+                                } else if (mActivity.getIntent().getStringExtra("commingForm").equalsIgnoreCase("Melody")) {
+                                    intent.putExtra("share", mActivity.getIntent().getSerializableExtra("share"));
+                                    intent.putExtra("file_type", mActivity.getIntent().getStringExtra("file_type"));
+                                    intent.putExtra("commingForm", mActivity.getIntent().getStringExtra("commingForm"));
+                                }
+                            }
 
-                    if (mActivity.getIntent() != null && mActivity.getIntent().hasExtra("share")) {
-                        AppHelper.sop("MessengerAdapter=");
-                        if (mActivity.getIntent().hasExtra("Previ")) {
-                            JoinedArtists mJoinModel = (JoinedArtists) mActivity.getIntent().getSerializableExtra("share");
-                            intent.putExtra("share", mJoinModel);
-                            intent.putExtra("file_type", mActivity.getIntent().getStringExtra("file_type"));
-                            intent.putExtra("commingForm","Joined");
-                        } else if (mActivity.getIntent().hasExtra("commingForm")) {
-                            AppHelper.sop("MessengerAdapter=commingForm="+mActivity.getIntent().getStringExtra("commingForm"));
-                            if (mActivity.getIntent().getStringExtra("commingForm").equalsIgnoreCase("Station")){
-                                intent.putExtra("share", mActivity.getIntent().getSerializableExtra("share"));
-                                intent.putExtra("file_type", mActivity.getIntent().getStringExtra("file_type"));
-                                intent.putExtra("commingForm", mActivity.getIntent().getStringExtra("commingForm"));
-                            }
-                            else if (mActivity.getIntent().getStringExtra("commingForm").equalsIgnoreCase("Melody")){
-                                intent.putExtra("share", mActivity.getIntent().getSerializableExtra("share"));
-                                intent.putExtra("file_type", mActivity.getIntent().getStringExtra("file_type"));
-                                intent.putExtra("commingForm", mActivity.getIntent().getStringExtra("commingForm"));
-                            }
                         }
 
+                        mActivity.startActivityForResult(intent, RecordingsCardAdapter.REQUEST_RECORDING_COMMENT);
+                    }catch (Exception ex){
+                        ex.printStackTrace();
                     }
-
-                    mActivity.startActivityForResult(intent, RecordingsCardAdapter.REQUEST_RECORDING_COMMENT);
                 }
             });
 
             userProfileImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    try {
+                        String showProfileUserId;
+                        String senderID = chatList.get(getAdapterPosition()).getSenderID();
+                        String receiverID = chatList.get(getAdapterPosition()).getReceiverID();
+                        String chatType = chatList.get(getAdapterPosition()).getChatType();
+                        if (senderID.equals(userId)) {
+                            showProfileUserId = receiverID;
+                        } else {
+                            showProfileUserId = senderID;
+                        }
+                        if (chatType.equals("single")) {
+                            Intent intent = new Intent(view.getContext(), ProfileActivity.class);
+                            intent.putExtra("showProfileUserId", showProfileUserId);
+                            view.getContext().startActivity(intent);
+                        } else {
 
-                    String showProfileUserId;
-                    String senderID = chatList.get(getAdapterPosition()).getSenderID();
-                    String receiverID = chatList.get(getAdapterPosition()).getReceiverID();
-                    String chatType = chatList.get(getAdapterPosition()).getChatType();
-                    if (senderID.equals(userId)) {
-                        showProfileUserId = receiverID;
-                    } else {
-                        showProfileUserId = senderID;
-                    }
-                    if (chatType.equals("single")) {
-                        Intent intent = new Intent(view.getContext(), ProfileActivity.class);
-                        intent.putExtra("showProfileUserId", showProfileUserId);
-                        view.getContext().startActivity(intent);
-                    } else {
-
+                        }
+                    }catch (Exception ex){
+                        ex.printStackTrace();
                     }
                 }
             });

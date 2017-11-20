@@ -261,37 +261,41 @@ public class ContactsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
-        editor.putString("receiverId", "");
-        editor.putString("receiverName", "");
-        editor.putString("receiverImage", "");
-        editor.putString("chatId", "");
-        editor.commit();
-        Count=0;
-        String caller = "";
-        if (getIntent() != null && getIntent().hasExtra("Previous")) {
-            caller = getIntent().getStringExtra("Previous");
-        }
-        AppHelper.sop("caller====" + caller);
-        Intent intent;
-        if (caller.equals("chat")) {
-            intent = new Intent(mActivity, ChatActivity.class);
-            startActivity(intent);
-        } else if (caller.equals("station")) {
-            intent = new Intent(mActivity, StationActivity.class);
-            startActivity(intent);
-        } else if (caller.equals("profile")) {
-            intent = new Intent(mActivity, ProfileActivity.class);
-            startActivity(intent);
-        } else if (caller.equals("discover")) {
-            intent = new Intent(mActivity, DiscoverActivity.class);
-            startActivity(intent);
-        } else if (caller.equals("studioActivity")) {
+        try {
+            SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+            editor.putString("receiverId", "");
+            editor.putString("receiverName", "");
+            editor.putString("receiverImage", "");
+            editor.putString("chatId", "");
+            editor.commit();
+            Count = 0;
+            String caller = "";
+            if (getIntent() != null && getIntent().hasExtra("Previous")) {
+                caller = getIntent().getStringExtra("Previous");
+            }
+            AppHelper.sop("caller====" + caller);
+            Intent intent;
+            if (caller.equals("chat")) {
+                intent = new Intent(mActivity, ChatActivity.class);
+                startActivity(intent);
+            } else if (caller.equals("station")) {
+                intent = new Intent(mActivity, StationActivity.class);
+                startActivity(intent);
+            } else if (caller.equals("profile")) {
+                intent = new Intent(mActivity, ProfileActivity.class);
+                startActivity(intent);
+            } else if (caller.equals("discover")) {
+                intent = new Intent(mActivity, DiscoverActivity.class);
+                startActivity(intent);
+            } else if (caller.equals("studioActivity")) {
             /*intent = new Intent(mActivity, StudioActivity.class);
             startActivity(intent);*/
-        } else if (caller.equals("Messenger")) {
-            intent = new Intent(mActivity, MessengerActivity.class);
-            startActivity(intent);
+            } else if (caller.equals("Messenger")) {
+                intent = new Intent(mActivity, MessengerActivity.class);
+                startActivity(intent);
+            }
+        }catch (Exception ex){
+            ex.printStackTrace();
         }
 
         finish();
@@ -305,11 +309,14 @@ public class ContactsActivity extends AppCompatActivity {
 
 //                        String str = response;
 //                        Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
-
-                        contactList.clear();
-                        adapter.notifyDataSetChanged();
-                        recyclerView.smoothScrollToPosition(adapter.getItemCount());
-                        new ParseContents(getApplicationContext()).parseContacts(contactList, response);
+                        try {
+                            contactList.clear();
+                            adapter.notifyDataSetChanged();
+                            recyclerView.smoothScrollToPosition(adapter.getItemCount());
+                            new ParseContents(getApplicationContext()).parseContacts(contactList, response);
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
                     }
                 },
                 new Response.ErrorListener() {
