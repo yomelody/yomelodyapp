@@ -445,7 +445,7 @@ public class StudioActivity extends AppCompatActivity {
         recording_date.setText(dateString);
         melody_date.setText(dateString);
 
-
+        rlPublic.setVisibility(View.GONE);
         final Intent intent = getIntent();
         if (intent != null) {
         }
@@ -1264,6 +1264,7 @@ public class StudioActivity extends AppCompatActivity {
                     StudioActivity.recyclerViewInstruments.smoothScrollToPosition(instrumentList.size());
 
                     if (!IsValidPack || instrumentList.size() <= LayerCount) {
+                        rlPublic.setVisibility(View.VISIBLE);
                         new PrepareInstruments().execute();
                     } else {
                         if (IsExp == "false") {
