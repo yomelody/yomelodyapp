@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:id="@+id/activity_messenger"
-    tools:context="com.instamelody.instamelody.MessengerActivity">
+    tools:context="com.yomelody.instamelody.com.yomelody.MessengerActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
