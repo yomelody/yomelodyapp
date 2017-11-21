@@ -822,6 +822,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         protected Bitmap doInBackground(String... urls) {
 
             try {
+                
                 for (int i = 0; i < melodyInstrumentsArrayList.size(); i++) {
                     try {
 
