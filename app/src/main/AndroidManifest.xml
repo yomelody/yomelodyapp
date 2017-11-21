@@ -65,7 +65,7 @@
             android:value="@integer/google_play_services_version" />-->
 
         <activity
-            android:name="com.yomelody.HomeActivity"
+            android:name=".HomeActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -74,13 +74,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.yomelody.StudioActivity"
+            android:name=".StudioActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_studio"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name="com.yomelody.StationActivity"
+            android:name=".StationActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_station"
             android:screenOrientation="portrait"
@@ -90,96 +90,96 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name="com.yomelody.MelodyActivity"
+            android:name=".MelodyActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_melody"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
 
         <activity
-            android:name="com.yomelody.SignUpActivity"
+            android:name=".SignUpActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.yomelody.SettingsActivity"
+            android:name=".SettingsActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.yomelody.SignInActivity"
+            android:name=".SignInActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity
-            android:name="com.yomelody.DiscoverActivity"
+            android:name=".DiscoverActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_discover"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.yomelody.SocialActivity"
+            android:name=".SocialActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.yomelody.MessengerActivity"
+            android:name=".MessengerActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_messenger"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name="com.yomelody.ChatActivity"
+            android:name=".ChatActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_chat"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name="com.yomelody.ContactsActivity"
+            android:name=".ContactsActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_studio"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
 
-        <service android:name="com.yomelody.Services.MyFirebaseInstanceIDService">
+        <service android:name=".Services.MyFirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-        <service android:name="com.yomelody.Services.MyFirebaseMessagingService">
+        <service android:name=".Services.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
         <activity
-            android:name="com.yomelody.ProfileActivity"
+            android:name=".ProfileActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_profile"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
 
         <activity
-            android:name="com.yomelody.CommentsActivity"
+            android:name=".CommentsActivity"
             android:label="@string/title_activity_comments"
             android:theme="@style/AppTheme" />
 
         <activity
-            android:name="com.yomelody.JoinActivity"
+            android:name=".JoinActivity"
             android:label="@string/title_activity_join"
             android:windowSoftInputMode="adjustResize|stateHidden"
             />
         <activity
-            android:name="com.yomelody.Update"
+            android:name=".Update"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden"
             android:theme="@style/AppTheme"/>
 
         <activity
-            android:name="com.yomelody.PrivacyPolicy"
+            android:name=".PrivacyPolicy"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"/>
 
         <activity
-            android:name="com.yomelody.JoinCommentActivity"
+            android:name=".JoinCommentActivity"
             android:label="@string/title_activity_join_comment"
             android:theme="@style/AppTheme">
         </activity>
@@ -201,7 +201,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.yomelody.StationCommentActivity"
+            android:name=".StationCommentActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_melody"
             android:screenOrientation="portrait"

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#E4E4E4"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.yomelody.instamelody.com.yomelody.DiscoverActivity"
+    tools:context="com.instamelody.instamelody.DiscoverActivity"
     tools:showIn="@layout/activity_discover">
 
     <RelativeLayout

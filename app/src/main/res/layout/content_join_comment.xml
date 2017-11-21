@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.yomelody.instamelody.com.yomelody.JoinCommentActivity"
+    tools:context="com.instamelody.instamelody.JoinCommentActivity"
     tools:showIn="@layout/activity_join_comment">
     <RelativeLayout
         android:layout_width="match_parent"
@@ -171,7 +171,7 @@
                             android:background="@drawable/background_home3"
                             android:scaleType="fitXY" />
 
-                        <com.yomelody.utils.WaveformView
+                        <com.instamelody.instamelody.utils.WaveformView
                             android:id="@+id/waveform_view"
                             android:layout_width="match_parent"
                             android:layout_height="95dp"

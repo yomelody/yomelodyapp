@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#CBCBCB"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.yomelody.instamelody.com.yomelody.ProfileActivity"
+    tools:context="com.instamelody.instamelody.ProfileActivity"
     tools:showIn="@layout/activity_profile">
 
     <LinearLayout
@@ -343,7 +343,7 @@
 
             <fragment
                 android:id="@+id/activity_fragment"
-                android:name="com.yomelody.Fragments.ActivityFragment"
+                android:name="com.instamelody.instamelody.Fragments.ActivityFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
@@ -358,7 +358,7 @@
 
             <fragment
                 android:id="@+id/bio_fragment"
-                android:name="com.yomelody.Fragments.ActivityFragment"
+                android:name="com.instamelody.instamelody.Fragments.ActivityFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
