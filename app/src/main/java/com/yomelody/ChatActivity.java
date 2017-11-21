@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,13 +18,16 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -101,6 +105,7 @@ import java.util.Map;
 import static android.os.Environment.isExternalStorageEmulated;
 import static android.os.Environment.isExternalStorageRemovable;
 //import static com.instamelody.instamelody.Adapters.ChatAdapter.tvNum;
+import static android.support.v4.content.FileProvider.getUriForFile;
 import static com.yomelody.utils.Const.PUSH_NOTIFICATION;
 import static com.yomelody.utils.Const.SHARED_PREF;
 import static com.yomelody.utils.Const.ServiceType.AuthenticationKeyName;
@@ -183,6 +188,8 @@ public class ChatActivity extends AppCompatActivity {
     public static Dialog alertDialog;
     public static RelativeLayout fotter;
     public static ProgressDialog progressDialog;
+    private String mCurrentPhotoPath;
+    private static final int REQUEST_TAKE_PHOTO = 1;
 
     @TargetApi(18)
     @Override
@@ -539,24 +546,62 @@ public class ChatActivity extends AppCompatActivity {
                     rlBtnPhotoLibrary.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent getIntent = new Intent(Intent.ACTION_PICK);
-                            getIntent.setType("image/*");
-                            Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                            startActivityForResult(galleryIntent, PICK_GALLERY_IMAGE);
-                            alertDialog.cancel();
+                            try {
+                                Intent getIntent = new Intent(Intent.ACTION_PICK);
+                                getIntent.setType("image/*");
+                                Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                startActivityForResult(galleryIntent, PICK_GALLERY_IMAGE);
+                                alertDialog.cancel();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
                         }
                     });
 
                     rlBtnTakePhotoOrVideo.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent chooserIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                            Date d = new Date();
-                            CharSequence s = DateFormat.format("yyyyMMdd_hhmmss", d.getTime());
-                            File f = new File(Environment.getExternalStorageDirectory(), "IMG_" + s.toString() + ".jpg");
-                            chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-                            imageToUploadUri = Uri.fromFile(f);
-                            startActivityForResult(chooserIntent, TAKE_CAMERA_PHOTO);
+                            try {
+                                if (Build.VERSION.SDK_INT > 21) { //use this if Lollipop_Mr1 (API 22) or above
+                                    Intent chooserIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                    Date d = new Date();
+                                    CharSequence s = DateFormat.format("yyyyMMdd_hhmmss", d.getTime());
+
+                                    File file=null;
+                                    try{
+                                        file=createImageFile();
+
+                                    }catch (Exception ex){
+                                        ex.printStackTrace();
+                                    }
+                                    String authority=getApplicationContext().getPackageName()+".provider";
+                                    Uri imguri=FileProvider.getUriForFile(ChatActivity.this,authority,file);
+                                    chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT,imguri);
+                                    startActivityForResult(chooserIntent, TAKE_CAMERA_PHOTO);
+
+
+                                   /* File f = new File(Environment.getExternalStorageDirectory(), "IMG_" + s.toString() + ".jpg");
+                                    Uri contentUri = getUriForFile(ChatActivity.this, "com.yomelody.provider", f);
+
+                                    chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
+                                    imageToUploadUri =contentUri;//Uri.fromFile(f);
+                                    startActivityForResult(chooserIntent, TAKE_CAMERA_PHOTO);*/
+
+
+                                } else {
+                                    //return Uri.fromFile(mediaFile);
+                                    Intent chooserIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                    Date d = new Date();
+                                    CharSequence s = DateFormat.format("yyyyMMdd_hhmmss", d.getTime());
+                                    File f = new File(Environment.getExternalStorageDirectory(), "IMG_" + s.toString() + ".jpg");
+                                    chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                                    imageToUploadUri = Uri.fromFile(f);
+                                    startActivityForResult(chooserIntent, TAKE_CAMERA_PHOTO);
+                                }
+
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
 //                            alertDialog.cancel();
                         }
                     });
@@ -587,22 +632,25 @@ public class ChatActivity extends AppCompatActivity {
         rlUserName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                if (chatType.equals("group")) {
-                    flCover.setVisibility(View.VISIBLE);
-                    rlUpdateGroup.setVisibility(View.VISIBLE);
-                    ivGroupImage.setClickable(false);
-                    etGroupName.setClickable(false);
-                    etGroupName.setText(receiverName);
-                    if (receiverName.equals("New Group") && (chatId.equals(""))) {
-                        Picasso.with(ivGroupImage.getContext()).load(groupImage).into(ivGroupImage);
-                    } else {
-                        try {
-                            Picasso.with(ivGroupImage.getContext()).load(groupImage).placeholder(getResources().getDrawable(R.drawable.loading)).error(getResources().getDrawable(R.drawable.no_image)).into(ivGroupImage);
-                        } catch (Throwable e) {
-                            e.printStackTrace();
+                try {
+                    if (chatType.equals("group")) {
+                        flCover.setVisibility(View.VISIBLE);
+                        rlUpdateGroup.setVisibility(View.VISIBLE);
+                        ivGroupImage.setClickable(false);
+                        etGroupName.setClickable(false);
+                        etGroupName.setText(receiverName);
+                        if (receiverName.equals("New Group") && (chatId.equals(""))) {
+                            Picasso.with(ivGroupImage.getContext()).load(groupImage).into(ivGroupImage);
+                        } else {
+                            try {
+                                Picasso.with(ivGroupImage.getContext()).load(groupImage).placeholder(getResources().getDrawable(R.drawable.loading)).error(getResources().getDrawable(R.drawable.no_image)).into(ivGroupImage);
+                            } catch (Throwable e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
         });
@@ -636,33 +684,37 @@ public class ChatActivity extends AppCompatActivity {
         ivGroupImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (checkPermissions()) {
-                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(ChatActivity.this);
-                    alertDialog.setTitle("Select your option");
-                    alertDialog.setPositiveButton("Open Gallery", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            updateGroupFlag = 1;
-                            Intent getIntent = new Intent(Intent.ACTION_PICK);
-                            getIntent.setType("image/*");
-                            Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                            startActivityForResult(galleryIntent, PICK_GALLERY_IMAGE);
-                        }
-                    });
-                    alertDialog.setNegativeButton("Open Camera", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            updateGroupFlag = 1;
-                            Intent chooserIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                            Date d = new Date();
-                            CharSequence s = DateFormat.format("yyyyMMdd_hhmmss", d.getTime());
-                            File f = new File(Environment.getExternalStorageDirectory(), "IMG_" + s.toString() + ".jpg");
-                            chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-                            imageToUploadUri = Uri.fromFile(f);
-                            startActivityForResult(chooserIntent, TAKE_CAMERA_PHOTO);
-                        }
-                    });
-                    alertDialog.show();
-                } else {
-                    setPermissions();
+                try {
+                    if (checkPermissions()) {
+                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(ChatActivity.this);
+                        alertDialog.setTitle("Select your option");
+                        alertDialog.setPositiveButton("Open Gallery", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                updateGroupFlag = 1;
+                                Intent getIntent = new Intent(Intent.ACTION_PICK);
+                                getIntent.setType("image/*");
+                                Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                startActivityForResult(galleryIntent, PICK_GALLERY_IMAGE);
+                            }
+                        });
+                        alertDialog.setNegativeButton("Open Camera", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                updateGroupFlag = 1;
+                                Intent chooserIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                Date d = new Date();
+                                CharSequence s = DateFormat.format("yyyyMMdd_hhmmss", d.getTime());
+                                File f = new File(Environment.getExternalStorageDirectory(), "IMG_" + s.toString() + ".jpg");
+                                chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                                imageToUploadUri = Uri.fromFile(f);
+                                startActivityForResult(chooserIntent, TAKE_CAMERA_PHOTO);
+                            }
+                        });
+                        alertDialog.show();
+                    } else {
+                        setPermissions();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
         });
@@ -688,27 +740,31 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View view) {
                 /*Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
                 startActivity(intent);*/
-                if (rlChatPlayer.getVisibility() == View.VISIBLE) {
-                    Message message = cAdapter.getmMessage();
-                    if (message != null && message.getAudioDetails() != null && message.getAudioDetails().length() > 0) {
-                        try {
-                            JSONObject json = (JSONObject) message.getAudioDetails().get(0);
-                            if (json.has("recording_id")) {
-                                SharedPreferences.Editor record = getSharedPreferences("RecordingData", MODE_PRIVATE).edit();
-                                record.putString("AddedBy", json.getString("added_by"));
-                                record.putString("Recording_id", json.getString("recording_id"));
-                                record.putString("UserNameRec", json.getString("user_name"));
-                                record.putString("RecordingName", json.getString("recording_topic"));
-                                record.putString("UserProfile", message.getProfilePic());
-                                record.commit();
-                                Intent intent = new Intent(mActivity, JoinActivity.class);
-                                startActivity(intent);
+                try {
+                    if (rlChatPlayer.getVisibility() == View.VISIBLE) {
+                        Message message = cAdapter.getmMessage();
+                        if (message != null && message.getAudioDetails() != null && message.getAudioDetails().length() > 0) {
+                            try {
+                                JSONObject json = (JSONObject) message.getAudioDetails().get(0);
+                                if (json.has("recording_id")) {
+                                    SharedPreferences.Editor record = getSharedPreferences("RecordingData", MODE_PRIVATE).edit();
+                                    record.putString("AddedBy", json.getString("added_by"));
+                                    record.putString("Recording_id", json.getString("recording_id"));
+                                    record.putString("UserNameRec", json.getString("user_name"));
+                                    record.putString("RecordingName", json.getString("recording_topic"));
+                                    record.putString("UserProfile", message.getProfilePic());
+                                    record.commit();
+                                    Intent intent = new Intent(mActivity, JoinActivity.class);
+                                    startActivity(intent);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
 
+                        }
                     }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
         });
@@ -1746,4 +1802,45 @@ public class ChatActivity extends AppCompatActivity {
         viewImageFragment imageview = new viewImageFragment();
         getFragmentManager().beginTransaction().replace(R.id.activity_chat, imageview).commit();
     }
+    @TargetApi(Build.VERSION_CODES.N)
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        }
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DCIM), "Camera");
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        return image;
+    }
+   /* private void dispatchTakePictureIntent() throws IOException {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                return;
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = Uri.fromFile(createImageFile());
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
+        }
+    }*/
+
 }

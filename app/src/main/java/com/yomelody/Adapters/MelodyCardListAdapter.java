@@ -212,7 +212,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                             fetchLikeState(userId, position, "1", MelodyName);
                         }
                     } else {
-                        Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Please login first.", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(context, SignInActivity.class);
                         context.startActivity(intent);
                     }
@@ -280,7 +280,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         });
                         alertDialog.show();*/
                     } else {
-                        Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Please login first.", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(context, SignInActivity.class);
                         context.startActivity(intent);
                     }
@@ -397,7 +397,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                             mActivity = (Activity) context;
                             mActivity.startActivityForResult(intent, REQUEST_MELODY_COMMENT);
                         } else {
-                            Toast.makeText(context, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Please login first.", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(context, SignInActivity.class);
                             context.startActivity(intent);
                         }
@@ -808,10 +808,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
         protected Bitmap doInBackground(String... urls) {
 
             try {
-<<<<<<< HEAD
-                
-=======
->>>>>>> parent of d68489c... package name changed.
+
                 for (int i = 0; i < melodyInstrumentsArrayList.size(); i++) {
                     try {
 

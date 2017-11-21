@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:id="@+id/activity_profile"
-    tools:context="com.instamelody.instamelody.ProfileActivity">
+    tools:context="com.yomelody.ProfileActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

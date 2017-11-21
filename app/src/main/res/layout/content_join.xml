@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#dbdbdb"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.instamelody.instamelody.JoinActivity"
+    tools:context="com.yomelody.JoinActivity"
     tools:showIn="@layout/activity_join">
 
     <LinearLayout
@@ -185,7 +185,7 @@
                                 android:scaleType="fitXY" />
 
 
-                            <com.instamelody.instamelody.utils.VisualizerView
+                            <com.yomelody.utils.VisualizerView
                                 android:id="@+id/myvisualizerview"
                                 android:layout_width="match_parent"
                                 android:layout_height="95dp"

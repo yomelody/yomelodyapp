@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/activity_chat"
-    tools:context="com.instamelody.instamelody.ChatActivity"
+    tools:context="com.yomelody.ChatActivity"
     >
 
     <android.support.design.widget.AppBarLayout
