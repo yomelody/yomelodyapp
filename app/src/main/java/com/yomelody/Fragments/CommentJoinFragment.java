@@ -55,22 +55,12 @@ import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.facebook.FacebookSdk.getApplicationContext;
-<<<<<<< HEAD:app/src/main/java/com/instamelody/instamelody/Fragments/CommentJoinFragment.java
-import static com.instamelody.instamelody.Adapters.JoinListAdapter.REQUEST_JOIN_TO_MESSANGER;
-import static com.instamelody.instamelody.JoinActivity.commentContainer;
-import static com.instamelody.instamelody.JoinActivity.joinFooter;
-import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyName;
-import static com.instamelody.instamelody.utils.Const.ServiceType.AuthenticationKeyValue;
-import static com.instamelody.instamelody.utils.Const.ServiceType.COMMENTS;
-import static com.instamelody.instamelody.utils.Const.ServiceType.COMMENT_LIST;
-=======
 import static com.yomelody.Adapters.JoinListAdapter.REQUEST_JOIN_TO_MESSANGER;
 import static com.yomelody.JoinActivity.joinFooter;
 import static com.yomelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.yomelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.yomelody.utils.Const.ServiceType.COMMENTS;
 import static com.yomelody.utils.Const.ServiceType.COMMENT_LIST;
->>>>>>> master:app/src/main/java/com/yomelody/Fragments/CommentJoinFragment.java
 
 
 public class CommentJoinFragment extends Fragment {
@@ -149,10 +139,8 @@ public class CommentJoinFragment extends Fragment {
         recyclerViewComment.setItemViewCacheSize(10);
         recyclerViewComment.setDrawingCacheEnabled(true);
         recyclerViewComment.setItemAnimator(new DefaultItemAnimator());
-        String play = JoinActivity.play_count.getText().toString().trim();
         recyclerViewComment.setAdapter(adapter);
-        tvPlayCount.setText(String.valueOf(play));
-        //  tvPlayCount.setText(JoinListAdapter.Joined_artist.get(0).getPlay_counts());
+        tvPlayCount.setText(JoinListAdapter.Joined_artist.get(0).getPlay_counts());
         tvLikeCount.setText(JoinListAdapter.Joined_artist.get(0).getLike_counts());
         tvCommentCount.setText(JoinListAdapter.Joined_artist.get(0).getComment_counts());
         tvShareCount.setText(JoinListAdapter.Joined_artist.get(0).getShare_counts());

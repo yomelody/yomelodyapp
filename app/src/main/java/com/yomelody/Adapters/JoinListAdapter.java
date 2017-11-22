@@ -151,11 +151,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
             SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
             SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
             SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
-<<<<<<< HEAD:app/src/main/java/com/instamelody/instamelody/Adapters/JoinListAdapter.java
-            int count = getItemCount() - 1;
-=======
             int count = getItemCount();
->>>>>>> master:app/src/main/java/com/yomelody/Adapters/JoinListAdapter.java
             JoinActivity.tvIncluded.setText("Included : " + count);
             mBufferSize = AudioRecord.getMinBufferSize(SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO,
                     AudioFormat.ENCODING_PCM_16BIT);
@@ -513,59 +509,6 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                 @Override
                 public void onClick(View view) {
                     //    String position = Integer.toString();
-<<<<<<< HEAD:app/src/main/java/com/instamelody/instamelody/Adapters/JoinListAdapter.java
-                    if (mp != null) {
-                        mp.reset();
-                    }
-                    if (JoinActivity.mVisualizer != null) {
-                        JoinActivity.mVisualizer.release();
-                    }
-                    if (JoinInstrumentListAdp.mp_start != null) {
-                        for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
-                            JoinInstrumentListAdp.mp_start.get(i).stop();
-
-                        }
-                    }
-                    if (JoinActivity.mediaPlayersAll != null) {
-                        for (int i = 0; i <= JoinActivity.mediaPlayersAll.size() - 1; i++) {
-                            JoinActivity.mediaPlayersAll.get(i).stop();
-                        }
-                        JoinActivity.mediaPlayersAll.clear();
-                        JoinActivity.lstViewHolder.clear();
-                    }
-                    // Toast.makeText(context, ""+posForStudio, Toast.LENGTH_SHORT).show();
-                    StudioActivity.instrumentList.clear();
-                    SharedPreferences.Editor editor = context.getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
-                    editor.putString("instrumentsPos", String.valueOf(posForStudio));
-                    editor.commit();
-                    Intent intent = new Intent(view.getContext(), StudioActivity.class);
-                    view.getContext().startActivity(intent);
-                    StudioActivity.list.clear();
-                }
-            });
-
-            JoinActivity.ivJoinPlay.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    JoinActivity.ivJoinPlay.setVisibility(v.GONE);
-                    JoinActivity.ivJoinPause.setVisibility(v.VISIBLE);
-                    progressDialog = new ProgressDialog(v.getContext());
-                    progressDialog.setMessage("Loading...");
-                    progressDialog.setCancelable(false);
-                    progressDialog.show();
-                    String play = JoinActivity.play_count.getText().toString().trim();
-                    int playValue = Integer.parseInt(play) + 1;
-                    String recording_id = join.getRecording_id().trim();
-
-                    if (!userId.equals("") && userId != null) {
-                        JoinActivity.play_count.setText(String.valueOf(playValue));
-                        //CommentJoinFragment.tvPlayCount.setText(String.valueOf(playValue));
-                        fetchViewCount(userId, recording_id);
-                    }
-                    mp = new MediaPlayer();
-                    mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-=======
->>>>>>> master:app/src/main/java/com/yomelody/Adapters/JoinListAdapter.java
                     try {
                         if (mp != null) {
                             mp.reset();

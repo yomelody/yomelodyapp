@@ -5,31 +5,6 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 
-<<<<<<< HEAD:app/src/main/java/com/instamelody/instamelody/Parse/ParseContents.java
-import com.instamelody.instamelody.ChatActivity;
-import com.instamelody.instamelody.ContactsActivity;
-
-import com.instamelody.instamelody.JoinActivity;
-import com.instamelody.instamelody.Models.AdvertisePagingData;
-import com.instamelody.instamelody.Models.Comments;
-import com.instamelody.instamelody.Models.Contacts;
-import com.instamelody.instamelody.Models.Genres;
-import com.instamelody.instamelody.Models.JoinedArtists;
-import com.instamelody.instamelody.Models.JoinedUserProfile;
-import com.instamelody.instamelody.Models.Joined_model;
-import com.instamelody.instamelody.Models.MelodyCard;
-import com.instamelody.instamelody.Models.MelodyInstruments;
-import com.instamelody.instamelody.Models.Message;
-import com.instamelody.instamelody.Models.MixingData;
-import com.instamelody.instamelody.Models.RecordingsModel;
-import com.instamelody.instamelody.Models.RecordingsPool;
-import com.instamelody.instamelody.Models.SharedAudios;
-import com.instamelody.instamelody.Models.SubscriptionPackage;
-import com.instamelody.instamelody.Models.test_joinModel;
-import com.instamelody.instamelody.StudioActivity;
-import com.instamelody.instamelody.utils.AppHelper;
-import com.squareup.picasso.Picasso;
-=======
 import com.yomelody.ChatActivity;
 import com.yomelody.ContactsActivity;
 
@@ -49,7 +24,6 @@ import com.yomelody.Models.RecordingsPool;
 import com.yomelody.Models.SharedAudios;
 import com.yomelody.Models.SubscriptionPackage;
 import com.yomelody.StudioActivity;
->>>>>>> master:app/src/main/java/com/yomelody/Parse/ParseContents.java
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -77,7 +51,6 @@ public class ParseContents {
     ArrayList<Genres> genreList = new ArrayList<>();
     static ArrayList<MelodyInstruments> instrumentsList = new ArrayList<>();
     private ArrayList<MelodyInstruments> instrumentsListLocal = new ArrayList<>();
-    ArrayList<Joined_model> join_arr_model = new ArrayList<>();
     String KEY_FLAG = "flag";
     String KEY_INFO = "info";
     String KEY_RESPONSE = "response";//JSONArray
@@ -188,7 +161,7 @@ public class ParseContents {
 
 //                    AppHelper.sop("=instrumentsListLocal=size="+instrumentsListLocal.size());
 //                    AppHelper.sop("=instrumentArray=size="+instrumentArray.length());
-                    card.setInstrumentCount(instrumentArray.length() + "");
+                    card.setInstrumentCount(instrumentArray.length()+"");
                     card.setMelodyInstrumentsList(instrumentsListLocal);
                     card.setMelodyLength(instrumentArray.getJSONObject(0).getString(KEY_INSTRUMENT_DURATION));
                     instrumentsList = instrumentList;
@@ -420,21 +393,17 @@ public class ParseContents {
         return commentList;
     }
 
-    public ArrayList<RecordingsModel> parseAudio(String response, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools, ArrayList<Joined_model> join_model) {
+    public ArrayList<RecordingsModel> parseAudio(String response, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools) {
         JSONObject jsonObject;
         JSONArray jsonArray, instrumentArray, JoinedArray;
-        join_arr_model.clear();
+
         try {
-            ArrayList arrayList;
             jsonObject = new JSONObject(response);
             if (jsonObject.getString(KEY_FLAG).equals("success")) {
                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    join_arr_model.clear();
                     RecordingsModel card = new RecordingsModel();
-
                     JSONObject cardJson = jsonArray.getJSONObject(i);
-                    JoinedArray = cardJson.getJSONArray("joined");
                     card.setAddedBy(cardJson.getString("added_by"));
 
                     card.setRecordingCreated(cardJson.getString("date_added"));
@@ -461,8 +430,6 @@ public class ParseContents {
                     card.setUserProfilePic(cardJson.getString("profile_url"));
                     card.setGenreName(cardJson.getString("genre_name"));
 
-<<<<<<< HEAD:app/src/main/java/com/instamelody/instamelody/Parse/ParseContents.java
-=======
                     ArrayList arrayList=new ArrayList();
 
 
@@ -479,7 +446,6 @@ public class ParseContents {
                         card.setJoinUrl(arrayList);
                     }
 
->>>>>>> master:app/src/main/java/com/yomelody/Parse/ParseContents.java
                     if (cardJson.isNull("recordings")) {
                         Log.d("Error", "pls check");
                     } else {
@@ -502,33 +468,11 @@ public class ParseContents {
                         }
                     }
 
-                    for (int j = 0; j < JoinedArray.length(); j++) {
-                        Joined_model join=new Joined_model();
 
-                        if (JoinedArray.get(0).equals(0)) {
-                            join.setRec_duration("");
-                            join.setRecording_url("");
-                            join_model.add(join);
-                        } else {
-                            JSONObject instrumentJson = JoinedArray.getJSONObject(j);
-                            join.setRec_duration(instrumentJson.getString("recording_duration"));
-                            join.setRecording_url(instrumentJson.getString("recording_url"));
-                            join_model.add(join);
-                            test_joinModel test_joinModel=new test_joinModel(instrumentJson.getString("recording_duration"),instrumentJson.getString("recording_url"));
-                            arrayList=new ArrayList();
-                            arrayList.add(j,test_joinModel);
-                            card.setArrJoin(arrayList);
-                        }
 
-<<<<<<< HEAD:app/src/main/java/com/instamelody/instamelody/Parse/ParseContents.java
-                    }
-                    join_arr_model=join_model;
-                    AppHelper.sop("Join Model response :------------------" + join_arr_model.size());
-                    card.setJoin_arr_model(join_arr_model);
-=======
-
->>>>>>> master:app/src/main/java/com/yomelody/Parse/ParseContents.java
                     recordingList.add(card);
+//                    card.setTvContributeDate(cardJson.getString("30/02/17"));
+//                    card.setTvContributeLength(cardJson.getString("recordings"));
                 }
             }
         } catch (JSONException e) {

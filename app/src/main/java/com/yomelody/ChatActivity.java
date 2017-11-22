@@ -215,14 +215,6 @@ public class ChatActivity extends AppCompatActivity {
         AppHelper.sop("intent==chatActivity=" + intent);
         if (intent != null) {
             String val = intent.getStringExtra("commingForm");
-<<<<<<< HEAD:app/src/main/java/com/instamelody/instamelody/ChatActivity.java
-            if(val != null){
-                if (val.equals("Joined")) {
-                    mJoinedModel = (JoinedArtists) mActivity.getIntent().getSerializableExtra("share");
-                } else if (val.equals("Station")) {
-                    mRecordingsModel = (RecordingsModel) mActivity.getIntent().getSerializableExtra("share");
-                }
-=======
             AppHelper.sop("val==chatActivity=" + val);
             if (val != null && val.equals("Joined")) {
                 mJoinedModel = (JoinedArtists) mActivity.getIntent().getSerializableExtra("share");
@@ -230,7 +222,6 @@ public class ChatActivity extends AppCompatActivity {
                 mRecordingsModel = (RecordingsModel) mActivity.getIntent().getSerializableExtra("share");
             } else if (val != null && val.equals("Melody")) {
                 melody = (MelodyCard) mActivity.getIntent().getSerializableExtra("share");
->>>>>>> master:app/src/main/java/com/yomelody/ChatActivity.java
             }
         }
 

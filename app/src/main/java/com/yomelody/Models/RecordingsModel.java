@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * Created by Saurabh Singh on 20/03/2017.
  */
 
-public class RecordingsModel implements Serializable {
+public class RecordingsModel implements Serializable{
 
     String recordingId;
     String addedBy;
@@ -21,33 +21,6 @@ public class RecordingsModel implements Serializable {
     String genreName;
     String recordingurl;
     String joinCount;
-    ArrayList<test_joinModel> arrJoin;
-    ArrayList<Joined_model> join_arr_model = new ArrayList<>();
-
-    public ArrayList<test_joinModel> getArrJoin() {
-        return arrJoin;
-    }
-
-    public void setArrJoin(ArrayList<test_joinModel> arrJoin) {
-        this.arrJoin = arrJoin;
-    }
-
-    public String getRecordingurl() {
-        return recordingurl;
-    }
-
-    public void setRecordingurl(String recordingurl) {
-        this.recordingurl = recordingurl;
-    }
-
-    public ArrayList<Joined_model> getJoin_arr_model() {
-        return join_arr_model;
-    }
-
-    public void setJoin_arr_model(ArrayList<Joined_model> join_arr_model) {
-        this.join_arr_model = join_arr_model;
-    }
-
 
     String thumnailUrl;
     ArrayList joinUrl;

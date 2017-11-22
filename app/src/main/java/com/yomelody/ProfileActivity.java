@@ -46,22 +46,6 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-<<<<<<< HEAD:app/src/main/java/com/instamelody/instamelody/ProfileActivity.java
-import com.crashlytics.android.Crashlytics;
-import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
-import com.instamelody.instamelody.Fragments.BioFragment;
-import com.instamelody.instamelody.Fragments.ProfileActivityFragment;
-import com.instamelody.instamelody.Models.Genres;
-import com.instamelody.instamelody.Models.Joined_model;
-import com.instamelody.instamelody.Models.RecordingsModel;
-import com.instamelody.instamelody.Models.RecordingsPool;
-import com.instamelody.instamelody.Models.UserDetails;
-import com.instamelody.instamelody.Parse.ParseContents;
-import com.instamelody.instamelody.app.Config;
-import com.instamelody.instamelody.utils.AppHelper;
-import com.instamelody.instamelody.utils.Const;
-import com.instamelody.instamelody.utils.NotificationUtils;
-=======
 import com.yomelody.Adapters.RecordingsCardAdapter;
 import com.yomelody.Fragments.BioFragment;
 import com.yomelody.Fragments.ProfileActivityFragment;
@@ -74,7 +58,6 @@ import com.yomelody.app.Config;
 import com.yomelody.utils.AppHelper;
 import com.yomelody.utils.Const;
 import com.yomelody.utils.NotificationUtils;
->>>>>>> master:app/src/main/java/com/yomelody/ProfileActivity.java
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -128,7 +111,6 @@ public class ProfileActivity extends AppCompatActivity {
 
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
-    ArrayList<Joined_model> joinmodel = new ArrayList<>();
     ArrayList<Genres> genresArrayList = new ArrayList<>();
     Button btnAudio, btnActivity, btnBio, btnCancel;
     RelativeLayout rlPartProfile, rlFragmentActivity, rlFragmentBio, rlSearch, rlFollow, tab1, rlMessage;
@@ -265,7 +247,7 @@ public class ProfileActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             getApplicationContext().startActivity(intent);
         }
-        adapter = new RecordingsCardAdapter(ProfileActivity.this, recordingList, recordingsPools,joinmodel);
+        adapter = new RecordingsCardAdapter(ProfileActivity.this, recordingList, recordingsPools);
         if (rv != null) {
             rv.setAdapter(adapter);
         }
@@ -849,7 +831,7 @@ public class ProfileActivity extends AppCompatActivity {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools,joinmodel);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                         tv_records.setText("" + recordingList.size());
                         isLoading = false;
@@ -1055,7 +1037,7 @@ public class ProfileActivity extends AppCompatActivity {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools,joinmodel);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                         isLoading = false;
                         if (progressDialog != null && progressDialog.isShowing()) {
@@ -1143,7 +1125,7 @@ public class ProfileActivity extends AppCompatActivity {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools,joinmodel);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                         isLoading = false;
                         progressDialog.dismiss();
@@ -1221,7 +1203,7 @@ public class ProfileActivity extends AppCompatActivity {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools,joinmodel);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                         isLoading = false;
                         if (progressDialog != null && progressDialog.isShowing()) {
@@ -1308,7 +1290,7 @@ public class ProfileActivity extends AppCompatActivity {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools,joinmodel);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                         isLoading = false;
                         if (progressDialog != null && progressDialog.isShowing()) {
@@ -1395,7 +1377,7 @@ public class ProfileActivity extends AppCompatActivity {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools,joinmodel);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                         isLoading = false;
 

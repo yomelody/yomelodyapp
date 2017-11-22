@@ -32,20 +32,6 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-<<<<<<< HEAD:app/src/main/java/com/instamelody/instamelody/Fragments/AudioFragment.java
-import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
-import com.instamelody.instamelody.Models.AudioModel;
-import com.instamelody.instamelody.Models.Genres;
-import com.instamelody.instamelody.Models.Joined_model;
-import com.instamelody.instamelody.Models.RecordingsModel;
-import com.instamelody.instamelody.Models.RecordingsModelMore;
-import com.instamelody.instamelody.Models.RecordingsPool;
-import com.instamelody.instamelody.Parse.ParseContents;
-import com.instamelody.instamelody.R;
-import com.instamelody.instamelody.StationActivity;
-import com.instamelody.instamelody.utils.AppHelper;
-import com.instamelody.instamelody.utils.Const;
-=======
 import com.yomelody.Adapters.RecordingsCardAdapter;
 import com.yomelody.Models.Genres;
 import com.yomelody.Models.RecordingsModel;
@@ -55,7 +41,6 @@ import com.yomelody.R;
 import com.yomelody.StationActivity;
 import com.yomelody.utils.AppHelper;
 import com.yomelody.utils.Const;
->>>>>>> master:app/src/main/java/com/yomelody/Fragments/AudioFragment.java
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -79,7 +64,6 @@ public class AudioFragment extends Fragment {
 
     ArrayList<RecordingsModel> recordingList = new ArrayList<RecordingsModel>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
-    ArrayList<Joined_model> Joined_model = new ArrayList<>();
     ArrayList<Genres> genresArrayList = new ArrayList<>();
     private String ID = "id";
     private String KEY = "key";
@@ -164,7 +148,7 @@ public class AudioFragment extends Fragment {
         } else if (twitterPref.getString("userId", null) != null) {
             userId = twitterPref.getString("userId", null);
         }
-        adapter = new RecordingsCardAdapter(mActivity, recordingList, recordingsPools, Joined_model);
+        adapter = new RecordingsCardAdapter(mActivity, recordingList, recordingsPools);
         if (rv != null) {
             rv.setAdapter(adapter);
         }
@@ -372,9 +356,8 @@ public class AudioFragment extends Fragment {
                         if (recordingList.size() <= 0) {
                             recordingList.clear();
                             recordingsPools.clear();
-                            Joined_model.clear();
                         }
-                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools, Joined_model);
+                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
 
                         try {
                             adapter.notifyDataSetChanged();
@@ -482,10 +465,9 @@ public class AudioFragment extends Fragment {
                         if (recordingList.size() <= 0) {
                             recordingList.clear();
                             recordingsPools.clear();
-                            Joined_model.clear();
                         }
 
-                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools, Joined_model);
+                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                         ClearSharedPref();
                         if (progressDialog != null) {
@@ -586,10 +568,9 @@ public class AudioFragment extends Fragment {
                         if (recordingList.size() <= 0) {
                             recordingList.clear();
                             recordingsPools.clear();
-                            Joined_model.clear();
                         }
 
-                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools, Joined_model);
+                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                         if (progressDialog != null) {
                             if (progressDialog.isShowing()) {
@@ -690,9 +671,8 @@ public class AudioFragment extends Fragment {
                         if (recordingList.size() <= 0) {
                             recordingList.clear();
                             recordingsPools.clear();
-                            Joined_model.clear();
                         }
-                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools, Joined_model);
+                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                         if (progressDialog != null) {
                             if (progressDialog.isShowing()) {
@@ -790,10 +770,9 @@ public class AudioFragment extends Fragment {
                         if (recordingList.size() <= 0) {
                             recordingList.clear();
                             recordingsPools.clear();
-                            Joined_model.clear();
                         }
 
-                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools, Joined_model);
+                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                         if (progressDialog != null) {
                             if (progressDialog.isShowing()) {
@@ -891,10 +870,9 @@ public class AudioFragment extends Fragment {
                         if (recordingList.size() <= 0) {
                             recordingList.clear();
                             recordingsPools.clear();
-                            Joined_model.clear();
                         }
 
-                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools, Joined_model);
+                        new ParseContents(getActivity()).parseAudio(response, recordingList, recordingsPools);
                         adapter.notifyDataSetChanged();
                         if (progressDialog != null) {
                             if (progressDialog.isShowing()) {
