@@ -103,6 +103,7 @@ public class JoinActivity extends AppCompatActivity {
     TextView tvDone;
     private Activity mActivity;
     public static boolean check_frag = false;
+    FrameLayout recycler_instrument;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,7 +125,7 @@ public class JoinActivity extends AppCompatActivity {
         ivRecordJoin = (ImageView) findViewById(R.id.ivRecordJoin);
         playAll = (ImageView) findViewById(R.id.playAll);
         pauseAll = (ImageView) findViewById(R.id.pauseAll);
-
+        //  recycler_instrument = (FrameLayout) findViewById(R.id.recycler_instrument);
         mVisualizerView = (VisualizerView) findViewById(R.id.myvisualizerview);
         mDecibelView = (TextView) findViewById(R.id.decibel_view);
         play_count = (TextView) findViewById(R.id.tvPlayCount);
@@ -198,6 +199,7 @@ public class JoinActivity extends AppCompatActivity {
 
                 try {
                     joinFooter.setVisibility(GONE);
+                   // recyclerViewInstruments.setVisibility(GONE);
                     CommentJoinFragment af = new CommentJoinFragment();
                     getFragmentManager().beginTransaction().replace(R.id.commentContainer, af).commit();
                     check_frag = true;

@@ -32,6 +32,7 @@ import com.android.volley.toolbox.Volley;
 import com.instamelody.instamelody.JoinActivity;
 import com.instamelody.instamelody.MessengerActivity;
 import com.instamelody.instamelody.Models.JoinRecordingModel;
+import com.instamelody.instamelody.Models.Joined_model;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.ProfileActivity;
@@ -77,13 +78,14 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     public static final int REQUEST_PROFILE_COMMENT = 713;
     String genreName, mpid, MelodyName, profile;
     static String instrumentFile;
-    public static MediaPlayer mp=null;
+    public static MediaPlayer mp = null;
     int duration1, currentPosition;
     int length;
     ArrayList<String> mpids = new ArrayList<>();
     private ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     private ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
     public static ArrayList<JoinRecordingModel> JoinList = new ArrayList<JoinRecordingModel>();
+    ArrayList<Joined_model> joined_models = new ArrayList<>();
     //    public static ArrayList<RecJoinRecordingModel> RecJoinList = new ArrayList<RecJoinRecordingModel>();
     public ArrayList<MediaPlayer> JoinMp = new ArrayList<MediaPlayer>();
     String USER_TYPE = "user_type";
@@ -117,11 +119,13 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     int MaxJoinCount = 0;
     private Activity mActivity;
     Handler mHandler1;
-    boolean IsLiked=false;
+    boolean IsLiked = false;
+    int count = 0;
 
-    public RecordingsCardAdapter(Context context, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools) {
+    public RecordingsCardAdapter(Context context, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools, ArrayList<Joined_model> joined_models) {
         this.recordingList = recordingList;
         this.recordingsPools = recordingsPools;
+        this.joined_models = joined_models;
         this.lazycount = recordingList.size();
         this.context = context;
         mActivity = (Activity) context;
@@ -315,7 +319,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 intent.putExtra("Previous", "station");
                                 intent.putExtra("share", recordingList.get(getAdapterPosition()));
                                 intent.putExtra("file_type", "user_recording");
-                                mActivity.startActivityForResult(intent,REQUEST_RECORDING_COMMENT);
+                                mActivity.startActivityForResult(intent, REQUEST_RECORDING_COMMENT);
                             }
                         });
                         alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -429,7 +433,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         Intent intent = new Intent(view.getContext(), ProfileActivity.class);
                         intent.putExtra("showProfileUserId", showProfileUserId);
                         //view.getContext().startActivity(intent);
-                        mActivity.startActivityForResult(intent,REQUEST_RECORDING_COMMENT);
+                        mActivity.startActivityForResult(intent, REQUEST_RECORDING_COMMENT);
                     }
                 });
             }
@@ -509,31 +513,25 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
 
         try {
-            RecordingsModel recording = recordingList.get(listPosition);
+            final RecordingsModel recording = recordingList.get(listPosition);
             lazycount = lazycount + 1;
-            int includedCount = Integer.parseInt(recordingList.get(listPosition).getJoinCount())+1;
+            int includedCount = Integer.parseInt(recordingList.get(listPosition).getJoinCount());
             holder.tvIncludedCount.setText("Included: " + includedCount);
 
             mpid = recording.getRecordingId();
             mpids.add(mpid);
 
             holder.tvIncludedCount.setText("Included: " + includedCount);
-            if (recordingList.get(listPosition).getJoinCount() == null) {
-                totaljoincount = "(" + "0" + " of " + "1" + ")";
-            } else {
-                totaljoincount = CalJoinCount(Integer.parseInt(recordingList.get(listPosition).getJoinCount()));
-            }
 
-            if (recordingList.get(listPosition).getJoinCount() != null) {
-                holder.TemptxtJoinCount.setText(recordingList.get(listPosition).getJoinCount());
+            if (Integer.parseInt(recordingList.get(listPosition).getJoinCount()) != 0) {
+                // holder.TemptxtJoinCount.setText(recordingList.get(listPosition).getJoinCount());
+                holder.txtJoinCount.setText(MinJoinCount + 1 + " of " + (Integer.parseInt(recordingList.get(listPosition).getJoinCount()) + 1));
             } else {
-                holder.TemptxtJoinCount.setText("0");
+                holder.txtJoinCount.setText(MinJoinCount + 1 + " of " + 1);
             }
 
 
-            holder.txtJoinCount.setText(totaljoincount);
-
-            holder.txtJoinCount.setText(totaljoincount);
+            //   holder.txtJoinCount.setText();
 
             Picasso.with(context).load(recordingList.get(listPosition).getUserProfilePic()).into(holder.userProfileImage);
             Picasso.with(context)
@@ -579,8 +577,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     holder.progressDialog.setMessage("Loading...");
                     holder.progressDialog.show();
                     //currentSongIndex = currentSongIndex + 1;
+                    Toast.makeText(mActivity, "" + recording.getJoin_arr_model().size(), Toast.LENGTH_SHORT).show();
 
-                    fetchPlayJoinAudio(recordingList.get(listPosition).getRecordingId());
+                    //    fetchPlayJoinAudio(recordingList.get(listPosition).getRecordingId());
                     holder.ivStationPause.setVisibility(View.VISIBLE);
                     //  try {
 //                RecordingsPool recordingsPool = recordingsPools.get(listPosition);
@@ -660,6 +659,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(VISIBLE);
                                 mp.seekTo(length);
                                 mp.start();
+                                holder.progressDialog.dismiss();
                                 duration1 = mp.getDuration();
                                 holder.primarySeekBarProgressUpdater();
 
@@ -728,147 +728,137 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 }
             });
 
-            if (listPosition > 10) {
-
-            }
             holder.ivStationPre.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    try {
 
+                    if (MinJoinCount == 0) {
+                        holder.ivStationPre.setEnabled(false);
+                    } else {
                         MinJoinCount = MinJoinCount - 1;
 
-                        int NxtCount = Integer.parseInt(holder.TemptxtJoinCount.getText().toString());
-
-                        if (MinJoinCount < NxtCount && MinJoinCount >= 0) {
-                            fetchPlayJoinAudio(recordingList.get(listPosition).getRecordingId());
-                            if (JoinMp != null) {
-                                if (JoinMp.size() > 0) {
-                                    try {
-                                        if (mp != null) {
-                                            if (mp.isPlaying()) {
-                                                try {
-                                                    mp.stop();
-                                                } catch (Exception ex) {
-                                                    ex.printStackTrace();
-                                                }
+                        fetchPlayJoinAudio(recordingList.get(listPosition).getRecordingId());
+                        if (JoinMp != null) {
+                            if (JoinMp.size() > 0) {
+                                try {
+                                    if (mp != null) {
+                                        if (mp.isPlaying()) {
+                                            try {
+                                                mp.stop();
+                                            } catch (Exception ex) {
+                                                ex.printStackTrace();
                                             }
                                         }
-
-
-                                    } catch (Throwable e) {
-                                        e.printStackTrace();
                                     }
 
 
-                                    holder.progressDialog = new ProgressDialog(v.getContext());
-                                    holder.progressDialog.setMessage("Loading...");
-                                    holder.progressDialog.setCancelable(false);
-                                    holder.progressDialog.show();
-                                    mp = new MediaPlayer();
-                                    try {
-                                        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                                    } catch (NullPointerException e) {
-                                        e.printStackTrace();
-                                    }
-                                    //currentSongIndex = currentSongIndex - 1;
-
-                                    for (int i = 0; i <= JoinMp.size() - 1; i++) {
-
-                                        if (MinJoinCount == i) {
-
-                                            mp = JoinMp.get(i);
-
-
-                                        }
-                                    }
-                                    mp.prepareAsync();
-                                    holder.txtJoinCount.setText(CalJoinCountPrevRec(NxtCount));
-
-                                    mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                        @Override
-                                        public void onPrepared(MediaPlayer mp) {
-                                            mp.start();
-                                            holder.progressDialog.dismiss();
-                                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(GONE);
-                                            lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(VISIBLE);
-
-                                            holder.primarySeekBarProgressUpdater();
-
-                                        }
-                                    });
-                                    mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                                        @Override
-                                        public boolean onError(MediaPlayer mp, int what, int extra) {
-                                            if (mp != null) {
-                                                try {
-                                                    mp.stop();
-                                                } catch (Exception ex) {
-                                                    ex.printStackTrace();
-                                                }
-                                            }
-                                            for (int i = 0; i <= JoinMp.size() - 1; i++) {
-                                                if (JoinMp.get(i).isPlaying()) {
-                                                    try {
-                                                        JoinMp.get(i).stop();
-                                                    } catch (Exception ex) {
-                                                        ex.printStackTrace();
-                                                    }
-                                                }
-                                            }
-                                            holder.progressDialog.dismiss();
-
-                                            return false;
-                                        }
-                                    });
-                                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                        @Override
-                                        public void onCompletion(MediaPlayer mp) {
-                                            mHandler1.removeCallbacksAndMessages(null);
-                                            if (mp != null) {
-                                                try {
-                                                    mp.stop();
-                                                } catch (Exception ex) {
-                                                    ex.printStackTrace();
-                                                }
-                                            }
-                                            for (int i = 0; i <= JoinMp.size() - 1; i++) {
-                                                if (JoinMp.get(i).isPlaying()) {
-                                                    try {
-                                                        JoinMp.get(i).stop();
-                                                    } catch (Exception ex) {
-                                                        ex.printStackTrace();
-                                                    }
-                                                }
-                                            }
-                                            holder.progressDialog.dismiss();
-                                            holder.seekBarRecordings.setProgress(0);
-                                            holder.ivStationPause.setVisibility(GONE);
-                                            holder.ivStationPlay.setVisibility(VISIBLE);
-
-                                        }
-                                    });
+                                } catch (Throwable e) {
+                                    e.printStackTrace();
                                 }
+
+
+                                holder.progressDialog = new ProgressDialog(v.getContext());
+                                holder.progressDialog.setMessage("Loading...");
+                                holder.progressDialog.setCancelable(false);
+                                holder.progressDialog.show();
+                                mp = new MediaPlayer();
+                                try {
+                                    mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                                } catch (NullPointerException e) {
+                                    e.printStackTrace();
+                                }
+                                //currentSongIndex = currentSongIndex - 1;
+
+                                for (int i = 0; i <= JoinMp.size() - 1; i++) {
+
+                                    if (MinJoinCount == i) {
+
+                                        mp = JoinMp.get(i);
+
+
+                                    }
+                                }
+                                mp.prepareAsync();
+                                holder.txtJoinCount.setText(MinJoinCount + 1 + " of " + recordingList.get(listPosition).getJoinCount());
+
+                                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                    @Override
+                                    public void onPrepared(MediaPlayer mp) {
+                                        mp.start();
+                                        holder.progressDialog.dismiss();
+                                        lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(GONE);
+                                        lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(VISIBLE);
+
+                                        holder.primarySeekBarProgressUpdater();
+
+                                    }
+                                });
+                                mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                                    @Override
+                                    public boolean onError(MediaPlayer mp, int what, int extra) {
+                                        if (mp != null) {
+                                            try {
+                                                mp.stop();
+                                            } catch (Exception ex) {
+                                                ex.printStackTrace();
+                                            }
+                                        }
+                                        for (int i = 0; i <= JoinMp.size() - 1; i++) {
+                                            if (JoinMp.get(i).isPlaying()) {
+                                                try {
+                                                    JoinMp.get(i).stop();
+                                                } catch (Exception ex) {
+                                                    ex.printStackTrace();
+                                                }
+                                            }
+                                        }
+                                        holder.progressDialog.dismiss();
+
+                                        return false;
+                                    }
+                                });
+                                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        mHandler1.removeCallbacksAndMessages(null);
+                                        if (mp != null) {
+                                            try {
+                                                mp.stop();
+                                            } catch (Exception ex) {
+                                                ex.printStackTrace();
+                                            }
+                                        }
+                                        for (int i = 0; i <= JoinMp.size() - 1; i++) {
+                                            if (JoinMp.get(i).isPlaying()) {
+                                                try {
+                                                    JoinMp.get(i).stop();
+                                                } catch (Exception ex) {
+                                                    ex.printStackTrace();
+                                                }
+                                            }
+                                        }
+                                        holder.progressDialog.dismiss();
+                                        holder.seekBarRecordings.setProgress(0);
+                                        holder.ivStationPause.setVisibility(GONE);
+                                        holder.ivStationPlay.setVisibility(VISIBLE);
+
+                                    }
+                                });
                             }
                         }
 
 
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
                     }
-
                 }
+
+
             });
             holder.ivStationNext.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     try {
-
-                        if (MinJoinCount < 0) {
-                            MinJoinCount = 0;
-                        }
-                        int NxtCount = Integer.parseInt(holder.TemptxtJoinCount.getText().toString());
-                        if (MinJoinCount < NxtCount && MinJoinCount >= 0) {
+                        if (Integer.parseInt(recordingList.get(listPosition).getJoinCount()) > MinJoinCount) {
+                            MinJoinCount = MinJoinCount + 1;
                             fetchPlayJoinAudio(recordingList.get(listPosition).getRecordingId());
                             if (JoinMp != null) {
                                 if (JoinMp.size() > 0) {
@@ -903,7 +893,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                         }
                                     }
                                     mp.prepareAsync();
-                                    holder.txtJoinCount.setText(CalJoinCountNextRec(NxtCount));
+                                    holder.txtJoinCount.setText(MinJoinCount + 1 + " of " + recordingList.get(listPosition).getJoinCount());
 
 
                                     mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -970,7 +960,12 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                                 }
                             }
+                        } else {
+                            holder.ivStationNext.setEnabled(false);
+                            holder.ivStationPre.setEnabled(true);
                         }
+
+
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -979,7 +974,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             });
 
 
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -1016,7 +1011,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 if (flag.equals("success")) {
                                     IsLiked = true;
                                 }
-                            }catch (Exception ex){
+                            } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
 
@@ -1121,7 +1116,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                         MediaPlayer mediaPlayer = new MediaPlayer();
                                         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                                         mediaPlayer.setDataSource(respObject.getString("recording_url"));
-                                        //mediaPlayer.prepare();
+                                        mediaPlayer.prepare();
                                         JoinMp.add(mediaPlayer);
 
                                     } catch (Exception ex) {
@@ -1161,10 +1156,10 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         try {
             if (joincount == 0) {
                 //currentSongIndex=1;
-                jCount = "(" + String.valueOf(MinJoinCount) + " of " + String.valueOf((joincount + 1)) + ")";
+                jCount = "(" + String.valueOf(MinJoinCount + 1) + " of " + String.valueOf((joincount + 1)) + ")";
             } else {
 
-                jCount = String.valueOf(MinJoinCount) + " of " + String.valueOf(joincount);
+                jCount = String.valueOf(MinJoinCount + 1) + " of " + String.valueOf(joincount);
             }
 
         } catch (Exception ex) {

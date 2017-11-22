@@ -56,6 +56,7 @@ import com.instamelody.instamelody.Adapters.DiscoverAdapter;
 import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Models.AdvertisePagingData;
 import com.instamelody.instamelody.Models.Genres;
+import com.instamelody.instamelody.Models.Joined_model;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Parse.ParseContents;
@@ -110,6 +111,7 @@ public class DiscoverActivity extends AppCompatActivity {
     private static RecyclerView recyclerView;
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
+    ArrayList<Joined_model> joinmodel = new ArrayList<>();
     ArrayList<Genres> genresArrayList = new ArrayList<>();
     ArrayList<AdvertisePagingData> pagingDataArrayList = new ArrayList<>();
     private String ID = "id";
@@ -253,7 +255,7 @@ public class DiscoverActivity extends AppCompatActivity {
 
 
         if (userId != null && userId != "") {
-            adapter = new RecordingsCardAdapter(mActivity, recordingList, recordingsPools);
+            adapter = new RecordingsCardAdapter(mActivity, recordingList, recordingsPools,joinmodel);
             fetchGenreNames();
 //            callApi();
         } else {
@@ -263,7 +265,7 @@ public class DiscoverActivity extends AppCompatActivity {
             getApplicationContext().startActivity(intent);
         }
 
-        adapter = new RecordingsCardAdapter(mActivity, recordingList, recordingsPools);
+        adapter = new RecordingsCardAdapter(mActivity, recordingList, recordingsPools,joinmodel);
 
         /*discover.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -609,7 +611,7 @@ public class DiscoverActivity extends AppCompatActivity {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools,joinmodel);
                         adapter.notifyDataSetChanged();
                         isLoading = false;
                         progressDialog.dismiss();
@@ -671,7 +673,7 @@ public class DiscoverActivity extends AppCompatActivity {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools,joinmodel);
                         adapter.notifyDataSetChanged();
                         isLoading = false;
                         progressDialog.dismiss();
@@ -896,7 +898,7 @@ public class DiscoverActivity extends AppCompatActivity {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools,joinmodel);
                         adapter.notifyDataSetChanged();
                         isLoading = false;
                         progressDialog.dismiss();
@@ -973,7 +975,7 @@ public class DiscoverActivity extends AppCompatActivity {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools,joinmodel);
                         adapter.notifyDataSetChanged();
                         isLoading = false;
                         progressDialog.dismiss();
@@ -1043,7 +1045,7 @@ public class DiscoverActivity extends AppCompatActivity {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools,joinmodel);
                         adapter.notifyDataSetChanged();
                         isLoading = false;
                         progressDialog.dismiss();
@@ -1117,7 +1119,7 @@ public class DiscoverActivity extends AppCompatActivity {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools,joinmodel);
                         adapter.notifyDataSetChanged();
                         isLoading = false;
                         progressDialog.dismiss();

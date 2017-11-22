@@ -52,6 +52,7 @@ import com.instamelody.instamelody.Adapters.RecordingsCardAdapter;
 import com.instamelody.instamelody.Fragments.BioFragment;
 import com.instamelody.instamelody.Fragments.ProfileActivityFragment;
 import com.instamelody.instamelody.Models.Genres;
+import com.instamelody.instamelody.Models.Joined_model;
 import com.instamelody.instamelody.Models.RecordingsModel;
 import com.instamelody.instamelody.Models.RecordingsPool;
 import com.instamelody.instamelody.Models.UserDetails;
@@ -123,6 +124,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
+    ArrayList<Joined_model> joinmodel = new ArrayList<>();
     ArrayList<Genres> genresArrayList = new ArrayList<>();
     Button btnAudio, btnActivity, btnBio, btnCancel;
     RelativeLayout rlPartProfile, rlFragmentActivity, rlFragmentBio, rlSearch, rlFollow, tab1, rlMessage;
@@ -259,7 +261,7 @@ public class ProfileActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             getApplicationContext().startActivity(intent);
         }
-        adapter = new RecordingsCardAdapter(ProfileActivity.this, recordingList, recordingsPools);
+        adapter = new RecordingsCardAdapter(ProfileActivity.this, recordingList, recordingsPools,joinmodel);
         if (rv != null) {
             rv.setAdapter(adapter);
         }
@@ -838,7 +840,7 @@ public class ProfileActivity extends AppCompatActivity {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools,joinmodel);
                         adapter.notifyDataSetChanged();
                         tv_records.setText("" + recordingList.size());
                         isLoading = false;
@@ -1038,7 +1040,7 @@ public class ProfileActivity extends AppCompatActivity {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools,joinmodel);
                         adapter.notifyDataSetChanged();
                         isLoading = false;
                         if (progressDialog != null && progressDialog.isShowing()) {
@@ -1121,7 +1123,7 @@ public class ProfileActivity extends AppCompatActivity {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools,joinmodel);
                         adapter.notifyDataSetChanged();
                         isLoading = false;
                         progressDialog.dismiss();
@@ -1194,7 +1196,7 @@ public class ProfileActivity extends AppCompatActivity {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools,joinmodel);
                         adapter.notifyDataSetChanged();
                         isLoading = false;
                         if (progressDialog != null && progressDialog.isShowing()) {
@@ -1276,7 +1278,7 @@ public class ProfileActivity extends AppCompatActivity {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools,joinmodel);
                         adapter.notifyDataSetChanged();
                         isLoading = false;
                         if (progressDialog != null && progressDialog.isShowing()) {
@@ -1358,7 +1360,7 @@ public class ProfileActivity extends AppCompatActivity {
                             recordingList.clear();
                             recordingsPools.clear();
                         }
-                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools);
+                        new ParseContents(getApplicationContext()).parseAudio(response, recordingList, recordingsPools,joinmodel);
                         adapter.notifyDataSetChanged();
                         isLoading = false;
 

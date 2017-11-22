@@ -216,10 +216,12 @@ public class ChatActivity extends AppCompatActivity {
         final Intent intent = getIntent();
         if (intent != null) {
             String val = intent.getStringExtra("commingForm");
-            if (val.equals("Joined")) {
-                mJoinedModel = (JoinedArtists) mActivity.getIntent().getSerializableExtra("share");
-            } else if (val.equals("Station")) {
-                mRecordingsModel = (RecordingsModel) mActivity.getIntent().getSerializableExtra("share");
+            if(val != null){
+                if (val.equals("Joined")) {
+                    mJoinedModel = (JoinedArtists) mActivity.getIntent().getSerializableExtra("share");
+                } else if (val.equals("Station")) {
+                    mRecordingsModel = (RecordingsModel) mActivity.getIntent().getSerializableExtra("share");
+                }
             }
         }
 
