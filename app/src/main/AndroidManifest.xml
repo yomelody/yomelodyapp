@@ -217,19 +217,21 @@
             </intent-filter>
         </activity>
 
-        <provider android:authorities="com.facebook.app.FacebookContentProvider164934724003307"
-            android:name="com.facebook.FacebookContentProvider"
-            android:exported="true"/>
-
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="${applicationId}.provider"
+            android:authorities="com.yomelody.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/filepaths"/>
+                android:resource="@xml/filepaths"></meta-data>
         </provider>
+
+        <provider android:authorities="com.facebook.app.FacebookContentProvider164934724003307"
+            android:name="com.facebook.FacebookContentProvider"
+            android:exported="true"/>
+
+
 
     </application>
 

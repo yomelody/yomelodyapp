@@ -562,30 +562,9 @@ public class ChatActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View view) {
                             try {
-                                if (Build.VERSION.SDK_INT > 21) { //use this if Lollipop_Mr1 (API 22) or above
-                                    Intent chooserIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                    Date d = new Date();
-                                    CharSequence s = DateFormat.format("yyyyMMdd_hhmmss", d.getTime());
 
-                                    File file=null;
-                                    try{
-                                        file=createImageFile();
-
-                                    }catch (Exception ex){
-                                        ex.printStackTrace();
-                                    }
-                                    String authority=getApplicationContext().getPackageName()+".provider";
-                                    Uri imguri=FileProvider.getUriForFile(ChatActivity.this,authority,file);
-                                    chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT,imguri);
-                                    startActivityForResult(chooserIntent, TAKE_CAMERA_PHOTO);
-
-
-                                   /* File f = new File(Environment.getExternalStorageDirectory(), "IMG_" + s.toString() + ".jpg");
-                                    Uri contentUri = getUriForFile(ChatActivity.this, "com.yomelody.provider", f);
-
-                                    chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
-                                    imageToUploadUri =contentUri;//Uri.fromFile(f);
-                                    startActivityForResult(chooserIntent, TAKE_CAMERA_PHOTO);*/
+                                if (Build.VERSION.SDK_INT >= 24) { //use this if Lollipop_Mr1 (API 22) or above
+                                    dispatchTakePictureIntent();
 
 
                                 } else {
@@ -596,7 +575,7 @@ public class ChatActivity extends AppCompatActivity {
                                     File f = new File(Environment.getExternalStorageDirectory(), "IMG_" + s.toString() + ".jpg");
                                     chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
                                     imageToUploadUri = Uri.fromFile(f);
-                                    startActivityForResult(chooserIntent, TAKE_CAMERA_PHOTO);
+                                    startActivityForResult(chooserIntent, REQUEST_TAKE_PHOTO);
                                 }
 
                             } catch (Exception ex) {
@@ -870,40 +849,54 @@ public class ChatActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == TAKE_CAMERA_PHOTO && resultCode == Activity.RESULT_OK) {
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
             if (updateGroupFlag == 1) {
                 if (imageToUploadUri != null) {
-                    Uri selectedImage = imageToUploadUri;
-                    sendGroupImageName = imageToUploadUri.getPath();
-                    getContentResolver().notifyChange(selectedImage, null);
-                    ImageCompressor ic = new ImageCompressor(getApplicationContext());
-                    groupImageBitmap = ic.compressImage(sendGroupImageName);
-                    if (groupImageBitmap != null) {
-                        ivGroupImage.setImageBitmap(groupImageBitmap);
-                    } else {
-                        Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
+                    try {
+                        Uri selectedImage = imageToUploadUri;
+                        sendGroupImageName = imageToUploadUri.getPath();
+                        getContentResolver().notifyChange(selectedImage, null);
+                        ImageCompressor ic = new ImageCompressor(getApplicationContext());
+                        groupImageBitmap = ic.compressImage(sendGroupImageName);
+                        if (groupImageBitmap != null) {
+                            ivGroupImage.setImageBitmap(groupImageBitmap);
+                        } else {
+                            Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
+                        }
+                    }catch (Exception ex){
+                        ex.printStackTrace();
                     }
                 } else {
                     Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
                 }
             } else {
                 if (imageToUploadUri != null) {
-                    Uri selectedImage = imageToUploadUri;
-                    sendImageName = imageToUploadUri.getPath();
-                    getContentResolver().notifyChange(selectedImage, null);
-                    ImageCompressor ic = new ImageCompressor(getApplicationContext());
-                    sendImageBitmap = ic.compressImage(sendImageName);
-                    if (sendImageBitmap != null) {
-                        alertDialog.cancel();
-                        flagFileType = "1";
-                        appbar.setVisibility(View.GONE);
-                        fotter.setVisibility(View.GONE);
-                        viewImageFragment imageview = new viewImageFragment();
-                        getFragmentManager().beginTransaction().replace(R.id.activity_chat, imageview).commit();
-                        // sendMessage("", userId);
+                    try {
+                        Uri selectedImage = imageToUploadUri;
+                        sendImageName = imageToUploadUri.getPath();
+                        getContentResolver().notifyChange(selectedImage, null);
+                        ImageCompressor ic = new ImageCompressor(getApplicationContext());
+                        if (Build.VERSION.SDK_INT >= 24) { //use this if Lollipop_Mr1 (API 22) or above
 
-                    } else {
-                        Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
+                            sendImageBitmap = ic.compressImage(mCurrentPhotoPath);
+
+                        } else {
+                            sendImageBitmap = ic.compressImage(sendImageName);
+                        }
+                        if (sendImageBitmap != null) {
+                            alertDialog.cancel();
+                            flagFileType = "1";
+                            appbar.setVisibility(View.GONE);
+                            fotter.setVisibility(View.GONE);
+                            viewImageFragment imageview = new viewImageFragment();
+                            getFragmentManager().beginTransaction().replace(R.id.activity_chat, imageview).commit();
+                            // sendMessage("", userId);
+
+                        } else {
+                            Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
+                        }
+                    }catch (Exception ex){
+                        ex.printStackTrace();
                     }
                 } else {
                     Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
@@ -1802,16 +1795,36 @@ public class ChatActivity extends AppCompatActivity {
         viewImageFragment imageview = new viewImageFragment();
         getFragmentManager().beginTransaction().replace(R.id.activity_chat, imageview).commit();
     }
-    @TargetApi(Build.VERSION_CODES.N)
+
     private File createImageFile() throws IOException {
+        /*// Create an image file name
+        String timeStamp = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        }
+
+        Date d = new Date();
+        CharSequence s = DateFormat.format("yyyyMMdd_hhmmss", d.getTime());
+        File f = new File(Environment.getExternalStorageDirectory(), "IMG_" + s.toString() + ".jpg");
+        File image=File.createTempFile("IMG_" + s.toString() , ".jpg",Environment.getExternalStorageDirectory());
+        *//*String imageFileName = "IMG_" + timeStamp;
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  *//**//* prefix *//**//*
+                ".jpg",         *//**//* suffix *//**//*
+                storageDir      *//**//* directory *//**//*
+        );*//*
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;*/
         // Create an image file name
         String timeStamp = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         }
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DCIM), "Camera");
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
@@ -1819,10 +1832,11 @@ public class ChatActivity extends AppCompatActivity {
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        mCurrentPhotoPath = image.getAbsolutePath();
         return image;
     }
-   /* private void dispatchTakePictureIntent() throws IOException {
+
+    private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -1832,15 +1846,51 @@ public class ChatActivity extends AppCompatActivity {
                 photoFile = createImageFile();
             } catch (IOException ex) {
                 // Error occurred while creating the File
-                return;
+
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                Uri photoURI = Uri.fromFile(createImageFile());
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.yomelody.fileprovider",
+                        photoFile);
+                imageToUploadUri=photoURI;
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }
         }
-    }*/
+    }
+
+    private Bitmap setPic() {
+        try {
+            // Get the dimensions of the View
+
+            int targetW = 700;
+            int targetH = 500;
+
+            // Get the dimensions of the bitmap
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            bmOptions.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+            int photoW = bmOptions.outWidth;
+            int photoH = bmOptions.outHeight;
+
+            // Determine how much to scale down the image
+            int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+
+            // Decode the image file into a Bitmap sized to fill the View
+            bmOptions.inJustDecodeBounds = false;
+            bmOptions.inSampleSize = scaleFactor;
+            bmOptions.inPurgeable = true;
+
+            //Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+            sendImageBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+            //mImageView.setImageBitmap(bitmap);
+
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return sendImageBitmap;
+        //mImageView.setImageBitmap(bitmap);
+    }
 
 }
