@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_home3"
-    tools:context="com.instamelody.instamelody.SettingsActivity">
+    tools:context="com.yomelody.SettingsActivity">
 
     <LinearLayout
         android:id="@+id/llTop"
@@ -48,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:text="InstaMelody v1.0 Studio Version"
+            android:text="YoMelody v1.0 Studio Version"
             android:textAlignment="center"
             android:layout_marginBottom="20dp"
             android:textSize="12dp"

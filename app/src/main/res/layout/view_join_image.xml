@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginEnd="5dp"
-    android:layout_marginRight="5dp">
+    android:layout_height="90dp"
+    android:layout_marginEnd="0dp"
+    android:layout_marginRight="0dp"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -35,20 +36,22 @@
             android:visibility="gone"
             />
 
-        <TextView
-            android:id="@+id/tvUserName"
-            android:layout_width="70dp"
-            android:layout_height="20dp"
-            android:layout_below="@+id/ivImageName"
-            android:background="@color/color_translucent_black"
-            android:text="sillypoet"
-            android:textSize="10dp"
-            android:textColor="#275AAB"
-            android:textStyle="bold"
-            android:gravity="center"/>
-
     </RelativeLayout>
-</RelativeLayout>
+
+    <TextView
+        android:id="@+id/tvUserName"
+        android:layout_width="70dp"
+        android:layout_height="20dp"
+        android:layout_below="@+id/ivImageName"
+        android:background="@color/color_translucent_black"
+        android:text="sillypoet"
+        android:textSize="10dp"
+        android:textColor="#275AAB"
+        android:textStyle="bold"
+        android:maxLines="1"
+        android:gravity="center"/>
+
+</LinearLayout>
 
 
 

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#dbdbdb"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.instamelody.instamelody.JoinActivity"
+    tools:context="com.yomelody.JoinActivity"
     tools:showIn="@layout/activity_join">
 
 
@@ -134,7 +134,7 @@
 
                             </RelativeLayout>
 
-                            <RelativeLayout
+                            <LinearLayout
                                 android:id="@+id/rlIncluded"
                                 android:layout_width="105dp"
                                 android:layout_height="match_parent"
@@ -145,14 +145,21 @@
                                     android:id="@+id/tvIncluded"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_centerVertical="true"
-                                    android:layout_toLeftOf="@+id/switchFree"
-                                    android:text="Included : 15"
+                                    android:layout_gravity="center_vertical"
+                                    android:text="Included:1"
                                     android:textColor="@color/cardview_dark_background"
                                     android:textSize="13sp"
                                     android:visibility="visible" />
 
-                            </RelativeLayout>
+                                <ImageView
+                                    android:id="@+id/arrowIv"
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginLeft="5dp"
+                                    android:src="@drawable/down_arrow_img" />
+
+                            </LinearLayout>
                         </RelativeLayout>
                     </LinearLayout>
 
@@ -179,11 +186,11 @@
                                 android:scaleType="fitXY" />
 
 
-                            <com.instamelody.instamelody.utils.VisualizerView
+                            <com.yomelody.utils.VisualizerView
                                 android:id="@+id/myvisualizerview"
                                 android:layout_width="match_parent"
-                                android:background="@color/black"
-                                android:layout_height="95dp" />
+                                android:layout_height="95dp"
+                                android:background="@color/black" />
 
                             <TextView
                                 android:id="@+id/decibel_view"
@@ -198,8 +205,7 @@
 
                         <FrameLayout
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            >
+                            android:layout_height="wrap_content">
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
@@ -337,17 +343,21 @@
                                 </FrameLayout>
 
                                 <FrameLayout
+                                    android:id="@+id/commentContainer"
                                     android:layout_width="match_parent"
+<<<<<<< HEAD
                                     android:layout_height="wrap_content"
                                     android:id="@+id/commentContainer"
                                     >
+=======
+                                    android:layout_height="wrap_content">
+>>>>>>> master
 
                                     <RelativeLayout
                                         android:id="@+id/joincenter"
                                         android:layout_width="match_parent"
                                         android:layout_height="40dp"
-                                        android:background="#EDEDED"
-                                       >
+                                        android:background="#EDEDED">
 
                                         <RelativeLayout
                                             android:id="@+id/relativeLayout"
@@ -361,7 +371,8 @@
                                                 android:layout_centerHorizontal="true"
                                                 android:layout_centerVertical="true"
                                                 android:src="@drawable/play_fill"
-                                                android:visibility="gone"/>
+                                                android:visibility="gone" />
+
                                             <ImageView
                                                 android:id="@+id/pauseAll"
                                                 android:layout_width="20dp"
@@ -369,7 +380,7 @@
                                                 android:layout_centerHorizontal="true"
                                                 android:layout_centerVertical="true"
                                                 android:src="@drawable/pause_all"
-                                                android:visibility="gone"/>
+                                                android:visibility="gone" />
 
                                         </RelativeLayout>
 

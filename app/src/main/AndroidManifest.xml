@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.instamelody.instamelody">
+    package="com.yomelody">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -107,7 +107,8 @@
         <activity
             android:name=".SignInActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity
             android:name=".DiscoverActivity"
             android:configChanges="orientation"
@@ -163,7 +164,7 @@
             android:name=".JoinActivity"
             android:label="@string/title_activity_join"
             android:windowSoftInputMode="adjustResize|stateHidden"
-            android:theme="@style/AppTheme" />
+            />
         <activity
             android:name=".Update"
             android:configChanges="orientation"
@@ -219,6 +220,16 @@
         <provider android:authorities="com.facebook.app.FacebookContentProvider164934724003307"
             android:name="com.facebook.FacebookContentProvider"
             android:exported="true"/>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths"/>
+        </provider>
 
     </application>
 
