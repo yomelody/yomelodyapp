@@ -276,23 +276,26 @@ public class CommentsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                try {
+                    if (!userId.equals("") && userId != null) {
 
-                if (!userId.equals("") && userId != null) {
+                        tvCancel.setVisibility(View.VISIBLE);
+                        tvSend.setVisibility(View.GONE);
+                        String comment = etComment.getText().toString().trim();
+                        etComment.getText().clear();
+                        sendComment(comment, userId);
+                        int commentCount = Integer.parseInt(tvCommentCount.getText().toString().trim()) + 1;
 
-                    tvCancel.setVisibility(View.VISIBLE);
-                    tvSend.setVisibility(View.GONE);
-                    String comment = etComment.getText().toString().trim();
-                    etComment.getText().clear();
-                    sendComment(comment, userId);
-                    int commentCount = Integer.parseInt(tvCommentCount.getText().toString().trim()) + 1;
+                        tvCommentCount.setText(String.valueOf(commentCount));
 
-                    tvCommentCount.setText(String.valueOf(commentCount));
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "Log in to comment", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    getApplicationContext().startActivity(intent);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Log in to comment", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        getApplicationContext().startActivity(intent);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
         });
@@ -300,30 +303,35 @@ public class CommentsActivity extends AppCompatActivity {
         tvCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                etComment.getText().clear();
+                try {
+                    etComment.getText().clear();
 
-                InputMethodManager inputManager = (InputMethodManager)
-                        getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                        InputMethodManager.HIDE_NOT_ALWAYS);
+                    InputMethodManager inputManager = (InputMethodManager)
+                            getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                            InputMethodManager.HIDE_NOT_ALWAYS);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         });
         ivShareButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                if (!userId.equals("") && userId != null) {
+                try {
+                    if (!userId.equals("") && userId != null) {
 
 
-                    Intent shareIntent = new Intent();
-                    shareIntent.setAction(Intent.ACTION_SEND);
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                    shareIntent.setType("text/plain");
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, "Melody Songs" + "\n" + CoverUrl + "\n" + RecordingURL);
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, "Melody Songs" + "\n" + RecordingURL);
+                        Intent shareIntent = new Intent();
+                        shareIntent.setAction(Intent.ACTION_SEND);
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                        shareIntent.setType("text/plain");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, "Melody Songs" + "\n" + CoverUrl + "\n" + RecordingURL);
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, "Melody Songs" + "\n" + RecordingURL);
 
-                    shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(Intent.createChooser(shareIntent, "Hello."));
+                        shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(Intent.createChooser(shareIntent, "Hello."));
 
                     /*final AlertDialog.Builder alertDialog = new AlertDialog.Builder(mActivity);
                     alertDialog.setTitle(mActivity.getString(R.string.share_with_YoMelody));
@@ -362,11 +370,14 @@ public class CommentsActivity extends AppCompatActivity {
                     });
                     alertDialog.show();*/
 
-                } else {
-                    Toast.makeText(getApplicationContext(), "Log in to comment", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    getApplicationContext().startActivity(intent);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Log in to comment", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        getApplicationContext().startActivity(intent);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
 
             }
@@ -374,38 +385,42 @@ public class CommentsActivity extends AppCompatActivity {
         rlLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String position;
-                String MelodyName;
-                if (!userId.equals("") && userId != null) {
-                    //Toast.makeText(context, "like", Toast.LENGTH_SHORT).show();
-                    //position = mpids.get(getAdapterPosition() + 1);
+                try {
+                    String position;
+                    String MelodyName;
+                    if (!userId.equals("") && userId != null) {
+                        //Toast.makeText(context, "like", Toast.LENGTH_SHORT).show();
+                        //position = mpids.get(getAdapterPosition() + 1);
 
                     /*RecordingsModel recording = commentList.get(Integer.parseInt(melodyID));
                     MelodyName = recording.getRecordingName();
                     position = recording.getRecordingId();*/
 
-                    if (ivDislikeButton.getVisibility() == View.VISIBLE) {
-                        ivLikeButton.setVisibility(View.VISIBLE);
-                        ivDislikeButton.setVisibility(View.GONE);
-                        String like = tvLikeCount.getText().toString().trim();
-                        int likeValue = Integer.parseInt(like) - 1;
-                        like = String.valueOf(likeValue);
-                        tvLikeCount.setText(like);
-                        SetLikeState(userId, melodyID, "0", melodyName);
+                        if (ivDislikeButton.getVisibility() == View.VISIBLE) {
+                            ivLikeButton.setVisibility(View.VISIBLE);
+                            ivDislikeButton.setVisibility(View.GONE);
+                            String like = tvLikeCount.getText().toString().trim();
+                            int likeValue = Integer.parseInt(like) - 1;
+                            like = String.valueOf(likeValue);
+                            tvLikeCount.setText(like);
+                            SetLikeState(userId, melodyID, "0", melodyName);
 
-                    } else if (ivDislikeButton.getVisibility() == View.GONE) {
-                        ivLikeButton.setVisibility(View.GONE);
-                        ivDislikeButton.setVisibility(View.VISIBLE);
-                        String like = tvLikeCount.getText().toString().trim();
-                        int likeValue = Integer.parseInt(like) + 1;
-                        like = String.valueOf(likeValue);
-                        tvLikeCount.setText(like);
-                        SetLikeState(userId, melodyID, "1", melodyName);
+                        } else if (ivDislikeButton.getVisibility() == View.GONE) {
+                            ivLikeButton.setVisibility(View.GONE);
+                            ivDislikeButton.setVisibility(View.VISIBLE);
+                            String like = tvLikeCount.getText().toString().trim();
+                            int likeValue = Integer.parseInt(like) + 1;
+                            like = String.valueOf(likeValue);
+                            tvLikeCount.setText(like);
+                            SetLikeState(userId, melodyID, "1", melodyName);
+                        }
+                    } else {
+                        Toast.makeText(CommentsActivity.this, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(CommentsActivity.this, SignInActivity.class);
+                        startActivity(intent);
                     }
-                } else {
-                    Toast.makeText(CommentsActivity.this, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(CommentsActivity.this, SignInActivity.class);
-                    startActivity(intent);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
         });
@@ -445,7 +460,7 @@ public class CommentsActivity extends AppCompatActivity {
                     }
 
                     new PrepareInstruments().execute();
-                }catch (Exception ex){
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
 
@@ -457,7 +472,7 @@ public class CommentsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    if(mHandler1!=null) {
+                    if (mHandler1 != null) {
                         mHandler1.removeCallbacksAndMessages(null);
                     }
                     for (MediaPlayer mediaPlayer : mediaPlayersAll) {
@@ -511,27 +526,32 @@ public class CommentsActivity extends AppCompatActivity {
         btnMelodyAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String position = adapterPosition;
-                StudioActivity.instrumentList.clear();
-                Intent intent = new Intent(v.getContext(), StudioActivity.class);
-                intent.putExtra("clickPosition", position);
-                v.getContext().startActivity(intent);
-                StudioActivity.list.clear();
-                if (mediaPlayer != null) {
-                    try {
-                        mediaPlayer.reset();
-                    } catch (IllegalStateException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    String position = adapterPosition;
+                    StudioActivity.instrumentList.clear();
+                    Intent intent = new Intent(v.getContext(), StudioActivity.class);
+                    intent.putExtra("clickPosition", position);
+                    v.getContext().startActivity(intent);
+                    StudioActivity.list.clear();
+                    if (mediaPlayer != null) {
+                        try {
+                            mediaPlayer.reset();
+                        } catch (IllegalStateException e) {
+                            e.printStackTrace();
+                        }
 
+                    }
+                    sendBroadcast(new Intent("finish_activity_melody"));
+                    finish();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
-                sendBroadcast(new Intent("finish_activity_melody"));
-                finish();
 
             }
         });
 
     }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -641,16 +661,20 @@ public class CommentsActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response==" + response);
+                        try {
+                            AppHelper.sop("response==" + response);
 
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra("PARAMETER", "Like");
-                        setResult(Activity.RESULT_OK, resultIntent);
+                            Intent resultIntent = new Intent();
+                            resultIntent.putExtra("PARAMETER", "Like");
+                            setResult(Activity.RESULT_OK, resultIntent);
 
-                        adapter.notifyDataSetChanged();
-                        getComments();
-                        recyclerView.smoothScrollToPosition(adapter.getItemCount());
+                            adapter.notifyDataSetChanged();
+                            getComments();
+                            recyclerView.smoothScrollToPosition(adapter.getItemCount());
 //                        new ParseContents(getApplicationContext()).parseComments(response, commentList);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -701,10 +725,14 @@ public class CommentsActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(String response) {
 //                            Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
-                            AppHelper.sop("response====" + response);
-                            Intent resultIntent = new Intent();
-                            resultIntent.putExtra("PARAMETER", "Like");
-                            setResult(Activity.RESULT_OK, resultIntent);
+                            try {
+                                AppHelper.sop("response====" + response);
+                                Intent resultIntent = new Intent();
+                                resultIntent.putExtra("PARAMETER", "Like");
+                                setResult(Activity.RESULT_OK, resultIntent);
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
                         }
                     },
                     new Response.ErrorListener() {
@@ -862,10 +890,10 @@ public class CommentsActivity extends AppCompatActivity {
                             @Override
                             public void onCompletion(MediaPlayer mp) {
                                 if (MaxMpSessionID == mp.getAudioSessionId()) {
-                                    if(mHandler1!=null) {
+                                    if (mHandler1 != null) {
                                         try {
                                             mHandler1.removeCallbacksAndMessages(null);
-                                        } catch (Exception ex){
+                                        } catch (Exception ex) {
                                             ex.printStackTrace();
                                         }
                                     }

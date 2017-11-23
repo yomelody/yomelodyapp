@@ -194,70 +194,73 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             ivJoin.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (!userId.equals("") && userId != null) {
-                        String instruments, bpm, genre, recordName, userName, duration, date, plays, likes, comments, shares, melodyID, LikeStatus;
-                        RecordingsModel rm = recordingList.get(getAdapterPosition());
-                        RecordingsModel recording = recordingList.get(getAdapterPosition());
+                    try {
+                        if (!userId.equals("") && userId != null) {
+                            String instruments, bpm, genre, recordName, userName, duration, date, plays, likes, comments, shares, melodyID, LikeStatus;
+                            RecordingsModel rm = recordingList.get(getAdapterPosition());
+                            RecordingsModel recording = recordingList.get(getAdapterPosition());
 
-                        if (ivDislikeButton.getVisibility() == VISIBLE) {
-                            LikeStatus = "1";
+                            if (ivDislikeButton.getVisibility() == VISIBLE) {
+                                LikeStatus = "1";
+                            } else {
+                                LikeStatus = "0";
+                            }
+                            addedBy = rm.getAddedBy();
+                            Rec_id = rm.getRecordingId();
+                            userNameRec = rm.getUserName();
+                            profile_image = rm.getUserProfilePic();
+                            RecordingName = rm.getRecordingName();
+
+                            genre = tvRecordingGenres.getText().toString().trim();
+                            recordName = tvRecordingName.getText().toString().trim();
+                            duration = tvContributeLength.getText().toString().trim();
+                            date = tvRecordingDate.getText().toString().trim();
+                            plays = tvViewCount.getText().toString().trim();
+                            userName = tvUserName.getText().toString().trim();
+                            likes = tvLikeCount.getText().toString().trim();
+                            comments = tvCommentCount.getText().toString().trim();
+                            shares = tvShareCount.getText().toString().trim();
+
+                            int pos = getAdapterPosition();
+
+                            SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
+
+
+                            editor.putString("genre", genre);
+                            editor.putString("melodyName", recordName);
+                            editor.putString("userName", userName);
+                            editor.putString("duration", duration);
+                            editor.putString("date", date);
+                            editor.putString("plays", plays);
+                            editor.putString("likes", likes);
+                            editor.putString("comments", comments);
+                            editor.putString("shares", shares);
+                            editor.putString("fileType", "admin_melody");
+                            editor.commit();
+
+
+                            try {
+                                SharedPreferences.Editor record = context.getSharedPreferences("RecordingData", MODE_PRIVATE).edit();
+                                record.putString("AddedBy", addedBy);
+                                record.putString("Recording_id", Rec_id);
+                                record.putString("UserNameRec", userNameRec);
+                                record.putString("UserProfile", profile_image);
+                                record.putString("RecordingName", RecordingName);
+                                record.commit();
+                                Intent intent = new Intent(context, JoinActivity.class);
+                                mActivity.startActivityForResult(intent, REQUEST_JOIN_COMMENT);
+                            } catch (Throwable e) {
+                                e.printStackTrace();
+                            }
+
                         } else {
-                            LikeStatus = "0";
+                            Toast.makeText(context, "Log in to join this Recording", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(context, SignInActivity.class);
+                            context.startActivity(intent);
                         }
-                        addedBy = rm.getAddedBy();
-                        Rec_id = rm.getRecordingId();
-                        userNameRec = rm.getUserName();
-                        profile_image = rm.getUserProfilePic();
-                        RecordingName = rm.getRecordingName();
-
-                        genre = tvRecordingGenres.getText().toString().trim();
-                        recordName = tvRecordingName.getText().toString().trim();
-                        duration = tvContributeLength.getText().toString().trim();
-                        date = tvRecordingDate.getText().toString().trim();
-                        plays = tvViewCount.getText().toString().trim();
-                        userName = tvUserName.getText().toString().trim();
-                        likes = tvLikeCount.getText().toString().trim();
-                        comments = tvCommentCount.getText().toString().trim();
-                        shares = tvShareCount.getText().toString().trim();
-
-                        int pos = getAdapterPosition();
-
-                        SharedPreferences.Editor editor = context.getSharedPreferences("commentData", MODE_PRIVATE).edit();
-
-
-                        editor.putString("genre", genre);
-                        editor.putString("melodyName", recordName);
-                        editor.putString("userName", userName);
-                        editor.putString("duration", duration);
-                        editor.putString("date", date);
-                        editor.putString("plays", plays);
-                        editor.putString("likes", likes);
-                        editor.putString("comments", comments);
-                        editor.putString("shares", shares);
-                        editor.putString("fileType", "admin_melody");
-                        editor.commit();
-
-
-                        try {
-                            SharedPreferences.Editor record = context.getSharedPreferences("RecordingData", MODE_PRIVATE).edit();
-                            record.putString("AddedBy", addedBy);
-                            record.putString("Recording_id", Rec_id);
-                            record.putString("UserNameRec", userNameRec);
-                            record.putString("UserProfile", profile_image);
-                            record.putString("RecordingName", RecordingName);
-                            record.commit();
-                            Intent intent = new Intent(context, JoinActivity.class);
-                            mActivity.startActivityForResult(intent, REQUEST_JOIN_COMMENT);
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                        }
-
-                    } else {
-                        Toast.makeText(context, "Log in to join this Recording", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(context, SignInActivity.class);
-                        context.startActivity(intent);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
-
 
                 }
             });
@@ -300,7 +303,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             Intent intent = new Intent(context, SignInActivity.class);
                             context.startActivity(intent);
                         }
-                    }catch (Exception ex){
+                    } catch (Exception ex) {
                         ex.printStackTrace();
                     }
                 }
@@ -356,7 +359,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             Intent intent = new Intent(context, SignInActivity.class);
                             context.startActivity(intent);
                         }
-                    }catch (Exception ex){
+                    } catch (Exception ex) {
                         ex.printStackTrace();
                     }
 
@@ -441,7 +444,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             Intent intent = new Intent(context, SignInActivity.class);
                             context.startActivity(intent);
                         }
-                    }catch (Exception ex){
+                    } catch (Exception ex) {
                         ex.printStackTrace();
                     }
 
@@ -458,7 +461,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             intent.putExtra("showProfileUserId", showProfileUserId);
                             //view.getContext().startActivity(intent);
                             mActivity.startActivityForResult(intent, REQUEST_RECORDING_COMMENT);
-                        }catch (Exception ex){
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         }
                     }
@@ -633,7 +636,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
-                    }catch (Exception ex){
+                    } catch (Exception ex) {
                         ex.printStackTrace();
                     }
 
@@ -651,7 +654,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         mp.reset();
                         mp.release();
                         mp = null;
-                        if (mHandler1!=null){
+                        if (mHandler1 != null) {
                             mHandler1.removeCallbacksAndMessages(null);
                         }
                         length = mp.getCurrentPosition();
@@ -895,11 +898,11 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 }
                 mp.release();
                 mp = null;
-                if (mHandler1!=null){
+                if (mHandler1 != null) {
                     mHandler1.removeCallbacksAndMessages(null);
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -938,7 +941,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
-                            if(mHandler1!=null) {
+                            if (mHandler1 != null) {
                                 mHandler1.removeCallbacksAndMessages(null);
                             }
 
@@ -994,7 +997,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 TextView tvIncludedCount = lastModifiedHoled.itemView.findViewById(R.id.txtJoinCount);
                                 tvIncludedCount.setText(UpdateCalJoinCount(TempJoinCount));
                             }
-                        }catch (Exception ex){
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         }
                     }
@@ -1005,7 +1008,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                         try {
                             progressDialog.dismiss();
-                            if(mHandler1!=null) {
+                            if (mHandler1 != null) {
                                 mHandler1.removeCallbacksAndMessages(null);
                             }
                             lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
@@ -1031,7 +1034,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             seekBar.setProgress(0);
                             length = 0;
                             duration1 = 0;
-                        }catch (Exception ex){
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         }
 
@@ -1055,7 +1058,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             SeekBar seekBar = lastModifiedHoled.itemView.findViewById(R.id.seekBarRecordings);
             seekBar.setProgress(0);
             seekBar.setProgress((int) (((float) mp.getCurrentPosition() / duration1) * 100));// This math construction give a percentage of "was playing"/"song length"
-            if (mp!=null && mp.isPlaying()) {
+            if (mp != null && mp.isPlaying()) {
                 Runnable notification = new Runnable() {
                     public void run() {
                         primarySeekBarProgressUpdater();
