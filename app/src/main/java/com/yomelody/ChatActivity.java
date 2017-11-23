@@ -401,9 +401,13 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (etMessage.getText().toString().length() == 0) {
-                    ivJoin.setVisibility(View.VISIBLE);
-                    tvSend.setVisibility(View.GONE);
+                try {
+                    if (etMessage.getText().toString().length() == 0) {
+                        ivJoin.setVisibility(View.VISIBLE);
+                        tvSend.setVisibility(View.GONE);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
         });
@@ -411,16 +415,20 @@ public class ChatActivity extends AppCompatActivity {
         ivNewChat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
-                editor.putString("receiverId", "");
-                editor.putString("receiverName", "");
-                editor.putString("receiverImage", "");
-                editor.putString("chatId", "");
-                editor.putString("purpose", "newChat");
-                editor.commit();
-                Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
-                intent.putExtra("Previous", "Chat");
-                startActivity(intent);
+                try {
+                    SharedPreferences.Editor editor = getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                    editor.putString("receiverId", "");
+                    editor.putString("receiverName", "");
+                    editor.putString("receiverImage", "");
+                    editor.putString("chatId", "");
+                    editor.putString("purpose", "newChat");
+                    editor.commit();
+                    Intent intent = new Intent(getApplicationContext(), ContactsActivity.class);
+                    intent.putExtra("Previous", "Chat");
+                    startActivity(intent);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         });
 
@@ -487,26 +495,29 @@ public class ChatActivity extends AppCompatActivity {
         {
             @Override
             public void onClick(View view) {
+                try {
+                    if (userId != null) {
+                        String message = etMessage.getText().toString().trim();
+                        etMessage.getText().clear();
+                        ivJoin.setVisibility(View.VISIBLE);
+                        tvSend.setVisibility(View.GONE);
+                        sendMessage(message, userId);
 
-                if (userId != null) {
-                    String message = etMessage.getText().toString().trim();
-                    etMessage.getText().clear();
-                    ivJoin.setVisibility(View.VISIBLE);
-                    tvSend.setVisibility(View.GONE);
-                    sendMessage(message, userId);
+                        InputMethodManager inputManager = (InputMethodManager)
+                                getSystemService(Context.INPUT_METHOD_SERVICE);
+                        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                                InputMethodManager.HIDE_NOT_ALWAYS);
+                        rlSelectedImage.setVisibility(View.GONE);
+                        ivClose.setVisibility(View.GONE);
 
-                    InputMethodManager inputManager = (InputMethodManager)
-                            getSystemService(Context.INPUT_METHOD_SERVICE);
-                    inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                            InputMethodManager.HIDE_NOT_ALWAYS);
-                    rlSelectedImage.setVisibility(View.GONE);
-                    ivClose.setVisibility(View.GONE);
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "Log in to Chat", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    getApplicationContext().startActivity(intent);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Log in to Chat", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        getApplicationContext().startActivity(intent);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
         });
@@ -562,30 +573,9 @@ public class ChatActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View view) {
                             try {
-                                if (Build.VERSION.SDK_INT > 21) { //use this if Lollipop_Mr1 (API 22) or above
-                                    Intent chooserIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                    Date d = new Date();
-                                    CharSequence s = DateFormat.format("yyyyMMdd_hhmmss", d.getTime());
 
-                                    File file=null;
-                                    try{
-                                        file=createImageFile();
-
-                                    }catch (Exception ex){
-                                        ex.printStackTrace();
-                                    }
-                                    String authority=getApplicationContext().getPackageName()+".provider";
-                                    Uri imguri=FileProvider.getUriForFile(ChatActivity.this,authority,file);
-                                    chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT,imguri);
-                                    startActivityForResult(chooserIntent, TAKE_CAMERA_PHOTO);
-
-
-                                   /* File f = new File(Environment.getExternalStorageDirectory(), "IMG_" + s.toString() + ".jpg");
-                                    Uri contentUri = getUriForFile(ChatActivity.this, "com.yomelody.provider", f);
-
-                                    chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
-                                    imageToUploadUri =contentUri;//Uri.fromFile(f);
-                                    startActivityForResult(chooserIntent, TAKE_CAMERA_PHOTO);*/
+                                if (Build.VERSION.SDK_INT >= 24) { //use this if Lollipop_Mr1 (API 22) or above
+                                    dispatchTakePictureIntent();
 
 
                                 } else {
@@ -596,7 +586,7 @@ public class ChatActivity extends AppCompatActivity {
                                     File f = new File(Environment.getExternalStorageDirectory(), "IMG_" + s.toString() + ".jpg");
                                     chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
                                     imageToUploadUri = Uri.fromFile(f);
-                                    startActivityForResult(chooserIntent, TAKE_CAMERA_PHOTO);
+                                    startActivityForResult(chooserIntent, REQUEST_TAKE_PHOTO);
                                 }
 
                             } catch (Exception ex) {
@@ -869,93 +859,110 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == TAKE_CAMERA_PHOTO && resultCode == Activity.RESULT_OK) {
-            if (updateGroupFlag == 1) {
-                if (imageToUploadUri != null) {
-                    Uri selectedImage = imageToUploadUri;
-                    sendGroupImageName = imageToUploadUri.getPath();
-                    getContentResolver().notifyChange(selectedImage, null);
-                    ImageCompressor ic = new ImageCompressor(getApplicationContext());
-                    groupImageBitmap = ic.compressImage(sendGroupImageName);
-                    if (groupImageBitmap != null) {
-                        ivGroupImage.setImageBitmap(groupImageBitmap);
+        try {
+            if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
+                if (updateGroupFlag == 1) {
+                    if (imageToUploadUri != null) {
+                        try {
+                            Uri selectedImage = imageToUploadUri;
+                            sendGroupImageName = imageToUploadUri.getPath();
+                            getContentResolver().notifyChange(selectedImage, null);
+                            ImageCompressor ic = new ImageCompressor(getApplicationContext());
+                            groupImageBitmap = ic.compressImage(sendGroupImageName);
+                            if (groupImageBitmap != null) {
+                                ivGroupImage.setImageBitmap(groupImageBitmap);
+                            } else {
+                                Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     } else {
                         Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
-                }
-            } else {
-                if (imageToUploadUri != null) {
-                    Uri selectedImage = imageToUploadUri;
-                    sendImageName = imageToUploadUri.getPath();
-                    getContentResolver().notifyChange(selectedImage, null);
-                    ImageCompressor ic = new ImageCompressor(getApplicationContext());
-                    sendImageBitmap = ic.compressImage(sendImageName);
-                    if (sendImageBitmap != null) {
-                        alertDialog.cancel();
-                        flagFileType = "1";
-                        appbar.setVisibility(View.GONE);
-                        fotter.setVisibility(View.GONE);
-                        viewImageFragment imageview = new viewImageFragment();
-                        getFragmentManager().beginTransaction().replace(R.id.activity_chat, imageview).commit();
-                        // sendMessage("", userId);
+                    if (imageToUploadUri != null) {
+                        try {
+                            Uri selectedImage = imageToUploadUri;
+                            sendImageName = imageToUploadUri.getPath();
+                            getContentResolver().notifyChange(selectedImage, null);
+                            ImageCompressor ic = new ImageCompressor(getApplicationContext());
+                            if (Build.VERSION.SDK_INT >= 24) { //use this if Lollipop_Mr1 (API 22) or above
 
+                                sendImageBitmap = ic.compressImage(mCurrentPhotoPath);
+
+                            } else {
+                                sendImageBitmap = ic.compressImage(sendImageName);
+                            }
+                            if (sendImageBitmap != null) {
+                                alertDialog.cancel();
+                                flagFileType = "1";
+                                appbar.setVisibility(View.GONE);
+                                fotter.setVisibility(View.GONE);
+                                viewImageFragment imageview = new viewImageFragment();
+                                getFragmentManager().beginTransaction().replace(R.id.activity_chat, imageview).commit();
+                                // sendMessage("", userId);
+
+                            } else {
+                                Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     } else {
                         Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
                     }
+                }
+            }
+
+            if (requestCode == PICK_GALLERY_IMAGE && resultCode == RESULT_OK && null != data) {
+                if (updateGroupFlag == 1) {
+                    try {
+                        Uri selectedImage = data.getData();
+                        String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                        Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                        cursor.moveToFirst();
+                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                        String img_Decodable_Str = cursor.getString(columnIndex);
+                        cursor.close();
+                        sendGroupImageName = img_Decodable_Str.substring(img_Decodable_Str.lastIndexOf("/") + 1);
+                        ImageCompressor ic = new ImageCompressor(getApplicationContext());
+                        groupImageBitmap = ic.compressImage(img_Decodable_Str);
+                        if (groupImageBitmap != null) {
+                            ivGroupImage.setImageBitmap(groupImageBitmap);
+                        }
+                        updateGroupFlag = 0;
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
                 } else {
-                    Toast.makeText(this, "Error while capturing Image", Toast.LENGTH_LONG).show();
+                    try {
+                        Uri selectedImage = data.getData();
+                        String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                        Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                        cursor.moveToFirst();
+                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                        String img_Decodable_Str = cursor.getString(columnIndex);
+                        cursor.close();
+                        sendImageName = img_Decodable_Str.substring(img_Decodable_Str.lastIndexOf("/") + 1);
+                        ImageCompressor ic = new ImageCompressor(getApplicationContext());
+                        sendImageBitmap = ic.compressImage(img_Decodable_Str);
+                        if (sendImageBitmap != null) {
+                            flagFileType = "1";
+                            appbar.setVisibility(View.GONE);
+                            fotter.setVisibility(View.GONE);
+                            viewImageFragment imageview = new viewImageFragment();
+                            getFragmentManager().beginTransaction().replace(R.id.activity_chat, imageview).commit();
+                            //   sendMessage("",userId);
+                        }
+
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-        }
-
-        if (requestCode == PICK_GALLERY_IMAGE && resultCode == RESULT_OK && null != data) {
-            if (updateGroupFlag == 1) {
-                try {
-                    Uri selectedImage = data.getData();
-                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
-                    Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-                    cursor.moveToFirst();
-                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                    String img_Decodable_Str = cursor.getString(columnIndex);
-                    cursor.close();
-                    sendGroupImageName = img_Decodable_Str.substring(img_Decodable_Str.lastIndexOf("/") + 1);
-                    ImageCompressor ic = new ImageCompressor(getApplicationContext());
-                    groupImageBitmap = ic.compressImage(img_Decodable_Str);
-                    if (groupImageBitmap != null) {
-                        ivGroupImage.setImageBitmap(groupImageBitmap);
-                    }
-                    updateGroupFlag = 0;
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-            } else {
-                try {
-                    Uri selectedImage = data.getData();
-                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
-                    Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-                    cursor.moveToFirst();
-                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                    String img_Decodable_Str = cursor.getString(columnIndex);
-                    cursor.close();
-                    sendImageName = img_Decodable_Str.substring(img_Decodable_Str.lastIndexOf("/") + 1);
-                    ImageCompressor ic = new ImageCompressor(getApplicationContext());
-                    sendImageBitmap = ic.compressImage(img_Decodable_Str);
-                    if (sendImageBitmap != null) {
-                        flagFileType = "1";
-                        appbar.setVisibility(View.GONE);
-                        fotter.setVisibility(View.GONE);
-                        viewImageFragment imageview = new viewImageFragment();
-                        getFragmentManager().beginTransaction().replace(R.id.activity_chat, imageview).commit();
-                        //   sendMessage("",userId);
-                    }
-
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -996,86 +1003,90 @@ public class ChatActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response=getChatMsgs=" + response);
                         try {
-                            if (ChatAdapter.sharedAudioList.size() > 0) {
-                                ChatAdapter.sharedAudioList.clear();
-                            }
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                        }
-                        if (rlNoMsg.getVisibility() == View.VISIBLE && rlTxtContent.getVisibility() == View.VISIBLE) {
-                            rlNoMsg.setVisibility(View.GONE);
-                            rlTxtContent.setVisibility(View.GONE);
-                        }
-
-                        chatList.clear();
-//                        audioDetailsList.clear();
-//                        sharedAudioList.clear();
-                        String usrId = userId;
-                        if (rlChatPlayer.getVisibility() == View.VISIBLE) {
+                            AppHelper.sop("response=getChatMsgs=" + response);
                             try {
-                                rlChatPlayer.setVisibility(View.GONE);
-                                flSeekbar.setVisibility(View.GONE);
-                                if (ChatAdapter.mp != null) {
-                                    //   ChatAdapter.mp.stop();
-                                    ChatAdapter.mp.release();
+                                if (ChatAdapter.sharedAudioList.size() > 0) {
+                                    ChatAdapter.sharedAudioList.clear();
                                 }
                             } catch (Throwable e) {
                                 e.printStackTrace();
                             }
-
-                        }
-
-
-                        JSONObject jsonObject;
-                        JSONArray resultArray, audiosDetailsArray, sharedAudiosArray;
-                        try {
-                            jsonObject = new JSONObject(response);
-                            if (jsonObject.getString("flag").equals("success")) {
-                                JSONObject result = jsonObject.getJSONObject("result");
-                                resultArray = result.getJSONArray("message LIst");
-                                if (resultArray.length() > 0) {
-                                    for (int i = 0; i < resultArray.length(); i++) {
-                                        Message message = new Message();
-                                        JSONObject chatJson = resultArray.getJSONObject(i);
-                                        message.setId(chatJson.getString("id"));
-                                        message.setSenderId(chatJson.getString("senderID"));
-                                        message.setProfilePic(chatJson.getString("sender_pic"));
-                                        message.setMessage(chatJson.getString("message"));
-                                        message.setFileType(chatJson.getString("file_type"));
-                                        message.setFile(chatJson.getString("file_url"));
-                                        message.setFileId(chatJson.getString("file_ID"));
-                                        message.setIsRead(chatJson.getString("isread"));
-                                        message.setCreatedAt(chatJson.getString("sendat"));
-                                        message.setRecCount((chatJson.getString("Rec_count")));
-                                        if (!chatJson.get("Audioshared").equals(null) && !chatJson.get("Audioshared").equals("")) {
-                                            message.setAudioDetails(chatJson.getJSONArray("Audioshared"));
-                                        }
-                                        if (chatJson.getString("isread").equals("0") && (!chatJson.getString("senderID").equals(usrId))) {
-                                            readStatus(chatJson.getString("id"), chatJson.getString("chatID"));
-                                        }
-                                        chatList.add(i, message);
-                                    }
-                                    recyclerViewChat.smoothScrollToPosition(chatList.size() - 1);
-                                    rlNoMsg.setVisibility(View.GONE);
-                                    rlTxtContent.setVisibility(View.GONE);
-                                } else {
-                                    tvRecieverName.setText(" " + receiverName);
-                                    try {
-                                        Picasso.with(ivRecieverProfilePic.getContext()).load(receiverImage).into(ivRecieverProfilePic);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-
-                                    rlNoMsg.setVisibility(View.VISIBLE);
-                                    rlTxtContent.setVisibility(View.VISIBLE);
-                                }
+                            if (rlNoMsg.getVisibility() == View.VISIBLE && rlTxtContent.getVisibility() == View.VISIBLE) {
+                                rlNoMsg.setVisibility(View.GONE);
+                                rlTxtContent.setVisibility(View.GONE);
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+
+                            chatList.clear();
+//                        audioDetailsList.clear();
+//                        sharedAudioList.clear();
+                            String usrId = userId;
+                            if (rlChatPlayer.getVisibility() == View.VISIBLE) {
+                                try {
+                                    rlChatPlayer.setVisibility(View.GONE);
+                                    flSeekbar.setVisibility(View.GONE);
+                                    if (ChatAdapter.mp != null) {
+                                        //   ChatAdapter.mp.stop();
+                                        ChatAdapter.mp.release();
+                                    }
+                                } catch (Throwable e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+
+
+                            JSONObject jsonObject;
+                            JSONArray resultArray, audiosDetailsArray, sharedAudiosArray;
+                            try {
+                                jsonObject = new JSONObject(response);
+                                if (jsonObject.getString("flag").equals("success")) {
+                                    JSONObject result = jsonObject.getJSONObject("result");
+                                    resultArray = result.getJSONArray("message LIst");
+                                    if (resultArray.length() > 0) {
+                                        for (int i = 0; i < resultArray.length(); i++) {
+                                            Message message = new Message();
+                                            JSONObject chatJson = resultArray.getJSONObject(i);
+                                            message.setId(chatJson.getString("id"));
+                                            message.setSenderId(chatJson.getString("senderID"));
+                                            message.setProfilePic(chatJson.getString("sender_pic"));
+                                            message.setMessage(chatJson.getString("message"));
+                                            message.setFileType(chatJson.getString("file_type"));
+                                            message.setFile(chatJson.getString("file_url"));
+                                            message.setFileId(chatJson.getString("file_ID"));
+                                            message.setIsRead(chatJson.getString("isread"));
+                                            message.setCreatedAt(chatJson.getString("sendat"));
+                                            message.setRecCount((chatJson.getString("Rec_count")));
+                                            if (!chatJson.get("Audioshared").equals(null) && !chatJson.get("Audioshared").equals("")) {
+                                                message.setAudioDetails(chatJson.getJSONArray("Audioshared"));
+                                            }
+                                            if (chatJson.getString("isread").equals("0") && (!chatJson.getString("senderID").equals(usrId))) {
+                                                readStatus(chatJson.getString("id"), chatJson.getString("chatID"));
+                                            }
+                                            chatList.add(i, message);
+                                        }
+                                        recyclerViewChat.smoothScrollToPosition(chatList.size() - 1);
+                                        rlNoMsg.setVisibility(View.GONE);
+                                        rlTxtContent.setVisibility(View.GONE);
+                                    } else {
+                                        tvRecieverName.setText(" " + receiverName);
+                                        try {
+                                            Picasso.with(ivRecieverProfilePic.getContext()).load(receiverImage).into(ivRecieverProfilePic);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+
+                                        rlNoMsg.setVisibility(View.VISIBLE);
+                                        rlTxtContent.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            cAdapter.notifyDataSetChanged();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
                         }
-                        cAdapter.notifyDataSetChanged();
                     }
                 },
                 new Response.ErrorListener() {
@@ -1120,326 +1131,336 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public void sendMessage(final String message, final String user_Id) {
-
-        if (flagFileType.equals("1")) {
-            VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, CHAT,
-                    new Response.Listener<NetworkResponse>() {
-                        @Override
-                        public void onResponse(NetworkResponse response) {
-                            String str = new String(response.data);
-                            AppHelper.sop("Chat.php Response for image :- " + str);
+        try {
+            if (flagFileType.equals("1")) {
+                VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, CHAT,
+                        new Response.Listener<NetworkResponse>() {
+                            @Override
+                            public void onResponse(NetworkResponse response) {
+                                String str = new String(response.data);
+                                AppHelper.sop("Chat.php Response for image :- " + str);
 //                            Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
-                            try {
-                                JSONObject json = new JSONObject(str);
-                                String flag = json.getString("flag");
-                                if (flag.equals("success")) {
-                                    JSONObject jsonMsg = json.getJSONObject("usermsg");
-                                    String chat_id = jsonMsg.getString("chat_id");
-                                    getChatMsgs(chat_id);
-                                } else {
-                                    JSONObject jsonMsg = json.getJSONObject("usermsg");
-                                    String chat_id = jsonMsg.getString("chat_id");
-                                    getChatMsgs(chat_id);
+                                try {
+                                    JSONObject json = new JSONObject(str);
+                                    String flag = json.getString("flag");
+                                    if (flag.equals("success")) {
+                                        JSONObject jsonMsg = json.getJSONObject("usermsg");
+                                        String chat_id = jsonMsg.getString("chat_id");
+                                        getChatMsgs(chat_id);
+                                    } else {
+                                        JSONObject jsonMsg = json.getJSONObject("usermsg");
+                                        String chat_id = jsonMsg.getString("chat_id");
+                                        getChatMsgs(chat_id);
+                                    }
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
+                                flagFileType = "0";
                             }
-                            flagFileType = "0";
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "Parse error";
+                        } else if (error == null) {
+
                         }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
 
-                    String errorMsg = "";
-                    if (error instanceof TimeoutError) {
-                        errorMsg = "Internet connection timed out";
-                    } else if (error instanceof NoConnectionError) {
-                        errorMsg = "There is no connection";
-                    } else if (error instanceof AuthFailureError) {
-                        errorMsg = "AuthFailureError";
-                    } else if (error instanceof ServerError) {
-                        errorMsg = "We are facing problem in connecting to server";
-                    } else if (error instanceof NetworkError) {
-                        errorMsg = "We are facing problem in connecting to network";
-                    } else if (error instanceof ParseError) {
-                        errorMsg = "Parse error";
-                    } else if (error == null) {
-
+                        if (!errorMsg.equals("")) {
+                            Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                            Log.d("Error", errorMsg);
+                            error.printStackTrace();
+                        }
                     }
-
-                    if (!errorMsg.equals("")) {
-                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                        error.printStackTrace();
-                    }
-                }
-            }) {
-                @Override
-                protected Map<String, String> getParams() {
-                    Map<String, String> params = new HashMap<>();
-                    if (chatType.equals("group")) {
-                        if (senderId.equals(user_Id)) {
-                            params.put(RECEIVER_ID, receiverId);
-                            params.put("groupName", tvUserName.getText().toString().trim());
+                }) {
+                    @Override
+                    protected Map<String, String> getParams() {
+                        Map<String, String> params = new HashMap<>();
+                        if (chatType.equals("group")) {
+                            if (senderId.equals(user_Id)) {
+                                params.put(RECEIVER_ID, receiverId);
+                                params.put("groupName", tvUserName.getText().toString().trim());
+                            } else {
+                                group = senderId + "," + receiverId;
+                                groupList = new ArrayList<>(Arrays.asList(group.split(",")));
+                                groupList.remove(groupList.indexOf(user_Id));
+                                String s = groupList.toString().replaceAll(", ", ",");
+                                receiverId = s.substring(1, s.length() - 1).trim();
+                                params.put(RECEIVER_ID, receiverId);
+                                params.put("groupName", tvUserName.getText().toString().trim());
+                            }
                         } else {
-                            group = senderId + "," + receiverId;
-                            groupList = new ArrayList<>(Arrays.asList(group.split(",")));
-                            groupList.remove(groupList.indexOf(user_Id));
-                            String s = groupList.toString().replaceAll(", ", ",");
-                            receiverId = s.substring(1, s.length() - 1).trim();
-                            params.put(RECEIVER_ID, receiverId);
-                            params.put("groupName", tvUserName.getText().toString().trim());
+                            if (receiverId.equals(user_Id)) {
+                                params.put(RECEIVER_ID, senderId);
+                            } else {
+                                params.put(RECEIVER_ID, receiverId);
+                            }
                         }
-                    } else {
-                        if (receiverId.equals(user_Id)) {
-                            params.put(RECEIVER_ID, senderId);
-                        } else {
-                            params.put(RECEIVER_ID, receiverId);
-                        }
+
+                        params.put(FILE_TYPE, "image");
+                        params.put(SENDER_ID, user_Id);
+                        params.put(CHAT_ID, chatId);
+                        params.put(TITLE, "message");
+                        //    params.put(MESSAGE, message);
+                        params.put(IS_READ, "0");
+                        params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                        return params;
                     }
 
-                    params.put(FILE_TYPE, "image");
-                    params.put(SENDER_ID, user_Id);
-                    params.put(CHAT_ID, chatId);
-                    params.put(TITLE, "message");
-                    //    params.put(MESSAGE, message);
-                    params.put(IS_READ, "0");
-                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                    return params;
-                }
+                    @Override
+                    protected Map<String, DataPart> getByteData() {
+                        Map<String, DataPart> params = new HashMap<>();
+                        params.put(FILE, new DataPart(sendImageName, AppHelper.getFileDataFromDrawable(getBaseContext(), sendImageBitmap), "image/jpeg"));
+                        return params;
+                    }
+                };
+                RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
 
-                @Override
-                protected Map<String, DataPart> getByteData() {
-                    Map<String, DataPart> params = new HashMap<>();
-                    params.put(FILE, new DataPart(sendImageName, AppHelper.getFileDataFromDrawable(getBaseContext(), sendImageBitmap), "image/jpeg"));
-                    return params;
-                }
-            };
-            RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+                int socketTimeout = 60000; // 30 seconds. You can change it
+                RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                        DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
 
-            int socketTimeout = 60000; // 30 seconds. You can change it
-            RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
-                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+                multipartRequest.setRetryPolicy(policy);
 
-            multipartRequest.setRetryPolicy(policy);
-
-            requestQueue.add(multipartRequest);
-            //     VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
-        } else {
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, CHAT, new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    String str = response;
-                    AppHelper.sop("response=sendMessage=else=case=" + response);
-                    //  Log.d("Chat.php Response normal :-",str);
+                requestQueue.add(multipartRequest);
+                //     VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
+            } else {
+                StringRequest stringRequest = new StringRequest(Request.Method.POST, CHAT, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String str = response;
+                        AppHelper.sop("response=sendMessage=else=case=" + response);
+                        //  Log.d("Chat.php Response normal :-",str);
 //                    Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
-                    try {
-                        JSONObject json = new JSONObject(response);
-                        String flag = json.getString("flag");
-                        if (flag.equals("success")) {
-                            JSONObject jsonMsg = json.getJSONObject("usermsg");
-                            String chat_id = jsonMsg.getString("chat_id");
-                            chatId = chat_id;
+                        try {
+                            JSONObject json = new JSONObject(response);
+                            String flag = json.getString("flag");
+                            if (flag.equals("success")) {
+                                JSONObject jsonMsg = json.getJSONObject("usermsg");
+                                String chat_id = jsonMsg.getString("chat_id");
+                                chatId = chat_id;
 
-                            getChatMsgs(chat_id);
-                        } else {
-                            JSONObject jsonMsg = json.getJSONObject("usermsg");
-                            String chat_id = jsonMsg.getString("chat_id");
-                            getChatMsgs(chat_id);
+                                getChatMsgs(chat_id);
+                            } else {
+                                JSONObject jsonMsg = json.getJSONObject("usermsg");
+                                String chat_id = jsonMsg.getString("chat_id");
+                                getChatMsgs(chat_id);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
 
 
-                    flagFileType = "0";
-                    //service for comment count.
+                        flagFileType = "0";
+                        //service for comment count.
 
 //                    if (getIntent() != null && getIntent().hasExtra("share")) {
 
-                    AppHelper.sop("mRecordingsModel==" + mRecordingsModel);
-                    AppHelper.sop("mJoinedModel==" + mJoinedModel);
-                    AppHelper.sop("melody==" + melody);
+                        AppHelper.sop("mRecordingsModel==" + mRecordingsModel);
+                        AppHelper.sop("mJoinedModel==" + mJoinedModel);
+                        AppHelper.sop("melody==" + melody);
 
-                    if (mJoinedModel != null) {
-                        shareCountApi(getIntent().getStringExtra("file_type"));
-                    } else if (mRecordingsModel != null) {
-                        shareCountApi(getIntent().getStringExtra("file_type"));
-                    } else if (melody != null) {
-                        shareCountApi(getIntent().getStringExtra("file_type"));
-                    }
+                        if (mJoinedModel != null) {
+                            shareCountApi(getIntent().getStringExtra("file_type"));
+                        } else if (mRecordingsModel != null) {
+                            shareCountApi(getIntent().getStringExtra("file_type"));
+                        } else if (melody != null) {
+                            shareCountApi(getIntent().getStringExtra("file_type"));
+                        }
 
 
 //                    }
 
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-
-                    String errorMsg = "";
-                    if (error instanceof TimeoutError) {
-                        errorMsg = "Internet connection timed out";
-                    } else if (error instanceof NoConnectionError) {
-                        errorMsg = "There is no connection";
-                    } else if (error instanceof AuthFailureError) {
-                        errorMsg = "AuthFailureError";
-                    } else if (error instanceof ServerError) {
-                        errorMsg = "We are facing problem in connecting to server";
-                    } else if (error instanceof NetworkError) {
-                        errorMsg = "We are facing problem in connecting to network";
-                    } else if (error instanceof ParseError) {
-                        errorMsg = "Parse error";
-                    } else if (error == null) {
-
                     }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
 
-                    if (!errorMsg.equals("")) {
-                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                        error.printStackTrace();
-                    }
-                }
-            }) {
-                @Override
-                protected Map<String, String> getParams() {
-                    Map<String, String> params = new HashMap<>();
-                    if (chatType.equals("group")) {
-                        if (senderId.equals(user_Id)) {
-                            params.put(RECEIVER_ID, receiverId);
-                            params.put("groupName", tvUserName.getText().toString().trim());
-                        } else {
-                            group = senderId + "," + receiverId;
-                            groupList = new ArrayList<>(Arrays.asList(group.split(",")));
-                            groupList.remove(groupList.indexOf(user_Id));
-                            String s = groupList.toString().replaceAll(", ", ",");
-                            receiverId = s.substring(1, s.length() - 1).trim();
-                            params.put(RECEIVER_ID, receiverId);
-                            params.put("groupName", tvUserName.getText().toString().trim());
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+                            errorMsg = "Parse error";
+                        } else if (error == null) {
+
                         }
-                    } else {
-                        if (receiverId.equals(user_Id)) {
-                            params.put(RECEIVER_ID, senderId);
-                        } else {
-                            params.put(RECEIVER_ID, receiverId);
+
+                        if (!errorMsg.equals("")) {
+                            Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                            Log.d("Error", errorMsg);
+                            error.printStackTrace();
                         }
                     }
-                    if (flagFileType.equals("2")) {
-                        String recID;
-                        SharedPreferences audioShareData = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE);
-                        recID = audioShareData.getString("recID", null);
-                        SharedPreferences.Editor editor = getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
-                        editor.putString("recID", null);
-                        editor.apply();
-                        params.put(FILE, recID);
-                        params.put(FILE_TYPE, "station");
-                    } else if (flagFileType.equals("3")) {
-                        String melodyID;
-                        SharedPreferences audioShareData = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE);
-                        melodyID = audioShareData.getString("melodyID", null);
-                        SharedPreferences.Editor editor = getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
-                        editor.putString("melodyID", null);
-                        editor.apply();
-                        params.put(FILE, melodyID);
-                        params.put(FILE_TYPE, "admin_melody");
+                }) {
+                    @Override
+                    protected Map<String, String> getParams() {
+                        Map<String, String> params = new HashMap<>();
+                        try {
+                            if (chatType.equals("group")) {
+                                if (senderId.equals(user_Id)) {
+                                    params.put(RECEIVER_ID, receiverId);
+                                    params.put("groupName", tvUserName.getText().toString().trim());
+                                } else {
+                                    group = senderId + "," + receiverId;
+                                    groupList = new ArrayList<>(Arrays.asList(group.split(",")));
+                                    groupList.remove(groupList.indexOf(user_Id));
+                                    String s = groupList.toString().replaceAll(", ", ",");
+                                    receiverId = s.substring(1, s.length() - 1).trim();
+                                    params.put(RECEIVER_ID, receiverId);
+                                    params.put("groupName", tvUserName.getText().toString().trim());
+                                }
+                            } else {
+                                if (receiverId.equals(user_Id)) {
+                                    params.put(RECEIVER_ID, senderId);
+                                } else {
+                                    params.put(RECEIVER_ID, receiverId);
+                                }
+                            }
+                            if (flagFileType.equals("2")) {
+                                String recID;
+                                SharedPreferences audioShareData = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE);
+                                recID = audioShareData.getString("recID", null);
+                                SharedPreferences.Editor editor = getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
+                                editor.putString("recID", null);
+                                editor.apply();
+                                params.put(FILE, recID);
+                                params.put(FILE_TYPE, "station");
+                            } else if (flagFileType.equals("3")) {
+                                String melodyID;
+                                SharedPreferences audioShareData = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE);
+                                melodyID = audioShareData.getString("melodyID", null);
+                                SharedPreferences.Editor editor = getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
+                                editor.putString("melodyID", null);
+                                editor.apply();
+                                params.put(FILE, melodyID);
+                                params.put(FILE_TYPE, "admin_melody");
+                            }
+                            params.put(SENDER_ID, user_Id);
+                            params.put(CHAT_ID, chatId);
+                            params.put(TITLE, "message");
+                            params.put(MESSAGE, message);
+                            params.put(IS_READ, "0");
+                            params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                            AppHelper.sop("params=sendMessage=else=case=" + params + "\nURL=" + CHAT);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        return params;
                     }
-                    params.put(SENDER_ID, user_Id);
-                    params.put(CHAT_ID, chatId);
-                    params.put(TITLE, "message");
-                    params.put(MESSAGE, message);
-                    params.put(IS_READ, "0");
-                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                    AppHelper.sop("params=sendMessage=else=case=" + params + "\nURL=" + CHAT);
-                    return params;
-                }
-            };
-            RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-            requestQueue.add(stringRequest);
+                };
+                RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+                requestQueue.add(stringRequest);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
     }
 
     public void getGalleryImages() {
+        try {
+            if (isExternalStorageRemovable()) {
+                String state = Environment.getExternalStorageState();
+                if (Environment.MEDIA_MOUNTED.equals(state) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+                    String ExternalStorageDirectoryPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+                    String ExternalStoragePath = ExternalStorageDirectoryPath + "/DCIM/Camera/";
+                    File targetDirector = new File(ExternalStoragePath);
 
-        if (isExternalStorageRemovable()) {
-            String state = Environment.getExternalStorageState();
-            if (Environment.MEDIA_MOUNTED.equals(state) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-                String ExternalStorageDirectoryPath = Environment.getExternalStorageDirectory().getAbsolutePath();
-                String ExternalStoragePath = ExternalStorageDirectoryPath + "/DCIM/Camera/";
-                File targetDirector = new File(ExternalStoragePath);
+                    int length;
+                    String file, filename;
+                    if (targetDirector.listFiles() != null) {
+                        File[] files = targetDirector.listFiles(new FilenameFilter() {
+                            public boolean accept(File dir, String name) {
+                                return name.toLowerCase().endsWith(".jpg");
+                            }
+                        });
 
-                int length;
-                String file, filename;
-                if (targetDirector.listFiles() != null) {
-                    File[] files = targetDirector.listFiles(new FilenameFilter() {
-                        public boolean accept(File dir, String name) {
-                            return name.toLowerCase().endsWith(".jpg");
-                        }
-                    });
-
-                    length = files.length;
-                    if (files.length > 9) {
-                        for (int i = length - 1; i >= length - 10; i--) {
-                            RecentImagesModel rim = new RecentImagesModel();
-                            file = files[i].toString();
-                            rim.setFilepath(file);
-                            filename = file.substring(file.lastIndexOf("/") + 1);
-                            rim.setName(filename);
-                            fileInfo.add(rim);
-                        }
-                    } else {
-                        for (int i = length - 1; i >= 0; i--) {
-                            RecentImagesModel rim = new RecentImagesModel();
-                            file = files[i].toString();
-                            rim.setFilepath(file);
-                            filename = file.substring(file.lastIndexOf("/") + 1);
-                            rim.setName(filename);
-                            fileInfo.add(rim);
+                        length = files.length;
+                        if (files.length > 9) {
+                            for (int i = length - 1; i >= length - 10; i--) {
+                                RecentImagesModel rim = new RecentImagesModel();
+                                file = files[i].toString();
+                                rim.setFilepath(file);
+                                filename = file.substring(file.lastIndexOf("/") + 1);
+                                rim.setName(filename);
+                                fileInfo.add(rim);
+                            }
+                        } else {
+                            for (int i = length - 1; i >= 0; i--) {
+                                RecentImagesModel rim = new RecentImagesModel();
+                                file = files[i].toString();
+                                rim.setFilepath(file);
+                                filename = file.substring(file.lastIndexOf("/") + 1);
+                                rim.setName(filename);
+                                fileInfo.add(rim);
+                            }
                         }
                     }
                 }
             }
-        }
-        if (isExternalStorageEmulated()) {
-            String state = Environment.getExternalStorageState();
-            if (Environment.MEDIA_MOUNTED.equals(state) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-                String ExternalStorageDirectoryPath = Environment.getExternalStorageDirectory().getAbsolutePath();
-                String InternalStoragePath = ExternalStorageDirectoryPath + "/DCIM/Camera/";
-                File targetDirector = new File(InternalStoragePath);
+            if (isExternalStorageEmulated()) {
+                String state = Environment.getExternalStorageState();
+                if (Environment.MEDIA_MOUNTED.equals(state) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+                    String ExternalStorageDirectoryPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+                    String InternalStoragePath = ExternalStorageDirectoryPath + "/DCIM/Camera/";
+                    File targetDirector = new File(InternalStoragePath);
 
-                int length;
-                String file, filename;
-                if (targetDirector.listFiles() != null) {
-                    File[] files = targetDirector.listFiles(new FilenameFilter() {
-                        public boolean accept(File dir, String name) {
-                            return name.toLowerCase().endsWith(".jpg");
-                        }
-                    });
+                    int length;
+                    String file, filename;
+                    if (targetDirector.listFiles() != null) {
+                        File[] files = targetDirector.listFiles(new FilenameFilter() {
+                            public boolean accept(File dir, String name) {
+                                return name.toLowerCase().endsWith(".jpg");
+                            }
+                        });
 
-                    length = files.length;
-                    if (files.length > 9) {
-                        for (int i = length - 1; i >= length - 10; i--) {
-                            RecentImagesModel rim = new RecentImagesModel();
-                            file = files[i].toString();
-                            rim.setFilepath(file);
-                            filename = file.substring(file.lastIndexOf("/") + 1);
-                            rim.setName(filename);
-                            fileInfo.add(rim);
-                        }
-                    } else {
-                        for (int i = length - 1; i >= 0; i--) {
-                            RecentImagesModel rim = new RecentImagesModel();
-                            file = files[i].toString();
-                            rim.setFilepath(file);
-                            filename = file.substring(file.lastIndexOf("/") + 1);
-                            rim.setName(filename);
-                            fileInfo.add(rim);
+                        length = files.length;
+                        if (files.length > 9) {
+                            for (int i = length - 1; i >= length - 10; i--) {
+                                RecentImagesModel rim = new RecentImagesModel();
+                                file = files[i].toString();
+                                rim.setFilepath(file);
+                                filename = file.substring(file.lastIndexOf("/") + 1);
+                                rim.setName(filename);
+                                fileInfo.add(rim);
+                            }
+                        } else {
+                            for (int i = length - 1; i >= 0; i--) {
+                                RecentImagesModel rim = new RecentImagesModel();
+                                file = files[i].toString();
+                                rim.setFilepath(file);
+                                filename = file.substring(file.lastIndexOf("/") + 1);
+                                rim.setName(filename);
+                                fileInfo.add(rim);
+                            }
                         }
                     }
                 }
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -1636,17 +1657,20 @@ public class ChatActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
-                        AppHelper.sop("response=shareCountApi=" + response);
-                        Intent intent = new Intent();
-                        intent.putExtra("share", "share");
-                        SharedPreferences.Editor socialStatusPrefEditor = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE).edit();
-                        socialStatusPrefEditor.putBoolean(Const.REC_SHARE_STATUS, true);
-                        socialStatusPrefEditor.apply();
-                        mRecordingsModel = null;
-                        mJoinedModel = null;
-                        melody = null;
-                        setResult(Activity.RESULT_OK, intent);
+                        try {
+                            AppHelper.sop("response=shareCountApi=" + response);
+                            Intent intent = new Intent();
+                            intent.putExtra("share", "share");
+                            SharedPreferences.Editor socialStatusPrefEditor = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE).edit();
+                            socialStatusPrefEditor.putBoolean(Const.REC_SHARE_STATUS, true);
+                            socialStatusPrefEditor.apply();
+                            mRecordingsModel = null;
+                            mJoinedModel = null;
+                            melody = null;
+                            setResult(Activity.RESULT_OK, intent);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -1802,16 +1826,36 @@ public class ChatActivity extends AppCompatActivity {
         viewImageFragment imageview = new viewImageFragment();
         getFragmentManager().beginTransaction().replace(R.id.activity_chat, imageview).commit();
     }
-    @TargetApi(Build.VERSION_CODES.N)
+
     private File createImageFile() throws IOException {
+        /*// Create an image file name
+        String timeStamp = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        }
+
+        Date d = new Date();
+        CharSequence s = DateFormat.format("yyyyMMdd_hhmmss", d.getTime());
+        File f = new File(Environment.getExternalStorageDirectory(), "IMG_" + s.toString() + ".jpg");
+        File image=File.createTempFile("IMG_" + s.toString() , ".jpg",Environment.getExternalStorageDirectory());
+        *//*String imageFileName = "IMG_" + timeStamp;
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  *//**//* prefix *//**//*
+                ".jpg",         *//**//* suffix *//**//*
+                storageDir      *//**//* directory *//**//*
+        );*//*
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;*/
         // Create an image file name
         String timeStamp = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         }
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DCIM), "Camera");
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
@@ -1819,28 +1863,69 @@ public class ChatActivity extends AppCompatActivity {
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        mCurrentPhotoPath = image.getAbsolutePath();
         return image;
     }
-   /* private void dispatchTakePictureIntent() throws IOException {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-                return;
+
+    private void dispatchTakePictureIntent() {
+        try {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            // Ensure that there's a camera activity to handle the intent
+            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                // Create the File where the photo should go
+                File photoFile = null;
+                try {
+                    photoFile = createImageFile();
+                } catch (IOException ex) {
+                    // Error occurred while creating the File
+
+                }
+                // Continue only if the File was successfully created
+                if (photoFile != null) {
+                    Uri photoURI = FileProvider.getUriForFile(this,
+                            "com.yomelody.fileprovider",
+                            photoFile);
+                    imageToUploadUri = photoURI;
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+                }
             }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri photoURI = Uri.fromFile(createImageFile());
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-    }*/
+    }
+
+    private Bitmap setPic() {
+        try {
+            // Get the dimensions of the View
+
+            int targetW = 700;
+            int targetH = 500;
+
+            // Get the dimensions of the bitmap
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            bmOptions.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+            int photoW = bmOptions.outWidth;
+            int photoH = bmOptions.outHeight;
+
+            // Determine how much to scale down the image
+            int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+
+            // Decode the image file into a Bitmap sized to fill the View
+            bmOptions.inJustDecodeBounds = false;
+            bmOptions.inSampleSize = scaleFactor;
+            bmOptions.inPurgeable = true;
+
+            //Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+            sendImageBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+            //mImageView.setImageBitmap(bitmap);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return sendImageBitmap;
+        //mImageView.setImageBitmap(bitmap);
+    }
 
 }

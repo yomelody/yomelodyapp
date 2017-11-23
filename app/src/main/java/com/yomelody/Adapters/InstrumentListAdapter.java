@@ -34,6 +34,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.toolbox.ByteArrayPool;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -420,28 +421,47 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 @Override
                 public void onClick(View v) {
                     try {
-                        if (holder.mp != null) {
-                            holder.mp.stop();
-                            holder.mp = null;
-                        }
-                        if (StudioActivity.mpInst != null) {
-                            StudioActivity.mpInst.stop();
-                            StudioActivity.mpInst = null;
-                        }
-
-                        for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
-                            if (i == holder.getAdapterPosition()) {
-                                StudioActivity.mediaPlayersAll.get(i).stop();
+                        if (instrumentList.size() > 1) {
+                            if (holder.mp != null) {
+                                try {
+                                    holder.mp.stop();
+                                    holder.mp = null;
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
                             }
-                        }
+                            if (StudioActivity.mpInst != null) {
+                                try {
+                                    StudioActivity.mpInst.stop();
+                                    StudioActivity.mpInst = null;
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
 
-                        int newPosition = holder.getAdapterPosition();
-                        instrumentList.remove(newPosition);
-                        notifyItemRemoved(newPosition);
-                        StudioActivity.setInsCount(instrumentList.size());
+
+                            for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
+                                if (i == holder.getAdapterPosition()) {
+                                    try {
+                                        StudioActivity.mediaPlayersAll.get(i).stop();
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
+                                }
+                            }
+
+                            int newPosition = holder.getAdapterPosition();
+                            instrumentList.remove(newPosition);
+                            StudioActivity.lstViewHolder.remove(newPosition);
+                            notifyItemRemoved(newPosition);
+                            StudioActivity.setInsCount(instrumentList.size());
+                        } else {
+                            Toast.makeText(getApplicationContext(), "You can't delete all instruments.", Toast.LENGTH_SHORT).show();
+                        }
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
+
 
                 }
             });
@@ -1516,7 +1536,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             Intent i = new Intent("fetchingInstruments");
             i.putStringArrayListExtra("instruments", instrument_url_count);
             LocalBroadcastManager.getInstance(context).sendBroadcast(i);
-        } catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -1613,7 +1633,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             e.printStackTrace();
         }
     }
-
 
 
     public void executeAsyncTaskPlayAll() {
