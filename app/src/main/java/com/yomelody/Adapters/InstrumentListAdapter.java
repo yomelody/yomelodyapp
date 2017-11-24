@@ -62,6 +62,7 @@ import static android.content.Context.MODE_PRIVATE;
 import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.yomelody.StudioActivity.bytes;
 import static com.yomelody.StudioActivity.lstViewHolder;
+import static com.yomelody.StudioActivity.mediaPlayersAll;
 import static com.yomelody.StudioActivity.rlBase;
 
 /**
@@ -452,6 +453,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
                             int newPosition = holder.getAdapterPosition();
                             instrumentList.remove(newPosition);
+                            mediaPlayersAll.remove(newPosition);
                             StudioActivity.lstViewHolder.remove(newPosition);
                             notifyItemRemoved(newPosition);
                             StudioActivity.setInsCount(instrumentList.size());
@@ -1408,129 +1410,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             });
 
 
-        /*StudioActivity.ivRecord.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    StudioActivity.recyclerViewInstruments.smoothScrollToPosition(instrumentList.size());
 
-                    new PrepareInstruments().execute();
-
-
-                } catch (IllegalStateException e) {
-                    e.printStackTrace();
-                }
-            }
-
-
-        });*/
-
-        /*StudioActivity.ivRecord_stop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    InstrumentCountSize = 0;
-                    StudioActivity.playAll.setVisibility(View.VISIBLE);
-                    StudioActivity.pauseAll.setVisibility(View.GONE);
-                    StudioActivity.pauseAll.setEnabled(true);
-
-                    StudioActivity.ivRecord_stop.setVisibility(View.GONE);
-                    StudioActivity.rlRecordingButton.setVisibility(View.GONE);
-                    StudioActivity.ivRecord_play.setVisibility(View.VISIBLE);
-                    StudioActivity.rlRedoButton.setVisibility(View.VISIBLE);
-                    if (StudioActivity.joinRecordingId != null) {
-                        StudioActivity.tvPublic.setVisibility(View.GONE);
-                        StudioActivity.switchPublic.setVisibility(View.GONE);
-                    } else {
-                        StudioActivity.tvPublic.setVisibility(View.VISIBLE);
-                        StudioActivity.switchPublic.setVisibility(View.VISIBLE);
-                    }
-
-                    StudioActivity.frameProgress.setVisibility(View.GONE);
-                    //StudioActivity.frameprog.setVisibility(View.GONE);
-
-                    mRecordingThread.stopRecording();
-
-                    StudioActivity.handler.removeCallbacksAndMessages(null);
-                    if (isRecording) {
-
-
-
-
-                    } else {
-                        try {
-                            StudioActivity.rlRecordingButton.setEnabled(true);
-                        } catch (NullPointerException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-
-                    try {
-                        if (StudioActivity.mpall != null) {
-                            StudioActivity.mpall.stop();
-                            for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
-
-                               *//* final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                                final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
-                                final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
-                                seekBar.setProgress(0);
-                                holderPlay.setVisibility(View.VISIBLE);
-                                holderPause.setVisibility(View.GONE);*//*
-                                final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                                final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
-                                final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
-                                final TextView txtMutes = StudioActivity.lstViewHolder.get(i).TxtMuteViewHolder;
-                                final TextView txtSolos = StudioActivity.lstViewHolder.get(i).TxtSoloViewHolder;
-                                final RelativeLayout RlsRepets = StudioActivity.lstViewHolder.get(i).TempRlRepeats;
-                                seekBar.setProgress(0);
-                                holderPlay.setVisibility(View.VISIBLE);
-                                holderPause.setVisibility(View.GONE);
-                                txtMutes.setBackgroundColor(Color.TRANSPARENT);
-                                txtSolos.setBackgroundColor(Color.TRANSPARENT);
-                                RlsRepets.setBackgroundColor(Color.TRANSPARENT);
-                                holderPause.setEnabled(true);
-                                try {
-                                    StudioActivity.mediaPlayersAll.get(i).stop();
-                                    StudioActivity.mediaPlayersAll.get(i).release();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-
-                            }
-
-                        }
-                        StudioActivity.tvDone.setEnabled(true);
-                        StudioActivity.chrono.stop();
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                    }
-
-                    try {
-                        InputStream inputStream =
-                                getApplicationContext().getContentResolver().openInputStream(Uri.fromFile(new File(audioFilePath)));
-                        StudioActivity.soundBytes = new byte[inputStream.available()];
-                        StudioActivity.soundBytes = toByteArray(inputStream);
-                        inputStream.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    try {
-                        StudioActivity.recordingDuration = getDuration(new File(audioFilePath));
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                    StudioActivity.stop_rec_time = SystemClock.elapsedRealtime() - StudioActivity.chrono.getBase();
-                    StudioActivity.time_stop = formateMilliSeccond(StudioActivity.stop_rec_time);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-
-            }
-
-        });*/
 
 
             Intent i = new Intent("fetchingInstruments");
@@ -1608,31 +1488,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         }
     }
 
-
-    private void LoadInstrumentData(int listPosition) {
-        try {
-
-            PositionId = String.valueOf(listPosition);
-            final MelodyInstruments instruments = instrumentList.get(listPosition);
-            if (StudioActivity.list.size() == 0) {
-                StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
-            } else {
-                StudioActivity.list.indexOf(listPosition);
-                boolean IsAvailable = false;
-                for (int i = 0; i <= StudioActivity.list.size(); i++) {
-                    int pos = Integer.parseInt(StudioActivity.list.get(i).positionId);
-                    if (pos == listPosition) {
-                        IsAvailable = true;
-                    }
-                }
-                if (IsAvailable) {
-                    StudioActivity.list.add(listPosition, new MixingData(String.valueOf(instruments.getInstrumentId()), String.valueOf(Volume), String.valueOf(Base), String.valueOf(Treble), String.valueOf(Pan), String.valueOf(Pitch), String.valueOf(Reverb), String.valueOf(Compression), String.valueOf(Delay), String.valueOf(Tempo), String.valueOf(threshold), String.valueOf(ratio), String.valueOf(attack), String.valueOf(release), String.valueOf(makeup), String.valueOf(knee), String.valueOf(mix), InstaURL, PositionId));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
 
     public void executeAsyncTaskPlayAll() {

@@ -198,7 +198,7 @@
 
                     <RelativeLayout
                         android:id="@+id/rlDetail"
-                        android:layout_width="45dp"
+                        android:layout_width="55dp"
                         android:layout_height="match_parent"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
@@ -207,14 +207,14 @@
                         android:layout_marginRight="5dp">
 
                         <RelativeLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="60dp"
                             android:layout_height="wrap_content"
                             android:layout_centerHorizontal="true"
                             android:layout_centerVertical="true">
 
                             <TextView
                                 android:id="@+id/tvMelodyLength"
-                                android:layout_width="match_parent"
+                                android:layout_width="60dp"
                                 android:layout_height="wrap_content"
                                 android:text="99:99:99"
                                 android:textColor="#FFFFFF"

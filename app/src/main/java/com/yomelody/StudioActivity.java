@@ -1064,11 +1064,16 @@ public class StudioActivity extends AppCompatActivity {
                         mVisualizer.release();
                     }
                     //StudioActivity.this.recreate();
+                    if(lstViewHolder.size()>0){
+                        instrumentList.clear();
+                        lstViewHolder.clear();
+                    }
 
                     fetchInstruments(melodyPackId);
                     switchPublic.setVisibility(View.VISIBLE);
 
                     JoinActivity.instrumentList.clear();
+
                     noMelodyNote.setVisibility(View.GONE);
                     recyclerViewInstruments.setVisibility(View.VISIBLE);
                     recyclerViewInstruments.setHasFixedSize(true);
@@ -1085,9 +1090,7 @@ public class StudioActivity extends AppCompatActivity {
                     if (instrumentList.size() > 0) {
                         rlSync.setVisibility(View.VISIBLE);
                     }
-                    if(lstViewHolder.size()>0){
-                        lstViewHolder.clear();
-                    }
+
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -1295,7 +1298,6 @@ public class StudioActivity extends AppCompatActivity {
                     StudioActivity.recyclerViewInstruments.smoothScrollToPosition(instrumentList.size());
 
                     if (!IsValidPack || instrumentList.size() <= LayerCount) {
-
                         new PrepareInstruments().execute();
                     } else {
                         if (IsExp == "false") {
@@ -2768,6 +2770,7 @@ public class StudioActivity extends AppCompatActivity {
                                 tmpduration = Compdurations;
                                 MaxMpSessionID = StudioActivity.mediaPlayersAll.get(i).getAudioSessionId();
                             }
+
                         }
                         IsRepeteReAll = true;
                         playAll.setEnabled(false);
@@ -2781,6 +2784,11 @@ public class StudioActivity extends AppCompatActivity {
             }
 
             return null;
+        }
+
+        protected void onProgressUpdate(String... values) {
+            // Update user with progress bar or similar - runs on user interface thread
+
         }
 
         protected void onPostExecute(Bitmap result) {
@@ -2847,6 +2855,7 @@ public class StudioActivity extends AppCompatActivity {
             }
         }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

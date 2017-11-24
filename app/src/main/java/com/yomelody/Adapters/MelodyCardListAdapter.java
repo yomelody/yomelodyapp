@@ -504,7 +504,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                             audioUrl = melody.getMelodyURL();
                         }
                         instCount = 1;
-                        MelodyActivity.frameProgress.setVisibility(VISIBLE);
+                        //MelodyActivity.frameProgress.setVisibility(VISIBLE);
                         melodyInstrumentsArrayList.clear();
                         for (int i = 0; i < instrumentList.size(); i++) {
                             if (position.equalsIgnoreCase("" + instrumentList.get(i).getMelodyPacksId())) {
