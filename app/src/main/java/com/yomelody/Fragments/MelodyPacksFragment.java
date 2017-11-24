@@ -259,7 +259,7 @@ public class MelodyPacksFragment extends Fragment {
                                         instrumentList.clear();
                                         editor.putString("File_Tyoe","admin_melody");
                                         editor.commit();
-                                        fetchMelodyPacks();
+                                        //fetchMelodyPacks();
                                         if (currentTab == 6) {
                                             if (TextUtils.isEmpty(userId)) {
                                                 Toast.makeText(mActivity, "Log in to see your melody.", Toast.LENGTH_SHORT).show();
@@ -354,11 +354,9 @@ public class MelodyPacksFragment extends Fragment {
                             jsonObject = new JSONObject(response);
                             if (jsonObject.getString(KEY_FLAG).equals("unsuccess")) {
                                 String str = jsonObject.getString(KEY_MSG);
-//                                if (str.equals("No pack found")) {
-                                str = "Sorry, no " + packName + " melody available.";
                                 Toast.makeText(getActivity(), msgUnsuccess, Toast.LENGTH_SHORT).show();
                                 isLastPage = true;
-//                                }
+
                             } else {
                                 isLastPage = false;
                             }
