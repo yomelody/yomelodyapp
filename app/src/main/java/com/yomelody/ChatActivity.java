@@ -1252,6 +1252,8 @@ public class ChatActivity extends AppCompatActivity {
                             if (flag.equals("success")) {
                                 JSONObject jsonMsg = json.getJSONObject("usermsg");
                                 String chat_id = jsonMsg.getString("chat_id");
+                                SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
+                                editor.putString("chatId", chat_id);
                                 chatId = chat_id;
 
                                 getChatMsgs(chat_id);

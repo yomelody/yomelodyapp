@@ -151,7 +151,6 @@ public class ProfileActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(mActivity);
         progressDialog.setTitle("Processing...");
         progressDialog.setMessage("Please wait...");
-        progressDialog.setCancelable(false);
         sharePrefClearProfile();
         SharedPreferences filterPref = this.getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
@@ -575,6 +574,7 @@ public class ProfileActivity extends AppCompatActivity {
                         JSONObject jsonObject;
                         JSONArray jsonArray;
                         try {
+
                             jsonObject = new JSONObject(response);
                             if (jsonObject.getString(KEY_FLAG).equals(SUCCESS)) {
                                 jsonArray = jsonObject.getJSONArray(KEY_RESULT);
@@ -676,6 +676,9 @@ public class ProfileActivity extends AppCompatActivity {
 //                                    }
                                 }
 
+                            }
+                            if (progressDialog != null || progressDialog.isShowing()) {
+                                progressDialog.dismiss();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

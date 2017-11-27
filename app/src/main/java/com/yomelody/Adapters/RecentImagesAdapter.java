@@ -165,6 +165,9 @@ public class RecentImagesAdapter extends RecyclerView.Adapter<RecentImagesAdapte
                             if(flag.equals("success")){
                                 JSONObject jsonMsg = json.getJSONObject("usermsg");
                                 String chat_id = jsonMsg.getString("chat_id");
+                                SharedPreferences.Editor editor =  context.getSharedPreferences("ContactsData", MODE_PRIVATE).edit();
+                                editor.putString("chatId", chat_id);
+                                chatId=chat_id;
                                 getChatMsgs(chat_id);
                             }
                             else{

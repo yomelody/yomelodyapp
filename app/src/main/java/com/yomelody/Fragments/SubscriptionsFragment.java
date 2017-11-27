@@ -129,22 +129,26 @@ public class SubscriptionsFragment extends Fragment {
         dob = loginSharedPref.getString("dob", null);
         mobile = loginSharedPref.getString("mobile", null);
 
-        SharedPreferences twitterEditor = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
-        userIdTwitter = twitterEditor.getString("userId", null);
-        firstNameTwitter = twitterEditor.getString("firstName", null);
-        lastNameTwitter = twitterEditor.getString("lastName", null);
-        userNameTwitter = twitterEditor.getString("userName", null);
-        emailFinalTwitter = twitterEditor.getString("emailFinal", null);
-        profilePicTwitter = twitterEditor.getString("profilePic", null);
+        if(userIdNormal==null) {
+            SharedPreferences twitterEditor = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
+            userIdTwitter = twitterEditor.getString("userId", null);
+            firstNameTwitter = twitterEditor.getString("firstName", null);
+            lastNameTwitter = twitterEditor.getString("lastName", null);
+            emailFinalTwitter = twitterEditor.getString("emailFinal", null);
+            userNameLogin = twitterEditor.getString("userName", null);
+            profilePicLogin = twitterEditor.getString("profilePic", null);
+        }
 
+        if(userIdTwitter==null && userIdNormal==null) {
+            SharedPreferences fbEditor = getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
+            userIdFb = fbEditor.getString("userId", null);
+            firstNameFb = fbEditor.getString("firstName", null);
+            lastNameFb = fbEditor.getString("lastName", null);
+            emailFinalFb = fbEditor.getString("emailFinal", null);
+            profilePicLogin = fbEditor.getString("profilePic", null);
+            userNameLogin = fbEditor.getString("userName", null);
+        }
 
-        SharedPreferences fbEditor = getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
-        userIdFb = fbEditor.getString("userId", null);
-        firstNameFb = fbEditor.getString("firstName", null);
-        lastNameFb = fbEditor.getString("lastName", null);
-        emailFinalFb = fbEditor.getString("emailFinal", null);
-        profilePicFb = fbEditor.getString("profilePic", null);
-        userNameFb = fbEditor.getString("userName", null);
 
         if (userIdNormal != null) {
             userId = userIdNormal;
@@ -189,21 +193,25 @@ public class SubscriptionsFragment extends Fragment {
         switchPremium = (Switch) view.findViewById(R.id.switchPremium);
         switchProducer = (Switch) view.findViewById(R.id.switchProducer);
 
+        try {
 
-        if (userId != null) {
-            userImage.setVisibility(View.INVISIBLE);
-            userProfileImage.setVisibility(View.VISIBLE);
-            Picasso.with(getActivity()).load(profilePicLogin).into(userProfileImage);
-            tvUserUpgrade.setText("Upgrade" + " " + userNameLogin + "!");
+            if (userId != null) {
+                userImage.setVisibility(View.INVISIBLE);
+                userProfileImage.setVisibility(View.VISIBLE);
+                Picasso.with(getActivity()).load(profilePicLogin).into(userProfileImage);
+                tvUserUpgrade.setText("Upgrade" + " " + userNameLogin + "!");
 
             /*switchFree.setChecked(true);
             switchFree.setClickable(false);*/
-        }else {
-            switchStandard.setChecked(false);
-            switchFree.setChecked(true);
+            } else {
+                switchStandard.setChecked(false);
+                switchFree.setChecked(true);
             /*switchFree.setClickable(false);*/
-            switchPremium.setChecked(false);
-            switchProducer.setChecked(false);
+                switchPremium.setChecked(false);
+                switchProducer.setChecked(false);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
         SharedPreferences profileEditor = getActivity().getSharedPreferences("ProfileUpdate", MODE_PRIVATE);
@@ -217,7 +225,6 @@ public class SubscriptionsFragment extends Fragment {
             //switchFree.setChecked(true);
             tvUserUpgrade.setText("Upgrade" + " " + profileEditor.getString("updateUserName", null) + "!");
         }
-
 
 
         GetClientTokenKey();
@@ -248,7 +255,7 @@ public class SubscriptionsFragment extends Fragment {
                             if (flag.equals("success")) {
                                 try {
                                     packageId = jsonObject.getString("subscribedPack");
-                                }catch (Exception ex){
+                                } catch (Exception ex) {
                                     ex.printStackTrace();
                                 }
 
@@ -261,8 +268,7 @@ public class SubscriptionsFragment extends Fragment {
                                 switchStandard.setChecked(false);
                                 switchPremium.setChecked(false);
                                 switchProducer.setChecked(false);
-                            }
-                            else if(packageId.equals("2")) {
+                            } else if (packageId.equals("2")) {
                                 switchStandard.setChecked(true);
                                 switchStandard.setClickable(false);
                                 switchFree.setChecked(false);
@@ -375,8 +381,8 @@ public class SubscriptionsFragment extends Fragment {
                                 switchFree.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                                     @Override
                                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                        if(isChecked) {
-                                            packageId="1";
+                                        if (isChecked) {
+                                            packageId = "1";
                                             switchFree.setChecked(false);
                                         }
                                     }
@@ -384,15 +390,15 @@ public class SubscriptionsFragment extends Fragment {
                                 switchFree.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        packageId="1";
+                                        packageId = "1";
 
                                     }
                                 });
                                 switchStandard.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                                     @Override
                                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                        if(isChecked) {
-                                            packageId="2";
+                                        if (isChecked) {
+                                            packageId = "2";
                                             onBraintreeSubmit();
                                         }
                                     }
@@ -406,8 +412,8 @@ public class SubscriptionsFragment extends Fragment {
                                 switchPremium.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                                     @Override
                                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                        if(isChecked) {
-                                            packageId="3";
+                                        if (isChecked) {
+                                            packageId = "3";
                                             onBraintreeSubmit();
                                         }
                                     }
@@ -422,8 +428,8 @@ public class SubscriptionsFragment extends Fragment {
                                 switchProducer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                                     @Override
                                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                        if(isChecked) {
-                                            packageId="4";
+                                        if (isChecked) {
+                                            packageId = "4";
                                             onBraintreeSubmit();
                                         }
                                     }
@@ -457,7 +463,7 @@ public class SubscriptionsFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                if(userId!=null) {
+                if (userId != null) {
                     params.put(USER_ID, userId);
                 }
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
