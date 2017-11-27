@@ -408,8 +408,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 @Override
                 public void onClick(View v) {
                     try {
-
-                        holder.deleteLl.setVisibility(View.VISIBLE);
+                        if(!StudioActivity.IsRecordingStart) {
+                            holder.deleteLl.setVisibility(View.VISIBLE);
+                        }
 
                     } catch (Exception ex) {
                         ex.printStackTrace();

@@ -326,7 +326,7 @@ public class StudioActivity extends AppCompatActivity {
     boolean IsValidPack = false;
     int PackDuration = 0;
     String PackId = null;
-    boolean IsRecordingStart = false;
+    public static boolean IsRecordingStart = false;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
