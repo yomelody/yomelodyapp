@@ -552,12 +552,12 @@ public class SubscriptionsFragment extends Fragment {
                             cost = subscriptionPackageArrayList.get(1).getCost();
                         } else if (packageId.equals("3")) {
                             txtAmount.setText("Paid Amount: $" + subscriptionPackageArrayList.get(2).getCost());
-                            txtPackName.setText("Package Name :" + subscriptionPackageArrayList.get(1).getPackage_name());
+                            txtPackName.setText("Package Name :" + subscriptionPackageArrayList.get(2).getPackage_name());
                             cost = subscriptionPackageArrayList.get(2).getCost();
 
                         } else if (packageId.equals("4")) {
                             txtAmount.setText("Paid Amount: $" + subscriptionPackageArrayList.get(3).getCost());
-                            txtPackName.setText("Package Name :" + subscriptionPackageArrayList.get(1).getPackage_name());
+                            txtPackName.setText("Package Name :" + subscriptionPackageArrayList.get(3).getPackage_name());
                             cost = subscriptionPackageArrayList.get(3).getCost();
                         }
                     }

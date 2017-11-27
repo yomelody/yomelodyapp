@@ -229,7 +229,7 @@ public class StudioActivity extends AppCompatActivity {
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";//JSONArray
 
-    public static String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, fbName, fbUserName, fbId, melodyPackId, joinRecordingId, instrumentCount, haveJoinid;
+    public static String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic,TwitprofilePic, fbName, fbUserName, fbId, melodyPackId, joinRecordingId, instrumentCount, haveJoinid;
     String selectedGenre;
     int statusNormal, statusFb, statusTwitter;
     String melodyName, instrumentName;
@@ -326,6 +326,7 @@ public class StudioActivity extends AppCompatActivity {
     boolean IsValidPack = false;
     int PackDuration = 0;
     String PackId = null;
+    boolean IsRecordingStart = false;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -410,7 +411,7 @@ public class StudioActivity extends AppCompatActivity {
         rlSetCover = (RelativeLayout) findViewById(R.id.rlSetCover);
         ivNewRecordCover = (ImageView) findViewById(R.id.ivNewRecordCover);
         chrono = (Chronometer) findViewById(R.id.chrono);
-
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mDecibelView = (TextView) findViewById(R.id.decibel_view);
         startTime = SystemClock.elapsedRealtime();
         rlInviteButton = (RelativeLayout) findViewById(R.id.rlInviteButton);
@@ -691,17 +692,17 @@ public class StudioActivity extends AppCompatActivity {
         SharedPreferences twitterPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
         Name = twitterPref.getString("Name", null);
         userName = twitterPref.getString("userName", null);
-        profilePic = twitterPref.getString("ProfilePic", null);
+        TwitprofilePic =twitterPref.getString("profilePic",null);// twitterPref.getString("ProfilePic", null);
         statusTwitter = twitterPref.getInt("status", 0);
 
         if (statusTwitter == 1) {
             artist_name.setText("@" + userName);
         }
 
-        if (profilePic != null) {
+        if (TwitprofilePic != null) {
             //ivProfile.setVisibility(View.GONE);
             profile_image.setVisibility(View.VISIBLE);
-            Picasso.with(StudioActivity.this).load(profilePic).into(profile_image);
+            Picasso.with(StudioActivity.this).load(TwitprofilePic).into(profile_image);
         }
 
         SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
@@ -749,14 +750,14 @@ public class StudioActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        chrono.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener(){
+        chrono.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             @Override
             public void onChronometerTick(Chronometer chronometer) {
                 long time = SystemClock.elapsedRealtime() - chronometer.getBase();
-                int h   = (int)(time /3600000);
-                int m = (int)(time - h*3600000)/60000;
-                int s= (int)(time - h*3600000- m*60000)/1000 ;
-                String t = (h < 10 ? "0"+h: h)+":"+(m < 10 ? "0"+m: m)+":"+ (s < 10 ? "0"+s: s);
+                int h = (int) (time / 3600000);
+                int m = (int) (time - h * 3600000) / 60000;
+                int s = (int) (time - h * 3600000 - m * 60000) / 1000;
+                String t = (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
                 chronometer.setText(t);
             }
         });
@@ -776,7 +777,7 @@ public class StudioActivity extends AppCompatActivity {
                     if (mVisualizer != null) {
                         mVisualizer.release();
                     }
-                    if(handler!=null) {
+                    if (handler != null) {
                         handler.removeCallbacksAndMessages(null);
                     }
 
@@ -832,7 +833,7 @@ public class StudioActivity extends AppCompatActivity {
 
                     if (isRecording) {
                         // ivRecord.setEnabled(false);
-                        if(handler!=null) {
+                        if (handler != null) {
                             handler.removeCallbacksAndMessages(null);
                         }
                         try {
@@ -1041,7 +1042,7 @@ public class StudioActivity extends AppCompatActivity {
                 try {
                     IsHomeMeloduId = null;
                     IscheckMelody = null;
-                    if(handler!=null) {
+                    if (handler != null) {
                         handler.removeCallbacksAndMessages(null);
                     }
                     ivRecord_play.setVisibility(View.INVISIBLE);
@@ -1061,9 +1062,34 @@ public class StudioActivity extends AppCompatActivity {
                     mVisualizerView.clearFocus();
                     if (mVisualizer != null) {
                         mVisualizer.release();
-
                     }
                     //StudioActivity.this.recreate();
+                    if(lstViewHolder.size()>0){
+                        instrumentList.clear();
+                        lstViewHolder.clear();
+                    }
+
+                    fetchInstruments(melodyPackId);
+                    switchPublic.setVisibility(View.VISIBLE);
+
+                    JoinActivity.instrumentList.clear();
+
+                    noMelodyNote.setVisibility(View.GONE);
+                    recyclerViewInstruments.setVisibility(View.VISIBLE);
+                    recyclerViewInstruments.setHasFixedSize(true);
+                    layoutManager = new LinearLayoutManager(getApplicationContext());
+                    recyclerViewInstruments.setLayoutManager(layoutManager);
+                    recyclerViewInstruments.setItemAnimator(new DefaultItemAnimator());
+                    adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+
+                    //recyclerViewInstruments.smoothScrollToPosition(0);
+                    recyclerViewInstruments.setAdapter(adapter);
+
+                    //frameTrans.setVisibility(View.VISIBLE);
+                    rlSync.setVisibility(View.VISIBLE);
+                    if (instrumentList.size() > 0) {
+                        rlSync.setVisibility(View.VISIBLE);
+                    }
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -1077,8 +1103,11 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-
-                    showFileChooser();
+                    if (IsRecordingStart) {
+                        Toast.makeText(StudioActivity.this, "Please stopped recording first.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        showFileChooser();
+                    }
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -1269,7 +1298,6 @@ public class StudioActivity extends AppCompatActivity {
                     StudioActivity.recyclerViewInstruments.smoothScrollToPosition(instrumentList.size());
 
                     if (!IsValidPack || instrumentList.size() <= LayerCount) {
-                        rlPublic.setVisibility(View.VISIBLE);
                         new PrepareInstruments().execute();
                     } else {
                         if (IsExp == "false") {
@@ -1304,13 +1332,7 @@ public class StudioActivity extends AppCompatActivity {
                         Toast.makeText(StudioActivity.this, "Task not running.", Toast.LENGTH_SHORT).show();
                     }
 
-                    if (mVisualizer != null) {
-                        mVisualizer.release();
-                        mVisualizerView.clearAnimation();
-                        mVisualizerView.clearFocus();
-
-                    }
-
+                    IsRecordingStart = false;
                     InstrumentCountSize = 0;
                     playAll.setVisibility(View.VISIBLE);
                     pauseAll.setVisibility(View.GONE);
@@ -1331,11 +1353,10 @@ public class StudioActivity extends AppCompatActivity {
                     frameProgress.setVisibility(View.GONE);
 
 
-                    if(handler!=null) {
+                    if (handler != null) {
                         handler.removeCallbacksAndMessages(null);
                     }
                     if (isRecording) {
-
 
                     } else {
                         try {
@@ -1347,6 +1368,8 @@ public class StudioActivity extends AppCompatActivity {
                     }
 
                     try {
+                        tvDone.setEnabled(true);
+                        chrono.stop();
                         if (mpall != null) {
                             try {
                                 mpall.stop();
@@ -1356,43 +1379,48 @@ public class StudioActivity extends AppCompatActivity {
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
-                            try {
-                                for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                                    PlayAllModel.get(i).setRepete(false);
-                                    if (i <= lstViewHolder.size() - 1) {
-                                        final ImageView holderPlay = lstViewHolder.get(i).holderPlay;
-                                        final ImageView holderPause = lstViewHolder.get(i).holderPause;
-                                        final SeekBar seekBar = lstViewHolder.get(i).seekBar;
-                                        final TextView txtMutes = lstViewHolder.get(i).TxtMuteViewHolder;
-                                        final TextView txtSolos = lstViewHolder.get(i).TxtSoloViewHolder;
-                                        final RelativeLayout RlsRepets = lstViewHolder.get(i).TempRlRepeats;
-                                        seekBar.setProgress(0);
-                                        holderPlay.setVisibility(View.VISIBLE);
-                                        holderPause.setVisibility(View.GONE);
-                                        txtMutes.setBackgroundColor(Color.TRANSPARENT);
-                                        txtSolos.setBackgroundColor(Color.TRANSPARENT);
-                                        RlsRepets.setBackgroundColor(Color.TRANSPARENT);
-                                        holderPause.setEnabled(true);
-                                        try {
-                                            mediaPlayersAll.get(i).stop();
-                                            mediaPlayersAll.get(i).reset();
-                                            mediaPlayersAll.get(i).release();
-                                        } catch (Exception ex) {
-                                            ex.printStackTrace();
-                                        }
-                                    }
-
-
-                                }
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
 
                         }
-                        tvDone.setEnabled(true);
-                        chrono.stop();
+
+
                     } catch (NullPointerException e) {
                         e.printStackTrace();
+                    }
+                    try {
+                        for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                            PlayAllModel.get(i).setRepete(false);
+                            if (i <= lstViewHolder.size() - 1) {
+                                final ImageView holderPlay = lstViewHolder.get(i).holderPlay;
+                                final ImageView holderPause = lstViewHolder.get(i).holderPause;
+                                final SeekBar seekBar = lstViewHolder.get(i).seekBar;
+                                final TextView txtMutes = lstViewHolder.get(i).TxtMuteViewHolder;
+                                final TextView txtSolos = lstViewHolder.get(i).TxtSoloViewHolder;
+                                final RelativeLayout RlsRepets = lstViewHolder.get(i).TempRlRepeats;
+                                seekBar.setProgress(0);
+                                holderPlay.setVisibility(View.VISIBLE);
+                                holderPause.setVisibility(View.GONE);
+                                txtMutes.setBackgroundColor(Color.TRANSPARENT);
+                                txtSolos.setBackgroundColor(Color.TRANSPARENT);
+                                RlsRepets.setBackgroundColor(Color.TRANSPARENT);
+                                holderPause.setEnabled(true);
+                                try {
+                                    mediaPlayersAll.get(i).stop();
+                                    mediaPlayersAll.get(i).reset();
+                                    mediaPlayersAll.get(i).release();
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+
+
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    if (mVisualizer != null) {
+                        mVisualizer.release();
+                        mVisualizerView.clearAnimation();
+                        mVisualizerView.clearFocus();
                     }
 
                     try {
@@ -1431,6 +1459,7 @@ public class StudioActivity extends AppCompatActivity {
                     rlListeningButton.setVisibility(View.VISIBLE);
                     mShouldContinue = true;
                     try {
+
                         playAurdio();
 
                     } catch (IOException e) {
@@ -1476,27 +1505,26 @@ public class StudioActivity extends AppCompatActivity {
                     ivRecord_play.setVisibility(View.VISIBLE);
                     rlRedoButton.setVisibility(View.VISIBLE);
 
-                    try {
-                        if (mVisualizer != null) {
-                            try {
-                                mVisualizer.release();
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
+
+                    if (mediaPlayer != null) {
+                        try {
+                            mediaPlayer.stop();
+                            mediaPlayer.reset();
+                            mediaPlayer.release();
+                            mediaPlayer = null;
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
                         }
 
-                        if (mediaPlayer != null) {
-                            try {
-                                mediaPlayer.stop();
-                                mediaPlayer.reset();
-                                mediaPlayer.release();
-                                mediaPlayer = null;
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-
+                    }
+                    if (mVisualizer != null) {
+                        try {
+                            mVisualizer.release();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
                         }
-                        if (mpall != null) {
+                    }
+                        /*if (mpall != null) {
                             try {
                                 mpall.stop();
                                 mpall.reset();
@@ -1515,11 +1543,9 @@ public class StudioActivity extends AppCompatActivity {
                                     ex.printStackTrace();
                                 }
                             }
-                        }
-                        chrono.stop();
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                    }
+                        }*/
+                    chrono.stop();
+
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -1948,7 +1974,7 @@ public class StudioActivity extends AppCompatActivity {
                         melodyurl = BASE_URL + MelodyResponseDetails.getString("melodyurl");
                         // urlRecording = r1.getString("recording");
                     }
-
+                    IsRecordingStart = false;
                     if (flag.equals("success")) {
                         if (msgflag.equals("Melody created")) {
                             tvDone.setEnabled(false);
@@ -2004,7 +2030,7 @@ public class StudioActivity extends AppCompatActivity {
                             switchFlag = "0";
 
                         }
-                        if(handler!=null) {
+                        if (handler != null) {
                             handler.removeCallbacksAndMessages(null);
                         }
                         if (StudioActivity.lstViewHolder.size() > 0) {
@@ -2418,7 +2444,7 @@ public class StudioActivity extends AppCompatActivity {
         super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
         try {
-            if(handler!=null) {
+            if (handler != null) {
                 handler.removeCallbacksAndMessages(null);
             }
 
@@ -2690,7 +2716,7 @@ public class StudioActivity extends AppCompatActivity {
                 if (mediaPlayersAll.size() > 0) {
                     mediaPlayersAll.clear();
                 }
-                if(handler!=null) {
+                if (handler != null) {
                     handler.removeCallbacksAndMessages(null);
                 }
 
@@ -2721,31 +2747,34 @@ public class StudioActivity extends AppCompatActivity {
                     tmpduration = 0;
                     Compdurations = 0;
                     MaxMpSessionID = 0;
-
+                    IsRecordingStart = true;
                     InstrumentCountSize = instrumentList.size();
-                    for (int i = 0; i < InstrumentCountSize; i++) {
-                        Log.d("Instrument url-:", "" + instrumentList.get(i).getInstrumentFile());
-                        mpall = new MediaPlayer();
-                        mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                        mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
-                        try {
+                    if (InstrumentCountSize > 0) {
+                        for (int i = 0; i < InstrumentCountSize; i++) {
+                            Log.d("Instrument url-:", "" + instrumentList.get(i).getInstrumentFile());
+                            mpall = new MediaPlayer();
+                            mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                            mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
+                            try {
 
-                            mpall.prepare();
+                                mpall.prepare();
 
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                            mediaPlayersAll.add(StudioActivity.mpall);
+                            PlayAllModel.add(i, new ModelPlayAllMediaPlayer(false, false, false, StudioActivity.mpall));
+
+                            Compdurations = StudioActivity.mediaPlayersAll.get(i).getDuration();
+                            if (Compdurations > tmpduration) {
+                                tmpduration = Compdurations;
+                                MaxMpSessionID = StudioActivity.mediaPlayersAll.get(i).getAudioSessionId();
+                            }
+
                         }
-                        mediaPlayersAll.add(StudioActivity.mpall);
-                        PlayAllModel.add(i, new ModelPlayAllMediaPlayer(false, false, false, StudioActivity.mpall));
-
-                        Compdurations = StudioActivity.mediaPlayersAll.get(i).getDuration();
-                        if (Compdurations > tmpduration) {
-                            tmpduration = Compdurations;
-                            MaxMpSessionID = StudioActivity.mediaPlayersAll.get(i).getAudioSessionId();
-                        }
+                        IsRepeteReAll = true;
+                        playAll.setEnabled(false);
                     }
-                    IsRepeteReAll = true;
-                    playAll.setEnabled(false);
 
                 }
 
@@ -2757,67 +2786,76 @@ public class StudioActivity extends AppCompatActivity {
             return null;
         }
 
+        protected void onProgressUpdate(String... values) {
+            // Update user with progress bar or similar - runs on user interface thread
+
+        }
+
         protected void onPostExecute(Bitmap result) {
             try {
-                playAll.setVisibility(View.GONE);
-                ivRecord.setVisibility(View.GONE);
-                rlMelodyButton.setVisibility(View.GONE);
-                ivRecord_stop.setVisibility(View.VISIBLE);
-                rlRecordingButton.setVisibility(View.VISIBLE);
-                pauseAll.setVisibility(View.VISIBLE);
-                pauseAll.setEnabled(false);
-                StudioActivity.ivBackButton.setEnabled(true);
-                StudioActivity.ivHomeButton.setEnabled(true);
-                for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                if (InstrumentCountSize > 0) {
+                    rlPublic.setVisibility(View.VISIBLE);
+                    playAll.setVisibility(View.GONE);
+                    ivRecord.setVisibility(View.GONE);
+                    rlMelodyButton.setVisibility(View.GONE);
+                    ivRecord_stop.setVisibility(View.VISIBLE);
+                    rlRecordingButton.setVisibility(View.VISIBLE);
+                    pauseAll.setVisibility(View.VISIBLE);
+                    pauseAll.setEnabled(false);
+                    StudioActivity.ivBackButton.setEnabled(true);
+                    StudioActivity.ivHomeButton.setEnabled(true);
+                    for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
 
-                    pts = new MediaPlayer();
-                    // Create the Visualizer object and attach it to our media player.
+                        pts = new MediaPlayer();
+                        // Create the Visualizer object and attach it to our media player.
 
 
-                    pts = mediaPlayersAll.get(i);
+                        pts = mediaPlayersAll.get(i);
 
-                    try {
-                        pts.start();
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                    try {
-                        if (i <= lstViewHolder.size() - 1) {
-                            final ImageView holderPlay = lstViewHolder.get(i).holderPlay;
-                            final ImageView holderPause = lstViewHolder.get(i).holderPause;
-
-                            holderPlay.setVisibility(View.GONE);
-                            holderPause.setVisibility(View.VISIBLE);
-                            holderPause.setEnabled(false);
+                        try {
+                            pts.start();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
                         }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
+                        try {
+                            if (i <= lstViewHolder.size() - 1) {
+                                final ImageView holderPlay = lstViewHolder.get(i).holderPlay;
+                                final ImageView holderPause = lstViewHolder.get(i).holderPause;
+
+                                holderPlay.setVisibility(View.GONE);
+                                holderPause.setVisibility(View.VISIBLE);
+                                holderPause.setEnabled(false);
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+
                     }
+                    initAudio(MaxMpSessionID);
+                    frameProgress.setVisibility(View.GONE);
+                    RunSeekbar();
 
+                    if (ContextCompat.checkSelfPermission(StudioActivity.this, Manifest.permission.RECORD_AUDIO)
+                            != PackageManager.PERMISSION_GRANTED) {
+                        // Request permission
+                        ActivityCompat.requestPermissions(StudioActivity.this,
+                                new String[]{Manifest.permission.RECORD_AUDIO},
+                                PERMISSION_RECORD_AUDIO);
+                        return;
+                    }
+                    launchTask();
+
+
+                    chrono.setBase(SystemClock.elapsedRealtime());
+                    chrono.start();
                 }
-                initAudio(MaxMpSessionID);
-                frameProgress.setVisibility(View.GONE);
-                RunSeekbar();
-
-                if (ContextCompat.checkSelfPermission(StudioActivity.this, Manifest.permission.RECORD_AUDIO)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    // Request permission
-                    ActivityCompat.requestPermissions(StudioActivity.this,
-                            new String[]{Manifest.permission.RECORD_AUDIO},
-                            PERMISSION_RECORD_AUDIO);
-                    return;
-                }
-                launchTask();
-
-
-                chrono.setBase(SystemClock.elapsedRealtime());
-                chrono.start();
 
             } catch (IllegalStateException e) {
                 e.printStackTrace();
             }
         }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -3268,9 +3306,10 @@ public class StudioActivity extends AppCompatActivity {
 
     private void CloseConnection() {
         try {
-            if(handler!=null) {
+            if (handler != null) {
                 handler.removeCallbacksAndMessages(null);
             }
+            IsRecordingStart = false;
             if (mVisualizer != null) {
                 mVisualizer.release();
             }

@@ -7,6 +7,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,6 +17,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -85,6 +89,8 @@ import com.twitter.sdk.android.core.services.AccountService;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -104,7 +110,7 @@ import static com.yomelody.utils.Const.ServiceType.REGISTER;
 /**
  * Created by Saurabh Singh on 01/04/2017
  */
-public class SignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
+public class SignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     private final int RC_SIGN_IN = 9001;
     String KEY_FNAME = "f_name";
@@ -132,8 +138,8 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     String KEY_EMAIL = "email";
     String KEY_PASSWORD = "password";
     String KEY_DEVICE_TOKEN = "devicetoken";
-    static String TWITTER_CONSUMER_KEY = "HPEUPWqatYYqdX2BXXZCwhRa3";
-    static String TWITTER_CONSUMER_SECRET = "INlgRJqcVyxZe8tzfDhBZ0kYONTlWBY5NO8akXcnzVhERWL67I";
+    static String TWITTER_CONSUMER_KEY = "Xq6cieg5b6FFEqSsJHzTnbrW8";
+    static String TWITTER_CONSUMER_SECRET = "GtR8gm0JZySbZfVLlW4YwzCMc8D7ERXIz0C8kdN3TjZ5MBVkxc";
     int temp = 0;
 
     EditText etEmail, etPassword;
@@ -160,8 +166,8 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
     private boolean pendingPublishReauthorization = false;
     ProgressDialog progressDialog;
-    String IscheckMelody=null;
-    String melodyPackId=null;
+    String IscheckMelody = null;
+    String melodyPackId = null;
     private Activity mActivity;
     private GoogleApiClient mGoogleApiClient;
 
@@ -171,7 +177,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_sign_in);
-        mActivity=SignInActivity.this;
+        mActivity = SignInActivity.this;
         progressDialog = new ProgressDialog(SignInActivity.this);
         progressDialog.setTitle("Processing...");
         progressDialog.setMessage("Please wait...");
@@ -236,7 +242,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
-        Fabric.with(this,new Crashlytics());
+        Fabric.with(this, new Crashlytics());
         initCustomLogin();
 //        initTwitterLogin();
 
@@ -262,17 +268,17 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                                     //Picasso.with(SignInActivity.this).load("https://graph.facebook.com/" + id + "/picture").into(ivuserimg);
                                     firstNamefb = object.getString("first_name");
                                     lastNamefb = object.getString("last_name");
-                                    if(object.has("email")){
+                                    if (object.has("email")) {
                                         fbEmail = object.getString("email");
                                     }
                                     //tvFirstName.setText(namefb);
                                     //tvUserName.setText("@" + namefb);
                                     gender = object.getString("gender");
                                     //birthday = object.getString("birthday");
-                               //     String temp = object.getString("email");
+                                    //     String temp = object.getString("email");
                                     fbProfilePic = "https://graph.facebook.com/" + fbId + "/picture";
-                                    username = "@"+firstNamefb;
-                                 //   String profilePicUrl = object.getJSONObject("picture").getJSONObject("data").getString("url");
+                                    username = "@" + firstNamefb;
+                                    //   String profilePicUrl = object.getJSONObject("picture").getJSONObject("data").getString("url");
                                     Log.d("1", fbProfilePic);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -315,14 +321,18 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         btnLogIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if ((etEmail.getText().toString().trim().equals("")) && (etPassword.getText().toString().trim().equals(""))) {
-                    emailRequired.setVisibility(View.VISIBLE);
-                    emailRequired.setText("required");
-                    passwordRequired.setVisibility(View.VISIBLE);
-                    passwordRequired.setText("required");
-                } else {
-                    btnLogIn.setEnabled(false);
-                    LogIn();
+                try {
+                    if ((etEmail.getText().toString().trim().equals("")) && (etPassword.getText().toString().trim().equals(""))) {
+                        emailRequired.setVisibility(View.VISIBLE);
+                        emailRequired.setText("required");
+                        passwordRequired.setVisibility(View.VISIBLE);
+                        passwordRequired.setText("required");
+                    } else {
+                        btnLogIn.setEnabled(false);
+                        LogIn();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
         });
@@ -412,6 +422,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         initGmail();
         hideSoftKeyboard();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        printKeyHash(SignInActivity.this);
     }
 
     @Override
@@ -498,7 +509,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                     tEditor.putInt("status", 1);
                     tEditor.commit();
                     registrationSpecialTwitter();
-                    Intent intent=new Intent(mActivity,HomeActivity.class);
+                    Intent intent = new Intent(mActivity, HomeActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                 }
@@ -539,13 +550,11 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
         if (requestCode == TwitterAuthConfig.DEFAULT_AUTH_REQUEST_CODE) {
             client.onActivityResult(requestCode, resultCode, data);
-        }
-        else if (requestCode == RC_SIGN_IN) {
+        } else if (requestCode == RC_SIGN_IN) {
             AppHelper.sop("gmailEmail==RC_SIGN_IN");
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
-        }
-        else {
+        } else {
             if (mcallbckmanager.onActivityResult(requestCode, resultCode, data))
                 return;
         }
@@ -562,19 +571,19 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                     @Override
                     public void onResponse(String response) {
                         String successmsg = response.toString();
-                        AppHelper.sop("response==login=="+response);
+                        AppHelper.sop("response==login==" + response);
                         //Toast.makeText(SignInActivity.this, "" + successmsg, Toast.LENGTH_SHORT).show();
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
                             flag = jsonObject.getString("flag");
                             if (flag.equals("unsuccess")) {
                                 String msg = jsonObject.getString("msg");
-                                if (flag.equals("unsuccess") && msg!= null){
-                                    Toast.makeText(SignInActivity.this, ""+msg, Toast.LENGTH_SHORT).show();
+                                if (flag.equals("unsuccess") && msg != null) {
+                                    Toast.makeText(SignInActivity.this, "" + msg, Toast.LENGTH_SHORT).show();
                                     btnLogIn.setEnabled(true);
                                     etEmail.setText("");
                                     etPassword.setText("");
-                                }else {
+                                } else {
                                     btnLogIn.setEnabled(true);
                                     Toast.makeText(SignInActivity.this, "Invalid Email or Password", Toast.LENGTH_SHORT).show();
                                     etEmail.setText("");
@@ -617,28 +626,27 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
                                 final Intent intent = getIntent();
                                 if (intent == null) {
-                                }
-                                else {
+                                } else {
                                     try {
                                         IscheckMelody = intent.getExtras().getString("StudioBack");
-                                        melodyPackId=intent.getExtras().getString("melodyPackId");
+                                        melodyPackId = intent.getExtras().getString("melodyPackId");
                                     } catch (NullPointerException e) {
                                         e.printStackTrace();
                                     }
                                 }
-                                if(IscheckMelody==null) {
+                                if (IscheckMelody == null) {
                                     i = new Intent(mActivity, HomeActivity.class);
                                     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     startActivity(i);
-                                }else{
+                                } else {
                                     i = new Intent(getApplicationContext(), StudioActivity.class);
-                                    i.putExtra("IsFromSignActivity","StudioActivity");
-                                    i.putExtra("melodyPackId",melodyPackId);
+                                    i.putExtra("IsFromSignActivity", "StudioActivity");
+                                    i.putExtra("melodyPackId", melodyPackId);
                                     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    IscheckMelody=null;
-                                    melodyPackId=null;
+                                    IscheckMelody = null;
+                                    melodyPackId = null;
                                     startActivity(i);
 
                                 }
@@ -756,11 +764,12 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                                 fbEditor.putInt("status", 1);
                                 fbEditor.putString("description", rspns.getString("discription"));
                                 fbEditor.commit();
+
+                                Intent i = new Intent(mActivity, HomeActivity.class);
+                                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(i);
                             }
 
-                            Intent i = new Intent(mActivity, HomeActivity.class);
-                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(i);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -1066,7 +1075,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
-    private void initGmail(){
+    private void initGmail() {
         // [START configure_signin]
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
@@ -1125,8 +1134,8 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
-            String gmailEmail=acct.getEmail();
-            AppHelper.sop("gmailEmail=="+gmailEmail);
+            String gmailEmail = acct.getEmail();
+            AppHelper.sop("gmailEmail==" + gmailEmail);
 //            signOut();
             registerGmailApi(acct);
         } else {
@@ -1142,7 +1151,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                     @Override
                     public void onResponse(String response) {
                         String successmsg = response.toString();
-                        AppHelper.sop("response==="+response);
+                        AppHelper.sop("response===" + response);
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
                             flag = jsonObject.getString("flag");
@@ -1173,8 +1182,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
                         } catch (JSONException e) {
                             e.printStackTrace();
-                        }
-                        finally{
+                        } finally {
                             progressDialog.dismiss();
 
                         }
@@ -1203,22 +1211,19 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                if (signInAccount.getGivenName()!=null){
+                if (signInAccount.getGivenName() != null) {
                     params.put(KEY_FNAME, signInAccount.getGivenName());
-                }
-                else {
+                } else {
                     params.put(KEY_FNAME, "");
                 }
-                if (signInAccount.getFamilyName()!=null){
+                if (signInAccount.getFamilyName() != null) {
                     params.put(KEY_LNAME, signInAccount.getFamilyName());
-                }
-                else {
+                } else {
                     params.put(KEY_LNAME, "");
                 }
-                if (signInAccount.getDisplayName()!=null){
+                if (signInAccount.getDisplayName() != null) {
                     params.put(KEY_USERNAME, signInAccount.getDisplayName());
-                }
-                else {
+                } else {
                     params.put(KEY_USERNAME, "");
                 }
 
@@ -1229,15 +1234,14 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 params.put(KEY_DEVICE_TYPE, "android");
 //                params.put(KEY_DOB, date);
 //                params.put(KEY_PHONE, phone);
-                if (signInAccount.getPhotoUrl()!=null){
-                    params.put(KEY_PROFILE_PIC, signInAccount.getPhotoUrl()+"");
-                }
-                else {
-                    params.put(KEY_PROFILE_PIC,"");
+                if (signInAccount.getPhotoUrl() != null) {
+                    params.put(KEY_PROFILE_PIC, signInAccount.getPhotoUrl() + "");
+                } else {
+                    params.put(KEY_PROFILE_PIC, "");
                 }
 
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params==="+params+"\nURL=="+REGISTER);
+                AppHelper.sop("params===" + params + "\nURL==" + REGISTER);
                 return params;
             }
         };
@@ -1246,20 +1250,22 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     }
 
     private void signOut() {
-        if (mGoogleApiClient!=null && mGoogleApiClient.isConnected()){
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
                     new ResultCallback<Status>() {
                         @Override
                         public void onResult(Status status) {
-                            AppHelper.sop("signOut==status="+status);
-                        }});
+                            AppHelper.sop("signOut==status=" + status);
+                        }
+                    });
         }
     }
+
     /**
      * Hides the soft keyboard
      */
     public void hideSoftKeyboard() {
-        if(getCurrentFocus()!=null) {
+        if (getCurrentFocus() != null) {
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
         }
@@ -1272,6 +1278,38 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         view.requestFocus();
         inputMethodManager.showSoftInput(view, 0);
+    }
+
+    public static String printKeyHash(Activity context) {
+        PackageInfo packageInfo;
+        String key = null;
+        try {
+            //getting application package name, as defined in manifest
+            String packageName = context.getApplicationContext().getPackageName();
+
+            //Retriving package info
+            packageInfo = context.getPackageManager().getPackageInfo(packageName,
+                    PackageManager.GET_SIGNATURES);
+
+            Log.e("Package Name=", context.getApplicationContext().getPackageName());
+
+            for (Signature signature : packageInfo.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                key = new String(Base64.encode(md.digest(), 0));
+
+                // String key = new String(Base64.encodeBytes(md.digest()));
+                Log.e("Key Hash=", key);
+            }
+        } catch (PackageManager.NameNotFoundException e1) {
+            Log.e("Name not found", e1.toString());
+        } catch (NoSuchAlgorithmException e) {
+            Log.e("No such an algorithm", e.toString());
+        } catch (Exception e) {
+            Log.e("Exception", e.toString());
+        }
+
+        return key;
     }
 }
 

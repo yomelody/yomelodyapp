@@ -95,7 +95,7 @@ public class StationCommentActivity extends AppCompatActivity {
     String LIKES = "likes";
     String TYPE = "type";
 
-    MediaPlayer mp=null;
+    MediaPlayer mp = null;
     String instrumentFile;
     String position;
     //    public static ArrayList<JoinRecordingModel> JoinList = new ArrayList<JoinRecordingModel>();
@@ -180,62 +180,66 @@ public class StationCommentActivity extends AppCompatActivity {
         ivJoin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!userId.equals("") && userId != null) {
-                    String instruments, bpm, genre, recordName, userName, duration, date, plays, likes, comments, shares, melodyID;
+                try {
+                    if (!userId.equals("") && userId != null) {
+                        String instruments, bpm, genre, recordName, userName, duration, date, plays, likes, comments, shares, melodyID;
 
 
-                    genre = tvRecordingGenres.getText().toString().trim();
-                    recordName = tvRecordingName.getText().toString().trim();
-                    duration = tvContributeLength.getText().toString().trim();
-                    date = tvRecordingDate.getText().toString().trim();
-                    plays = tvViewCount.getText().toString().trim();
-                    userName = tvUserName.getText().toString().trim();
-                    likes = tvLikeCount.getText().toString().trim();
-                    comments = tvCommentCount.getText().toString().trim();
-                    shares = tvShareCount.getText().toString().trim();
+                        genre = tvRecordingGenres.getText().toString().trim();
+                        recordName = tvRecordingName.getText().toString().trim();
+                        duration = tvContributeLength.getText().toString().trim();
+                        date = tvRecordingDate.getText().toString().trim();
+                        plays = tvViewCount.getText().toString().trim();
+                        userName = tvUserName.getText().toString().trim();
+                        likes = tvLikeCount.getText().toString().trim();
+                        comments = tvCommentCount.getText().toString().trim();
+                        shares = tvShareCount.getText().toString().trim();
 
 //                    int pos = getAdapterPosition();
 
-                    SharedPreferences.Editor editor = getSharedPreferences("commentData", MODE_PRIVATE).edit();
+                        SharedPreferences.Editor editor = getSharedPreferences("commentData", MODE_PRIVATE).edit();
 
 
-                    editor.putString("genre", genre);
-                    editor.putString("melodyName", recordName);
-                    editor.putString("userName", userName);
-                    editor.putString("duration", duration);
-                    editor.putString("date", date);
-                    editor.putString("plays", plays);
-                    editor.putString("likes", likes);
-                    editor.putString("comments", comments);
-                    editor.putString("shares", shares);
+                        editor.putString("genre", genre);
+                        editor.putString("melodyName", recordName);
+                        editor.putString("userName", userName);
+                        editor.putString("duration", duration);
+                        editor.putString("date", date);
+                        editor.putString("plays", plays);
+                        editor.putString("likes", likes);
+                        editor.putString("comments", comments);
+                        editor.putString("shares", shares);
 //                    editor.putString("bitmapProfile", profile);
 //                    editor.putString("bitmapCover", cover);
 //                    editor.putString("melodyID", );
-                    editor.putString("fileType", "admin_melody");
-                    editor.commit();
+                        editor.putString("fileType", "admin_melody");
+                        editor.commit();
 
 
-                    try {
+                        try {
 
-                        RecordingsModel rm = recordingsModel;
+                            RecordingsModel rm = recordingsModel;
 
-                        SharedPreferences.Editor record = getSharedPreferences("RecordingData", MODE_PRIVATE).edit();
-                        record.putString("AddedBy", rm.getAddedBy());
-                        record.putString("Recording_id", rm.getRecordingId());
-                        record.putString("UserNameRec", rm.getUserName());
-                        record.putString("UserProfile", rm.getUserProfilePic());
-                        record.putString("RecordingName", rm.getRecordingName());
-                        record.commit();
-                        Intent intent = new Intent(mActivity, JoinActivity.class);
+                            SharedPreferences.Editor record = getSharedPreferences("RecordingData", MODE_PRIVATE).edit();
+                            record.putString("AddedBy", rm.getAddedBy());
+                            record.putString("Recording_id", rm.getRecordingId());
+                            record.putString("UserNameRec", rm.getUserName());
+                            record.putString("UserProfile", rm.getUserProfilePic());
+                            record.putString("RecordingName", rm.getRecordingName());
+                            record.commit();
+                            Intent intent = new Intent(mActivity, JoinActivity.class);
+                            startActivity(intent);
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                        }
+
+                    } else {
+                        Toast.makeText(mActivity, "Log in to join this Recording", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(mActivity, SignInActivity.class);
                         startActivity(intent);
-                    } catch (Throwable e) {
-                        e.printStackTrace();
                     }
-
-                } else {
-                    Toast.makeText(mActivity, "Log in to join this Recording", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(mActivity, SignInActivity.class);
-                    startActivity(intent);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
 
 
@@ -246,42 +250,45 @@ public class StationCommentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String position;
+                try {
+                    String MelodyName;
+                    if (!userId.equals("") && userId != null) {
+                        //Toast.makeText(context, "like", Toast.LENGTH_SHORT).show();
+                        //position = mpids.get(getAdapterPosition() + 1);
 
-                String MelodyName;
-                if (!userId.equals("") && userId != null) {
-                    //Toast.makeText(context, "like", Toast.LENGTH_SHORT).show();
-                    //position = mpids.get(getAdapterPosition() + 1);
+                        RecordingsModel recording = recordingsModel;
+                        if (recordingsModel != null) {
+                            MelodyName = recording.getRecordingName();
+                            position = recording.getRecordingId();
 
-                    RecordingsModel recording = recordingsModel;
-                    if (recordingsModel != null) {
-                        MelodyName = recording.getRecordingName();
-                        position = recording.getRecordingId();
-
-                        if (ivDislikeButton.getVisibility() == VISIBLE) {
-                            ivLikeButton.setVisibility(VISIBLE);
-                            ivDislikeButton.setVisibility(GONE);
-                            String like = tvLikeCount.getText().toString().trim();
-                            int likeValue = Integer.parseInt(like) - 1;
-                            like = String.valueOf(likeValue);
-                            tvLikeCount.setText(like);
-                            fetchLikeState(userId, position, "0", MelodyName);
+                            if (ivDislikeButton.getVisibility() == VISIBLE) {
+                                ivLikeButton.setVisibility(VISIBLE);
+                                ivDislikeButton.setVisibility(GONE);
+                                String like = tvLikeCount.getText().toString().trim();
+                                int likeValue = Integer.parseInt(like) - 1;
+                                like = String.valueOf(likeValue);
+                                tvLikeCount.setText(like);
+                                fetchLikeState(userId, position, "0", MelodyName);
 
 
-                        } else if (ivDislikeButton.getVisibility() == GONE) {
-                            ivLikeButton.setVisibility(GONE);
-                            ivDislikeButton.setVisibility(VISIBLE);
-                            String like = tvLikeCount.getText().toString().trim();
-                            int likeValue = Integer.parseInt(like) + 1;
-                            like = String.valueOf(likeValue);
-                            tvLikeCount.setText(like);
-                            fetchLikeState(userId, position, "1", MelodyName);
+                            } else if (ivDislikeButton.getVisibility() == GONE) {
+                                ivLikeButton.setVisibility(GONE);
+                                ivDislikeButton.setVisibility(VISIBLE);
+                                String like = tvLikeCount.getText().toString().trim();
+                                int likeValue = Integer.parseInt(like) + 1;
+                                like = String.valueOf(likeValue);
+                                tvLikeCount.setText(like);
+                                fetchLikeState(userId, position, "1", MelodyName);
+                            }
                         }
-                    }
 
-                } else {
-                    Toast.makeText(mActivity, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(mActivity, SignInActivity.class);
-                    startActivity(intent);
+                    } else {
+                        Toast.makeText(mActivity, "Log in to like this melody pack", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(mActivity, SignInActivity.class);
+                        startActivity(intent);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
         });
@@ -298,18 +305,21 @@ public class StationCommentActivity extends AppCompatActivity {
 //                        alertDialog.setMessage("Choose yes to share in chat.");
                     alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-
-                            SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
-                            RecordingsModel recording = recordingsModel;
-                            if (recording != null) {
-                                editor.putString("recID", recording.getRecordingId());
-                                editor.apply();
-                                Intent intent = new Intent(mActivity, MessengerActivity.class);
-                                intent.putExtra("commingForm", "Station");
-                                intent.putExtra("share", recording);
-                                intent.putExtra("file_type", "user_recording");
-                                startActivityForResult(intent, RecordingsCardAdapter.REQUEST_RECORDING_COMMENT);
-                                finish();
+                            try {
+                                SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
+                                RecordingsModel recording = recordingsModel;
+                                if (recording != null) {
+                                    editor.putString("recID", recording.getRecordingId());
+                                    editor.apply();
+                                    Intent intent = new Intent(mActivity, MessengerActivity.class);
+                                    intent.putExtra("commingForm", "Station");
+                                    intent.putExtra("share", recording);
+                                    intent.putExtra("file_type", "user_recording");
+                                    startActivityForResult(intent, RecordingsCardAdapter.REQUEST_RECORDING_COMMENT);
+                                    finish();
+                                }
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
                             }
 
                         }
@@ -317,17 +327,21 @@ public class StationCommentActivity extends AppCompatActivity {
                     alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
-                            RecordingsModel recording = recordingsModel;
-                            if (recording != null) {
-                                String RecordingURL = recording.getrecordingurl();
-                                Intent shareIntent = new Intent();
-                                shareIntent.setAction(Intent.ACTION_SEND);
-                                shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                                shareIntent.putExtra(Intent.EXTRA_TEXT, mActivity.getString(R.string.yomelody_music));
-                                shareIntent.putExtra(Intent.EXTRA_TEXT, recording.getThumnailUrl());
-                                shareIntent.setType("image/jpeg");
-                                shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivity(Intent.createChooser(shareIntent, "Choose Sharing option!"));
+                            try {
+                                RecordingsModel recording = recordingsModel;
+                                if (recording != null) {
+                                    String RecordingURL = recording.getrecordingurl();
+                                    Intent shareIntent = new Intent();
+                                    shareIntent.setAction(Intent.ACTION_SEND);
+                                    shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                                    shareIntent.putExtra(Intent.EXTRA_TEXT, mActivity.getString(R.string.yomelody_music));
+                                    shareIntent.putExtra(Intent.EXTRA_TEXT, recording.getThumnailUrl());
+                                    shareIntent.setType("image/jpeg");
+                                    shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(Intent.createChooser(shareIntent, "Choose Sharing option!"));
+                                }
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
                             }
 
                         }
@@ -346,10 +360,14 @@ public class StationCommentActivity extends AppCompatActivity {
         rlProfilePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (recordingsModel != null) {
-                    Intent intent = new Intent(mActivity, ProfileActivity.class);
-                    intent.putExtra("showProfileUserId", recordingsModel.getAddedBy());
-                    startActivity(intent);
+                try {
+                    if (recordingsModel != null) {
+                        Intent intent = new Intent(mActivity, ProfileActivity.class);
+                        intent.putExtra("showProfileUserId", recordingsModel.getAddedBy());
+                        startActivity(intent);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
         });
@@ -368,13 +386,13 @@ public class StationCommentActivity extends AppCompatActivity {
                     PlayCounter = 0;
                     MinJoinCount = 1;
 
-                        try {
-                            if(mHandler1!=null) {
-                                mHandler1.removeCallbacksAndMessages(null);
-                            }
-                        }catch (Exception ex){
-                            ex.printStackTrace();
+                    try {
+                        if (mHandler1 != null) {
+                            mHandler1.removeCallbacksAndMessages(null);
                         }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                         /*lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
                         lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
                         SeekBar seekBar = lastModifiedHoled.itemView.findViewById(R.id.seekBarRecordings);
@@ -413,7 +431,7 @@ public class StationCommentActivity extends AppCompatActivity {
 
                     mp.stop();
                     mp.reset();
-                    mp=null;
+                    mp = null;
                     length = mp.getCurrentPosition();
                 }
                 // seekBarRecordings.setProgress(0);
@@ -425,14 +443,14 @@ public class StationCommentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                        if (PlayCounter <= TempJoinCount - 1 && PlayCounter != 0) {
-                            progressDialog = new ProgressDialog(v.getContext());
-                            progressDialog.setMessage("Loading...");
-                            progressDialog.show();
-                            //lastModifiedHoled = holder;
-                            PlayCounter = PlayCounter - 1;
-                            PlayAudio(0, "pre");
-                            //lastModifiedHoled = holder;
+                    if (PlayCounter <= TempJoinCount - 1 && PlayCounter != 0) {
+                        progressDialog = new ProgressDialog(v.getContext());
+                        progressDialog.setMessage("Loading...");
+                        progressDialog.show();
+                        //lastModifiedHoled = holder;
+                        PlayCounter = PlayCounter - 1;
+                        PlayAudio(0, "pre");
+                        //lastModifiedHoled = holder;
 
                     }
                 } catch (Exception ex) {
@@ -446,15 +464,15 @@ public class StationCommentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                        if (PlayCounter < TempJoinCount - 1) {
-                            progressDialog = new ProgressDialog(v.getContext());
-                            progressDialog.setMessage("Loading...");
-                            progressDialog.show();
-                            //lastModifiedHoled = holder;
-                            PlayCounter = PlayCounter + 1;
-                            PlayAudio(0, "next");
-                            //lastModifiedHoled = holder;
-                        }
+                    if (PlayCounter < TempJoinCount - 1) {
+                        progressDialog = new ProgressDialog(v.getContext());
+                        progressDialog.setMessage("Loading...");
+                        progressDialog.show();
+                        //lastModifiedHoled = holder;
+                        PlayCounter = PlayCounter + 1;
+                        PlayAudio(0, "next");
+                        //lastModifiedHoled = holder;
+                    }
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -500,9 +518,13 @@ public class StationCommentActivity extends AppCompatActivity {
         ivHomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mActivity, HomeActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
+                try {
+                    Intent intent = new Intent(mActivity, HomeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         });
 
@@ -510,21 +532,24 @@ public class StationCommentActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                try {
+                    if (!userId.equals("") && userId != null) {
 
-                if (!userId.equals("") && userId != null) {
-
-                    tvCancel.setVisibility(View.VISIBLE);
-                    tvSend.setVisibility(View.GONE);
-                    String comment = etComment.getText().toString().trim();
-                    etComment.getText().clear();
-                    sendComment(comment, userId);
+                        tvCancel.setVisibility(View.VISIBLE);
+                        tvSend.setVisibility(View.GONE);
+                        String comment = etComment.getText().toString().trim();
+                        etComment.getText().clear();
+                        sendComment(comment, userId);
 
 
-                } else {
-                    Toast.makeText(getApplicationContext(), "Log in to comment", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    getApplicationContext().startActivity(intent);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Log in to comment", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        getApplicationContext().startActivity(intent);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
         });
@@ -532,13 +557,17 @@ public class StationCommentActivity extends AppCompatActivity {
         tvCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                etComment.getText().clear();
-                Intent i = new Intent(StationCommentActivity.this, StationActivity.class);
-                startActivity(i);
-                InputMethodManager inputManager = (InputMethodManager)
-                        getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                        InputMethodManager.HIDE_NOT_ALWAYS);
+                try {
+                    etComment.getText().clear();
+                    Intent i = new Intent(StationCommentActivity.this, StationActivity.class);
+                    startActivity(i);
+                    InputMethodManager inputManager = (InputMethodManager)
+                            getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                            InputMethodManager.HIDE_NOT_ALWAYS);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         });
 
@@ -546,62 +575,70 @@ public class StationCommentActivity extends AppCompatActivity {
     }
 
     private void adapterWork() {
-        recyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager lm = new LinearLayoutManager(getApplicationContext());
-        recyclerView.setLayoutManager(lm);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setItemViewCacheSize(10);
-        recyclerView.setDrawingCacheEnabled(true);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        adapter = new CommentsAdapter(getApplicationContext(), commentList);
-        recyclerView.setAdapter(adapter);
-        getComments();
+        try {
+            recyclerView.setHasFixedSize(true);
+            RecyclerView.LayoutManager lm = new LinearLayoutManager(getApplicationContext());
+            recyclerView.setLayoutManager(lm);
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setItemViewCacheSize(10);
+            recyclerView.setDrawingCacheEnabled(true);
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+            adapter = new CommentsAdapter(getApplicationContext(), commentList);
+            recyclerView.setAdapter(adapter);
+            getComments();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     void setData() {
-        String totaljoincount = "";
-        if (getIntent() != null) {
-            recordingsModel = (RecordingsModel) getIntent().getSerializableExtra("recording_modle");
-            recordingsPool = (RecordingsPool) getIntent().getSerializableExtra("recording_pool");
+        try {
+            String totaljoincount = "";
+            if (getIntent() != null) {
+                recordingsModel = (RecordingsModel) getIntent().getSerializableExtra("recording_modle");
+                recordingsPool = (RecordingsPool) getIntent().getSerializableExtra("recording_pool");
 
-            tvUserName.setText(recordingsModel.getUserName());
-            tvRecordingName.setText(recordingsModel.getRecordingName());
-            tvIncludedCount.setText("Included: "+recordingsModel.getJoinCount());
-            tvRecordingGenres.setText("Genre:" + " " + recordingsModel.getGenreName());
-            tvContributeLength.setText(DateUtils.formatElapsedTime(Long.parseLong(recordingsPool.getDuration())));
-            tvContributeDate.setText(convertDate(recordingsPool.getDateAdded()));
+                tvUserName.setText(recordingsModel.getUserName());
+                tvRecordingName.setText(recordingsModel.getRecordingName());
+                tvIncludedCount.setText("Included: " + recordingsModel.getJoinCount());
+                tvRecordingGenres.setText("Genre:" + " " + recordingsModel.getGenreName());
+                tvContributeLength.setText(DateUtils.formatElapsedTime(Long.parseLong(recordingsPool.getDuration())));
+                tvContributeDate.setText(convertDate(recordingsPool.getDateAdded()));
 
-            if (recordingsModel.getJoinCount() == null) {
-                totaljoincount = "(" + "1" + " of " + "1" + ")";
-            } else {
-                totaljoincount = CalJoinCount(Integer.parseInt(recordingsModel.getJoinCount()));
+                if (recordingsModel.getJoinCount() == null) {
+                    totaljoincount = "(" + "1" + " of " + "1" + ")";
+                } else {
+                    totaljoincount = CalJoinCount(Integer.parseInt(recordingsModel.getJoinCount()));
+                }
+
+                if (recordingsModel.getJoinCount() != null) {
+                    TemptxtJoinCount.setText(recordingsModel.getJoinCount());
+                } else {
+                    TemptxtJoinCount.setText("0");
+                }
+
+                txtJoinCount.setText(totaljoincount);
+
+                txtJoinCount.setText(totaljoincount);
+                Picasso.with(this).load(recordingsModel.getUserProfilePic()).into(userProfileImage);
+
+
+                tvRecordingDate.setText(convertDate(recordingsPool.getDateAdded()));
+                tvViewCount.setText(getIntent().getStringExtra("play_count"));
+                tvLikeCount.setText(getIntent().getStringExtra("likes"));
+                tvCommentCount.setText(String.valueOf(recordingsModel.getCommentCount()));
+                tvShareCount.setText(recordingsModel.getShareCount() + "");
+
+                String likeStatus = getIntent().getStringExtra("LikeStatus");
+                if (likeStatus.equalsIgnoreCase("0")) {
+                    ivDislikeButton.setVisibility(GONE);
+                } else {
+                    ivDislikeButton.setVisibility(VISIBLE);
+                }
+                AppHelper.sop("likeStatus======" + likeStatus + "");
             }
-
-            if (recordingsModel.getJoinCount() != null) {
-                TemptxtJoinCount.setText(recordingsModel.getJoinCount());
-            } else {
-                TemptxtJoinCount.setText("0");
-            }
-
-            txtJoinCount.setText(totaljoincount);
-
-            txtJoinCount.setText(totaljoincount);
-            Picasso.with(this).load(recordingsModel.getUserProfilePic()).into(userProfileImage);
-
-
-            tvRecordingDate.setText(convertDate(recordingsPool.getDateAdded()));
-            tvViewCount.setText(getIntent().getStringExtra("play_count"));
-            tvLikeCount.setText(getIntent().getStringExtra("likes"));
-            tvCommentCount.setText(String.valueOf(recordingsModel.getCommentCount()));
-            tvShareCount.setText(recordingsModel.getShareCount() + "");
-
-            String likeStatus = getIntent().getStringExtra("LikeStatus");
-            if (likeStatus.equalsIgnoreCase("0")) {
-                ivDislikeButton.setVisibility(GONE);
-            } else {
-                ivDislikeButton.setVisibility(VISIBLE);
-            }
-            AppHelper.sop("likeStatus======" + likeStatus + "");
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -687,9 +724,13 @@ public class StationCommentActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(String response) {
                             //Toast.makeText(context, "" + response, Toast.LENGTH_SHORT).show();
-                            Intent resultIntent = new Intent();
-                            resultIntent.putExtra("LIKE", "Like");
-                            setResult(Activity.RESULT_OK, resultIntent);
+                            try {
+                                Intent resultIntent = new Intent();
+                                resultIntent.putExtra("LIKE", "Like");
+                                setResult(Activity.RESULT_OK, resultIntent);
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
                         }
                     },
                     new Response.ErrorListener() {
@@ -771,7 +812,7 @@ public class StationCommentActivity extends AppCompatActivity {
         try {
             ///    duration1 = mp.getDuration();
             seekBarRecordings.setProgress((int) (((float) mp.getCurrentPosition() / duration1) * 100));// This math construction give a percentage of "was playing"/"song length"
-            if (mp!=null && mp.isPlaying()) {
+            if (mp != null && mp.isPlaying()) {
                 Runnable notification = new Runnable() {
                     public void run() {
                         primarySeekBarProgressUpdater();
@@ -824,14 +865,18 @@ public class StationCommentActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response==" + response);
-                        commentList.clear();
+                        try {
+                            AppHelper.sop("response==" + response);
+                            commentList.clear();
 
 
-                        new ParseContents(getApplicationContext()).parseComments(response, commentList);
-                        adapter.notifyDataSetChanged();
+                            new ParseContents(getApplicationContext()).parseComments(response, commentList);
+                            adapter.notifyDataSetChanged();
 //                        recyclerView.smoothScrollToPosition(adapter.getItemCount());
-                        recyclerView.scrollToPosition(commentList.size() - 1);
+                            recyclerView.scrollToPosition(commentList.size() - 1);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -879,17 +924,21 @@ public class StationCommentActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        AppHelper.sop("response==" + response);
+                        try {
+                            AppHelper.sop("response==" + response);
 
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra("PARAMETER", "Like");
-                        setResult(Activity.RESULT_OK, resultIntent);
+                            Intent resultIntent = new Intent();
+                            resultIntent.putExtra("PARAMETER", "Like");
+                            setResult(Activity.RESULT_OK, resultIntent);
 
-                        int commentCount = Integer.parseInt(tvCommentCount.getText().toString().trim()) + 1;
+                            int commentCount = Integer.parseInt(tvCommentCount.getText().toString().trim()) + 1;
 
-                        tvCommentCount.setText(String.valueOf(commentCount));
+                            tvCommentCount.setText(String.valueOf(commentCount));
 //                        adapter.notifyDataSetChanged();
-                        getComments();
+                            getComments();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
 //                        recyclerView.smoothScrollToPosition(adapter.getItemCount()-1);
 //                      new ParseContents(getApplicationContext()).parseComments(response, commentList);
                     }
@@ -962,11 +1011,14 @@ public class StationCommentActivity extends AppCompatActivity {
                 userProfileImage.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
-                        String showProfileUserId = commentList.get(getAdapterPosition()).getUser_id();
-                        Intent intent = new Intent(view.getContext(), ProfileActivity.class);
-                        intent.putExtra("showProfileUserId", showProfileUserId);
-                        view.getContext().startActivity(intent);
+                        try {
+                            String showProfileUserId = commentList.get(getAdapterPosition()).getUser_id();
+                            Intent intent = new Intent(view.getContext(), ProfileActivity.class);
+                            intent.putExtra("showProfileUserId", showProfileUserId);
+                            view.getContext().startActivity(intent);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 });
             }
@@ -981,14 +1033,17 @@ public class StationCommentActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final MyViewHolder holder, int listPosition) {
-
-            Comments comments = commentList.get(listPosition);
-            Picasso.with(holder.userProfileImage.getContext()).load(comments.getUserProfileImage()).into(holder.userProfileImage);
-            holder.tvRealName.setText(comments.getTvRealName());
-            holder.tvUsername.setText("@" + comments.getTvUsername());
-            holder.tvTime.setText(DateTime(comments.getTvTime()));
-            holder.tvMsg.setText(comments.getTvMsg());
-            //DateTime(c.getString(comments.getTvTime())
+            try {
+                Comments comments = commentList.get(listPosition);
+                Picasso.with(holder.userProfileImage.getContext()).load(comments.getUserProfileImage()).into(holder.userProfileImage);
+                holder.tvRealName.setText(comments.getTvRealName());
+                holder.tvUsername.setText("@" + comments.getTvUsername());
+                holder.tvTime.setText(DateTime(comments.getTvTime()));
+                holder.tvMsg.setText(comments.getTvMsg());
+                //DateTime(c.getString(comments.getTvTime())
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
 
         }
 
@@ -1020,7 +1075,7 @@ public class StationCommentActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        try{
+        try {
             if (mp != null) {
                 if (mp.isPlaying()) {
                     mp.stop();
@@ -1028,11 +1083,11 @@ public class StationCommentActivity extends AppCompatActivity {
                 mp.reset();
                 mp.release();
                 mp = null;
-                if (mHandler1!=null){
+                if (mHandler1 != null) {
                     mHandler1.removeCallbacksAndMessages(null);
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -1058,7 +1113,7 @@ public class StationCommentActivity extends AppCompatActivity {
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
-                            if(mHandler1!=null) {
+                            if (mHandler1 != null) {
                                 mHandler1.removeCallbacksAndMessages(null);
                             }
 
@@ -1108,7 +1163,7 @@ public class StationCommentActivity extends AppCompatActivity {
 
                                 tvIncludedCount.setText(UpdateCalJoinCount(TempJoinCount));
                             }
-                        }catch (Exception ex){
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         }
                     }
@@ -1119,7 +1174,7 @@ public class StationCommentActivity extends AppCompatActivity {
 
                         try {
                             progressDialog.dismiss();
-                            if(mHandler1!=null) {
+                            if (mHandler1 != null) {
                                 mHandler1.removeCallbacksAndMessages(null);
                             }
                         } catch (Exception ex) {
@@ -1138,7 +1193,7 @@ public class StationCommentActivity extends AppCompatActivity {
                             seekBarRecordings.setProgress(0);
                             length = 0;
                             duration1 = 0;
-                        }catch (Exception ex){
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         }
 
