@@ -169,67 +169,38 @@ public class StudioActivity extends AppCompatActivity {
     AudioManager audioManager;
     final int MY_PERMISSIONS_REQUEST_MICROPHONE = 200;
     final int MY_PERMISSIONS_REQUEST_STORAGE = 201;
-    private static final int SAMPLING_RATE = 44100;
-    int MY_SOCKET_TIMEOUT_MS = 30000;
     private int PICK_IMAGE_REQUEST = 1;
     private Bitmap bitmap;
-    private String FILE_RECORDING = "";
-    private String RECORDING_TYPE = "recording_type";
     private String USER_ID = "user_id";
-    private String USERID1 = "userid";
-    private String RECORDING_NAME = "topic_name";
-    private String RECORDING_GENRE = "genere";
-    private String RECORDING_DURATION = "duration";
-    private String SHARE_PUBLIC = "public_flag";
-    private String RECORDING_BPM = "bpm";
-    private String ADMIN_INSTRUMENT_ID = "admin_instruments_ids";
-    private String USER_INSTRUMENT_ID = "user_instruments_ids";
 
     private String FILE_TYPE = "file_type";
-    private String IS_MELODY = "isMelody";
-    private String ID_MELODY_REC = "melodyOrRecordingID";
-    private String FILE1 = "file1";
-    private String USER_ID1 = "user_id";
-    ArrayList<RecordingsModel> recordingList = new ArrayList<>();
 
     ArrayList<Genres> genresArrayList = new ArrayList<>();
     ArrayList<String> genresName = new ArrayList<>();
     ArrayList<String> genresId = new ArrayList<>();
     String KEY_GENRE_ID = "id";
 
-    List<String> genreList = new ArrayList<>();
     String IsMicConnected;
-    private int mBufferSize;
     private static byte[] buffer;
-    //private String mDecibelFormat;
-    private View view;
-    long elapsedMillis;
-    MediaPlayer mPlayer;
-    Timer myTimer;
     public static Chronometer chrono;
     ImageView audio_feed, grey_circle, blue_circle;
     public static TextView tvPublic, tvDone, tvInfo, recording_date, melody_date, melody_detail;
     EditText subEtTopicName;
     Spinner sp;
     RadioGroup rgR;
-    RadioButton radioButton;
     public static TextView mDecibelView;
 
     public static MediaRecorder recorder;
-    private final int requestCode = 20;
     public static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
     public static boolean isRecording = false;
     public static MediaPlayer mediaPlayer = null;
     public static String audioFilePath;
-    private static String instrumentFilePath;
     public static ArrayList<InstrumentListAdapter.ViewHolder> lstViewHolder = new ArrayList<InstrumentListAdapter.ViewHolder>();
-    Uri audioUri;
-    MediaPlayer mpVisulizer;
     String KEY_GENRE_NAME = "name";
     String KEY_FLAG = "flag";
     String KEY_RESPONSE = "response";//JSONArray
 
-    public static String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic,TwitprofilePic, fbName, fbUserName, fbId, melodyPackId, joinRecordingId, instrumentCount, haveJoinid;
+    public static String firstName, userNameLogin, profilePicLogin, Name, userName, profilePic, TwitprofilePic, fbName, fbUserName, fbId, melodyPackId, joinRecordingId, instrumentCount, haveJoinid;
     String selectedGenre;
     int statusNormal, statusFb, statusTwitter;
     String melodyName, instrumentName;
@@ -260,10 +231,7 @@ public class StudioActivity extends AppCompatActivity {
     String idUpload;
     int InstrumentCountSize = 0;
     public static boolean mShouldContinue = true;
-    ArrayList<String> urls;
-    MediaPlayer[] media;
-    List<MediaPlayer> mps = new ArrayList<MediaPlayer>();
-    public static boolean playfrom_studio = false;
+
     public static String recordingDuration;
     public static long stop_rec_time;
     public static String time_stop;
@@ -272,7 +240,6 @@ public class StudioActivity extends AppCompatActivity {
     public static RelativeLayout rlInviteButton, rlBase;
     public static TextView tvInstrumentLength, tvUserName, tvInstrumentName, tvBpmRate;
     public static ImageView userProfileImage, ivInstrumentCover, playAll, pauseAll;
-    ArrayList<SubscriptionPackage> subscriptionPackageArrayList = new ArrayList<>();
     public static MelodyMixing melodyMixing = new MelodyMixing();
     public static ArrayList<MixingData> list = new ArrayList<MixingData>();
 
@@ -294,10 +261,7 @@ public class StudioActivity extends AppCompatActivity {
     public static ArrayList<ModelPlayAllMediaPlayer> PlayAllModel = new ArrayList<>();
     public static List<MediaPlayer> mp_start = new ArrayList<MediaPlayer>();
     public static final Handler handler = new Handler();
-    private String RECORDING_ID = "rid";
     CallbackManager callbackManager;
-    URL ShortUrl;
-    String pos = "0";
     BroadcastReceiver mRegistrationBroadcastReceiver;
     //    private boolean fbSwitch, twitterSwitch, googleSwitch;
     private BroadcastReceiver mReceiver;
@@ -312,21 +276,18 @@ public class StudioActivity extends AppCompatActivity {
 
     private static final int PERMISSION_RECORD_AUDIO = 0;
     private RecordWaveTask recordTask = null;
-    private RecordingThread mRecordingThread;
-    private Thread mThread;
-    public static AudioDataReceivedListener mListener;
     public static VisualizerView mVisualizerView;
     public static Visualizer mVisualizer;
     public static boolean IsRepeat = false;
-    int RecmaxVolume = 1, MelmaxVolume = 1;
+    int MelmaxVolume = 1;
     public static boolean IsRepeteReAll = false;
     private SharedPreferences socialStatusPref;
     public static String IsExp;
     public static int LayerCount = 0;
     boolean IsValidPack = false;
     int PackDuration = 0;
-    String PackId = null;
     public static boolean IsRecordingStart = false;
+    private AsyncTask mMyTask = null;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -692,7 +653,7 @@ public class StudioActivity extends AppCompatActivity {
         SharedPreferences twitterPref = this.getSharedPreferences("TwitterPref", MODE_PRIVATE);
         Name = twitterPref.getString("Name", null);
         userName = twitterPref.getString("userName", null);
-        TwitprofilePic =twitterPref.getString("profilePic",null);// twitterPref.getString("ProfilePic", null);
+        TwitprofilePic = twitterPref.getString("profilePic", null);// twitterPref.getString("ProfilePic", null);
         statusTwitter = twitterPref.getInt("status", 0);
 
         if (statusTwitter == 1) {
@@ -1064,7 +1025,7 @@ public class StudioActivity extends AppCompatActivity {
                         mVisualizer.release();
                     }
                     //StudioActivity.this.recreate();
-                    if(lstViewHolder.size()>0){
+                    if (lstViewHolder.size() > 0) {
                         instrumentList.clear();
                         lstViewHolder.clear();
                     }
@@ -1090,7 +1051,7 @@ public class StudioActivity extends AppCompatActivity {
                     if (instrumentList.size() > 0) {
                         rlSync.setVisibility(View.VISIBLE);
                     }
-
+                    mMyTask = null;
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -1298,7 +1259,7 @@ public class StudioActivity extends AppCompatActivity {
                     StudioActivity.recyclerViewInstruments.smoothScrollToPosition(instrumentList.size());
 
                     if (!IsValidPack || instrumentList.size() <= LayerCount) {
-                        new PrepareInstruments().execute();
+                        mMyTask = new PrepareInstruments().execute();
                     } else {
                         if (IsExp == "false") {
                             if (LayerCount < instrumentList.size() && LayerCount != 0) {
@@ -1325,6 +1286,13 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    try {
+                        // if (!mMyTask.isCancelled() &&  mMyTask.getStatus() == AsyncTask.Status.RUNNING) {
+                        mMyTask.cancel(true);
+                        //}
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                     IsRepeteReAll = false;
                     if (!recordTask.isCancelled() && recordTask.getStatus() == AsyncTask.Status.RUNNING) {
                         recordTask.cancel(false);
@@ -1368,25 +1336,6 @@ public class StudioActivity extends AppCompatActivity {
                     }
 
                     try {
-                        tvDone.setEnabled(true);
-                        chrono.stop();
-                        if (mpall != null) {
-                            try {
-                                mpall.stop();
-                                mpall.reset();
-                                mpall.release();
-                                mpall = null;
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-
-                        }
-
-
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                    }
-                    try {
                         for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
                             PlayAllModel.get(i).setRepete(false);
                             if (i <= lstViewHolder.size() - 1) {
@@ -1405,8 +1354,6 @@ public class StudioActivity extends AppCompatActivity {
                                 holderPause.setEnabled(true);
                                 try {
                                     mediaPlayersAll.get(i).stop();
-                                    mediaPlayersAll.get(i).reset();
-                                    mediaPlayersAll.get(i).release();
                                 } catch (Exception ex) {
                                     ex.printStackTrace();
                                 }
@@ -1416,6 +1363,25 @@ public class StudioActivity extends AppCompatActivity {
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
+                    }
+                    try {
+                        tvDone.setEnabled(true);
+                        chrono.stop();
+                        if (mpall != null) {
+                            try {
+                                mpall.stop();
+                                mpall.reset();
+                                mpall.release();
+                                mpall = null;
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+
+                        }
+
+
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
                     }
                     if (mVisualizer != null) {
                         mVisualizer.release();
@@ -1438,9 +1404,11 @@ public class StudioActivity extends AppCompatActivity {
                     time_stop = formateMilliSeccond(stop_rec_time);
                     try {
                         recordingDuration = time_stop;
+
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
+
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -2484,14 +2452,13 @@ public class StudioActivity extends AppCompatActivity {
             if (StudioActivity.mpInst != null) {
                 StudioActivity.mpInst.stop();
             }
-            PrepareInstruments prepareInstruments = new PrepareInstruments();
-            prepareInstruments.cancel(true);
+
             if (!recordTask.isCancelled() && recordTask.getStatus() == AsyncTask.Status.RUNNING) {
                 recordTask.cancel(false);
             } else {
                 //Toast.makeText(StudioActivity.this, "Task not running.", Toast.LENGTH_SHORT).show();
             }
-
+            mMyTask.cancel(true);
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -2701,6 +2668,8 @@ public class StudioActivity extends AppCompatActivity {
 
     private class PrepareInstruments extends AsyncTask<String, Void, Bitmap> {
 
+        private AsyncTask<String, Void, Bitmap> asyncTask = null;
+
         protected void onPreExecute() {
 
             try {
@@ -2739,6 +2708,12 @@ public class StudioActivity extends AppCompatActivity {
             }
         }
 
+        protected void onCancelled() {
+            // Do something when async task is cancelled
+            Log.d("Asysc operation ", "is cancel...");
+
+        }
+
         protected Bitmap doInBackground(String... urls) {
 
             try {
@@ -2750,30 +2725,33 @@ public class StudioActivity extends AppCompatActivity {
                     IsRecordingStart = true;
                     InstrumentCountSize = instrumentList.size();
                     if (InstrumentCountSize > 0) {
-                        for (int i = 0; i < InstrumentCountSize; i++) {
-                            Log.d("Instrument url-:", "" + instrumentList.get(i).getInstrumentFile());
-                            mpall = new MediaPlayer();
-                            mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                            mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
-                            try {
+                        try {
+                            for (int i = 0; i < InstrumentCountSize; i++) {
+                                Log.d("Instrument url-:", "" + instrumentList.get(i).getInstrumentFile());
+                                mpall = new MediaPlayer();
+                                mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                                mpall.setDataSource(instrumentList.get(i).getInstrumentFile());
+                                try {
 
-                                mpall.prepare();
+                                    mpall.prepare();
 
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                                mediaPlayersAll.add(StudioActivity.mpall);
+                                PlayAllModel.add(i, new ModelPlayAllMediaPlayer(false, false, false, StudioActivity.mpall));
+
+                                Compdurations = StudioActivity.mediaPlayersAll.get(i).getDuration();
+                                if (Compdurations > tmpduration) {
+                                    tmpduration = Compdurations;
+                                    MaxMpSessionID = StudioActivity.mediaPlayersAll.get(i).getAudioSessionId();
+                                }
+
                             }
-                            mediaPlayersAll.add(StudioActivity.mpall);
-                            PlayAllModel.add(i, new ModelPlayAllMediaPlayer(false, false, false, StudioActivity.mpall));
 
-                            Compdurations = StudioActivity.mediaPlayersAll.get(i).getDuration();
-                            if (Compdurations > tmpduration) {
-                                tmpduration = Compdurations;
-                                MaxMpSessionID = StudioActivity.mediaPlayersAll.get(i).getAudioSessionId();
-                            }
-
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
                         }
-                        IsRepeteReAll = true;
-                        playAll.setEnabled(false);
                     }
 
                 }
@@ -2794,6 +2772,8 @@ public class StudioActivity extends AppCompatActivity {
         protected void onPostExecute(Bitmap result) {
             try {
                 if (InstrumentCountSize > 0) {
+                    IsRepeteReAll = true;
+                    playAll.setEnabled(false);
                     rlPublic.setVisibility(View.VISIBLE);
                     playAll.setVisibility(View.GONE);
                     ivRecord.setVisibility(View.GONE);
@@ -2852,6 +2832,8 @@ public class StudioActivity extends AppCompatActivity {
 
             } catch (IllegalStateException e) {
                 e.printStackTrace();
+            } finally {
+
             }
         }
     }
@@ -3364,6 +3346,8 @@ public class StudioActivity extends AppCompatActivity {
                 instrumentList.clear();
             }
             chrono.stop();
+
+            mMyTask.cancel(true);
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
