@@ -15,11 +15,19 @@ import java.util.TimeZone;
 
 public class Message implements Serializable {
 
-    String id, message, createdAt, senderId, file, fileId, fileType, profilePic, isRead, recCount;
+    String id, message, createdAt, senderId, file, fileId, fileType, profilePic, isRead, recCount,MsgTime;
     JSONArray audioDetails;
 
     public String getRecCount() {
         return recCount;
+    }
+
+    public String getMsgTime() {
+        return MsgTime;
+    }
+
+    public void setMsgTime(String msgTime) {
+        MsgTime = msgTime;
     }
 
     public void setRecCount(String recCount) {

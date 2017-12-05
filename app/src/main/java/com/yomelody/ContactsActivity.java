@@ -2,6 +2,7 @@ package com.yomelody;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -47,6 +48,7 @@ import java.util.Map;
 
 import static com.yomelody.Adapters.ContactsAdapter.Count;
 import static com.yomelody.Adapters.ContactsAdapter.recId;
+import static com.yomelody.utils.Const.PUSH_NOTIFICATION;
 import static com.yomelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.yomelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.yomelody.utils.Const.ServiceType.BASE_URL;
@@ -254,6 +256,24 @@ public class ContactsActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(PUSH_NOTIFICATION)) {
+
+                   /* sender_name = intent.getStringExtra("sender_name");
+                    // Toast.makeText(context, "Brod :"+chatId_new + "Old :"+chatId , Toast.LENGTH_SHORT).show();
+                    if (chatId_new.equals(chatId)) {
+                        if (chatType.equals("single")) {
+                            tvUserName.setText(sender_name);
+                        }
+                        getChatMsgs(chatId_new);
+                    }*/
+
+                }
+            }
+        };
     }
 
     @Override

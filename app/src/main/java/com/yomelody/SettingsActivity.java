@@ -21,6 +21,7 @@ import com.facebook.login.LoginManager;
 import com.yomelody.utils.AppHelper;
 import com.yomelody.utils.Const;
 import com.squareup.picasso.Picasso;
+import com.yomelody.utils.TermsofServices;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -179,7 +180,7 @@ public class SettingsActivity extends AppCompatActivity {
             rlTos.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(mActivity, PrivacyPolicy.class);
+                    Intent intent = new Intent(mActivity, TermsofServices.class);
                     startActivity(intent);
                 }
             });
@@ -368,7 +369,7 @@ public class SettingsActivity extends AppCompatActivity {
             rlTos.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(SettingsActivity.this, PrivacyPolicy.class);
+                    Intent intent = new Intent(SettingsActivity.this, TermsofServices.class);
                     startActivity(intent);
                 }
             });

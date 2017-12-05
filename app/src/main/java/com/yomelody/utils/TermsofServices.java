@@ -1,32 +1,38 @@
-package com.yomelody;
+package com.yomelody.utils;
 
 import android.graphics.Bitmap;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 
+import com.yomelody.PrivacyPolicy;
+import com.yomelody.R;
+
 import static com.yomelody.utils.Const.ServiceType.HOST_URL;
 
+/**
+ * Created by ADMIN on 12/6/2017.
+ */
 
-public class PrivacyPolicy extends AppCompatActivity {
+public class TermsofServices extends AppCompatActivity{
     WebView wv;
-    String url = HOST_URL + "api/company_policy/privacy_policy.php";
+    String url = HOST_URL + "api/company_policy/terms_services.php";
     ImageView backIv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_privacy_policy);
+        setContentView(R.layout.activity_termsof_services);
         wv = (WebView) findViewById(R.id.privacy);
         backIv = (ImageView) findViewById(R.id.backIv);
 //        WebSettings webSettings = wv.getSettings();
 //        wv.getSettings().setLoadWithOverviewMode(true);
 //        wv.getSettings().setUseWideViewPort(true);
 
-        wv.setWebViewClient(new myWebClient());
+        wv.setWebViewClient(new TermsofServices.myWebClient());
         wv.loadUrl(url);
 
 

@@ -15,6 +15,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.yomelody.MessengerActivity;
 import com.yomelody.R;
+import com.yomelody.utils.Const;
 import com.yomelody.utils.NotificationUtils;
 
 import org.json.JSONException;
@@ -52,8 +53,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 Log.d("FCM data playload mes", data.toString());
                 String res = data.get("body");
                 String click_action = data.get("click_action");
-                String title=data.get("title");
-                handleDataMessage(res,title);
+                String title = data.get("title");
+                handleDataMessage(res, title);
             } catch (Exception e) {
                 Log.e("fbs", "Exception: " + e.getMessage());
             }
@@ -61,19 +62,23 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private void handleNotification(String message) {
-        if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) {// app is in foreground, broadcast the push message
-            // app is in foreground, broadcast the push message
-            Intent pushNotification = new Intent(PUSH_NOTIFICATION);
-            pushNotification.putExtra("message", message);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-            NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
+        try {
+            if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) {// app is in foreground, broadcast the push message
+                // app is in foreground, broadcast the push message
+                Intent pushNotification = new Intent(PUSH_NOTIFICATION);
+                pushNotification.putExtra("message", message);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
+                NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
 //            notificationUtils.playNotificationSound();
-            flagSoundPlayedAlready = "true";
+                flagSoundPlayedAlready = "true";
 
+            }
+        }catch (Exception ex){
+            ex.printStackTrace();
         }
     }
 
-    private void handleDataMessage(String response,String title) {
+    private void handleDataMessage(String response, String title) {
 
         try {
 
@@ -100,30 +105,40 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Log.e("fbs", "title: " + title);
 
             if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) { // app is in foreground, broadcast the push message
-                Intent pushNotification = new Intent(PUSH_NOTIFICATION);
+
+                Intent pushNotification = new Intent(Const.PUSH_NOTIFICATION);
                 pushNotification.putExtra("chatId", chatId);
                 pushNotification.putExtra("sender_name", senderName);
-                LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
+                try {
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
                 // play notification sound
                 if (flagSoundPlayedAlready.equals("false")) {
                     NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
                     notificationUtils.playNotificationSound();
                 }
+
             } else { // app is in background, show the notification in notification tray
-                Intent resultIntent = new Intent(getApplicationContext(), MessengerActivity.class);
+                try {
+                    Intent resultIntent = new Intent(getApplicationContext(), MessengerActivity.class);
 //                    resultIntent.putExtra("sender_name", senderName);
 //                    resultIntent.putExtra("message", message);
-                resultIntent.putExtra("chat_id", chatId);
+                    resultIntent.putExtra("chat_id", chatId);
 
-                if (TextUtils.isEmpty(fileUrl)) { // check for image attachment
-                    handleNotification(message);
-                    showNotificationMessage(getApplicationContext(), title, senderId, senderName, message, chatId, /*file_id,*/ resultIntent);
-                } else if (TextUtils.isEmpty(fileId)) {
-                    handleNotification(message);
-                    showNotificationMessageWithBigImage(getApplicationContext(), title, senderId, senderName, message, chatId, /*file_id,*/ resultIntent, fileUrl);
-                } else { // image is present, show notification with image
-                    handleNotification(message);
-                    showNotificationMessageWithBigImage(getApplicationContext(), title, senderId, senderName, message, chatId, /*file_id,*/ resultIntent, fileUrl);
+                    if (TextUtils.isEmpty(fileUrl)) { // check for image attachment
+                        handleNotification(message);
+                        showNotificationMessage(getApplicationContext(), title, senderId, senderName, message, chatId, /*file_id,*/ resultIntent);
+                    } else if (TextUtils.isEmpty(fileId)) {
+                        handleNotification(message);
+                        showNotificationMessageWithBigImage(getApplicationContext(), title, senderId, senderName, message, chatId, /*file_id,*/ resultIntent, fileUrl);
+                    } else { // image is present, show notification with image
+                        handleNotification(message);
+                        showNotificationMessageWithBigImage(getApplicationContext(), title, senderId, senderName, message, chatId, /*file_id,*/ resultIntent, fileUrl);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
 

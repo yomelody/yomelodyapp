@@ -752,6 +752,9 @@ public class ChatActivity extends AppCompatActivity {
                             }
 
                         }
+                    } else {
+                        Intent intent = new Intent(mActivity, StudioActivity.class);
+                        startActivity(intent);
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -980,7 +983,7 @@ public class ChatActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         try {
-            if (ChatAdapter.mp != null) {
+             if (ChatAdapter.mp != null) {
                 //   ChatAdapter.mp.stop();
                 ChatAdapter.mp.reset();
                 ChatAdapter.mp.release();
@@ -1056,6 +1059,7 @@ public class ChatActivity extends AppCompatActivity {
                                             message.setFileId(chatJson.getString("file_ID"));
                                             message.setIsRead(chatJson.getString("isread"));
                                             message.setCreatedAt(chatJson.getString("sendat"));
+                                            message.setMsgTime(chatJson.getString("chat_time"));
                                             message.setRecCount((chatJson.getString("Rec_count")));
                                             if (!chatJson.get("Audioshared").equals(null) && !chatJson.get("Audioshared").equals("")) {
                                                 message.setAudioDetails(chatJson.getJSONArray("Audioshared"));
