@@ -408,8 +408,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 @Override
                 public void onClick(View v) {
                     try {
-
-                        holder.deleteLl.setVisibility(View.VISIBLE);
+                        if (!StudioActivity.IsRecordingStart) {
+                            holder.deleteLl.setVisibility(View.VISIBLE);
+                        }
 
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -453,7 +454,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
                             int newPosition = holder.getAdapterPosition();
                             instrumentList.remove(newPosition);
-                            mediaPlayersAll.remove(newPosition);
+                            if (mediaPlayersAll.size() > 0) {
+                                mediaPlayersAll.remove(newPosition);
+                            }
                             StudioActivity.lstViewHolder.remove(newPosition);
                             notifyItemRemoved(newPosition);
                             StudioActivity.setInsCount(instrumentList.size());
@@ -1063,27 +1066,12 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                         StudioActivity.playAll.setVisibility(View.VISIBLE);
                         StudioActivity.ivRecord.setEnabled(true);
                         InstrumentCountSize = 0;
-                        if (StudioActivity.mpall != null) {
-                            StudioActivity.mpall.stop();
-                            StudioActivity.mpall.release();
-                            StudioActivity.mpall = null;
-                        }
+
 
                         StudioActivity.handler.removeCallbacksAndMessages(null);
-                        if (StudioActivity.mpInst != null) {
-                            StudioActivity.mpInst.stop();
-                            StudioActivity.mpInst.release();
-                            StudioActivity.mpInst = null;
-                        }
+
 
                         for (int i = 0; i <= StudioActivity.mediaPlayersAll.size() - 1; i++) {
-                       /* final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
-                        final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
-                        final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
-                        seekBar.setProgress(0);
-                        holderPlay.setVisibility(View.VISIBLE);
-                        holderPause.setVisibility(View.GONE);
-                        holderPause.setEnabled(true);*/
                             final ImageView holderPlay = StudioActivity.lstViewHolder.get(i).holderPlay;
                             final ImageView holderPause = StudioActivity.lstViewHolder.get(i).holderPause;
                             final SeekBar seekBar = StudioActivity.lstViewHolder.get(i).seekBar;
@@ -1104,6 +1092,24 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                                 ex.printStackTrace();
                             }
 
+                        }
+                        if (StudioActivity.mpall != null) {
+                            try {
+                                StudioActivity.mpall.stop();
+                                StudioActivity.mpall.release();
+                                StudioActivity.mpall = null;
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                        if (StudioActivity.mpInst != null) {
+                            try {
+                                StudioActivity.mpInst.stop();
+                                StudioActivity.mpInst.release();
+                                StudioActivity.mpInst = null;
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
                         }
 
 
@@ -1410,9 +1416,6 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             });
 
 
-
-
-
             Intent i = new Intent("fetchingInstruments");
             i.putStringArrayListExtra("instruments", instrument_url_count);
             LocalBroadcastManager.getInstance(context).sendBroadcast(i);
@@ -1489,9 +1492,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     }
 
 
-
     public void executeAsyncTaskPlayAll() {
         AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();

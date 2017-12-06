@@ -1,6 +1,7 @@
 package com.yomelody.Fragments;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -42,6 +43,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.yomelody.ChatActivity.CHAT_ID;
 import static com.yomelody.ChatActivity.CHAT_ID_;
 import static com.yomelody.ChatActivity.FILE;
@@ -141,6 +143,9 @@ public class viewImageFragment extends Fragment {
                             if(flag.equals("success")){
                                 JSONObject jsonMsg = json.getJSONObject("usermsg");
                                 String chat_id = jsonMsg.getString("chat_id");
+                                SharedPreferences.Editor editor = getContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
+                                editor.putString("chatId", chat_id);
+                                chatId=chat_id;
                                 getChatMsgs(chat_id);
                             }
                             else{

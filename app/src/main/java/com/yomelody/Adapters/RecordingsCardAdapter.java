@@ -347,7 +347,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                     shareIntent.putExtra(Intent.EXTRA_STREAM, "");
                                     shareIntent.putExtra(Intent.EXTRA_TEXT, mActivity.getString(R.string.yomelody_music));
                                     shareIntent.putExtra(Intent.EXTRA_TEXT, recording.getThumnailUrl());
-                                    shareIntent.setType("image/jpeg");
+                                    shareIntent.setType("text/plain");
                                     shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                     context.startActivity(Intent.createChooser(shareIntent, "Choose Sharing option!"));
                                 }
