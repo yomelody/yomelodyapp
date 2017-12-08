@@ -1617,11 +1617,17 @@ public class ProfileActivity extends AppCompatActivity {
         super.onPause();
         try {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-            if (RecordingsCardAdapter.mp != null && RecordingsCardAdapter.mp.isPlaying()) {
+            if (RecordingsCardAdapter.mp != null) {
                 try {
-                    RecordingsCardAdapter.mp.reset();
+                    try {
+                        RecordingsCardAdapter.mp.stop();
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                     RecordingsCardAdapter.mp.reset();
                     RecordingsCardAdapter.mp.release();
+                    RecordingsCardAdapter.mp=null;
+
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
