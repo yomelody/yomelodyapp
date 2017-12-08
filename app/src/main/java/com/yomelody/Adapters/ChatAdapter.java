@@ -208,7 +208,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                 if (!message.getProfilePic().equals("")) {
                     Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
                 }
-                holder.timeStamp.setText(message.getMsgTime());
+                holder.timeStamp.setText(message.getCreatedAt());
                 String stroke = "(1" + " of " + message.getRecCount() + ")";
                 holder.tvNum.setText(stroke);
                 if (message.getIsRead().equals("1")) {
@@ -467,7 +467,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                 if (!message.getProfilePic().equals("")) {
                     Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
                 }
-                holder.timeStamp.setText(message.getMsgTime());
+                holder.timeStamp.setText(message.getCreatedAt());
                 if (message.getIsRead().equals("1")) {
                     holder.ivTick.setVisibility(View.GONE);
                     holder.ivDoubleTick.setVisibility(VISIBLE);
@@ -494,7 +494,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                     Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
                 }
                 holder.chatMessage.setText(message.getMessage());
-                holder.timeStamp.setText(message.getMsgTime());
+                holder.timeStamp.setText(message.getCreatedAt());
                 if (message.getIsRead().equals("1")) {
                     holder.ivTick.setVisibility(View.GONE);
                     holder.ivDoubleTick.setVisibility(VISIBLE);

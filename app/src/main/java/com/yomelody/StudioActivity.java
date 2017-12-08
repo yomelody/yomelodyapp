@@ -429,10 +429,10 @@ public class StudioActivity extends AppCompatActivity {
             recyclerViewInstruments.setItemAnimator(new DefaultItemAnimator());
             adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
             recyclerViewInstruments.setAdapter(adapter);
-            //frameTrans.setVisibility(View.VISIBLE);
-            rlSync.setVisibility(View.VISIBLE);
+
+            //rlSync.setVisibility(View.VISIBLE);
             if (instrumentList.size() > 0) {
-                rlSync.setVisibility(View.VISIBLE);
+                //rlSync.setVisibility(View.VISIBLE);
             }
 
 
@@ -493,10 +493,10 @@ public class StudioActivity extends AppCompatActivity {
                     //recyclerViewInstruments.smoothScrollToPosition(0);
                     recyclerViewInstruments.setAdapter(adapter);
 
-                    //frameTrans.setVisibility(View.VISIBLE);
-                    rlSync.setVisibility(View.VISIBLE);
+
+                    //rlSync.setVisibility(View.VISIBLE);
                     if (instrumentList.size() > 0) {
-                        rlSync.setVisibility(View.VISIBLE);
+                        //rlSync.setVisibility(View.VISIBLE);
                     }
 
 
@@ -555,9 +555,9 @@ public class StudioActivity extends AppCompatActivity {
                         recyclerViewInstruments.setAdapter(adapter);
 
                         //frameTrans.setVisibility(View.VISIBLE);
-                        rlSync.setVisibility(View.VISIBLE);
+                        //rlSync.setVisibility(View.VISIBLE);
                         if (instrumentList.size() > 0) {
-                            rlSync.setVisibility(View.VISIBLE);
+                            //rlSync.setVisibility(View.VISIBLE);
                         }
 
 
@@ -1046,10 +1046,10 @@ public class StudioActivity extends AppCompatActivity {
                     //recyclerViewInstruments.smoothScrollToPosition(0);
                     recyclerViewInstruments.setAdapter(adapter);
 
-                    //frameTrans.setVisibility(View.VISIBLE);
-                    rlSync.setVisibility(View.VISIBLE);
+
+                    //rlSync.setVisibility(View.VISIBLE);
                     if (instrumentList.size() > 0) {
-                        rlSync.setVisibility(View.VISIBLE);
+                        //rlSync.setVisibility(View.VISIBLE);
                     }
                     mMyTask = null;
                 } catch (Exception ex) {
