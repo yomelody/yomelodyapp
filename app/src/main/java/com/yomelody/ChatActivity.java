@@ -78,6 +78,7 @@ import com.yomelody.Models.Message;
 import com.yomelody.Models.RecentImagesModel;
 import com.yomelody.Models.RecordingsModel;
 import com.yomelody.Models.SharedAudios;
+import com.yomelody.Services.LogoutService;
 import com.yomelody.utils.AppHelper;
 import com.yomelody.utils.Const;
 import com.yomelody.utils.ImageCompressor;
@@ -110,6 +111,7 @@ import static com.yomelody.utils.Const.PUSH_NOTIFICATION;
 import static com.yomelody.utils.Const.SHARED_PREF;
 import static com.yomelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.yomelody.utils.Const.ServiceType.AuthenticationKeyValue;
+import static com.yomelody.utils.Const.ServiceType.BASE_URL;
 import static com.yomelody.utils.Const.ServiceType.CHAT;
 import static com.yomelody.utils.Const.ServiceType.MESSAGE_LIST;
 import static com.yomelody.utils.Const.ServiceType.READ_STATUS;
@@ -997,6 +999,7 @@ public class ChatActivity extends AppCompatActivity {
         }
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        //startService(new Intent(this, LogoutService.class));
     }
 
     public void getChatMsgs(final String chat_Id) {
@@ -1075,7 +1078,8 @@ public class ChatActivity extends AppCompatActivity {
                                     } else {
                                         tvRecieverName.setText(" " + receiverName);
                                         try {
-                                            Picasso.with(ivRecieverProfilePic.getContext()).load(receiverImage).into(ivRecieverProfilePic);
+
+                                            Picasso.with(ivRecieverProfilePic.getContext()).load(BASE_URL+"uploads/profilepics/group.jpg").into(ivRecieverProfilePic);
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }

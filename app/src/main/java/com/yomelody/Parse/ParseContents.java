@@ -188,9 +188,14 @@ public class ParseContents {
             StudioActivity.list.clear();
             if (jsonObject.getString(KEY_FLAG).equals("success")) {
                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
-                JSONObject selectedObj = jsonArray.getJSONObject(Integer.parseInt(mpid));
+                try {
+                    JSONObject selectedObj = jsonArray.getJSONObject(Integer.parseInt(mpid));
+                    jsonArray = selectedObj.getJSONArray(KEY_INSTRUMENTS);
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                }
 
-                jsonArray = selectedObj.getJSONArray(KEY_INSTRUMENTS);
+
 
                 MelodyInstruments.setInstrumentCount(jsonArray.length());  // This code added by Abhishek
                 Log.d("Count", "" + jsonArray.length());
@@ -435,15 +440,19 @@ public class ParseContents {
 
                     JoinedArray = cardJson.getJSONArray("joined");
 
-                    if(JoinedArray.length()>0) {
-                        for (int j = 0; j < JoinedArray.length(); j++) {
-                            JSONObject jsonObject1=new JSONObject(JoinedArray.get(j).toString());
+                    try {
+                        if (JoinedArray.length() > 0) {
+                            for (int j = 0; j < JoinedArray.length(); j++) {
+                                JSONObject jsonObject1 = new JSONObject(JoinedArray.get(j).toString());
 
-                            //JSONArray jsonArray1=new JSONArray(jsonObject1.getJSONArray(jsonObject1));
+                                //JSONArray jsonArray1=new JSONArray(jsonObject1.getJSONArray(jsonObject1));
 
-                            arrayList.add(jsonObject1.get("recording_url"));
+                                arrayList.add(jsonObject1.get("recording_url"));
+                            }
+                            card.setJoinUrl(arrayList);
                         }
-                        card.setJoinUrl(arrayList);
+                    }catch (Exception ex){
+                        ex.printStackTrace();
                     }
 
                     if (cardJson.isNull("recordings")) {
@@ -506,6 +515,7 @@ public class ParseContents {
                     join.setLike_counts(cardJoin.getString("like_counts"));
                     join.setShare_counts(cardJoin.getString("share_counts"));
                     join.setComment_counts(cardJoin.getString("comment_counts"));
+                    join.setJoin_Thumbnail(cardJoin.getString("thumbnail_url"));
                     //    instrumentsList = instrumentList;
                     JoinArtist.add(join);
                     JoinActivity.listProfile.add(i, new JoinedUserProfile(String.valueOf(cardJoin.getString("user_id")), "0"));

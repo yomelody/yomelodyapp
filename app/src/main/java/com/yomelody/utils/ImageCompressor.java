@@ -174,7 +174,6 @@ public class ImageCompressor extends AsyncTask<String, Void, Bitmap> {
 
         String mImageName = "IMG_" + String.valueOf(System.currentTimeMillis()) + ".jpg";
         String uriString = (mediaStorageDir.getAbsolutePath() + "/" + mImageName);
-        ;
         return uriString;
 
     }
