@@ -117,7 +117,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     boolean likest = false;
     private Activity mActivity;
     public static final int REQUEST_JOIN_TO_MESSANGER = 716;
-    private String hideProfImg = "";
+    private String hideProfImg="";
 
     public JoinListAdapter(ArrayList<JoinedArtists> Joined_artist, Context context) {
         this.Joined_artist = Joined_artist;
@@ -125,11 +125,11 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
         mActivity = (Activity) context;
     }
 
-    public void setHideProfImg(String property) {
-        hideProfImg = property;
+    public void setHideProfImg(String property){
+        hideProfImg=property;
     }
 
-    public String getHideProfImg() {
+    public String getHideProfImg(){
         return hideProfImg;
     }
 
@@ -187,19 +187,15 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                     });
                     alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            try {
-                                dialog.cancel();
-                                Intent shareIntent = new Intent();
-                                shareIntent.setAction(Intent.ACTION_SEND);
-                                shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                                shareIntent.putExtra(Intent.EXTRA_TEXT, mActivity.getString(R.string.yomelody_music));
-                                shareIntent.putExtra(Intent.EXTRA_TEXT, Joined_artist.get(0).getJoin_Thumbnail());
-                                shareIntent.setType("text/plain");
-                                shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                context.startActivity(Intent.createChooser(shareIntent, "Choose Sharing option!"));
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
+                            dialog.cancel();
+                            Intent shareIntent = new Intent();
+                            shareIntent.setAction(Intent.ACTION_SEND);
+                            shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                            shareIntent.putExtra(Intent.EXTRA_TEXT, mActivity.getString(R.string.yomelody_music));
+                            shareIntent.putExtra(Intent.EXTRA_TEXT, Joined_artist.get(0));
+                            shareIntent.setType("image/jpeg");
+                            shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            context.startActivity(Intent.createChooser(shareIntent, "Choose Sharing option!"));
                         }
                     });
                     alertDialog.show();
@@ -239,10 +235,11 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                 lstViewHolder.add(viewHolder);
             }
             final JoinedArtists join = Joined_artist.get(0);
-            holder.Join_usr_name.setText("@" + joinArt.getJoined_usr_name());
-            if (hideProfImg.equalsIgnoreCase("hide")) {
+            holder.Join_usr_name.setText("@"+joinArt.getJoined_usr_name());
+            if (hideProfImg.equalsIgnoreCase("hide")){
                 holder.joined_profile.setVisibility(GONE);
-            } else {
+            }
+            else {
                 holder.joined_profile.setVisibility(VISIBLE);
             }
             try {
@@ -387,7 +384,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         }
 
                         lastModifiedHoled = holder;
-                    } catch (Exception ex) {
+                    }catch (Exception ex){
                         ex.printStackTrace();
                     }
 
@@ -463,7 +460,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         } else {
                             Toast.makeText(context, "You can not remove yourself", Toast.LENGTH_SHORT).show();
                         }
-                    } catch (Exception ex) {
+                    }catch (Exception ex){
                         ex.printStackTrace();
                     }
 
@@ -502,7 +499,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         Intent intent = new Intent(v.getContext(), StudioActivity.class);
                         v.getContext().startActivity(intent);
                         StudioActivity.list.clear();
-                    } catch (Exception ex) {
+                    }catch (Exception ex){
                         ex.printStackTrace();
                     }
                 }
@@ -540,7 +537,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         Intent intent = new Intent(view.getContext(), StudioActivity.class);
                         view.getContext().startActivity(intent);
                         StudioActivity.list.clear();
-                    } catch (Exception ex) {
+                    }catch (Exception ex){
                         ex.printStackTrace();
                     }
                 }
@@ -618,7 +615,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                 progressDialog.dismiss();
                             }
                         });
-                    } catch (Exception ex) {
+                    }catch (Exception ex){
                         ex.printStackTrace();
                     }
 
@@ -748,7 +745,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                             });
                         }
                         Log.d("Next play", "" + realPosition);
-                    } catch (Exception ex) {
+                    }catch (Exception ex){
                         ex.printStackTrace();
                     }
 
@@ -886,7 +883,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 
                         }
                         Log.d("Previous play", "" + realPosition);
-                    } catch (Exception ex) {
+                    }catch (Exception ex){
                         ex.printStackTrace();
                     }
 
@@ -935,7 +932,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                             Intent intent = new Intent(context, SignInActivity.class);
                             context.startActivity(intent);
                         }
-                    } catch (Exception ex) {
+                    }catch (Exception ex){
                         ex.printStackTrace();
                     }
 
@@ -1101,7 +1098,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                 JoinActivity.playAll.setVisibility(VISIBLE);
                                 JoinActivity.melody_detail.setText(JoinActivity.instrumentList.size() + " " + "Instrumental");
                             }
-                        } catch (Exception ex) {
+                        }catch (Exception ex){
                             ex.printStackTrace();
                         }
 
@@ -1142,7 +1139,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                 params.put("userid", addedBy);
                 params.put("rid", RecId);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=getJoined_users=" + params + "\nURL===" + JOINED_USERS);
+                AppHelper.sop("params=getJoined_users="+params+"\nURL==="+JOINED_USERS);
                 return params;
             }
         };

@@ -33,7 +33,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.yomelody.Adapters.MessengerAdapter;
 import com.yomelody.Models.Chat;
-import com.yomelody.Services.LogoutService;
 import com.yomelody.app.Config;
 import com.yomelody.utils.AppHelper;
 
@@ -293,7 +292,6 @@ public class MessengerActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-        //startService(new Intent(this, LogoutService.class));
     }
 
     public void getTotalCount() {

@@ -8,28 +8,95 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:870917113323:android:9700cffa2198302d",
+        "android_client_info": {
+          "package_name": "com.instamelody.instamelody"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "870917113323-j4ael2ncjb68o7nt2n9nikqjqbuhbpvr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.instamelody.instamelody",
+            "certificate_hash": "939fe55e36e0bdf2b54c218ea942c5413571b09b"
+          }
+        },
+        {
+          "client_id": "870917113323-8dl1fgu81ng0g79jhn6k9gk2cab5ikdm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.instamelody.instamelody",
+            "certificate_hash": "6b2edd93675a6e3ab4aedb94dd414f3a6b7ce66d"
+          }
+        },
+        {
+          "client_id": "870917113323-ln5ge7ps8i9ps7pjrl7r9kf5hn4pa1gb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.instamelody.instamelody",
+            "certificate_hash": "8d48d3716853e827a4486bdb3beb5d87d057049a"
+          }
+        },
+        {
+          "client_id": "870917113323-910gomfcufsqkppjbtf4rjaa3akjlqc1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.instamelody.instamelody",
+            "certificate_hash": "7a58b3594cfd5043d9ae5051212b14682a8d3ad2"
+          }
+        },
+        {
+          "client_id": "870917113323-n3b4m6so9hluqrabg2lode2aa08criit.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.instamelody.instamelody",
+            "certificate_hash": "0323d16a90ffa4ad08e1d8affbd3a104516954ff"
+          }
+        },
+        {
+          "client_id": "870917113323-3ob87s8pnit5vmm9uqu960tuuhh1tei1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGjzicZPRYs3j3XmBUZ89YpfS6pCHKX90"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "870917113323-k0l3rk09mffuc2p3ggi8deqaua61simo.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.CodingBrainsMini.melody"
+              }
+            },
+            {
+              "client_id": "870917113323-3ob87s8pnit5vmm9uqu960tuuhh1tei1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:870917113323:android:01e4b5040d63730d",
         "android_client_info": {
           "package_name": "com.yomelody"
         }
       },
       "oauth_client": [
-        {
-          "client_id": "870917113323-3liqcdretb5gm8jvbepdkecqep96pj2j.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.yomelody",
-            "certificate_hash": "d9c50e7290e201f4be92a19a1ee97dccf22d0f07"
-          }
-        },
-        {
-          "client_id": "870917113323-jit1bge8hanuabk600m7dkj5ie64d5jg.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.yomelody",
-            "certificate_hash": "25125cc019d4a7b17239b9d1ec6efad55d83d07d"
-          }
-        },
         {
           "client_id": "870917113323-gvnk7lo3h1vmisi3rfgaoo3pqffd8hug.apps.googleusercontent.com",
           "client_type": 1,

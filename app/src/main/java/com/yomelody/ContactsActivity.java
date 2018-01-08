@@ -35,7 +35,6 @@ import com.android.volley.toolbox.Volley;
 import com.yomelody.Adapters.ContactsAdapter;
 import com.yomelody.Models.Contacts;
 import com.yomelody.Parse.ParseContents;
-import com.yomelody.Services.LogoutService;
 import com.yomelody.utils.AppHelper;
 import com.yomelody.utils.Const;
 import com.yomelody.utils.NotificationUtils;
@@ -388,7 +387,6 @@ public class ContactsActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-       // startService(new Intent(this, LogoutService.class));
     }
 
     public void getTotalCount() {

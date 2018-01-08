@@ -49,7 +49,6 @@ import com.yomelody.Adapters.CommentsAdapter;
 import com.yomelody.Models.Comments;
 import com.yomelody.Models.MelodyInstruments;
 import com.yomelody.Parse.ParseContents;
-import com.yomelody.Services.LogoutService;
 import com.yomelody.utils.AppHelper;
 import com.squareup.picasso.Picasso;
 
@@ -556,7 +555,6 @@ public class CommentsActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        //startService(new Intent(this, LogoutService.class));
     }
 
     public void fetchViewCount(final String userId, final String pos) {

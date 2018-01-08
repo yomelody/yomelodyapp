@@ -32,6 +32,8 @@ import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.wearable.view.DotsPageIndicator;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
@@ -53,7 +55,6 @@ import com.yomelody.Models.Genres;
 import com.yomelody.Models.RecordingsModel;
 import com.yomelody.Models.RecordingsPool;
 import com.yomelody.Parse.ParseContents;
-import com.yomelody.Services.LogoutService;
 import com.yomelody.utils.AppHelper;
 import com.yomelody.utils.Const;
 import com.yomelody.utils.NotificationUtils;
@@ -123,6 +124,8 @@ public class DiscoverActivity extends AppCompatActivity {
     Button btnCancel;
     ViewPager recyclerViewPager;
     DiscoverAdapter adapterAdvertiseMent;
+    CircleIndicator recyclerViewPagerIndicator;
+    DotsPageIndicator page_indicator;
     Activity mActivity;
     RecyclerView rv;
     BroadcastReceiver mRegistrationBroadcastReceiver;
@@ -436,23 +439,19 @@ public class DiscoverActivity extends AppCompatActivity {
         }
     }
     private void addBottomDots(int currentPage) {
-        try {
-            dots = new TextView[pagingDataArrayList.size()];
+        dots = new TextView[pagingDataArrayList.size()];
 
-            ll_dots.removeAllViews();
-            for (int i = 0; i < dots.length; i++) {
-                dots[i] = new TextView(this);
-                dots[i].setText(Html.fromHtml("&#8226;"));
-                dots[i].setTextSize(35);
-                dots[i].setTextColor(Color.parseColor("#FFFFFF"));
-                ll_dots.addView(dots[i]);
-            }
-
-            if (dots.length > 0)
-                dots[currentPage].setTextColor(Color.parseColor("#000000"));
-        }catch (Exception ex){
-            ex.printStackTrace();
+        ll_dots.removeAllViews();
+        for (int i = 0; i < dots.length; i++) {
+            dots[i] = new TextView(this);
+            dots[i].setText(Html.fromHtml("&#8226;"));
+            dots[i].setTextSize(35);
+            dots[i].setTextColor(Color.parseColor("#FFFFFF"));
+            ll_dots.addView(dots[i]);
         }
+
+        if (dots.length >= 0)
+            dots[currentPage].setTextColor(Color.parseColor("#000000"));
     }
 
 
@@ -1246,7 +1245,6 @@ public class DiscoverActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-        //startService(new Intent(this, LogoutService.class));
     }
 
     @Override

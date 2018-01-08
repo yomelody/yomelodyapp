@@ -55,7 +55,6 @@ import com.yomelody.Fragments.RecordingsFragment;
 import com.yomelody.Fragments.SubscriptionsFragment;
 import com.yomelody.Models.RecordingsModel;
 import com.yomelody.Models.RecordingsPool;
-import com.yomelody.Services.LogoutService;
 import com.yomelody.utils.AppHelper;
 import com.yomelody.utils.Const;
 import com.yomelody.utils.NotificationUtils;
@@ -725,7 +724,6 @@ public class MelodyActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-        //startService(new Intent(this, LogoutService.class));
     }
 
     @Override

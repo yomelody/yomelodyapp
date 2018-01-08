@@ -1,7 +1,6 @@
 package com.yomelody.Fragments;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -87,7 +86,7 @@ public class viewImageFragment extends Fragment {
 
     ImageView viewImage, backButton, sendButton;
     Activity mactivity;
-    ProgressDialog progressDialog;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,7 +106,6 @@ public class viewImageFragment extends Fragment {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                progressDialog = new ProgressDialog(getActivity());
                 sendImage(userId, sendImageName, sendImageBitmap);
 
             }
@@ -115,14 +113,10 @@ public class viewImageFragment extends Fragment {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    appbar.setVisibility(View.VISIBLE);
-                    fotter.setVisibility(View.VISIBLE);
-                    getFragmentManager().beginTransaction()
-                            .remove(viewImageFragment.this).commit();
-                }catch (Exception ex){
-                    ex.printStackTrace();
-                }
+                appbar.setVisibility(View.VISIBLE);
+                fotter.setVisibility(View.VISIBLE);
+                getFragmentManager().beginTransaction()
+                        .remove(viewImageFragment.this).commit();
             }
         });
 
@@ -130,27 +124,20 @@ public class viewImageFragment extends Fragment {
     }
 
     private void sendImage(final String user_Id, final String imageName, final Bitmap bit) {
-        progressDialog.setTitle("Processing...");
-        progressDialog.setMessage("Please wait...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
         VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, CHAT,
                 new Response.Listener<NetworkResponse>() {
                     @Override
                     public void onResponse(NetworkResponse response) {
-
-                        try {
-
-                            String str = new String(response.data);
-                            AppHelper.sop("Chat.php Response for image :- " + str);
-                            getFragmentManager().beginTransaction()
-                                    .remove(viewImageFragment.this).commit();
-                            appbar.setVisibility(View.VISIBLE);
-                            fotter.setVisibility(View.VISIBLE);
-                            //    ((ChatActivity)mactivity).recreate();
-                            flagFileType="0";
+                        String str = new String(response.data);
+                        AppHelper.sop("Chat.php Response for image :- " + str);
+                        getFragmentManager().beginTransaction()
+                                .remove(viewImageFragment.this).commit();
+                        appbar.setVisibility(View.VISIBLE);
+                        fotter.setVisibility(View.VISIBLE);
+                        //    ((ChatActivity)mactivity).recreate();
+                        flagFileType="0";
 //                            Toast.makeText(ChatActivity.this, str + "chat api response", Toast.LENGTH_SHORT).show();
-
+                        try {
                             JSONObject json = new JSONObject(str);
                             String flag=json.getString("flag");
                             if(flag.equals("success")){
@@ -166,11 +153,6 @@ public class viewImageFragment extends Fragment {
                                 String chat_id = jsonMsg.getString("chat_id");
                                 getChatMsgs(chat_id);
                             }
-                            if (progressDialog != null) {
-                                if (progressDialog.isShowing()) {
-                                    progressDialog.dismiss();
-                                }
-                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -178,74 +160,32 @@ public class viewImageFragment extends Fragment {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                try {
-                    String errorMsg = "";
-                    if (error instanceof TimeoutError) {
-                        errorMsg = "Internet connection timed out";
-                        if (progressDialog != null) {
-                            if (progressDialog.isShowing()) {
-                                progressDialog.dismiss();
-                            }
-                        }
-                    } else if (error instanceof NoConnectionError) {
-                        errorMsg = "There is no connection";
-                        if (progressDialog != null) {
-                            if (progressDialog.isShowing()) {
-                                progressDialog.dismiss();
-                            }
-                        }
-                    } else if (error instanceof AuthFailureError) {
-                        errorMsg = "AuthFailureError";
-                        if (progressDialog != null) {
-                            if (progressDialog.isShowing()) {
-                                progressDialog.dismiss();
-                            }
-                        }
-                    } else if (error instanceof ServerError) {
-                        errorMsg = "We are facing problem in connecting to server";
-                        if (progressDialog != null) {
-                            if (progressDialog.isShowing()) {
-                                progressDialog.dismiss();
-                            }
-                        }
-                    } else if (error instanceof NetworkError) {
-                        errorMsg = "We are facing problem in connecting to network";
-                        if (progressDialog != null) {
-                            if (progressDialog.isShowing()) {
-                                progressDialog.dismiss();
-                            }
-                        }
-                    } else if (error instanceof ParseError) {
-                        errorMsg = "Parse error";
-                        if (progressDialog != null) {
-                            if (progressDialog.isShowing()) {
-                                progressDialog.dismiss();
-                            }
-                        }
-                    } else if (error == null) {
-                        if (progressDialog != null) {
-                            if (progressDialog.isShowing()) {
-                                progressDialog.dismiss();
-                            }
-                        }
-                    }
 
-                    getFragmentManager().beginTransaction()
-                            .remove(viewImageFragment.this).commit();
-                    appbar.setVisibility(View.VISIBLE);
-                    fotter.setVisibility(View.VISIBLE);
-                    if (!errorMsg.equals("")) {
-                        Toast.makeText(mactivity, errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.d("Error", errorMsg);
-                        error.printStackTrace();
-                        if (progressDialog != null) {
-                            if (progressDialog.isShowing()) {
-                                progressDialog.dismiss();
-                            }
-                        }
-                    }
-                }catch (Exception ex){
-                    ex.printStackTrace();
+                String errorMsg = "";
+                if (error instanceof TimeoutError) {
+                    errorMsg = "Internet connection timed out";
+                } else if (error instanceof NoConnectionError) {
+                    errorMsg = "There is no connection";
+                } else if (error instanceof AuthFailureError) {
+                    errorMsg = "AuthFailureError";
+                } else if (error instanceof ServerError) {
+                    errorMsg = "We are facing problem in connecting to server";
+                } else if (error instanceof NetworkError) {
+                    errorMsg = "We are facing problem in connecting to network";
+                } else if (error instanceof ParseError) {
+                    errorMsg = "Parse error";
+                } else if (error == null) {
+
+                }
+
+                getFragmentManager().beginTransaction()
+                        .remove(viewImageFragment.this).commit();
+                appbar.setVisibility(View.VISIBLE);
+                fotter.setVisibility(View.VISIBLE);
+                if (!errorMsg.equals("")) {
+                    Toast.makeText(mactivity, errorMsg, Toast.LENGTH_SHORT).show();
+                    Log.d("Error", errorMsg);
+                    error.printStackTrace();
                 }
             }
         }) {
@@ -318,22 +258,20 @@ public class viewImageFragment extends Fragment {
                         } catch (Throwable e) {
                             e.printStackTrace();
                         }
+                        if (rlNoMsg.getVisibility() == View.VISIBLE && rlTxtContent.getVisibility() == View.VISIBLE) {
+                            rlNoMsg.setVisibility(View.GONE);
+                            rlTxtContent.setVisibility(View.GONE);
+                        }
 
-                        try {
-                            if (rlNoMsg.getVisibility() == View.VISIBLE && rlTxtContent.getVisibility() == View.VISIBLE) {
-                                rlNoMsg.setVisibility(View.GONE);
-                                rlTxtContent.setVisibility(View.GONE);
-                            }
-
-                            chatList.clear();
+                        chatList.clear();
 //                        audioDetailsList.clear();
 //                        sharedAudioList.clear();
-                            String usrId = userId;
+                        String usrId = userId;
 
-                            cAdapter.notifyDataSetChanged();
-                            JSONObject jsonObject;
-                            JSONArray resultArray, audiosDetailsArray, sharedAudiosArray;
-
+                        cAdapter.notifyDataSetChanged();
+                        JSONObject jsonObject;
+                        JSONArray resultArray, audiosDetailsArray, sharedAudiosArray;
+                        try {
                             jsonObject = new JSONObject(response);
                             if (jsonObject.getString("flag").equals("success")) {
                                 JSONObject result = jsonObject.getJSONObject("result");
@@ -419,7 +357,7 @@ public class viewImageFragment extends Fragment {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, READ_STATUS, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                //String str = response;
+                String str = response;
 //                Toast.makeText(ChatActivity.this, str + "readStatus", Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {

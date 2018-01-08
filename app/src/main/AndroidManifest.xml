@@ -20,9 +20,9 @@
 
     <uses-permission
         android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <!--<permission-->
-    <!--android:name="com.sixmod.com.client.permission.C2D_MESSAGE"-->
-    <!--android:protectionLevel="signature" />-->
+    <permission
+        android:name="com.sixmod.com.client.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
     <uses-permission
         android:name="com.sixmod.com.client.permission.C2D_MESSAGE" />
 
@@ -61,7 +61,6 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorPrimaryDark" />
 
-        <meta-data android:name="firebase_crashlytics_collection_enabled" android:value="true" />
         <!--<meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />-->
@@ -149,7 +148,6 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:enabled="true" android:name=".Services.LogoutService"/>
 
         <activity
             android:name=".ProfileActivity"
@@ -204,7 +202,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:host="@string/com_auth0_domain"
-                    android:pathPrefix="/android/$com.yomelody/callback"
+                    android:pathPrefix="/android/$com.instamelody.instamelody/callback"
                     android:scheme="https" />
             </intent-filter>
         </activity>
@@ -221,7 +219,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="com.yomelody.braintree" />
+                <data android:scheme="com.instamelody.instamelody.braintree" />
             </intent-filter>
         </activity>
 
@@ -231,15 +229,6 @@
             android:name="com.facebook.FacebookContentProvider"
             android:exported="true"/>
 
-        <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.yomelody.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/filepaths"/>
-        </provider>
 
 
     </application>

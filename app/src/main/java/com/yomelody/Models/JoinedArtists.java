@@ -9,15 +9,8 @@ import java.io.Serializable;
 public class JoinedArtists implements Serializable {
 
     String joined_image,joined_usr_name,user_id,joined_artists,recording_id,recording_name,
-    recording_url,recording_duration,recording_date,like_status,play_counts,like_counts,share_counts,comment_counts,Join_Thumbnail;
+    recording_url,recording_duration,recording_date,like_status,play_counts,like_counts,share_counts,comment_counts;
 
-    public String getJoin_Thumbnail() {
-        return Join_Thumbnail;
-    }
-
-    public void setJoin_Thumbnail(String join_Thumbnail) {
-        Join_Thumbnail = join_Thumbnail;
-    }
 
     public String getUser_id() {
         return user_id;

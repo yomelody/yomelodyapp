@@ -237,7 +237,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         shareIntent.setAction(Intent.ACTION_SEND);
                         shareIntent.putExtra(Intent.EXTRA_STREAM, "");
                         shareIntent.setType("text/plain");
-                        shareIntent.putExtra(Intent.EXTRA_TEXT, "YoMelody Music Hunt" + "\n" + RecordingURL);
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, "InstaMelody Music Hunt" + "\n" + RecordingURL);
 
                         shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         context.startActivity(Intent.createChooser(shareIntent, "Hello."));
@@ -403,7 +403,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                             Intent intent = new Intent(context, SignInActivity.class);
                             context.startActivity(intent);
                         }
-                    } catch (Exception ex) {
+                    }catch (Exception ex){
                         ex.printStackTrace();
                     }
 
@@ -430,7 +430,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 
                         }
                         mActivity.finish();
-                    } catch (Exception ex) {
+                    }catch (Exception ex){
                         ex.printStackTrace();
                     }
                 }
@@ -536,13 +536,9 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                                 if (mp != null) {
                                     duration = 0;
                                     length = 0;
-                                    try {
-                                        mp.stop();
-                                        mp.reset();
-                                        mp.release();
-                                    }catch (Exception ex){
-                                        ex.printStackTrace();
-                                    }
+                                    mp.stop();
+                                    mp.reset();
+                                    mp.release();
 
 //                                AppHelper.sop("lastModifiedHoled=="+lastModifiedHoled);
                                     if (lastModifiedHoled != null) {
@@ -567,12 +563,13 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 
 
                         lastModifiedHoled = holder;
-                    } catch (Exception ex) {
+                    }catch (Exception ex){
                         ex.printStackTrace();
                         progressDialog.dismiss();
                         lastModifiedHoled.itemView.findViewById(R.id.ivPlay).setVisibility(VISIBLE);
                         lastModifiedHoled.itemView.findViewById(R.id.ivPause).setVisibility(GONE);
                     }
+
 
 
                 }
@@ -583,31 +580,24 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 @Override
                 public void onClick(View v) {
 
-                    try {
-                        for (MediaPlayer mediaPlayer : mediaPlayersAll) {
-                            try {
-                                holder.ivPlay.setVisibility(VISIBLE);
-                                holder.ivPause.setVisibility(GONE);
-                                try {
-                                    if (mediaPlayer.isPlaying()) {
-                                        mediaPlayer.stop();
-                                        mediaPlayer.reset();
-                                        mediaPlayer.release();
-                                    }
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-                                length = mediaPlayersAll.get(0).getCurrentPosition();
-                                isPausePressed = true;
-                            } catch (Exception e) {
-                                e.printStackTrace();
+
+                    for (MediaPlayer mediaPlayer : mediaPlayersAll) {
+                        try {
+                            holder.ivPlay.setVisibility(VISIBLE);
+                            holder.ivPause.setVisibility(GONE);
+                            if (mediaPlayer.isPlaying()) {
+                                mediaPlayer.stop();
+                                mediaPlayer.reset();
+                                mediaPlayer.release();
                             }
+                            length = mediaPlayersAll.get(0).getCurrentPosition();
+                            isPausePressed = true;
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                        mHandler1.removeCallbacksAndMessages(null);
-                        holder.melodySlider.setProgress(0);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
                     }
+                    mHandler1.removeCallbacksAndMessages(null);
+                    holder.melodySlider.setProgress(0);
                 }
             });
             holder.melodySlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -808,6 +798,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                 try {
 
 
+
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
@@ -856,7 +847,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         lastModifiedHoled.itemView.findViewById(R.id.ivPause).setVisibility(GONE);
                         ex.printStackTrace();
 
-                    } finally {
+                    }finally {
 
                     }
                 }
@@ -872,7 +863,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 
         protected void onPostExecute(Bitmap result) {
             try {
-                for (MediaPlayer mediaPlayer : mediaPlayersAll) {
+                for(MediaPlayer mediaPlayer:mediaPlayersAll){
                     try {
                         progressDialog.dismiss();
                         mediaPlayer.start();
@@ -880,16 +871,16 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                             @Override
                             public void onCompletion(MediaPlayer mp) {
-                                if (MaxMpSessionID == mp.getAudioSessionId()) {
+                                if(MaxMpSessionID==mp.getAudioSessionId()){
                                     mHandler1.removeCallbacksAndMessages(null);
-                                    SeekBar seekBar = lastModifiedHoled.itemView.findViewById(R.id.melodySlider);
+                                    SeekBar seekBar= lastModifiedHoled.itemView.findViewById(R.id.melodySlider);
                                     lastModifiedHoled.itemView.findViewById(R.id.ivPlay).setVisibility(VISIBLE);
                                     lastModifiedHoled.itemView.findViewById(R.id.ivPause).setVisibility(GONE);
                                     seekBar.setProgress(0);
                                 }
                             }
                         });
-                    } catch (Exception ex) {
+                    }catch (Exception ex){
                         ex.printStackTrace();
                         progressDialog.dismiss();
                     }
@@ -904,15 +895,14 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             }
         }
     }
-
     private void primarySeekBarProgressUpdater() {
 
         try {
             for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                final SeekBar seekBar = lastModifiedHoled.itemView.findViewById(R.id.melodySlider);
+                final SeekBar seekBar= lastModifiedHoled.itemView.findViewById(R.id.melodySlider);
                 final MediaPlayer pts;
                 //final SeekBar seekBarf;
-                if (MaxMpSessionID == mediaPlayersAll.get(i).getAudioSessionId()) {
+                if(MaxMpSessionID==mediaPlayersAll.get(i).getAudioSessionId()) {
                     pts = mediaPlayersAll.get(i);
                     Runnable runnable = new Runnable() {
                         @Override

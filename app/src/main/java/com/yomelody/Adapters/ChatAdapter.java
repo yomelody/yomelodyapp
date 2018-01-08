@@ -83,7 +83,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     public static String str;
     public static ImageView ivPrev, ivNext;
     //    public TextView tvNum;
-    public static MediaPlayer mp = null;
+    public static MediaPlayer mp=null;
     String parentRec;
     public static int origCount = 0;
     int pos;
@@ -192,7 +192,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                     return OTHER_IMAGE;
                 }
             }
-        } catch (Exception ex) {
+        }catch (Exception ex){
             ex.printStackTrace();
         }
         return position;
@@ -463,55 +463,47 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                 });
 
             } else if (itemType == SELF_IMAGE || itemType == OTHER_IMAGE) {
-                try {
-                    Message message = chatList.get(position);
-                    if (!message.getProfilePic().equals("")) {
-                        Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
+                Message message = chatList.get(position);
+                if (!message.getProfilePic().equals("")) {
+                    Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
+                }
+                holder.timeStamp.setText(message.getCreatedAt());
+                if (message.getIsRead().equals("1")) {
+                    holder.ivTick.setVisibility(View.GONE);
+                    holder.ivDoubleTick.setVisibility(VISIBLE);
+                } else {
+                    holder.ivDoubleTick.setVisibility(View.GONE);
+                    holder.ivTick.setVisibility(VISIBLE);
+                }
+                if (!message.getFile().equals("")) {
+                    holder.rlChatImage.setVisibility(VISIBLE);
+                    String picUrl = message.getFile();
+                    String picName = picUrl.substring(picUrl.lastIndexOf("/") + 1);
+                    if (!picUrl.equals("")) {
+                        Picasso.with(holder.chatImage.getContext()).load(picUrl).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(holder.chatImage);
                     }
-                    holder.timeStamp.setText(message.getCreatedAt());
-                    if (message.getIsRead().equals("1")) {
-                        holder.ivTick.setVisibility(View.GONE);
-                        holder.ivDoubleTick.setVisibility(VISIBLE);
-                    } else {
-                        holder.ivDoubleTick.setVisibility(View.GONE);
-                        holder.ivTick.setVisibility(VISIBLE);
-                    }
-                    if (!message.getFile().equals("")) {
-                        holder.rlChatImage.setVisibility(VISIBLE);
-                        String picUrl = message.getFile();
-                        String picName = picUrl.substring(picUrl.lastIndexOf("/") + 1);
-                        if (!picUrl.equals("")) {
-                            Picasso.with(holder.chatImage.getContext()).load(picUrl).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.no_image)).into(holder.chatImage);
-                        }
-                        holder.chatImageName.setText(picName);
-                    }
-                    if (!message.getMessage().equals("")) {
-                        holder.chatMessage.setVisibility(VISIBLE);
-                        holder.chatMessage.setText(message.getMessage());
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                    holder.chatImageName.setText(picName);
+                }
+                if (!message.getMessage().equals("")) {
+                    holder.chatMessage.setVisibility(VISIBLE);
+                    holder.chatMessage.setText(message.getMessage());
                 }
             } else {
-                try {
-                    Message message = chatList.get(position);
-                    if (!message.getProfilePic().equals("")) {
-                        Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
-                    }
-                    holder.chatMessage.setText(message.getMessage());
-                    holder.timeStamp.setText(message.getCreatedAt());
-                    if (message.getIsRead().equals("1")) {
-                        holder.ivTick.setVisibility(View.GONE);
-                        holder.ivDoubleTick.setVisibility(VISIBLE);
-                    } else {
-                        holder.ivDoubleTick.setVisibility(View.GONE);
-                        holder.ivTick.setVisibility(VISIBLE);
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                Message message = chatList.get(position);
+                if (!message.getProfilePic().equals("")) {
+                    Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
+                }
+                holder.chatMessage.setText(message.getMessage());
+                holder.timeStamp.setText(message.getCreatedAt());
+                if (message.getIsRead().equals("1")) {
+                    holder.ivTick.setVisibility(View.GONE);
+                    holder.ivDoubleTick.setVisibility(VISIBLE);
+                } else {
+                    holder.ivDoubleTick.setVisibility(View.GONE);
+                    holder.ivTick.setVisibility(VISIBLE);
                 }
             }
-        } catch (Exception ex) {
+        }catch (Exception ex){
             ex.printStackTrace();
         }
     }
@@ -643,7 +635,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                 MinJoinCount = MinJoinCount - 1;
                                 ChatActivity.tvNumPlayer.setText(UpdateCalJoinCount(TempJoinCount));
                             }
-                        } catch (Exception ex) {
+                        }catch (Exception ex){
                             ex.printStackTrace();
                         }
                     }
@@ -685,7 +677,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                         seekBar.setProgress(0);
                         length = 0;
                         duration1 = 0;*/
-                        } catch (Exception ex) {
+                        }catch (Exception ex){
                             ex.printStackTrace();
                         }
 
@@ -701,7 +693,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             ex.printStackTrace();
         }
     }
-
     private void primarySeekBarProgressUpdater() {
         try {
             seekBarChata.setProgress((int) (((float) mp.getCurrentPosition() / mp.getDuration()) * 100));
@@ -723,7 +714,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             e.printStackTrace();
         }
     }
-
     private String UpdateCalJoinCount(int joincount) {
         String jCount = "";
         try {

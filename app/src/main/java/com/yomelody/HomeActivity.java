@@ -38,7 +38,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.login.LoginManager;
-import com.yomelody.Services.LogoutService;
 import com.yomelody.utils.Const;
 import com.yomelody.utils.NotificationUtils;
 import com.squareup.picasso.Picasso;
@@ -69,6 +68,14 @@ public class HomeActivity extends AppCompatActivity {
     private static final String TWITTER_SECRET = "INlgRJqcVyxZe8tzfDhBZ0kYONTlWBY5NO8akXcnzVhERWL67I";
     public static final int MY_PERMISSIONS_REQUEST_MICROPHONE = 200;
     public static final int MY_PERMISSIONS_REQUEST_STORAGE = 201;
+    String KEY_FNAME = "f_name";
+    String KEY_LNAME = "l_name";
+    String KEY_EMAIL = "email";
+    String KEY_USERNAME = "username";
+    String KEY_USER_TYPE = "usertype";
+    String KEY_APP_ID = "appid";
+    String KEY_DEVICE_TOKEN = "device_token";
+    String REGISTER_URL = "http://35.165.96.167/api/registration.php";
     String USER_ID = "user_id";
 
     SignUpActivity obj = new SignUpActivity();
@@ -594,12 +601,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        //LogoutService.timer.cancel();
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         if (userId != null) {
@@ -609,14 +610,12 @@ public class HomeActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(PUSH_NOTIFICATION));
         NotificationUtils.clearNotifications(getApplicationContext());
-
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-       // startService(new Intent(this, LogoutService.class));
     }
 
     private void clearPreff(){
