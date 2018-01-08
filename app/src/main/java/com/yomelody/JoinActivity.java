@@ -40,6 +40,7 @@ import com.yomelody.Models.JoinedArtists;
 import com.yomelody.Models.JoinedUserProfile;
 import com.yomelody.Models.MelodyInstruments;
 import com.yomelody.Parse.ParseContents;
+import com.yomelody.Services.LogoutService;
 import com.yomelody.utils.AppHelper;
 import com.yomelody.utils.Const;
 import com.yomelody.utils.VisualizerView;
@@ -479,7 +480,7 @@ public class JoinActivity extends AppCompatActivity {
             }
 
         }
-
+        //startService(new Intent(this, LogoutService.class));
 
     }
 

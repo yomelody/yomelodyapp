@@ -681,6 +681,9 @@ public class ProfileActivity extends AppCompatActivity {
                                 progressDialog.dismiss();
                             }
                         } catch (JSONException e) {
+                            if (progressDialog != null || progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
                             e.printStackTrace();
                         }
 
@@ -689,7 +692,9 @@ public class ProfileActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                        if (progressDialog != null || progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";

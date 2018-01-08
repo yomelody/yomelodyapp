@@ -36,9 +36,11 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.dropin.DropInActivity;
 import com.braintreepayments.api.dropin.DropInRequest;
 import com.braintreepayments.api.dropin.DropInResult;
+import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.yomelody.Models.SubscriptionPackage;
 import com.yomelody.Parse.ParseContents;
 import com.yomelody.R;
@@ -129,7 +131,7 @@ public class SubscriptionsFragment extends Fragment {
         dob = loginSharedPref.getString("dob", null);
         mobile = loginSharedPref.getString("mobile", null);
 
-        if(userIdNormal==null) {
+        if (userIdNormal == null) {
             SharedPreferences twitterEditor = getActivity().getSharedPreferences("TwitterPref", MODE_PRIVATE);
             userIdTwitter = twitterEditor.getString("userId", null);
             firstNameTwitter = twitterEditor.getString("firstName", null);
@@ -139,7 +141,7 @@ public class SubscriptionsFragment extends Fragment {
             profilePicLogin = twitterEditor.getString("profilePic", null);
         }
 
-        if(userIdTwitter==null && userIdNormal==null) {
+        if (userIdTwitter == null && userIdNormal == null) {
             SharedPreferences fbEditor = getActivity().getSharedPreferences("MyFbPref", MODE_PRIVATE);
             userIdFb = fbEditor.getString("userId", null);
             firstNameFb = fbEditor.getString("firstName", null);
@@ -534,6 +536,7 @@ public class SubscriptionsFragment extends Fragment {
         if (requestCode == REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
+
                 Nonec = result.getPaymentMethodNonce().getNonce();
 
                 LayoutInflater mInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -582,6 +585,7 @@ public class SubscriptionsFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         try {
+                            alertDialog.dismiss();
                             PaymentContext(cost, Nonec);
                         } catch (Exception ex) {
                             ex.printStackTrace();
@@ -591,8 +595,15 @@ public class SubscriptionsFragment extends Fragment {
                 closePayDial.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        alertDialog.dismiss();
-                        subscriptionPackage();
+
+                        try {
+                            subscriptionPackage();
+                            alertDialog.dismiss();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+
+
                     }
                 });
                 // use the result to update your UI and send the payment method nonce to your server
@@ -601,15 +612,16 @@ public class SubscriptionsFragment extends Fragment {
                 // the user canceled
             } else {
                 // handle errors here, an exception may be available in
+                subscriptionPackage();
                 Exception error = (Exception) data.getSerializableExtra(DropInActivity.EXTRA_ERROR);
+
             }
         }
     }
 
     public void onBraintreeSubmit() {
-        DropInRequest dropInRequest = new DropInRequest()
-                // .clientToken(clientTokens);
-                .clientToken(clientTokens);
+        DropInRequest dropInRequest = new DropInRequest().clientToken(clientTokens);
+
         startActivityForResult(dropInRequest.getIntent(getActivity()), REQUEST_CODE);
     }
 
@@ -670,31 +682,19 @@ public class SubscriptionsFragment extends Fragment {
                         try {
                             JSONObject jsonObject = new JSONObject(response);
                             String flag = jsonObject.getString("status");
+                            String status = jsonObject.getString("success");
                             if (flag.equals("201")) {
+                                if (status.equals("true")) {
+                                    subscriptionPackage();
+                                    alertDialog.dismiss();
+                                } else {
+                                    subscriptionPackage();
+                                    alertDialog.dismiss();
+                                    Toast.makeText(getActivity(), "" + "Not a valid payment.", Toast.LENGTH_SHORT).show();
+                                }
 
-
-                                /*if (switchStandard.isChecked() == true) {
-                                    switchStandard.setChecked(true);
-                                    switchPremium.setChecked(false);
-                                    switchProducer.setChecked(false);
-                                    switchFree.setChecked(false);
-                                } else if (switchPremium.isChecked() == true) {
-                                    switchPremium.setChecked(true);
-                                    switchStandard.setChecked(false);
-                                    switchProducer.setChecked(false);
-                                    switchFree.setChecked(false);
-                                } else if (switchProducer.isChecked() == true) {
-                                    switchProducer.setChecked(true);
-                                    switchPremium.setChecked(false);
-                                    switchStandard.setChecked(false);
-                                    switchFree.setChecked(false);
-                                }*/
-                                subscriptionPackage();
-                                alertDialog.dismiss();
                             } else {
-                                /*switchPremium.setChecked(false);
-                                switchStandard.setChecked(false);
-                                switchProducer.setChecked(false);*/
+
                             }
 
                         } catch (JSONException e) {

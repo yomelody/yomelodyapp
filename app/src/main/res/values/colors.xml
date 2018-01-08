@@ -12,5 +12,7 @@
     <color name="navy_blue">#3B6EFE</color>
     <color name="colorSeekProgress">#0098fe</color>
     <color name="colorSearch">#ABB4B9</color>
-
+    <color name="white">#FFFFFF</color>
+    <color name="dark_blue">#00008B</color>
+    <color name="black">#000000</color>
 </resources>
