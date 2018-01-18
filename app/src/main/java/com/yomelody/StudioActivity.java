@@ -1010,9 +1010,13 @@ public class StudioActivity extends AppCompatActivity {
 
                     } else {
                         if (instrumentList.size() < LayerCount) {
-                            openDialog();
-                            ivRecord.setVisibility(View.VISIBLE);
-                            ivRecord.setEnabled(true);
+                            if (joinRecordingId == null) {
+                                openDialog();
+                                ivRecord.setVisibility(View.VISIBLE);
+                                ivRecord.setEnabled(true);
+                            }else{
+                                uploadRecordingsMixing();
+                            }
                         } else {
                             if (IsExp == "false") {
                                 if (instrumentList.size() == LayerCount && LayerCount != 0) {
