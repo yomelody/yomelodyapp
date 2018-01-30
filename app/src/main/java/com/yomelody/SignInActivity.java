@@ -72,6 +72,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.yomelody.Models.HandelLogin;
+import com.yomelody.Services.MyFirebaseInstanceIDService;
 import com.yomelody.utils.AppHelper;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
@@ -295,6 +296,17 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                                 fbEditor.putString("profilePic", fbProfilePic);
                                 fbEditor.putInt("status", 1);
                                 fbEditor.commit();
+
+                                try {
+                                    if (DeviceToken == "") {
+                                        startService(new Intent(getBaseContext(), MyFirebaseInstanceIDService.class));
+                                        SharedPreferences fcmPref = getApplicationContext().getSharedPreferences(SHARED_PREF, MODE_PRIVATE);
+                                        DeviceToken = fcmPref.getString("regId", "");
+                                    }
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+
                                 registerSpecialFB();
                             }
                         });
