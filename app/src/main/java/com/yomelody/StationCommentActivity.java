@@ -393,6 +393,7 @@ public class StationCommentActivity extends AppCompatActivity {
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
+
                         /*lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
                         lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
                         SeekBar seekBar = lastModifiedHoled.itemView.findViewById(R.id.seekBarRecordings);
@@ -428,11 +429,14 @@ public class StationCommentActivity extends AppCompatActivity {
                 ivStationPlay.setVisibility(v.VISIBLE);
                 ivStationPause.setVisibility(v.GONE);
                 if (mp != null) {
-
-                    mp.stop();
-                    mp.reset();
-                    mp = null;
-                    length = mp.getCurrentPosition();
+                    try {
+                        mp.stop();
+                        mp.reset();
+                        mp = null;
+                        length = mp.getCurrentPosition();
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                 }
                 // seekBarRecordings.setProgress(0);
             }
@@ -1149,6 +1153,7 @@ public class StationCommentActivity extends AppCompatActivity {
                             duration1 = mp.getDuration();
                             primarySeekBarProgressUpdater();
 
+
                             if (Type == "main") {
 
                                 //MinJoinCount = MinJoinCount + 1;
@@ -1156,12 +1161,14 @@ public class StationCommentActivity extends AppCompatActivity {
 
                                 MinJoinCount = MinJoinCount + 1;
 
-                                tvIncludedCount.setText(UpdateCalJoinCount(TempJoinCount));
+                                //tvIncludedCount.setText(UpdateCalJoinCount(TempJoinCount));
+                                txtJoinCount.setText(UpdateCalJoinCount(TempJoinCount));
                             } else if (Type == "pre") {
 
                                 MinJoinCount = MinJoinCount - 1;
 
-                                tvIncludedCount.setText(UpdateCalJoinCount(TempJoinCount));
+                                //tvIncludedCount.setText(UpdateCalJoinCount(TempJoinCount));
+                                txtJoinCount.setText(UpdateCalJoinCount(TempJoinCount));
                             }
                         } catch (Exception ex) {
                             ex.printStackTrace();
@@ -1173,6 +1180,8 @@ public class StationCommentActivity extends AppCompatActivity {
                     public boolean onError(MediaPlayer mp, int what, int extra) {
 
                         try {
+                            ivStationPlay.setVisibility(VISIBLE);
+                            ivStationPause.setVisibility(GONE);
                             progressDialog.dismiss();
                             if (mHandler1 != null) {
                                 mHandler1.removeCallbacksAndMessages(null);
@@ -1190,6 +1199,8 @@ public class StationCommentActivity extends AppCompatActivity {
                             if (mHandler1 != null) {
                                 mHandler1.removeCallbacksAndMessages(null);
                             }
+                            ivStationPlay.setVisibility(VISIBLE);
+                            ivStationPause.setVisibility(GONE);
                             seekBarRecordings.setProgress(0);
                             length = 0;
                             duration1 = 0;
@@ -1200,12 +1211,15 @@ public class StationCommentActivity extends AppCompatActivity {
                     }
                 });
 
-
+                ivStationPlay.setVisibility(GONE);
+                ivStationPause.setVisibility(VISIBLE);
             } else {
                 Toast.makeText(StationCommentActivity.this, "Recording URL not found", Toast.LENGTH_SHORT).show();
             }
 
         } catch (Exception ex) {
+            ivStationPlay.setVisibility(VISIBLE);
+            ivStationPause.setVisibility(GONE);
             ex.printStackTrace();
         }
     }

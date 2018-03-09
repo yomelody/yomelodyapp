@@ -681,6 +681,9 @@ public class ProfileActivity extends AppCompatActivity {
                                 progressDialog.dismiss();
                             }
                         } catch (JSONException e) {
+                            if (progressDialog != null || progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
                             e.printStackTrace();
                         }
 
@@ -689,7 +692,9 @@ public class ProfileActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                        if (progressDialog != null || progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
                         String errorMsg = "";
                         if (error instanceof TimeoutError) {
                             errorMsg = "Internet connection timed out";
@@ -1617,11 +1622,17 @@ public class ProfileActivity extends AppCompatActivity {
         super.onPause();
         try {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-            if (RecordingsCardAdapter.mp != null && RecordingsCardAdapter.mp.isPlaying()) {
+            if (RecordingsCardAdapter.mp != null) {
                 try {
-                    RecordingsCardAdapter.mp.reset();
+                    try {
+                        RecordingsCardAdapter.mp.stop();
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                     RecordingsCardAdapter.mp.reset();
                     RecordingsCardAdapter.mp.release();
+                    RecordingsCardAdapter.mp=null;
+
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }

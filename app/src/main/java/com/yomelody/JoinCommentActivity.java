@@ -36,6 +36,7 @@ import com.yomelody.Adapters.JoinListAdapter;
 import com.yomelody.Models.Comments;
 import com.yomelody.Parse.ParseContents;
 import com.squareup.picasso.Picasso;
+import com.yomelody.Services.LogoutService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -362,4 +363,9 @@ public class JoinCommentActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //startService(new Intent(this, LogoutService.class));
+    }
 }

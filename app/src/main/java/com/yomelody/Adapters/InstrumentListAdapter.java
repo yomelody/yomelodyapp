@@ -363,9 +363,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 viewHolder.TxtSoloViewHolder = (TextView) holder.tvSButton.findViewById(R.id.tvSButton);
                 StudioActivity.lstViewHolder.add(viewHolder);
             }
-            String aafs = FirebaseInstanceId.getInstance().getToken();
+            // String aafs = FirebaseInstanceId.getInstance().getToken();
             final MelodyInstruments instruments = instrumentList.get(listPosition);
-            String abc = instrumentList.get(listPosition).getInstrumentFile();
+            //String abc = instrumentList.get(listPosition).getInstrumentFile();
 
             // holder.melodySlider.setProgress(0);
             if (coverPicStudio != null) {
@@ -383,12 +383,12 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             } else
                 Picasso.with(holder.userProfileImage.getContext()).load(instruments.getUserProfilePic()).into(holder.userProfileImage);
             holder.tvBpmRate.setText(instruments.getInstrumentBpm());
-            if (userName != null) {
-                holder.tvUserName.setText("@" + userName);
-            } else if (fbName != null) {
-                holder.tvUserName.setText("@" + fbName);
-            } else
-                holder.tvUserName.setText(instruments.getUserName());
+//            if (userName != null) {
+//                holder.tvUserName.setText("@" + userName);
+//            } else if (fbName != null) {
+//                holder.tvUserName.setText("@" + fbName);
+//            } else
+            holder.tvUserName.setText(instruments.getUserName());
 
             holder.tvInstrumentName.setText(instruments.getInstrumentName());
             String InstLen;
@@ -423,7 +423,7 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                 @Override
                 public void onClick(View v) {
                     try {
-                        if (instrumentList.size() > 1) {
+                        //if (instrumentList.size() > 1) {
                             if (holder.mp != null) {
                                 try {
                                     holder.mp.stop();
@@ -460,9 +460,9 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                             StudioActivity.lstViewHolder.remove(newPosition);
                             notifyItemRemoved(newPosition);
                             StudioActivity.setInsCount(instrumentList.size());
-                        } else {
-                            Toast.makeText(getApplicationContext(), "You can't delete all instruments.", Toast.LENGTH_SHORT).show();
-                        }
+//                        } else {
+//                            Toast.makeText(getApplicationContext(), "You can't delete all instruments.", Toast.LENGTH_SHORT).show();
+//                        }
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -1252,11 +1252,12 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                                 //duration1 = holder.mp.getDuration();
                                 //currentPosition = holder.mp.getCurrentPosition();
                                 //holder.progressDialog.dismiss();
+                                StudioActivity.handler.removeCallbacksAndMessages(null);
                                 holder.ivPlay.setVisibility(View.VISIBLE);
                                 if (holder.mp != null) {
                                     try {
                                         holder.mp.setLooping(false);
-                                        holder.mp.stop();
+                                        //holder.mp.stop();
                                         holder.mp.release();
                                         holder.mp = null;
                                     } catch (Exception ex) {
