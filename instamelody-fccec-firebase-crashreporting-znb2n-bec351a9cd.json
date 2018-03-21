@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "instamelody-fccec",
+  "private_key_id": "bec351a9cd09b8a910b10da03dce838d6bc6e81f",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCt1x1H27YEpC7u\nTuR3KYwnnooTQBT0UuXyMcTcOf9M8RHHGSLxKe11ik1kCCcShX4hk2KW7qtZ9Lum\njs5cQhiUt/apn9iWCmSrVUOCyg5ylRGEjQ0DtINWUel4WDmamgE4kmcgcmC8Cxc+\n5mfoiGGbEwn7geSg7mMpoiGb37AbZFJH3w78Hme61Wh0UdyDS9W1uKAQ3g/UrRbv\nNBYg75fxUTaHALLZC5LXeySaNiv5IW0rTo8j2fYtwac0Ko7TCZsL/7sSsmfPVvlt\ngPa3pLkGgzYkXBDKubdQ6tjAd9cEMgU7uUA6D9/h2kqWfejvvXS8NFieomSdSA8C\nFPI6tSxlAgMBAAECggEAFz6LOL+FEAvQBqdf3xscFXQabEaGRsEK5B6JfxT2MRiO\n0vtmc66yhKPwgy6f4tccrWqipSHWoZmaucOgji98T+5lOfsYn79WBJ7K/yL7WZDb\nHckqc1NguFsNh7zsPuLWxPS2e10v2BT3j76JKEuMGYsrK4kLxAT8F2YJbmkziAXi\nXCoHosL/i90cN1lG4x24KidgrG7VkYPiB3HBrFUfjTm/ubKj72bUat/IMr0etCnq\nIdTqqNl1pyjz4sbJ95B74vResJSrMYKStgybOtKMOd/zox+2s6/Uf7cp9xlbf9Mk\niqu/PUckYcwJJz1/YujcGaRPT5/wMQwp+aAoo+48hQKBgQDnytIdWS/mmExPjeQv\nCBxcjzmaFDQX4tgNMdunlj1KpWvclSkaIZrI99lUICaBcajuqYBo8eK0PBTXhsI+\n5nGe2IZOAywiFngZsTAD7oJTfdAUAu/cY7Qv8sAZEPNdEAfCd3hH/6RtMnGSgppQ\nxFw07rEg/dVOBXVmhd6IqiAkHwKBgQC//uTtSilrZ2cAo6ke6BsS5+8Irh9g5kAX\nKxuTfpuirZPvIE+AHgvNTNs/GBGrQFExa14hHmsax49zOUrX0PG+7VMbpLVmlRcx\nDGk3g1lnmIdEvyMs6XmAfJadf3OSx7ZUecAUzGs5Zhl+KwHe6cmwJOh5NwLJ2VbD\nE2tAk0X++wKBgBlS11HNhKY0zWGDpwJcaHzUSP7EZkyVw/TtFYphp6CYIgifYzYv\npbF/IodGW+6YdFRewGC2zIXUapKBbodgtdkc3s93GUNAIS7tZMmJLUPh4vHMwFfb\nrLvwUXxrlar9LVvZoZJ8I4KqmC3hhup8CXbe/QsVsFAt2H2y8nUL4ScRAoGAE9AO\n+bm8envqMjOxYSIcoR/UF/Y4ALziAkINj3PyRaBZ8sRHz/XJy/7RZTproFt7xXjJ\n9ur3rITJdd+ErK7AM66z89dUbOiXwxT/yp3AXSNtWhfLXngddLfmpwwe9her5h3G\nR58stXimytFPWRyRFp9IajHWFNRb0revSrOn9n8CgYEAuSjmR+LuQ2QSWyaOpUY9\ngxWHthemnF+YWZBjC+MXR+zHqY/Ojr/BtuUM75eEb3eKZOfQLboEx6Rx6Eogp/3A\nPg3e+my9RUKHoH1S28EpGo9wgmGHw+X/qV8d4y8Y6YItQFEJ3jwcRPXfie8VDyjx\nc82G7jb70Ans6W8q4zj51rA=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-crashreporting-znb2n@instamelody-fccec.iam.gserviceaccount.com",
+  "client_id": "116029258499607319910",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-crashreporting-znb2n%40instamelody-fccec.iam.gserviceaccount.com"
+}

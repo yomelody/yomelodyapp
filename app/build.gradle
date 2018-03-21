@@ -2,9 +2,12 @@ buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
     }
-
+    repositories {
+        mavenCentral()
+    }
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.+'
+        classpath 'io.fabric.tools:gradle:1.24.4'
+        //classpath 'io.fabric.tools:gradle:1.+'
     }
 }
 apply plugin: 'com.android.application'
@@ -21,8 +24,8 @@ android {
         applicationId "com.yomelody"
         minSdkVersion 18
         targetSdkVersion 26
-        versionCode 1
-        versionName "1.0.0.49"
+        versionCode 7
+        versionName "1.0.6"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -51,51 +54,38 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-
     compile('com.twitter.sdk.android:twitter:2.3.1@aar') {
         transitive = true;
     }
-    //    compile files('libs/facebook.jar')
-    compile 'com.github.lsjwzh.RecyclerViewPager:lib:v1.1.2'
     compile 'com.github.lsjwzh.RecyclerViewPager:lib:v1.1.2'
     compile 'com.squareup.picasso:picasso:2.3.2'
     //noinspection GradleCompatible
     compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.android.support:recyclerview-v7:26.1.0'
     compile 'me.relex:circleindicator:1.2.2@aar'
-    //noinspection GradleCompatible
-    compile 'com.google.android.support:wearable:1.1.0'
     compile 'com.android.support:cardview-v7:26.1.0'
     compile 'com.android.support:design:26.1.0'
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.crystal:crystalrangeseekbar:1.1.1'
     compile 'com.mcxiaoke.volley:library-aar:1.0.0'
     compile 'com.firebase:firebase-client-android:2.5.2'
-    compile 'com.google.firebase:firebase-core:11.4.2'
-    compile 'com.google.firebase:firebase-messaging:11.4.2'
+    compile 'com.google.firebase:firebase-messaging:11.6.2'
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     compile 'com.cleveroad:audiovisualization:1.0.0'
-    compile 'com.google.android.gms:play-services:11.4.2'
-    compile 'com.google.android.gms:play-services-auth:11.4.2'
+    compile 'com.google.android.gms:play-services:11.6.2'
+    compile 'com.google.android.gms:play-services-auth:11.6.2'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.auth0.android:auth0:1.+'
     compile 'com.auth0.android:lock:2.+'
     compile 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.7.2'
-    compile 'com.github.asne:asne-facebook:0.3.3'
-    compile 'com.github.asne:asne-twitter:0.3.3'
-    compile 'com.github.asne:asne-googleplus:0.3.3'
-    compile 'com.jlubecki.soundcloud:soundcloud-api:1.2.1'
     testCompile 'junit:junit:4.12'
-    compile 'com.github.lsjwzh.RecyclerViewPager:lib:v1.1.2'
     compile 'com.android.support:multidex:1.0.0'
     compile 'com.paypal.sdk:paypal-android-sdk:2.15.3'
-    //compile 'com.braintreepayments.api:drop-in:3.1.0'
     compile 'com.braintreepayments.api:drop-in:3.+'
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
         transitive = true;
     }
-    //    compile files('libs/facebook.jar')
-
+    compile 'com.google.firebase:firebase-crash:11.6.2'
 }
 apply plugin: 'com.google.gms.google-services'

@@ -24,6 +24,7 @@ import com.yomelody.Models.RecordingsPool;
 import com.yomelody.Models.SharedAudios;
 import com.yomelody.Models.SubscriptionPackage;
 import com.yomelody.StudioActivity;
+import com.yomelody.utils.AppHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -120,12 +121,16 @@ public class ParseContents {
                     MelodyCard card = new MelodyCard();
                     JSONObject cardJson = jsonArray.getJSONObject(i);
                     card.setMelodyPackId(cardJson.getString(KEY_MELODY_PACK_ID));
+                    card.setAddByAdmin(cardJson.getString("added_by_admin"));
+                    card.setMelodyThumbnail(cardJson.getString("thumbnail_url"));
+                    card.setMelodyDuration(cardJson.getString("duration"));
 //                    card.setAddedBy(cardJson.getInt(KEY_ADDED_BY));
                     card.setUserName(cardJson.getString(KEY_USERNAME));
                     card.setMelodyName(cardJson.getString(KEY_MELODY_NAME));
                     card.setGenreId(cardJson.getString(KEY_GENRE_ID));
                     card.setGenreName(cardJson.getString(KEY_GENRE_NAME));
                     card.setMelodyLength(cardJson.getString(KEY_DURATION));
+                    AppHelper.sop("KEY_DURATION=="+cardJson.getString(KEY_DURATION));
 //                    card.setInstrumentCount(cardJson.getString(KEY_INSTRUMENT_COUNT));
                     card.setMelodyBpm(cardJson.getString(KEY_BPM));
                     card.setPlayCount(cardJson.getInt(KEY_PLAY_COUNTS));
@@ -163,7 +168,11 @@ public class ParseContents {
 //                    AppHelper.sop("=instrumentArray=size="+instrumentArray.length());
                     card.setInstrumentCount(instrumentArray.length()+"");
                     card.setMelodyInstrumentsList(instrumentsListLocal);
-                    card.setMelodyLength(instrumentArray.getJSONObject(0).getString(KEY_INSTRUMENT_DURATION));
+                    if (instrumentArray.length()<=0){
+                        card.setMelodyLength("00");
+                    }else {
+                        card.setMelodyLength(instrumentArray.getJSONObject(0).getString(KEY_INSTRUMENT_DURATION));
+                    }
                     instrumentsList = instrumentList;
                     melodyList.add(card);
 
@@ -188,9 +197,14 @@ public class ParseContents {
             StudioActivity.list.clear();
             if (jsonObject.getString(KEY_FLAG).equals("success")) {
                 jsonArray = jsonObject.getJSONArray(KEY_RESPONSE);
-                JSONObject selectedObj = jsonArray.getJSONObject(Integer.parseInt(mpid));
+                try {
+                    JSONObject selectedObj = jsonArray.getJSONObject(Integer.parseInt(mpid));
+                    jsonArray = selectedObj.getJSONArray(KEY_INSTRUMENTS);
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                }
 
-                jsonArray = selectedObj.getJSONArray(KEY_INSTRUMENTS);
+
 
                 MelodyInstruments.setInstrumentCount(jsonArray.length());  // This code added by Abhishek
                 Log.d("Count", "" + jsonArray.length());
@@ -435,15 +449,19 @@ public class ParseContents {
 
                     JoinedArray = cardJson.getJSONArray("joined");
 
-                    if(JoinedArray.length()>0) {
-                        for (int j = 0; j < JoinedArray.length(); j++) {
-                            JSONObject jsonObject1=new JSONObject(JoinedArray.get(j).toString());
+                    try {
+                        if (JoinedArray.length() > 0) {
+                            for (int j = 0; j < JoinedArray.length(); j++) {
+                                JSONObject jsonObject1 = new JSONObject(JoinedArray.get(j).toString());
 
-                            //JSONArray jsonArray1=new JSONArray(jsonObject1.getJSONArray(jsonObject1));
+                                //JSONArray jsonArray1=new JSONArray(jsonObject1.getJSONArray(jsonObject1));
 
-                            arrayList.add(jsonObject1.get("recording_url"));
+                                arrayList.add(jsonObject1.get("recording_url"));
+                            }
+                            card.setJoinUrl(arrayList);
                         }
-                        card.setJoinUrl(arrayList);
+                    }catch (Exception ex){
+                        ex.printStackTrace();
                     }
 
                     if (cardJson.isNull("recordings")) {
@@ -506,6 +524,7 @@ public class ParseContents {
                     join.setLike_counts(cardJoin.getString("like_counts"));
                     join.setShare_counts(cardJoin.getString("share_counts"));
                     join.setComment_counts(cardJoin.getString("comment_counts"));
+                    join.setJoin_Thumbnail(cardJoin.getString("thumbnail_url"));
                     //    instrumentsList = instrumentList;
                     JoinArtist.add(join);
                     JoinActivity.listProfile.add(i, new JoinedUserProfile(String.valueOf(cardJoin.getString("user_id")), "0"));
@@ -625,7 +644,7 @@ public class ParseContents {
                 for (int j = 0; j < audiosDetailsArray.length(); j++) {
                     try {
                         JSONObject detailsJson = audiosDetailsArray.getJSONObject(j);
-                        if (!detailsJson.get("recordings").equals(null) && !detailsJson.get("recordings").equals("")) {
+                        if (detailsJson.has("recordings") && !detailsJson.get("recordings").equals(null) && !detailsJson.get("recordings").equals("")) {
                             JSONArray sharedAudiosArray = detailsJson.getJSONArray("recordings");
 
                             if (sharedAudiosArray.length() > 0) {
@@ -642,6 +661,19 @@ public class ParseContents {
                                     sharedAudioList.add(sharedAudios);
                                 }
                             }
+                        }
+                        else if (detailsJson.has("instruments") && !detailsJson.get("instruments").equals(null) && !detailsJson.get("instruments").equals("")) {
+                            JSONArray instrumentsArray = detailsJson.getJSONArray("instruments");
+                            SharedAudios sharedAudios = new SharedAudios();
+
+                            sharedAudios.setAddedById(detailsJson.getString("added_by_admin"));
+                            sharedAudios.setUserName(detailsJson.getString("username"));
+                            sharedAudios.setName(detailsJson.getString("name"));
+                            sharedAudios.setProfileUrl(detailsJson.getString("profilepic"));
+                            sharedAudios.setDateAdded(detailsJson.getString("date"));
+                            sharedAudios.setDuration(detailsJson.getString("duration"));
+                            sharedAudios.setRecordingUrl(detailsJson.getString("melodyurl"));
+                            sharedAudioList.add(sharedAudios);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
