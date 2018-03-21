@@ -1,8 +1,10 @@
 package com.yomelody;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
@@ -46,7 +48,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.yomelody.Adapters.CommentsAdapter;
+import com.yomelody.Adapters.MelodyCardListAdapter;
 import com.yomelody.Models.Comments;
+import com.yomelody.Models.MelodyCard;
 import com.yomelody.Models.MelodyInstruments;
 import com.yomelody.Parse.ParseContents;
 import com.yomelody.Services.LogoutService;
@@ -104,7 +108,8 @@ public class CommentsActivity extends AppCompatActivity {
 
 
     String instruments, bpm, genre, melodyName, userName, duration, date, plays, likes, comments,
-            shares, profilePic, cover, melodyID, fileType, RecordingURL, LikeStatus, CoverUrl;
+            shares, profilePic, cover, melodyID, fileType, RecordingURL, LikeStatus, CoverUrl,
+    melodyThumbnail;
     static ArrayList<Comments> commentList = new ArrayList<>();
     String COMMENT = "comment";
     String FILE_TYPE = "file_type";
@@ -176,6 +181,7 @@ public class CommentsActivity extends AppCompatActivity {
         melodyID = prefs.getString("melodyID", null);
         fileType = prefs.getString("fileType", null);
         RecordingURL = prefs.getString("RecordingURL", null);
+        melodyThumbnail = prefs.getString("melody_thumbnail", null);
         LikeStatus = prefs.getString("LikeStatus", null);
         CoverUrl = prefs.getString("CoverUrl", null);
         adapterPosition = prefs.getString("adapterPosition", null);
@@ -323,8 +329,7 @@ public class CommentsActivity extends AppCompatActivity {
                 try {
                     if (!userId.equals("") && userId != null) {
 
-
-                        Intent shareIntent = new Intent();
+                        /*Intent shareIntent = new Intent();
                         shareIntent.setAction(Intent.ACTION_SEND);
                         shareIntent.putExtra(Intent.EXTRA_STREAM, "");
                         shareIntent.setType("text/plain");
@@ -332,14 +337,14 @@ public class CommentsActivity extends AppCompatActivity {
                         shareIntent.putExtra(Intent.EXTRA_TEXT, "Melody Songs" + "\n" + RecordingURL);
 
                         shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(Intent.createChooser(shareIntent, "Hello."));
+                        startActivity(Intent.createChooser(shareIntent, "Hello."));*/
 
-                    /*final AlertDialog.Builder alertDialog = new AlertDialog.Builder(mActivity);
+                    final AlertDialog.Builder alertDialog = new AlertDialog.Builder(mActivity);
                     alertDialog.setTitle(mActivity.getString(R.string.share_with_YoMelody));
                     alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             if (getIntent() != null && getIntent().hasExtra("melody_card")) {
-                                melody = (MelodyCard) getIntent().getSerializableExtra("melody_card");
+                                MelodyCard melody = (MelodyCard) getIntent().getSerializableExtra("melody_card");
                                 SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
                                 editor.putString("recID", melody.getMelodyPackId());
                                 editor.apply();
@@ -360,16 +365,20 @@ public class CommentsActivity extends AppCompatActivity {
                             dialog.cancel();
                             Intent shareIntent = new Intent();
                             shareIntent.setAction(Intent.ACTION_SEND);
-                            shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+//                            shareIntent.putExtra(Intent.EXTRA_STREAM, "");
                             shareIntent.setType("text/plain");
-                            shareIntent.putExtra(Intent.EXTRA_TEXT, "Melody Songs" + "\n" + CoverUrl + "\n" + RecordingURL);
-                            shareIntent.putExtra(Intent.EXTRA_TEXT, "Melody Songs" + "\n" + RecordingURL);
 
+//                            shareIntent.putExtra(Intent.EXTRA_TEXT, "Melody Songs" + "\n" + CoverUrl + "\n" + RecordingURL);
+                            shareIntent.putExtra(Intent.EXTRA_TEXT, melodyName);
+                            shareIntent.putExtra(Intent.EXTRA_TEXT, melodyThumbnail);
+                            /*shareIntent.putExtra(Intent.EXTRA_TEXT, mActivity.getString(R.string.listen_to)+
+                                    " "+melodyName+"\n"+mActivity.getString(R.string.yomelody_music)
+                                    +"\n"+melodyThumbnail);*/
                             shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(Intent.createChooser(shareIntent, "Hello."));
+                            startActivity(Intent.createChooser(shareIntent, "Choose Sharing option!"));
                         }
                     });
-                    alertDialog.show();*/
+                    alertDialog.show();
 
                     } else {
                         Toast.makeText(getApplicationContext(), "Log in to comment", Toast.LENGTH_SHORT).show();

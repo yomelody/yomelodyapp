@@ -71,6 +71,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.yomelody.Models.ActivityData;
 import com.yomelody.Models.HandelLogin;
 import com.yomelody.Services.MyFirebaseInstanceIDService;
 import com.yomelody.utils.AppHelper;
@@ -86,12 +87,15 @@ import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 import com.twitter.sdk.android.core.models.User;
 import com.twitter.sdk.android.core.services.AccountService;
+import com.yomelody.utils.Const;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -171,6 +175,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     String melodyPackId = null;
     private Activity mActivity;
     private GoogleApiClient mGoogleApiClient;
+    private SharedPreferences.Editor socialStatusPrefEditor;
 
 
     @Override
@@ -223,6 +228,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
             }
         });
+
 
         etPassword.addTextChangedListener(new TextWatcher() {
             @Override
@@ -633,6 +639,12 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                                 editor.putInt("status", 1);
                                 editor.putString("description", rspns.getString("discription"));
                                 editor.commit();
+
+
+                                UpdateSocialStatus(rspns.getString("facebook_status"),
+                                        rspns.getString("google_status"),
+                                        rspns.getString("twitter_status"));
+
                                 Intent i;
 
 
@@ -717,6 +729,34 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     }
 
 
+    private void UpdateSocialStatus(String fbStatus, String gmailStatus, String twitterStatus){
+        socialStatusPrefEditor = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE).edit();
+        if (fbStatus.equalsIgnoreCase("1")) {
+            socialStatusPrefEditor.putBoolean(Const.FB_STATUS, true);
+            socialStatusPrefEditor.apply();
+        } else {
+            socialStatusPrefEditor.putBoolean(Const.FB_STATUS, false);
+            socialStatusPrefEditor.apply();
+        }
+
+        if (twitterStatus.equalsIgnoreCase("1")) {
+            socialStatusPrefEditor.putBoolean(Const.TWITTER_STATUS, true);
+            socialStatusPrefEditor.apply();
+        } else {
+            socialStatusPrefEditor.putBoolean(Const.TWITTER_STATUS, false);
+            socialStatusPrefEditor.apply();
+        }
+
+        if (gmailStatus.equalsIgnoreCase("1")) {
+            socialStatusPrefEditor.putBoolean(Const.GOOGLE_STATUS, true);
+            socialStatusPrefEditor.apply();
+        } else {
+            socialStatusPrefEditor.putBoolean(Const.GOOGLE_STATUS, false);
+            socialStatusPrefEditor.apply();
+        }
+    }
+
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -738,7 +778,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
                         String successmsg = response.toString();
 //                        Toast.makeText(SignInActivity.this, ""+successmsg, Toast.LENGTH_SHORT).show();
-                        Log.d("print", successmsg);
+                        Log.d("FB=respon=", successmsg);
 
                         try {
                             JSONObject jsonObject = new JSONObject(successmsg);
@@ -776,6 +816,10 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                                 fbEditor.putInt("status", 1);
                                 fbEditor.putString("description", rspns.getString("discription"));
                                 fbEditor.commit();
+
+                                UpdateSocialStatus(rspns.getString("facebook_status"),
+                                        rspns.getString("google_status"),
+                                        rspns.getString("twitter_status"));
 
                                 Intent i = new Intent(mActivity, HomeActivity.class);
                                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -880,6 +924,10 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                                 twitterEditor.putInt("status", 1);
                                 twitterEditor.putString("description", rspns.getString("discription"));
                                 twitterEditor.commit();
+
+                                UpdateSocialStatus(rspns.getString("facebook_status"),
+                                        rspns.getString("google_status"),
+                                        rspns.getString("twitter_status"));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -1186,6 +1234,10 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                                 editor.putInt("status", 1);
                                 editor.putString("description", rspns.getString("discription"));
                                 editor.commit();
+
+                                UpdateSocialStatus(rspns.getString("facebook_status"),
+                                        rspns.getString("google_status"),
+                                        rspns.getString("twitter_status"));
                             }
 
                             Intent intent = new Intent(mActivity, HomeActivity.class);

@@ -190,10 +190,17 @@ public class CommentJoinFragment extends Fragment {
                         dialog.cancel();
                         Intent shareIntent = new Intent();
                         shareIntent.setAction(Intent.ACTION_SEND);
-                        shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                        shareIntent.putExtra(Intent.EXTRA_TEXT, mActivity.getString(R.string.yomelody_music));
-                        shareIntent.putExtra(Intent.EXTRA_TEXT, JoinListAdapter.Joined_artist.get(0));
-                        shareIntent.setType("image/jpeg");
+//                        shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, JoinListAdapter.Joined_artist.get(0).getRecording_name());
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, JoinListAdapter.Joined_artist.get(0).getJoin_Thumbnail());
+//                        shareIntent.setType("image/jpeg");
+
+
+                        shareIntent.setType("text/plain");
+                        /*shareIntent.putExtra(Intent.EXTRA_TEXT, mActivity.getString(R.string.listen_to)+
+                                " "+JoinListAdapter.Joined_artist.get(0).getRecording_name()+
+                                "\n"+mActivity.getString(R.string.yomelody_music)
+                                +"\n"+JoinListAdapter.Joined_artist.get(0).getJoin_Thumbnail());*/
                         shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         mActivity.startActivity(Intent.createChooser(shareIntent, "Choose Sharing option!"));
                     }

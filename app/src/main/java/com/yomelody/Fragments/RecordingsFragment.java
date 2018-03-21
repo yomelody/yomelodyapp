@@ -60,7 +60,7 @@ import static com.yomelody.utils.Const.ServiceType.RECORDINGS;
  * Created by Saurabh Singh on 03/24/2017.
  */
 
-public class RecordingsFragment extends Fragment {
+public class  RecordingsFragment extends Fragment {
 
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();

@@ -1291,8 +1291,6 @@ public class ChatActivity extends AppCompatActivity {
                         } else if (melody != null) {
                             shareCountApi(getIntent().getStringExtra("file_type"));
                         }
-
-
 //                    }
 
                     }
@@ -1365,7 +1363,13 @@ public class ChatActivity extends AppCompatActivity {
                                 editor.putString("melodyID", null);
                                 editor.apply();
                                 params.put(FILE, melodyID);
-                                params.put(FILE_TYPE, "admin_melody");
+                                if (!audioShareData.getString("added_by_admin", "").
+                                        equalsIgnoreCase("1")){
+                                    params.put(FILE_TYPE, "user_melody");
+                                }else {
+                                    params.put(FILE_TYPE, "admin_melody");
+                                }
+
                             }
                             params.put(SENDER_ID, user_Id);
                             params.put(CHAT_ID, chatId);

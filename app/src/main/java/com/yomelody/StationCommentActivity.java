@@ -330,13 +330,17 @@ public class StationCommentActivity extends AppCompatActivity {
                             try {
                                 RecordingsModel recording = recordingsModel;
                                 if (recording != null) {
-                                    String RecordingURL = recording.getrecordingurl();
+                                    String RecordingURL = recording.getThumnailUrl();
                                     Intent shareIntent = new Intent();
                                     shareIntent.setAction(Intent.ACTION_SEND);
-                                    shareIntent.putExtra(Intent.EXTRA_STREAM, "");
-                                    shareIntent.putExtra(Intent.EXTRA_TEXT, mActivity.getString(R.string.yomelody_music));
+//                                    shareIntent.putExtra(Intent.EXTRA_STREAM, "");
+                                    shareIntent.putExtra(Intent.EXTRA_TEXT, recording.getRecordingName());
                                     shareIntent.putExtra(Intent.EXTRA_TEXT, recording.getThumnailUrl());
-                                    shareIntent.setType("image/jpeg");
+
+                                    /*shareIntent.putExtra(Intent.EXTRA_TEXT, mActivity.getString(R.string.listen_to)+
+                                            " "+recording.getRecordingName()+"\n"+mActivity.getString(R.string.yomelody_music)
+                                            +"\n"+RecordingURL);*/
+                                    shareIntent.setType("text/plain");
                                     shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                     startActivity(Intent.createChooser(shareIntent, "Choose Sharing option!"));
                                 }

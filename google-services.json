@@ -1,0 +1,119 @@
+{
+  "project_info": {
+    "project_number": "870917113323",
+    "firebase_url": "https://instamelody-fccec.firebaseio.com",
+    "project_id": "instamelody-fccec",
+    "storage_bucket": "instamelody-fccec.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:870917113323:android:01e4b5040d63730d",
+        "android_client_info": {
+          "package_name": "com.yomelody"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "870917113323-55r46t1mgfbac6gse89ctdc4a8f144ku.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yomelody",
+            "certificate_hash": "7a58b3594cfd5043d9ae5051212b14682a8d3ad2"
+          }
+        },
+        {
+          "client_id": "870917113323-i69cktc1ppjhe9f9g7irl3ksr3u20rej.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yomelody",
+            "certificate_hash": "c3c8c7da3db95f32fee8de059a99c13ac9e51e9a"
+          }
+        },
+        {
+          "client_id": "870917113323-6tuiga7o66tqbtvgb4heqb4a28uceq5b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yomelody",
+            "certificate_hash": "7583896a41e31c28a72af81a3b218d68890592ba"
+          }
+        },
+        {
+          "client_id": "870917113323-2j2nv5e49h26keb295lu55svee45gqdt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yomelody",
+            "certificate_hash": "1d7bcbf85873ba42e4e906775fe643f60b931e5e"
+          }
+        },
+        {
+          "client_id": "870917113323-pallpd7930gqegfmmm757iiff174gj2k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yomelody",
+            "certificate_hash": "25125cc019d4a7b17239b9d1ec6efad55d83d07d"
+          }
+        },
+        {
+          "client_id": "870917113323-8hfh5rcl71im09cpoarinc00246kpb2c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yomelody",
+            "certificate_hash": "cf6476964e64cfc85251ad2ff44be0e2b8c05c6a"
+          }
+        },
+        {
+          "client_id": "870917113323-bldisn77gbv8ochhes03uhq12tq9m8e2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yomelody",
+            "certificate_hash": "2508d2010520c5329f48e56810feb0f8e0f4d92f"
+          }
+        },
+        {
+          "client_id": "870917113323-sk8q1ha7qj3pvpemarb61okv23np47ou.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yomelody",
+            "certificate_hash": "edc81b192628514e378dfe9cc701a74a8e61aa8f"
+          }
+        },
+        {
+          "client_id": "870917113323-3ob87s8pnit5vmm9uqu960tuuhh1tei1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGjzicZPRYs3j3XmBUZ89YpfS6pCHKX90"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "870917113323-vgq1s736bmcfmodsp32a4no4flha372r.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.Yomelody",
+                "app_store_id": "1329831002"
+              }
+            },
+            {
+              "client_id": "870917113323-3ob87s8pnit5vmm9uqu960tuuhh1tei1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

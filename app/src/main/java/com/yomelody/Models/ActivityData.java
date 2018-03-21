@@ -14,4 +14,5 @@ public class ActivityData {
     public static String[] UserNameArray1 = {"@MattJacob", "@JoeLost", "@SonyaYo", "@LukeSkywalker", "@HarperCruise", "@MerrieJane"};
     public static String[] Topic = {"World Love", "Alter Ago", "We are the World", "Friends with benifit", "busy Day", "Rise above hate"};
     public static String[] Time = {"1 hr ago", "1 day ago", "1 week ago", "1 month ago", "2 months ago", "6 months ago"};
+
 }

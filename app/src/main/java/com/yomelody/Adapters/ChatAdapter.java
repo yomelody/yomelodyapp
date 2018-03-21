@@ -31,6 +31,7 @@ import com.yomelody.Models.Message;
 import com.yomelody.Models.SharedAudios;
 import com.yomelody.Parse.ParseContents;
 import com.yomelody.R;
+import com.yomelody.utils.Const;
 import com.yomelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
@@ -56,6 +57,8 @@ import static com.yomelody.ChatActivity.rlNothing;
 import static com.yomelody.ChatActivity.seekBarChata;
 import static com.yomelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.yomelody.utils.Const.ServiceType.AuthenticationKeyValue;
+import static com.yomelody.utils.Const.ServiceType.BASE_URL;
+import static com.yomelody.utils.Const.ServiceType.HOST_URL;
 import static com.yomelody.utils.Const.ServiceType.JoinRecording;
 
 /**
@@ -178,7 +181,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                 userId = twitterPref.getString("userId", null);
             }
             if (message.getSenderId().equals(userId)) {
-                if (message.getFileType().equals("station") || message.getFileType().equals("admin_melody")) {
+                if (message.getFileType().equals("station") ||
+                        message.getFileType().equals("admin_melody") ||
+                        message.getFileType().equals("user_melody")) {
                     return SELF_AUDIO;
                 } else if (message.getFileType().equals("image")) {
                     return SELF_IMAGE;
@@ -582,6 +587,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         try {
             instrumentFile = ParseContents.sharedAudioList.get(PlayCounter).getRecordingUrl();
             if (instrumentFile != "") {
+                if (!instrumentFile.contains("http")){
+                    instrumentFile = BASE_URL+instrumentFile;
+                }
                 try {
                     if (mp != null) {
                         try {
@@ -618,6 +626,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
                 } catch (IOException e) {
                     e.printStackTrace();
+                    progressDialog.dismiss();
                 }
                 mp.prepareAsync();
                 mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {

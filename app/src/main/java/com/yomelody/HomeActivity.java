@@ -70,7 +70,6 @@ public class HomeActivity extends AppCompatActivity {
     public static final int MY_PERMISSIONS_REQUEST_MICROPHONE = 200;
     public static final int MY_PERMISSIONS_REQUEST_STORAGE = 201;
     String USER_ID = "user_id";
-
     SignUpActivity obj = new SignUpActivity();
     Button Settings;
     static Button SignIn;
@@ -121,7 +120,6 @@ public class HomeActivity extends AppCompatActivity {
         tvUserName = (TextView) findViewById(R.id.tvUserName);
         message_count = (TextView) findViewById(R.id.message_count);
         userProfileImage = (CircleImageView) findViewById(R.id.userProfileImage);
-
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
         SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);

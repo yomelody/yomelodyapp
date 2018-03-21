@@ -1,5 +1,7 @@
 package com.yomelody.Models;
 
+import com.yomelody.utils.AppHelper;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -24,7 +26,18 @@ public class MelodyCard implements Serializable {
     String genreName;
     int LikeStatus;
     String MelodyURL;
+    String AddByAdmin;
+    String melodyDuration;
+    String melodyThumbnail;
     ArrayList<MelodyInstruments> melodyInstrumentsList;
+
+    public String getMelodyDuration() {
+        return melodyDuration;
+    }
+
+    public void setMelodyDuration(String melodyDuration) {
+        this.melodyDuration = melodyDuration;
+    }
 
     public String getMelodyPackId() {
         return melodyPackId;
@@ -32,6 +45,18 @@ public class MelodyCard implements Serializable {
 
     public void setMelodyPackId(String melodyPackId) {
         this.melodyPackId = melodyPackId;
+    }
+
+    public String getMelodyThumbnail() {return melodyThumbnail;
+    }
+
+    public void setMelodyThumbnail(String melodyThumbnail) {this.melodyThumbnail = melodyThumbnail;
+    }
+
+    public String getAddByAdmin() {return AddByAdmin;
+    }
+
+    public void setAddByAdmin(String addByAdmin) {AddByAdmin = addByAdmin;
     }
 
 //    public int getAddedBy() {
@@ -184,7 +209,7 @@ public class MelodyCard implements Serializable {
     }
 
     public void setMelodyLength(String melodyLength) {
-
+//        AppHelper.sop("melodyLength=="+melodyLength);
         int secs=0;
         if (melodyLength.equals(null)) {
             melodyLength = "0";
@@ -213,6 +238,7 @@ public class MelodyCard implements Serializable {
                 }
             } else {
                 melodyLength = adjust(hours, mins, secs);
+//                AppHelper.sop("else=secs=="+secs+"=mins="+mins+"=hours="+hours+"=melodyLength="+melodyLength);
 //                melodyLength = "00:00:" + secs;
             }
         }
@@ -220,19 +246,24 @@ public class MelodyCard implements Serializable {
     }
 
     public String adjust(int a, int b, int c) {
+//        AppHelper.sop("adjust=a="+a+"=b="+b+"=c="+c);
         String h = "00", m = "00", s = "00";
         String value;
         if (a < 10) {
             h = "0" + String.valueOf(a);
         }
+
         if (b < 10) {
             m = "0" + String.valueOf(b);
-        } else if (b > 10) {
+        }
+        else{
             m = String.valueOf(b);
         }
+
         if (c < 10) {
             s = "0" + String.valueOf(c);
-        } else if (c > 10) {
+        }
+        else {
             s = String.valueOf(c);
         }
 
