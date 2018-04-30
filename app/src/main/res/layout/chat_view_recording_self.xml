@@ -41,6 +41,7 @@
                     android:id="@+id/rlChatRecTop"
                     android:layout_width="match_parent"
                     android:layout_height="55dp"
+                    android:visibility="visible"
                     android:background="@drawable/chat_rec_white">
 
                     <RelativeLayout
@@ -141,18 +142,17 @@
 
                             <TextView
                                 android:id="@+id/tvMelodyName"
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
                                 android:maxLength="25"
+                                android:layout_alignParentEnd="true"
                                 android:textColor="#FFFFFF"
                                 android:textSize="16sp"
                                 android:textStyle="normal|bold" />
                             <TextView
                                 android:id="@+id/TemptvMelodyName"
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
                                 android:maxLength="25"
                                 android:textColor="#FFFFFF"
                                 android:textSize="16sp"
@@ -162,7 +162,7 @@
 
                             <TextView
                                 android:id="@+id/tvUserName"
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
                                 android:layout_below="@+id/tvMelodyName"
@@ -170,6 +170,16 @@
                                 android:text=""
                                 android:textColor="#FFFFFF"
                                 android:textSize="13sp" />
+
+                            <ImageView
+                                android:id="@+id/plusIv"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_alignParentRight="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginRight="10dp"
+                                android:visibility="gone"
+                                app:srcCompat="@drawable/plus_icon" />
 
                         </RelativeLayout>
 
@@ -196,6 +206,7 @@
                     android:layout_height="16dp"
                     android:layout_marginEnd="0dp"
                     android:layout_marginStart="7dp"
+                    android:visibility="gone"
                     android:layout_marginTop="47dp">
 
                     <SeekBar

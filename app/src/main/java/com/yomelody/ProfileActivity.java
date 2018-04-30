@@ -10,8 +10,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -35,6 +41,7 @@ import android.widget.Toast;
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -59,11 +66,14 @@ import com.yomelody.utils.AppHelper;
 import com.yomelody.utils.Const;
 import com.yomelody.utils.NotificationUtils;
 import com.squareup.picasso.Picasso;
+import com.yomelody.utils.VolleyMultipartRequest;
+import com.yomelody.utils.VolleySingleton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,6 +87,7 @@ import static com.yomelody.utils.Const.ServiceType.FOLLOWERS;
 import static com.yomelody.utils.Const.ServiceType.GENERE;
 import static com.yomelody.utils.Const.ServiceType.RECORDINGS;
 import static com.yomelody.utils.Const.ServiceType.TOTAL_COUNT;
+import static com.yomelody.utils.Const.ServiceType.UPLOAD_FILE;
 import static com.yomelody.utils.Const.ServiceType.USERS_BIO;
 import static com.yomelody.utils.Const.ServiceType.USER_CHAT_ID;
 
@@ -108,7 +119,10 @@ public class ProfileActivity extends AppCompatActivity {
     private String USER_NAME = "username";
     private String COUNT = "count";
     private String limit = "limit";
+    private String FILE1 = "file1";
 
+    private final int PERMISSION_READ_STORAGE = 241;
+    private int PICK_IMAGE_REQUEST = 1;
     ArrayList<RecordingsModel> recordingList = new ArrayList<>();
     ArrayList<RecordingsPool> recordingsPools = new ArrayList<>();
     ArrayList<Genres> genresArrayList = new ArrayList<>();
@@ -141,6 +155,9 @@ public class ProfileActivity extends AppCompatActivity {
     private boolean isLastPage = false;
     private String msgUnsuccess = "No record found.";
     public static final int PROFILE_TO_MESSANGER = 105;
+    private TextView editCoverEt;
+    private Bitmap bitmap;
+    private String imageType="";
 
 
     @Override
@@ -151,6 +168,7 @@ public class ProfileActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(mActivity);
         progressDialog.setTitle("Processing...");
         progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
         sharePrefClearProfile();
         SharedPreferences filterPref = this.getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
@@ -198,6 +216,7 @@ public class ProfileActivity extends AppCompatActivity {
         tv_fans = (TextView) findViewById(R.id.tv_fans);
         tv_following = (TextView) findViewById(R.id.tv_following);
         message_count = (TextView) findViewById(R.id.message_count);
+        editCoverEt = (TextView) findViewById(R.id.editCoverEt);
 
         Bundle bundle = getIntent().getExtras();
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
@@ -544,6 +563,31 @@ public class ProfileActivity extends AppCompatActivity {
                 //  startActivity(i);
             }
         });
+
+        editCoverEt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageType="cover";
+//                setPermissions();
+                showFileChooser();
+            }
+        });
+
+        userProfileImageInProf.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageType="profile";
+//                setPermissions();
+                showFileChooser();
+            }
+        });
+    }
+
+    private void showFileChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
     public String getUserId() {
@@ -636,7 +680,7 @@ public class ProfileActivity extends AppCompatActivity {
                                     profilePic = userJson.getString("profilepic");
                                     userProfileImageInProf.setVisibility(View.VISIBLE);
                                     Picasso.with(ProfileActivity.this).load(profilePic).into(userProfileImageInProf);
-                                    coverPic = userJson.getString("coverpic");
+                                    coverPic = userJson.getString("original_cover");
                                     Picasso.with(ProfileActivity.this).load(coverPic).into(userCover);
 
                                     userDetails.setId(userJson.getString("id"));
@@ -651,7 +695,7 @@ public class ProfileActivity extends AppCompatActivity {
                                     userDetails.setLogintype(userJson.getString("logintype"));
                                     userDetails.setLogin_with(userJson.getString("login_with"));
                                     userDetails.setProfilepic(userJson.getString("profilepic"));
-                                    userDetails.setCoverpic(userJson.getString("coverpic"));
+                                    userDetails.setCoverpic(userJson.getString("original_cover"));
                                     userDetails.setRegisterdate(userJson.getString("registerdate"));
                                     if (userJson.has("followers")) {
                                         userDetails.setFollowers(userJson.getString("followers"));
@@ -1617,6 +1661,86 @@ public class ProfileActivity extends AppCompatActivity {
         editorFilterBPM.apply();
     }
 
+    private void updateImageApi(final String fileType) {
+        progressDialog.show();
+        VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST,
+                UPLOAD_FILE, new Response.Listener<NetworkResponse>() {
+            @Override
+            public void onResponse(NetworkResponse response) {
+
+                String resultResponse = new String(response.data);
+                AppHelper.sop("resultResponse==" + resultResponse);
+                try {
+                    JSONObject jsonObject = new JSONObject(resultResponse);
+                    String flag = jsonObject.getString("flag");
+                    if (flag.equals("success")) {
+                        JSONObject responJson=jsonObject.getJSONObject("response");
+
+                        SharedPreferences.Editor editor = mActivity.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
+                        if (fileType.equalsIgnoreCase("1")){
+                            editor.putString("profilePic", responJson.getString("profilepic"));
+                        }
+                        else {
+                            editor.putString("coverPic", responJson.getString("extralarge_profile"));
+                        }
+                        editor.commit();
+                        Toast.makeText(mActivity, "Image Updated.", Toast.LENGTH_SHORT).show();
+
+                    } else {
+                        Toast.makeText(mActivity, "Image not updated.", Toast.LENGTH_SHORT).show();
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if (progressDialog != null) {
+                    progressDialog.dismiss();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                if (progressDialog != null) {
+                    progressDialog.dismiss();
+                }
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put(USER_ID, userId);
+                params.put(FILE_TYPE, fileType);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params===" + params + "\nURL===" + UPLOAD_FILE);
+                return params;
+            }
+
+            @Override
+            protected Map<String, DataPart> getByteData() {
+                Map<String, DataPart> params = new HashMap<>();
+                DataPart dataPart=null;
+                if (fileType.equalsIgnoreCase("1")){
+                    dataPart = new DataPart("img.jpg",
+                            AppHelper.getFileDataFromDrawable(mActivity, userProfileImageInProf.getDrawable()),
+                            "image/jpeg");
+                }
+                else {
+                    dataPart = new DataPart("img.jpg",
+                            AppHelper.getFileDataFromDrawable(mActivity, userCover.getDrawable()),
+                            "image/jpeg");
+                }
+                params.put(FILE1, dataPart);
+                AppHelper.sop("getByteData=getFileName===" + dataPart.getFileName() +
+                        "=" + dataPart.getType() + "=" + dataPart.getContent());
+                return params;
+            }
+
+
+        };
+        VolleySingleton.getInstance(getBaseContext()).addToRequestQueue(multipartRequest);
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -1670,6 +1794,70 @@ public class ProfileActivity extends AppCompatActivity {
         if (requestCode == PROFILE_TO_MESSANGER) {
             fetchUserBio();
         }
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && null != data) {
+            Uri filePath = null;
+            filePath = data.getData();
+            try {
+                //Getting the Bitmap from Gallery
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+//                Drawable mDrawable = new BitmapDrawable(getResources(), bitmap);
+                //Setting the Bitmap to ImageView
+                if (imageType.equalsIgnoreCase("profile")){
+                    userProfileImageInProf.setImageBitmap(bitmap);
+                }else {
+                    userCover.setImageBitmap(bitmap);
+                }
+                confirmDialog();
+                AppHelper.sop("filePath===" + filePath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void confirmDialog(){
+        final android.support.v7.app.AlertDialog.Builder alertDialog = new android.support.v7.app.AlertDialog.Builder(mActivity);
+        alertDialog.setTitle("Confirmation");
+        if (imageType.equalsIgnoreCase("profile")){
+            alertDialog.setMessage("Proceed to upload profile pic");
+        }
+        else {
+            alertDialog.setMessage("Proceed to upload cover pic");
+        }
+        alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+                if (imageType.equalsIgnoreCase("profile")){
+                    updateImageApi("1");
+                }
+                else {
+                    updateImageApi("2");
+                }
+            }
+        });
+        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        alertDialog.show();
+    }
+
+    public void setPermissions() {
+        if (ContextCompat.checkSelfPermission(mActivity, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(mActivity, android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                ActivityCompat.requestPermissions(mActivity, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_STORAGE);
+            } else {
+                ActivityCompat.requestPermissions(mActivity, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_STORAGE);
+            }
+        } /*else if (ContextCompat.checkSelfPermission(mActivity, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(mActivity, android.Manifest.permission.CAMERA)) {
+                ActivityCompat.requestPermissions(mActivity, new String[]{android.Manifest.permission.CAMERA}, PERMISSION_CAMERA);
+            } else {
+                ActivityCompat.requestPermissions(mActivity, new String[]{android.Manifest.permission.CAMERA}, PERMISSION_CAMERA);
+            }
+        }*/
     }
 
     private void getChatId(final String user_id, final String reciever_id) {

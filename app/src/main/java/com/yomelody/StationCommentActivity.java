@@ -44,6 +44,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.yomelody.Adapters.RecordingsCardAdapter;
+import com.yomelody.Models.ActivityModel;
 import com.yomelody.Models.Comments;
 import com.yomelody.Models.RecordingsModel;
 import com.yomelody.Models.RecordingsPool;
@@ -70,6 +71,7 @@ import static com.yomelody.utils.Const.ServiceType.COMMENT_LIST;
 import static com.yomelody.utils.Const.ServiceType.JoinRecording;
 import static com.yomelody.utils.Const.ServiceType.LIKESAPI;
 import static com.yomelody.utils.Const.ServiceType.PLAY_COUNT;
+import static com.yomelody.utils.Const.ServiceType.viewPost;
 import static com.yomelody.utils.RMethod.getServerDiffrenceDate;
 
 public class StationCommentActivity extends AppCompatActivity {
@@ -121,6 +123,7 @@ public class StationCommentActivity extends AppCompatActivity {
     private int PlayCounter = 0;
     private int PreviousAdapterIndex = 0, CurrentAdapterIndex = 0, FirstIndex = 0;
     int includedCount = 1, TempJoinCount = 0;
+    private ActivityModel activityModel;
 
 
     @Override
@@ -162,8 +165,6 @@ public class StationCommentActivity extends AppCompatActivity {
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
         ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
 
-        setData();
-
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
         SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
@@ -176,6 +177,16 @@ public class StationCommentActivity extends AppCompatActivity {
             userId = twitterPref.getString("userId", null);
         }
 
+        if (getIntent()!=null && getIntent().hasExtra("Activity_Model")){
+            activityModel = (ActivityModel) getIntent().getSerializableExtra("Activity_Model");
+            AppHelper.sop("activityModel=="+activityModel+"=ID="+activityModel.getId_());
+            if (activityModel!=null){
+                getPost();
+            }
+        }else {
+            setData();
+            adapterWork();
+        }
 
         ivJoin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -214,7 +225,6 @@ public class StationCommentActivity extends AppCompatActivity {
 //                    editor.putString("melodyID", );
                         editor.putString("fileType", "admin_melody");
                         editor.commit();
-
 
                         try {
 
@@ -256,10 +266,10 @@ public class StationCommentActivity extends AppCompatActivity {
                         //Toast.makeText(context, "like", Toast.LENGTH_SHORT).show();
                         //position = mpids.get(getAdapterPosition() + 1);
 
-                        RecordingsModel recording = recordingsModel;
+//                        RecordingsModel recording = recordingsModel;
                         if (recordingsModel != null) {
-                            MelodyName = recording.getRecordingName();
-                            position = recording.getRecordingId();
+                            MelodyName = recordingsModel.getRecordingName();
+                            position = recordingsModel.getRecordingId();
 
                             if (ivDislikeButton.getVisibility() == VISIBLE) {
                                 ivLikeButton.setVisibility(VISIBLE);
@@ -579,7 +589,7 @@ public class StationCommentActivity extends AppCompatActivity {
             }
         });
 
-        adapterWork();
+
     }
 
     private void adapterWork() {
@@ -603,8 +613,12 @@ public class StationCommentActivity extends AppCompatActivity {
         try {
             String totaljoincount = "";
             if (getIntent() != null) {
-                recordingsModel = (RecordingsModel) getIntent().getSerializableExtra("recording_modle");
-                recordingsPool = (RecordingsPool) getIntent().getSerializableExtra("recording_pool");
+                if (recordingsModel==null){
+                    recordingsModel = (RecordingsModel) getIntent().getSerializableExtra("recording_modle");
+                }
+                if (recordingsPool==null){
+                    recordingsPool = (RecordingsPool) getIntent().getSerializableExtra("recording_pool");
+                }
 
                 tvUserName.setText(recordingsModel.getUserName());
                 tvRecordingName.setText(recordingsModel.getRecordingName());
@@ -629,15 +643,22 @@ public class StationCommentActivity extends AppCompatActivity {
 
                 txtJoinCount.setText(totaljoincount);
                 Picasso.with(this).load(recordingsModel.getUserProfilePic()).into(userProfileImage);
-
+                Picasso.with(this)
+                        .load(recordingsModel.getRecordingCover())
+                        .placeholder(R.drawable.bg_cell)
+                        .error(R.drawable.bg_cell)
+                        .into(ivRecordingCover);
 
                 tvRecordingDate.setText(convertDate(recordingsPool.getDateAdded()));
-                tvViewCount.setText(getIntent().getStringExtra("play_count"));
-                tvLikeCount.setText(getIntent().getStringExtra("likes"));
+//                tvViewCount.setText(getIntent().getStringExtra("play_count"));
+                tvViewCount.setText(""+recordingsModel.getPlayCount());
+//                tvLikeCount.setText(getIntent().getStringExtra("likes"));
+                tvLikeCount.setText(""+recordingsModel.getLikeCount());
                 tvCommentCount.setText(String.valueOf(recordingsModel.getCommentCount()));
-                tvShareCount.setText(recordingsModel.getShareCount() + "");
+                tvShareCount.setText(""+recordingsModel.getShareCount());
 
-                String likeStatus = getIntent().getStringExtra("LikeStatus");
+//                String likeStatus = getIntent().getStringExtra("LikeStatus");
+                String likeStatus = recordingsModel.getLikeStatus()+"";
                 if (likeStatus.equalsIgnoreCase("0")) {
                     ivDislikeButton.setVisibility(GONE);
                 } else {
@@ -984,6 +1005,140 @@ public class StationCommentActivity extends AppCompatActivity {
                 params.put(TOPIC, recordingsModel.getRecordingName());
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 AppHelper.sop("params==" + params + "\nURL==" + COMMENTS);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+    }
+
+    public void getPost() {
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, viewPost,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            AppHelper.sop("response==" + response);
+
+                            JSONObject jsonObject, json;
+                            JSONArray instrumentArray, JoinedArray;
+
+                            jsonObject = new JSONObject(response);
+                            if (jsonObject.getString(KEY_FLAG).equals("success")) {
+                                json = jsonObject.getJSONObject(KEY_RESPONSE);
+                                recordingsModel = new RecordingsModel();
+                                JSONObject cardJson = json;
+                                recordingsModel.setAddedBy(cardJson.getString("added_by"));
+
+                                recordingsModel.setRecordingCreated(cardJson.getString("date_added"));
+                                recordingsModel.setGenreId(cardJson.getString("genre"));
+                                recordingsModel.setRecordingName(cardJson.getString("recording_topic"));
+                                recordingsModel.setUserName(cardJson.getString("user_name"));
+                                recordingsModel.setRecordingId(cardJson.getString("recording_id"));
+                                recordingsModel.setPlayCount(cardJson.getInt("play_count"));
+                                recordingsModel.setCommentCount(cardJson.getInt("comment_count"));
+                                recordingsModel.setLikeCount(cardJson.getInt("like_count"));
+                                recordingsModel.setJoinCount(cardJson.getString("join_count"));
+                                recordingsModel.setLikeStatus(cardJson.getInt("like_status"));
+                                recordingsModel.setJoinCount(cardJson.getString("join_count"));
+                                recordingsModel.setThumnailUrl(cardJson.getString("thumbnail_url"));
+
+                                if (cardJson.isNull("recording_url")) {
+                                    recordingsModel.setrecordingurl("");
+                                } else {
+                                    recordingsModel.setrecordingurl(cardJson.getString("recording_url"));
+                                }
+
+                                recordingsModel.setShareCount(cardJson.getInt("share_count"));
+                                recordingsModel.setRecordingCover(cardJson.getString("cover_url"));
+                                recordingsModel.setUserProfilePic(cardJson.getString("profile_url"));
+                                recordingsModel.setGenreName(cardJson.getString("genre_name"));
+
+                                ArrayList arrayList = new ArrayList();
+
+
+                                JoinedArray = cardJson.getJSONArray("joined");
+
+                                try {
+                                    if (JoinedArray.length() > 0) {
+                                        for (int j = 0; j < JoinedArray.length(); j++) {
+                                            JSONObject jsonObject1 = new JSONObject(JoinedArray.get(j).toString());
+
+                                            //JSONArray jsonArray1=new JSONArray(jsonObject1.getJSONArray(jsonObject1));
+                                            arrayList.add(jsonObject1.get("recording_url"));
+                                        }
+                                        recordingsModel.setJoinUrl(arrayList);
+                                    }
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+
+                                if (cardJson.isNull("recordings")) {
+                                    Log.d("Error", "pls check");
+                                } else {
+                                    instrumentArray = cardJson.getJSONArray("recordings");
+
+                                    for (int j = 0; j < instrumentArray.length(); j++) {
+                                        recordingsPool = new RecordingsPool();
+                                        JSONObject instrumentJson = instrumentArray.getJSONObject(j);
+                                        recordingsPool.setAddedById(instrumentJson.getString("added_by_id"));
+                                        recordingsPool.setUserName(instrumentJson.getString("user_name"));
+                                        recordingsPool.setName(instrumentJson.getString("name"));
+                                        recordingsPool.setCoverUrl(instrumentJson.getString("cover_url"));
+                                        recordingsPool.setProfileUrl(instrumentJson.getString("profile_url"));
+                                        recordingsPool.setDateAdded(instrumentJson.getString("date_added"));
+                                        recordingsPool.setDuration(instrumentJson.getString("duration"));
+                                        recordingsPool.setRecordingUrl(instrumentJson.getString("recording_url"));
+                                        recordingsPool.setInstruments(instrumentJson.getString("instruments"));
+                                    }
+                                }
+                                setData();
+                                adapterWork();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String errorMsg = "";
+                        if (error instanceof TimeoutError) {
+                            errorMsg = "Internet connection timed out";
+                        } else if (error instanceof NoConnectionError) {
+                            errorMsg = "There is no connection";
+                        } else if (error instanceof AuthFailureError) {
+//                            errorMsg = "AuthFailureError";
+                        } else if (error instanceof ServerError) {
+                            errorMsg = "We are facing problem in connecting to server";
+                        } else if (error instanceof NetworkError) {
+                            errorMsg = "We are facing problem in connecting to network";
+                        } else if (error instanceof ParseError) {
+//                            errorMsg = "ParseError";
+                        }
+                        Log.d("Error", errorMsg);
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+
+                if (activityModel.getRecordingID() != null) {
+                    params.put(FILE_ID, activityModel.getRecordingID() + "");
+                    params.put(FILE_TYPE, "user_recording");
+                } else if (activityModel.getMelodyID() != null) {
+                    params.put(FILE_ID, activityModel.getMelodyID() + "");
+                    params.put(FILE_TYPE, "user_melody");
+                } else if (activityModel.getAdminmelodyid() != null) {
+                    params.put(FILE_ID, activityModel.getAdminmelodyid() + "");
+                    params.put(FILE_TYPE, "admin_melody");
+                }
+                params.put(USER_ID, userId);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params==" + params + "\nURL==" + viewPost);
                 return params;
             }
         };

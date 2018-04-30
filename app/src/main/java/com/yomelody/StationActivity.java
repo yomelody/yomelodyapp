@@ -48,6 +48,7 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.yomelody.Adapters.ActivityCardAdapter;
 import com.yomelody.Fragments.ActivityFragment;
 import com.yomelody.Fragments.AudioFragment;
 import com.yomelody.Models.RecordingsModel;
@@ -124,6 +125,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     int totalCount = 0;
     Activity mActivity;
     public static boolean IsActivity=false;
+    ActivityFragment actf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,13 +183,27 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
             }
         };
 
-        af = new AudioFragment();
-        getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
-        btnActivity.setBackgroundColor(Color.parseColor("#E4E4E4"));
-        btnAudio.setBackgroundColor(Color.parseColor("#FFFFFF"));
-        btnAudio.setEnabled(false);
-        btnActivity.setEnabled(true);
-        ivStationSearchActivity.setVisibility(View.GONE);
+        if (getIntent()!=null && getIntent().hasExtra("notification_type")){
+            btnAudio.setBackgroundColor(Color.parseColor("#E4E4E4"));
+            btnActivity.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            btnActivity.setEnabled(false);
+            btnAudio.setEnabled(true);
+            IsActivity=true;
+            clearSharePrefStation();
+            ivFilter.setVisibility(View.GONE);
+            actf = new ActivityFragment();
+            getFragmentManager().beginTransaction().replace(R.id.activity_station, actf).commit();
+        }
+        else {
+            af = new AudioFragment();
+            getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
+            btnActivity.setBackgroundColor(Color.parseColor("#E4E4E4"));
+            btnAudio.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            btnAudio.setEnabled(false);
+            btnActivity.setEnabled(true);
+            ivStationSearchActivity.setVisibility(View.GONE);
+        }
+
         btnAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -219,7 +235,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 IsActivity=true;
                 clearSharePrefStation();
                 ivFilter.setVisibility(View.GONE);
-                ActivityFragment actf = new ActivityFragment();
+                actf = new ActivityFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_station, actf).commit();
 
 
@@ -798,8 +814,15 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         AppHelper.sop("onActivityResult=of=StationActivity=requestCode" + requestCode + "=resultCode=" + resultCode + "=data=" + data);
-        if (af != null) {
-            af.onActivityResult(requestCode, resultCode, data);
+        if (requestCode== ActivityCardAdapter.REQUEST_USER_ACTIVITY){
+            if (actf != null) {
+                actf.onActivityResult(requestCode, resultCode, data);
+            }
+        }
+        else {
+            if (af != null) {
+                af.onActivityResult(requestCode, resultCode, data);
+            }
         }
     }
 

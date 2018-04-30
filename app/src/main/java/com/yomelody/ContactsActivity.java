@@ -12,9 +12,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -34,6 +37,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.yomelody.Adapters.ContactsAdapter;
 import com.yomelody.Models.Contacts;
+import com.yomelody.Models.PhoneBookContact;
 import com.yomelody.Parse.ParseContents;
 import com.yomelody.Services.LogoutService;
 import com.yomelody.utils.AppHelper;
@@ -45,6 +49,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.yomelody.Adapters.ContactsAdapter.Count;
@@ -76,6 +81,8 @@ public class ContactsActivity extends AppCompatActivity {
     Activity mActivity;
     BroadcastReceiver mRegistrationBroadcastReceiver;
     int totalCount = 0;
+    private ImageView phoneContactIv;
+    private EditText search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +115,8 @@ public class ContactsActivity extends AppCompatActivity {
         rlNoContacts = (RelativeLayout) findViewById(R.id.rlNoContacts);
         message_count = (TextView) findViewById(R.id.message_count);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewContacts);
+        phoneContactIv = (ImageView) findViewById(R.id.phoneContactIv);
+        search = (EditText) findViewById(R.id.search);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
@@ -275,6 +284,43 @@ public class ContactsActivity extends AppCompatActivity {
                 }
             }
         };
+
+        phoneContactIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(mActivity,PhoneBookActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    public void addTextListener(){
+
+        search.addTextChangedListener(new TextWatcher() {
+
+            public void afterTextChanged(Editable s) {}
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            public void onTextChanged(CharSequence query, int start, int before, int count) {
+
+                query = query.toString().toLowerCase();
+
+                final ArrayList<Contacts> filteredList = new ArrayList<>();
+
+                for (int i = 0; i < contactList.size(); i++) {
+
+                    final String text = contactList.get(i).getfName().toLowerCase();
+                    if (text.contains(query)) {
+                        filteredList.add(contactList.get(i));
+                    }
+                }
+
+                adapter = new ContactsAdapter(getApplicationContext(), filteredList);
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();  // data set changed
+            }
+        });
     }
 
     @Override
@@ -332,6 +378,7 @@ public class ContactsActivity extends AppCompatActivity {
                             adapter.notifyDataSetChanged();
                             recyclerView.smoothScrollToPosition(adapter.getItemCount());
                             new ParseContents(getApplicationContext()).parseContacts(contactList, response);
+                            addTextListener();
                         }catch (Exception ex){
                             ex.printStackTrace();
                         }

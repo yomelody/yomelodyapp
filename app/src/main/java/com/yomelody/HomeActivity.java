@@ -90,6 +90,7 @@ public class HomeActivity extends AppCompatActivity {
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     String joinRecordingId;
     private Activity mActivity;
+    SharedPreferences loginSharedPref;
 
 
     @TargetApi(16)
@@ -120,7 +121,7 @@ public class HomeActivity extends AppCompatActivity {
         tvUserName = (TextView) findViewById(R.id.tvUserName);
         message_count = (TextView) findViewById(R.id.message_count);
         userProfileImage = (CircleImageView) findViewById(R.id.userProfileImage);
-        SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+        loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
         SharedPreferences fbPref = getApplicationContext().getSharedPreferences("MyFbPref", MODE_PRIVATE);
         firstName = loginSharedPref.getString("firstName", null);
@@ -158,12 +159,7 @@ public class HomeActivity extends AppCompatActivity {
             tvUserName.setText("@" + userNameLogin);
         }
 
-        if (profilePicLogin != null) {
-            ivProfile.setVisibility(View.GONE);
-            userProfileImage.setVisibility(View.VISIBLE);
-            userProfileImage.setDrawingCacheEnabled(true);
-            Picasso.with(HomeActivity.this).load(profilePicLogin).into(userProfileImage);
-        }
+
 
         Name = twitterPref.getString("Name", null);
         userName = twitterPref.getString("userName", null);
@@ -265,29 +261,49 @@ public class HomeActivity extends AppCompatActivity {
         ivStation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    if (StudioActivity.melodyPackId != null) {
-                        StudioActivity.melodyPackId = null;
+                if (userId != null){
+                    try {
+                        if (StudioActivity.melodyPackId != null) {
+                            StudioActivity.melodyPackId = null;
+                        }
+                    } catch (Throwable e) {
+                        e.printStackTrace();
                     }
-                } catch (Throwable e) {
-                    e.printStackTrace();
+
+                    try {
+                        SharedPreferences fromHome = getApplicationContext().getSharedPreferences("FromHomeToMelody", MODE_PRIVATE);
+                        String home = fromHome.getString("click", null);
+                        if (home != null) {
+                            SharedPreferences.Editor FilterPref1 = getApplicationContext().getSharedPreferences("FromHomeToMelody", MODE_PRIVATE).edit();
+                            FilterPref1.clear();
+                            FilterPref1.apply();
+                        }
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+
+
+                    Intent intent = new Intent(getApplicationContext(), StationActivity.class);
+                    startActivity(intent);
+                }
+                else {
+                    final AlertDialog.Builder alertDialog = new AlertDialog.Builder(mActivity);
+                    alertDialog.setTitle("Login");
+                    alertDialog.setMessage("You must login to see the audio feed.");
+                    alertDialog.setPositiveButton("Sign In", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent i = new Intent(mActivity, SignInActivity.class);
+                            startActivity(i);
+                        }
+                    });
+                    alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    alertDialog.show();
                 }
 
-                try {
-                    SharedPreferences fromHome = getApplicationContext().getSharedPreferences("FromHomeToMelody", MODE_PRIVATE);
-                    String home = fromHome.getString("click", null);
-                    if (home != null) {
-                        SharedPreferences.Editor FilterPref1 = getApplicationContext().getSharedPreferences("FromHomeToMelody", MODE_PRIVATE).edit();
-                        FilterPref1.clear();
-                        FilterPref1.apply();
-                    }
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-
-
-                Intent intent = new Intent(getApplicationContext(), StationActivity.class);
-                startActivity(intent);
             }
         });
 
@@ -323,6 +339,7 @@ public class HomeActivity extends AppCompatActivity {
 
                     if (checkPermissions()) {
                         Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
+                          intent.putExtra("previous_screen", "HomeActivity");
                         //  intent.putExtra("clickPosition", "fromHomeActivity");
                         startActivity(intent);
                     } else {
@@ -331,6 +348,7 @@ public class HomeActivity extends AppCompatActivity {
 
                 } else {
                     Intent intent = new Intent(getApplicationContext(), StudioActivity.class);
+                    intent.putExtra("previous_screen", "HomeActivity");
                     //   intent.putExtra("clickPosition", "fromHomeActivity");
                     startActivity(intent);
                 }
@@ -362,12 +380,14 @@ public class HomeActivity extends AppCompatActivity {
 
                     if (checkPermissions()) {
                         Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
+                        intent.putExtra("previous_screen","HomeActivity");
                         startActivity(intent);
                     } else {
                         setPermissions();
                     }
                 } else {
                     Intent intent = new Intent(getApplicationContext(), MelodyActivity.class);
+                    intent.putExtra("previous_screen","HomeActivity");
                     startActivity(intent);
                 }
             }
@@ -404,7 +424,18 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-
+        if (getIntent().getExtras() != null) {
+            for (String key : getIntent().getExtras().keySet()) {
+                Object value = getIntent().getExtras().get(key);
+                Log.d("HomeActivity: ", "Key: " + key + " Value: " + value);
+                if (key.equalsIgnoreCase("notification_type") &&
+                        (value.toString()).equalsIgnoreCase("Activity")){
+                    Intent intent = new Intent(getApplicationContext(), StationActivity.class);
+                    intent.putExtra("notification_type",value.toString());
+                    startActivity(intent);
+                }
+            }
+        }
     }
 
     public void logOut() {
@@ -607,6 +638,13 @@ public class HomeActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(PUSH_NOTIFICATION));
         NotificationUtils.clearNotifications(getApplicationContext());
+        profilePicLogin = loginSharedPref.getString("profilePic", null);
+        if (profilePicLogin != null) {
+            ivProfile.setVisibility(View.GONE);
+            userProfileImage.setVisibility(View.VISIBLE);
+            userProfileImage.setDrawingCacheEnabled(true);
+            Picasso.with(HomeActivity.this).load(profilePicLogin).into(userProfileImage);
+        }
 
     }
 

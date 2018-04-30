@@ -432,6 +432,7 @@ public class ParseContents {
                     card.setLikeStatus(cardJson.getInt("like_status"));
                     card.setJoinCount(cardJson.getString("join_count"));
                     card.setThumnailUrl(cardJson.getString("thumbnail_url"));
+                    card.setIsPublic(cardJson.getString("public"));
 
                     if (cardJson.isNull("recording_url")) {
                         card.setrecordingurl("");
@@ -452,11 +453,15 @@ public class ParseContents {
                     try {
                         if (JoinedArray.length() > 0) {
                             for (int j = 0; j < JoinedArray.length(); j++) {
-                                JSONObject jsonObject1 = new JSONObject(JoinedArray.get(j).toString());
+                                if (JoinedArray.get(j) instanceof JSONObject){
+                                    JSONObject jsonObject1 = new JSONObject(JoinedArray.get(j).toString());
+//                                JSONObject jsonObject1 = JoinedArray.getJSONObject(j);
 
-                                //JSONArray jsonArray1=new JSONArray(jsonObject1.getJSONArray(jsonObject1));
+                                    //JSONArray jsonArray1=new JSONArray(jsonObject1.getJSONArray(jsonObject1));
 
-                                arrayList.add(jsonObject1.get("recording_url"));
+                                    arrayList.add(jsonObject1.get("recording_url"));
+                                }
+
                             }
                             card.setJoinUrl(arrayList);
                         }
@@ -525,6 +530,7 @@ public class ParseContents {
                     join.setShare_counts(cardJoin.getString("share_counts"));
                     join.setComment_counts(cardJoin.getString("comment_counts"));
                     join.setJoin_Thumbnail(cardJoin.getString("thumbnail_url"));
+                    join.setRecCover(cardJoin.getString("recording_cover"));
                     //    instrumentsList = instrumentList;
                     JoinArtist.add(join);
                     JoinActivity.listProfile.add(i, new JoinedUserProfile(String.valueOf(cardJoin.getString("user_id")), "0"));

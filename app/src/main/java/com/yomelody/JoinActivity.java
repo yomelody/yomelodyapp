@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Chronometer;
@@ -35,6 +36,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.yomelody.Adapters.JoinInstrumentListAdp;
 import com.yomelody.Adapters.JoinListAdapter;
+import com.yomelody.Adapters.RecordingsCardAdapter;
 import com.yomelody.Fragments.CommentJoinFragment;
 import com.yomelody.Models.JoinedArtists;
 import com.yomelody.Models.JoinedUserProfile;
@@ -88,6 +90,7 @@ public class JoinActivity extends AppCompatActivity {
     public static ImageView profile_image, ivShareButton, ivRecordJoin;
     public static ImageView ivBackButton, ivHomeButton, playAll, pauseAll;
     public static TextView melody_detail, txtCount, tvIncluded;
+
     public static RelativeLayout joincenter, joinFooter, rlInviteButton;
     public static FrameLayout commentContainer, frameProgress;
     public static final Handler handler = new Handler();
@@ -100,6 +103,8 @@ public class JoinActivity extends AppCompatActivity {
     private Activity mActivity;
     public static boolean check_frag = false;
     private ImageView arrowIv;
+    private String previouSScreen="";
+    public static ImageView ivNewRecordCover;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +127,7 @@ public class JoinActivity extends AppCompatActivity {
         playAll = (ImageView) findViewById(R.id.playAll);
         pauseAll = (ImageView) findViewById(R.id.pauseAll);
         arrowIv = (ImageView) findViewById(R.id.arrowIv);
+        ivNewRecordCover = (ImageView) findViewById(R.id.ivNewRecordCover);
 
         mVisualizerView = (VisualizerView) findViewById(R.id.myvisualizerview);
         mDecibelView = (TextView) findViewById(R.id.decibel_view);
@@ -169,6 +175,7 @@ public class JoinActivity extends AppCompatActivity {
         } else if (twitterPref.getString("userId", null) != null) {
             userId = twitterPref.getString("userId", null);
         }
+
 
 
         rlIncluded.setOnClickListener(new View.OnClickListener() {
@@ -324,6 +331,12 @@ public class JoinActivity extends AppCompatActivity {
         UserName = filterPref.getString("UserNameRec", null);
         ProfileImageRec = filterPref.getString("UserProfile", null);
         RecordingName = filterPref.getString("RecordingName", null);
+        previouSScreen = filterPref.getString("previous_screen", "");
+
+        if (getIntent()!=null && getIntent().hasExtra("previous_screen")){
+            previouSScreen=getIntent().getStringExtra("previous_screen");
+        }
+
         Picasso.with(getApplicationContext()).load(ProfileImageRec).into(profile_image);
         recording_name.setText(RecordingName);
         artist_name.setText(UserName);
@@ -345,6 +358,13 @@ public class JoinActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (adapter!=null){
+            ((JoinListAdapter)adapter).releaseMediaPlayer();
+        }
+    }
 
     public void getJoined_users(final String addedBy, final String RecId) {
         progressDialog.setTitle("Processing...");
@@ -424,7 +444,7 @@ public class JoinActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        finish();
+
         if (JoinListAdapter.mp != null) {
             JoinListAdapter.mp.reset();
         }
@@ -445,49 +465,48 @@ public class JoinActivity extends AppCompatActivity {
             mediaPlayersAll.clear();
             lstViewHolder.clear();
         }
-
+        finish();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (JoinListAdapter.mp != null) {
-            JoinListAdapter.mp.reset();
-        }
-        if (mVisualizer != null) {
-            mVisualizer.release();
-        }
-
-        if (JoinInstrumentListAdp.mp_start != null) {
-            for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
-                JoinInstrumentListAdp.mp_start.get(i).stop();
-
+        try {
+            if (JoinListAdapter.mp != null) {
+                JoinListAdapter.mp.reset();
             }
-        }
-        if (mediaPlayersAll != null) {
-            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                mediaPlayersAll.get(i).stop();
+            if (mVisualizer != null) {
+                mVisualizer.release();
             }
-            mediaPlayersAll.clear();
-            lstViewHolder.clear();
-            try {
+            if (JoinInstrumentListAdp.mp_start != null) {
+                for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
+                    JoinInstrumentListAdp.mp_start.get(i).stop();
+                }
+            }
+            if (mediaPlayersAll != null) {
+                for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                    mediaPlayersAll.get(i).stop();
+                }
+                mediaPlayersAll.clear();
+                lstViewHolder.clear();
                 if (pauseAll.getVisibility() == View.VISIBLE) {
                     pauseAll.setVisibility(GONE);
                     playAll.setVisibility(View.VISIBLE);
                 }
-            } catch (Throwable e) {
-                e.printStackTrace();
             }
-
+            //startService(new Intent(this, LogoutService.class));
         }
-        //startService(new Intent(this, LogoutService.class));
-
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        AppHelper.sop("JoinActivity onactivity Result" + "requestCode" + requestCode + ",resultCode" + resultCode + ",data" + data + "mActivity" + mActivity.RESULT_OK);
+        AppHelper.sop("JoinActivity onactivity Result" + "requestCode" + requestCode +
+                ",resultCode" + resultCode + ",data" + data + "mActivity" + mActivity.RESULT_OK+
+        "=previousScreen="+previouSScreen);
         if (JoinListAdapter.REQUEST_JOIN_TO_MESSANGER == requestCode) {
             if (resultCode == mActivity.RESULT_OK) {
                 AppHelper.sop("onActivityResult==called=" + "resultCode==" + resultCode);
@@ -514,6 +533,20 @@ public class JoinActivity extends AppCompatActivity {
                 }
             }
 
+        }
+        else if (JoinListAdapter.REQUEST_JOIN == requestCode){
+            if (previouSScreen.equalsIgnoreCase("ChatActivity")){
+                finish();
+            }
+            else {
+                if (addedBy != null && RecId != null) {
+                    try {
+                        getJoined_users(addedBy, RecId);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
 
     }

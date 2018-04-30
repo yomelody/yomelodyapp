@@ -3,6 +3,7 @@ package com.yomelody.Fragments;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -41,6 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
 import static com.yomelody.utils.Const.ServiceType.ACTIVITY;
 import static com.yomelody.utils.Const.ServiceType.AuthenticationKeyName;
@@ -189,7 +191,10 @@ public class ActivityFragment extends Fragment {
                                                 c.getString("profile_pick"),
                                                 c.getString("created_by_userID"),
                                                 c.getString("first_user"),
-                                                c.getString("second_user")
+                                                c.getString("second_user"),
+                                                c.getString("recordingID"),
+                                                c.getString("melodyID"),
+                                                c.getString("adminmelodyid")
                                         ));
 
                                     }
@@ -271,4 +276,14 @@ public class ActivityFragment extends Fragment {
         return val;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        AppHelper.sop("ActivityFragment=requestCode"+requestCode+"=resultCode="+resultCode+"=data="+data);
+        if (requestCode==ActivityCardAdapter.REQUEST_USER_ACTIVITY){
+            if (resultCode==RESULT_OK){
+                fetchActivityData(userId,strSearch);
+            }
+        }
+    }
 }

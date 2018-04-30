@@ -181,6 +181,12 @@
                             android:id="@+id/myvisualizerview"
                             android:layout_width="match_parent"
                             android:layout_height="95dp" />
+                        <!--android:background="@drawable/background_new_dialog"-->
+                        <com.yomelody.utils.WaveformView
+                            android:id="@+id/waveform_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="95dp"
+                            android:visibility="gone" />
 
                         <TextView
                             android:id="@+id/decibel_view"

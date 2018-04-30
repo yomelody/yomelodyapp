@@ -1,5 +1,6 @@
 package com.yomelody.Adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
@@ -13,6 +14,7 @@ import com.yomelody.Models.ActivityModel;
 import com.yomelody.ProfileActivity;
 import com.squareup.picasso.Picasso;
 import com.yomelody.R;
+import com.yomelody.StationCommentActivity;
 
 import java.util.ArrayList;
 
@@ -24,6 +26,7 @@ public class ActivityCardAdapter extends RecyclerView.Adapter<ActivityCardAdapte
 
     private ArrayList<ActivityModel> activityList = new ArrayList<>();
     Context context;
+    public static final int REQUEST_USER_ACTIVITY = 11;
 
     public ActivityCardAdapter(ArrayList<ActivityModel> activityList, Context context) {
         this.activityList = activityList;
@@ -98,6 +101,15 @@ public class ActivityCardAdapter extends RecyclerView.Adapter<ActivityCardAdapte
             tvtime.setText(activityList.get(listPosition).getTvtime());
             tvfrom.setText(activityList.get(listPosition).getMsgsecond_user());
             tvsecond.setText(activityList.get(listPosition).getMsgfirst_user());
+            holder.mCardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, StationCommentActivity.class);
+                    intent.putExtra("Activity_Model",activityList.get(listPosition));
+                    ((Activity)context).startActivityForResult(intent,REQUEST_USER_ACTIVITY);
+                }
+            });
+
         }catch (Exception ex){
             ex.printStackTrace();
         }

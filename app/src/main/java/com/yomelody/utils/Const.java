@@ -20,11 +20,13 @@ public class Const {
         public static final String PLAY_COUNT = BASE_URL + "playcount.php";
         public static final String COMMENTS = BASE_URL + "comments.php";
         public static final String RECORDINGS = BASE_URL + "recordings.php";
+        public static final String STATION_RECORDINGS = BASE_URL + "station_recordings.php";
        // public static final String UPLOAD_COVER_MELODY_FILE = BASE_URL + "upload_cover_melody_file.php";
         public static final String UPLOAD_FILE = BASE_URL + "uploadfile.php";
         //public static final String SHARE_AUDIO_CHAT = BASE_URL + "ShareAudioChat.php";
         public static final String ACTIVITY = BASE_URL + "activity.php";
         public static final String COMMENT_LIST = BASE_URL + "commentlist.php";
+
         public static final String CONTACT_LIST = BASE_URL + "contactList.php";
         //public static final String FOLLOWER_LIST = BASE_URL + "followerlist.php";
         public static final String CHAT = BASE_URL + "chat.php";
@@ -63,7 +65,8 @@ public class Const {
         public static final String BRAINTREE_FILES_TRANSACTION = BASE_URL + "braintree/files/transaction.php";
         public static final String IsValidateSubPack = BASE_URL + "check_subscription_validity.php";
 
-
+        public static final String viewPost = BASE_URL + "view_post.php";
+        public static final String PUBLIC = BASE_URL + "public.php";
 
 //        public static final String USERS_BIO = BASE_URL + "uploads/melody/instruments/";
     }

@@ -180,7 +180,7 @@
                             <ImageView
                                 android:id="@+id/ivNewRecordCover"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="95dp"
                                 android:background="@drawable/background_home3"
                                 android:scaleType="fitXY" />
 
@@ -189,8 +189,8 @@
                                 android:id="@+id/myvisualizerview"
                                 android:layout_width="match_parent"
                                 android:layout_height="95dp"
-                                android:background="@color/black" />
-
+                                 />
+                            <!--android:background="@color/black"-->
                             <TextView
                                 android:id="@+id/decibel_view"
                                 android:layout_width="wrap_content"
@@ -259,7 +259,7 @@
                                         android:layout_gravity="start|bottom"
                                         android:layout_marginBottom="8dp"
                                         android:layout_marginLeft="70dp"
-                                        android:text="(1 of 15)"
+                                        android:text="(1 of 1)"
                                         android:textSize="8sp" />
 
                                     <ImageView
