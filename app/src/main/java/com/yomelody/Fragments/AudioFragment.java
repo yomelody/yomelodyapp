@@ -54,7 +54,7 @@ import static android.content.Context.MODE_PRIVATE;
 import static com.yomelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.yomelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.yomelody.utils.Const.ServiceType.GENERE;
-import static com.yomelody.utils.Const.ServiceType.RECORDINGS;
+import static com.yomelody.utils.Const.ServiceType.STATION_RECORDINGS;
 
 /**
  * Created by Saurabh Singh on 4/18/2017.
@@ -334,7 +334,7 @@ public class AudioFragment extends Fragment {
             progressDialog.show();
         }
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, STATION_RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -421,7 +421,7 @@ public class AudioFragment extends Fragment {
                     params.put(limit, recordingList.size() + "");
                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 }
-                AppHelper.sop("params=fetchRecordings=" + params + "\nURL==" + RECORDINGS);
+                AppHelper.sop("params=fetchRecordings=" + params + "\nURL==" + STATION_RECORDINGS);
                 return params;
             }
         };
@@ -443,7 +443,7 @@ public class AudioFragment extends Fragment {
         if (!progressDialog.isShowing()) {
             progressDialog.show();
         }
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, STATION_RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -523,7 +523,7 @@ public class AudioFragment extends Fragment {
                 params.put(FILTER, "extrafilter");
                 params.put(limit, recordingList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=filter=" + params + "\nURL==" + RECORDINGS);
+                AppHelper.sop("params=filter=" + params + "\nURL==" + STATION_RECORDINGS);
                 return params;
             }
         };
@@ -542,7 +542,7 @@ public class AudioFragment extends Fragment {
         if (!progressDialog.isShowing()) {
             progressDialog.show();
         }
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, STATION_RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -630,7 +630,7 @@ public class AudioFragment extends Fragment {
                 params.put(KEY_SEARCH, strSearch);
                 params.put(limit, recordingList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=search=" + params + "\nURL==" + RECORDINGS);
+                AppHelper.sop("params=search=" + params + "\nURL==" + STATION_RECORDINGS);
                 return params;
             }
         };
@@ -649,7 +649,7 @@ public class AudioFragment extends Fragment {
         if (!progressDialog.isShowing()) {
             progressDialog.show();
         }
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, STATION_RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -729,7 +729,7 @@ public class AudioFragment extends Fragment {
                 params.put(FILTER, "extrafilter");
                 params.put(limit, recordingList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=artist=" + params + "\nURL==" + RECORDINGS);
+                AppHelper.sop("params=artist=" + params + "\nURL==" + STATION_RECORDINGS);
                 return params;
             }
         };
@@ -748,7 +748,7 @@ public class AudioFragment extends Fragment {
         if (!progressDialog.isShowing()) {
             progressDialog.show();
         }
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, STATION_RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -829,7 +829,7 @@ public class AudioFragment extends Fragment {
                 params.put(FILTER, "extrafilter");
                 params.put(limit, recordingList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=instrument=" + params + "\nURL==" + RECORDINGS);
+                AppHelper.sop("params=instrument=" + params + "\nURL==" + STATION_RECORDINGS);
                 return params;
             }
         };
@@ -848,7 +848,7 @@ public class AudioFragment extends Fragment {
         if (!progressDialog.isShowing()) {
             progressDialog.show();
         }
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, STATION_RECORDINGS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -929,7 +929,7 @@ public class AudioFragment extends Fragment {
                 params.put(FILTER, "extrafilter");
                 params.put(limit, recordingList.size() + "");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                AppHelper.sop("params=BPM=" + params + "\nURL==" + RECORDINGS);
+                AppHelper.sop("params=BPM=" + params + "\nURL==" + STATION_RECORDINGS);
                 return params;
             }
         };

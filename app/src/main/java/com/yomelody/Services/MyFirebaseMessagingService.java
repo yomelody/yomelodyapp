@@ -61,9 +61,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
     }
 
+
+
     private void handleNotification(String message) {
         try {
-            if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) {// app is in foreground, broadcast the push message
+            if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) {
                 // app is in foreground, broadcast the push message
                 Intent pushNotification = new Intent(PUSH_NOTIFICATION);
                 pushNotification.putExtra("message", message);
@@ -104,7 +106,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Log.e("fbs", "fileUrl: " + fileUrl);
             Log.e("fbs", "title: " + title);
 
-            if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) { // app is in foreground, broadcast the push message
+            if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) {
+                // app is in foreground, broadcast the push message
 
                 Intent pushNotification = new Intent(Const.PUSH_NOTIFICATION);
                 pushNotification.putExtra("chatId", chatId);
@@ -117,7 +120,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 // play notification sound
                 if (flagSoundPlayedAlready.equals("false")) {
                     NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
-                    notificationUtils.playNotificationSound();
+//                    notificationUtils.playNotificationSound();
                 }
 
             } else { // app is in background, show the notification in notification tray

@@ -190,7 +190,10 @@ public class ProfileActivityFragment extends Fragment {
                                                 c.getString("profile_pick"),
                                                 c.getString("created_by_userID"),
                                                 c.getString("first_user"),
-                                                c.getString("second_user")
+                                                c.getString("second_user"),
+                                                c.getString("recordingID"),
+                                                c.getString("melodyID"),
+                                                c.getString("adminmelodyid")
                                         ));
                                     }
                                     activityAdapter.notifyDataSetChanged();

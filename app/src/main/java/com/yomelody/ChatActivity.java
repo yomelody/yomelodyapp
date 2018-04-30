@@ -125,6 +125,7 @@ import static com.yomelody.utils.Const.ServiceType.sharefile;
 
 public class ChatActivity extends AppCompatActivity {
 
+
     public static TextView tvUserName, tvNamePlayer, tvUserNamePlayer, tvAudioNamePlayer, tvNumPlayer;
     public static ImageView ivPausePlayer, ivPlayPlayer, userProfileImagePlayer;
     public static RelativeLayout rlChatPlayer, rlNothing;
@@ -138,7 +139,9 @@ public class ChatActivity extends AppCompatActivity {
     public static ImageView ivBackButton, ivHomeButton, ivCamera, ivNewChat, ivRecieverProfilePic, ivSelectedImage, ivGroupImage;
     public static TextView tvSend, tvRecieverName, tvDone, tvEdit, tvUpdate;
     public static RecyclerView recycleImage, recyclerViewChat;
-    public static RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton, rlMessage, rlSelectedImage, rlUserName, rlPrevPlayer, rlNextPlayer, rlUpdateGroup, contInviteButton;
+    public static RelativeLayout rlNoMsg, rlTxtContent, rlInviteButton, rlMessage;
+    public static RelativeLayout rlSelectedImage, rlUserName, rlPrevPlayer, rlNextPlayer;
+    public static RelativeLayout rlUpdateGroup, contInviteButton, nextPreRl;
 
     RecentImagesAdapter riAdapter;
     public static ChatAdapter cAdapter;
@@ -192,6 +195,8 @@ public class ChatActivity extends AppCompatActivity {
     public static ProgressDialog progressDialog;
     private String mCurrentPhotoPath;
     private static final int REQUEST_TAKE_PHOTO = 1;
+    public static final int REQUEST_JOIN_REC = 003;
+    public static final int REQUEST_JOIN_MELO = 37;
 
     @TargetApi(18)
     @Override
@@ -285,6 +290,7 @@ public class ChatActivity extends AppCompatActivity {
         flCover = (FrameLayout) findViewById(R.id.flCover);
         rlInviteButton = (RelativeLayout) findViewById(R.id.rlInviteButton);
         contInviteButton = (RelativeLayout) findViewById(R.id.contInviteButton);
+        nextPreRl = (RelativeLayout) findViewById(R.id.nextPreRl);
 
 
         try {
@@ -347,7 +353,7 @@ public class ChatActivity extends AppCompatActivity {
         recyclerViewChat.setItemViewCacheSize(10);
         recyclerViewChat.setDrawingCacheEnabled(true);
         recyclerViewChat.setItemAnimator(new DefaultItemAnimator());
-        cAdapter = new ChatAdapter(getApplicationContext(), chatList/*, audioDetailsList, sharedAudioList*/);
+        cAdapter = new ChatAdapter(mActivity, chatList/*, audioDetailsList, sharedAudioList*/);
         recyclerViewChat.setAdapter(cAdapter);
 //        recyclerViewChat.addOnScrollListener(new RecyclerView.OnScrollListener() {
 //            @Override
@@ -382,7 +388,8 @@ public class ChatActivity extends AppCompatActivity {
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
-
+                    cAdapter.resetPlaycount();
+                    cAdapter.notifyDataSetChanged();
                 }
                 return false;
             }
@@ -738,6 +745,7 @@ public class ChatActivity extends AppCompatActivity {
                         if (message != null && message.getAudioDetails() != null && message.getAudioDetails().length() > 0) {
                             try {
                                 JSONObject json = (JSONObject) message.getAudioDetails().get(0);
+                                AppHelper.sop("json==="+json);
                                 if (json.has("recording_id")) {
                                     SharedPreferences.Editor record = getSharedPreferences("RecordingData", MODE_PRIVATE).edit();
                                     record.putString("AddedBy", json.getString("added_by"));
@@ -745,9 +753,18 @@ public class ChatActivity extends AppCompatActivity {
                                     record.putString("UserNameRec", json.getString("user_name"));
                                     record.putString("RecordingName", json.getString("recording_topic"));
                                     record.putString("UserProfile", message.getProfilePic());
+//                                    record.putString("previous_screen", "ChatActivity");
                                     record.commit();
                                     Intent intent = new Intent(mActivity, JoinActivity.class);
-                                    startActivity(intent);
+                                    intent.putExtra("previous_screen","ChatActivity");
+                                    startActivityForResult(intent,REQUEST_JOIN_REC);
+                                }
+                                else if (json.has("melodypackid") || json.has("melody_id")){
+                                    Intent intent = new Intent(mActivity, StudioActivity.class);
+                                    intent.putExtra("previous_screen","ChatActivity");
+                                    intent.putExtra("melody_data",message.getMsgJson()+"");
+//                                    AppHelper.sop("melody_data="+chatList.get(position).getMsgJson());
+                                    startActivityForResult(intent,REQUEST_JOIN_MELO);
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -755,8 +772,11 @@ public class ChatActivity extends AppCompatActivity {
 
                         }
                     } else {
+                        StudioActivity.instrumentList.clear();
                         Intent intent = new Intent(mActivity, StudioActivity.class);
+                        intent.putExtra("previous_screen","ChatActivity");
                         startActivity(intent);
+                        AppHelper.sop("chatActivity=else=join=button");
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -966,6 +986,14 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 }
             }
+
+            if (requestCode == REQUEST_JOIN_REC) {
+                getChatMsgs(chatId);
+            }
+            if (requestCode == REQUEST_JOIN_MELO) {
+
+            }
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -1064,6 +1092,7 @@ public class ChatActivity extends AppCompatActivity {
                                             message.setCreatedAt(chatJson.getString("sendat"));
                                             message.setMsgTime(chatJson.getString("chat_time"));
                                             message.setRecCount((chatJson.getString("Rec_count")));
+                                            message.setMsgJson(chatJson);
                                             if (!chatJson.get("Audioshared").equals(null) && !chatJson.get("Audioshared").equals("")) {
                                                 message.setAudioDetails(chatJson.getJSONArray("Audioshared"));
                                             }

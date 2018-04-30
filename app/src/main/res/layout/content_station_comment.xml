@@ -372,7 +372,7 @@
                                     android:layout_marginLeft="5dp"
                                     android:layout_toEndOf="@+id/ivViewButton"
                                     android:layout_toRightOf="@+id/ivViewButton"
-                                    android:text="999"
+                                    android:text="0"
                                     android:textColor="@color/cardview_dark_background"
                                     android:textSize="12sp" />
 
@@ -416,7 +416,7 @@
                                     android:layout_marginStart="5dp"
                                     android:layout_toEndOf="@+id/rlLikeContainer"
                                     android:layout_toRightOf="@+id/rlLikeContainer"
-                                    android:text="999"
+                                    android:text="0"
                                     android:textColor="@color/cardview_dark_background"
                                     android:textSize="12sp" />
 
@@ -445,7 +445,7 @@
                                     android:layout_marginLeft="5dp"
                                     android:layout_toEndOf="@+id/ivCommentButton"
                                     android:layout_toRightOf="@+id/ivCommentButton"
-                                    android:text="999"
+                                    android:text="0"
                                     android:textColor="@color/cardview_dark_background"
                                     android:textSize="12sp" />
 
@@ -473,7 +473,7 @@
                                     android:layout_marginLeft="5dp"
                                     android:layout_toEndOf="@+id/ivShareButton"
                                     android:layout_toRightOf="@+id/ivShareButton"
-                                    android:text="999"
+                                    android:text="0"
                                     android:textColor="@color/cardview_dark_background"
                                     android:textSize="12sp" />
 

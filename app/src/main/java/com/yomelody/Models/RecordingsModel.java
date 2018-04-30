@@ -23,7 +23,17 @@ public class RecordingsModel implements Serializable{
     String joinCount;
 
     String thumnailUrl;
+    String isPublic;
     ArrayList joinUrl;
+
+
+    public String getIsPublic() {
+        return isPublic;
+    }
+
+    public void setIsPublic(String isPublic) {
+        this.isPublic = isPublic;
+    }
 
     public ArrayList getJoinUrl() {
         return joinUrl;

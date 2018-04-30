@@ -253,8 +253,11 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         initCustomLogin();
 //        initTwitterLogin();
 
+//        fbloginbtn.setReadPermissions(Arrays.asList(
+//                "public_profile", "email", "user_birthday", "user_friends", "user_about_me"));
+
         fbloginbtn.setReadPermissions(Arrays.asList(
-                "public_profile", "email", "user_birthday", "user_friends", "user_about_me"));
+                "email", "public_profile", "user_friends", "user_birthday"));
 
         fbloginbtn.registerCallback(mcallbckmanager, new FacebookCallback<LoginResult>() {
             @Override
@@ -333,6 +336,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
             @Override
             public void onError(FacebookException error) {
                 Toast.makeText(SignInActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                error.printStackTrace();
             }
         });
 
@@ -437,6 +441,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 // ... Options
                 .build(this);
 
+
         initGmail();
         hideSoftKeyboard();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -527,9 +532,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                     tEditor.putInt("status", 1);
                     tEditor.commit();
                     registrationSpecialTwitter();
-                    Intent intent = new Intent(mActivity, HomeActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
+
                 }
 
                 @Override
@@ -928,6 +931,10 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                                 UpdateSocialStatus(rspns.getString("facebook_status"),
                                         rspns.getString("google_status"),
                                         rspns.getString("twitter_status"));
+
+                                Intent intent = new Intent(mActivity, HomeActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -963,7 +970,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 params.put(KEY_FNAME, name);
                 params.put(KEY_LNAME, name);
                 params.put(KEY_USERNAME, username);
-                params.put(KEY_EMAIL_SIGN_UP, "codingbrains17@gmail.com");
+//                params.put(KEY_EMAIL_SIGN_UP, "codingbrains17@gmail.com");
                 params.put(KEY_APP_ID, String.valueOf(TwitterId));
                 params.put(KEY_USER_TYPE, "3");
                 params.put(KEY_DEVICE_TOKEN_SIGN_UP, DeviceToken);

@@ -39,6 +39,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -79,16 +80,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ByteArrayPool;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.crashlytics.android.Crashlytics;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
 import com.google.android.gms.plus.PlusShare;
-import com.google.firebase.crash.FirebaseCrash;
 import com.yomelody.Adapters.InstrumentListAdapter;
 import com.yomelody.Adapters.MelodyCardListAdapter;
 import com.yomelody.Models.Genres;
@@ -97,20 +95,16 @@ import com.yomelody.Models.MelodyInstruments;
 import com.yomelody.Models.MelodyMixing;
 import com.yomelody.Models.MixingData;
 import com.yomelody.Models.ModelPlayAllMediaPlayer;
-import com.yomelody.Models.RecordingsModel;
-import com.yomelody.Models.SubscriptionPackage;
 import com.yomelody.Parse.ParseContents;
-import com.yomelody.Services.LogoutService;
 import com.yomelody.utils.AppHelper;
-import com.yomelody.utils.AudioDataReceivedListener;
 import com.yomelody.utils.Const;
 import com.yomelody.utils.NotificationUtils;
-import com.yomelody.utils.RecordingThread;
 import com.yomelody.utils.VisualizerView;
 import com.yomelody.utils.VolleyMultipartRequest;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 import com.twitter.sdk.android.tweetcomposer.TweetUploadService;
+import com.yomelody.utils.WaveformView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -135,7 +129,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
+import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -162,6 +156,7 @@ public class StudioActivity extends AppCompatActivity {
     String userIdNormal, userIdFb, userIdTwitter;
     String userId;
     String switchFlag = "0";
+    String switchFlagTemp = "0";
     MediaPlayer pts;
     AudioManager audioManager;
     final int MY_PERMISSIONS_REQUEST_MICROPHONE = 200;
@@ -171,7 +166,6 @@ public class StudioActivity extends AppCompatActivity {
     private String USER_ID = "user_id";
 
     private String FILE_TYPE = "file_type";
-
     ArrayList<Genres> genresArrayList = new ArrayList<>();
     ArrayList<String> genresName = new ArrayList<>();
     ArrayList<String> genresId = new ArrayList<>();
@@ -218,13 +212,11 @@ public class StudioActivity extends AppCompatActivity {
     String fetchRecordingUrl;
     public static byte[] bytes, soundBytes;
     int InstrumentCountSize = 0;
-    public static boolean mShouldContinue = true;
-
+    private boolean mShouldContinue = true;
     public static String recordingDuration;
     public static long stop_rec_time;
     public static String time_stop;
     int count = 0;
-
     public static RelativeLayout rlInviteButton, rlBase;
     public static TextView tvInstrumentLength, tvUserName, tvInstrumentName, tvBpmRate;
     public static ImageView userProfileImage, ivInstrumentCover, playAll, pauseAll;
@@ -263,6 +255,7 @@ public class StudioActivity extends AppCompatActivity {
     String IsHomeMeloduId = null;
 
     private static final int PERMISSION_RECORD_AUDIO = 0;
+    private final int TWEET_COMPOSER_REQUEST_CODE = 29;
     private RecordWaveTask recordTask = null;
     public static VisualizerView mVisualizerView;
     public static Visualizer mVisualizer;
@@ -271,13 +264,22 @@ public class StudioActivity extends AppCompatActivity {
     public static boolean IsRepeteReAll = false;
     private SharedPreferences socialStatusPref;
     public static String IsExp;
-    public static int LayerCount = 0;
+    public static int LayerCount = -1;
     boolean IsValidPack = false;
     int PackDuration = 0;
     public static boolean IsRecordingStart = false;
     private AsyncTask mMyTask = null;
     public static boolean IsDirect = false;
     private String CommonUserName = null;
+    private static String previousScreen="";
+    private String mMessage="";
+    private JSONObject instJson=null;
+    private AudioRecord audioRecord = null;
+    public WaveformView waveform_view;
+    private static final int SAMPLING_RATE = 44100;
+    private int mBufferSize;
+    private short[] mAudioBuffer;
+    private RecordingThread mRecordingThread;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -287,7 +289,6 @@ public class StudioActivity extends AppCompatActivity {
         mActivity = StudioActivity.this;
         progressDialog = new ProgressDialog(mActivity);
         socialStatusPref = getSharedPreferences(Const.SOCIAL_STATUS_PREF, MODE_PRIVATE);
-
         rlBase = (RelativeLayout) findViewById(R.id.rlBase);
         frameprog = (ProgressBar) findViewById(R.id.frameProg);
         message = (ImageView) findViewById(R.id.message);
@@ -324,6 +325,19 @@ public class StudioActivity extends AppCompatActivity {
         message_count = (TextView) findViewById(R.id.message_count);
         playAll = (ImageView) findViewById(R.id.playAll);
         pauseAll = (ImageView) findViewById(R.id.pauseAll);
+        recyclerViewInstruments = (RecyclerView) findViewById(R.id.recyclerViewInstruments);
+        rlInviteButton = (RelativeLayout) findViewById(R.id.rlInviteButton);
+        rlPublic = (RelativeLayout) findViewById(R.id.rlPublic);
+        noMelodyNote = (TextView) findViewById(R.id.noMelodyNote);
+        tvDone = (TextView) findViewById(R.id.tvDone);
+        frameTrans = (FrameLayout) findViewById(R.id.frameTrans);
+        rlSync = (RelativeLayout) findViewById(R.id.rlSync);
+        rlSetCover = (RelativeLayout) findViewById(R.id.rlSetCover);
+        ivNewRecordCover = (ImageView) findViewById(R.id.ivNewRecordCover);
+        chrono = (Chronometer) findViewById(R.id.chrono);
+        mVisualizerView = (VisualizerView) findViewById(R.id.myvisualizerview);
+        mDecibelView = (TextView) findViewById(R.id.decibel_view);
+        waveform_view = findViewById(R.id.waveform_view);
 
         SharedPreferences loginSharedPref = this.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         firstName = loginSharedPref.getString("firstName", null);
@@ -348,6 +362,7 @@ public class StudioActivity extends AppCompatActivity {
             CommonUserName = loginTwitterSharedPref.getString("userName", null);
         }
 
+
         getTotalCount();
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -358,23 +373,15 @@ public class StudioActivity extends AppCompatActivity {
             }
         };
         switchPublic.setVisibility(View.VISIBLE);
-        mVisualizerView = (VisualizerView) findViewById(R.id.myvisualizerview);
+
         TweeterSharingWork();
         IsDirect = false;
         playAll.setVisibility(View.GONE);
-        rlSetCover = (RelativeLayout) findViewById(R.id.rlSetCover);
-        ivNewRecordCover = (ImageView) findViewById(R.id.ivNewRecordCover);
-        chrono = (Chronometer) findViewById(R.id.chrono);
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        mDecibelView = (TextView) findViewById(R.id.decibel_view);
+
         startTime = SystemClock.elapsedRealtime();
-        rlInviteButton = (RelativeLayout) findViewById(R.id.rlInviteButton);
-        rlPublic = (RelativeLayout) findViewById(R.id.rlPublic);
-        recyclerViewInstruments = (RecyclerView) findViewById(R.id.recyclerViewInstruments);
-        noMelodyNote = (TextView) findViewById(R.id.noMelodyNote);
-        tvDone = (TextView) findViewById(R.id.tvDone);
-        frameTrans = (FrameLayout) findViewById(R.id.frameTrans);
-        rlSync = (RelativeLayout) findViewById(R.id.rlSync);
+
         SharedPreferences loginSharedPref1 = this.getSharedPreferences("Url_recording", MODE_PRIVATE);
         fetchRecordingUrl = loginSharedPref1.getString("Recording_url", null);
         pauseAll.setVisibility(View.GONE);
@@ -390,12 +397,29 @@ public class StudioActivity extends AppCompatActivity {
         rlPublic.setVisibility(View.GONE);
         final Intent intent = getIntent();
         if (intent != null) {
+            try {
+                melodyPackId = intent.getExtras().getString("clickPosition");
+                MelodyCard melodyCard = (MelodyCard) intent.getSerializableExtra("melody_data_MelodyActivity");
+                MelodyInstruments melodyInstruments = null;
+                instrumentList.clear();
+                if (melodyCard!=null){
+                    melodyInstruments = new MelodyInstruments();
+                    melodyInstruments.setInstrumentFile(melodyCard.getMelodyURL());
+                    melodyInstruments.setInstrumentName(melodyCard.getMelodyName());
+                    melodyInstruments.setInstrumentBpm("120");
+                    melodyInstruments.setUserProfilePic(melodyCard.getUserProfilePic());
+                    melodyInstruments.setInstrumentCover(melodyCard.getMelodyCover());
+                    melodyInstruments.setUserName(melodyCard.getUserName());
+                    melodyInstruments.setInstrumentLength(melodyCard.getMelodyDuration());
+                    melodyInstruments.setInstrumentCreated(melodyCard.getMelodyCreated());
+                    instrumentList.add(melodyInstruments);
+                    setAdapter();
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
         }
-        try {
-            melodyPackId = intent.getExtras().getString("clickPosition");
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
+
 
         recordTask = (RecordWaveTask) getLastCustomNonConfigurationInstance();
         if (recordTask == null) {
@@ -412,6 +436,89 @@ public class StudioActivity extends AppCompatActivity {
 //        joinRecordingId = intent.getExtras().getString("clickPositionJoin");
         SharedPreferences filterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE);
         joinRecordingId = filterPref.getString("instrumentsPos", null);
+
+
+        if (getIntent()!=null && getIntent().hasExtra("previous_screen")){
+            previousScreen = getIntent().getStringExtra("previous_screen");
+            AppHelper.sop("StudioActivity=previousScreen="+previousScreen);
+            if (getIntent().hasExtra("melody_data")){
+                mMessage=getIntent().getStringExtra("melody_data");
+//                AppHelper.sop("mMessage=json="+mMessage.getMsgJson());
+                AppHelper.sop("mMessage=json="+mMessage);
+                instrumentList.clear();
+                list.clear();
+                JSONObject audioJson=null;
+                try {
+                    JSONObject json=new JSONObject(mMessage);
+                    JSONArray audioSharedArr=json.getJSONArray("Audioshared");
+                    for (int i=0; i<audioSharedArr.length();i++){
+                        audioJson=audioSharedArr.getJSONObject(i);
+                        String melodyurl="";
+                        String melodyName="";
+                        String melodyProfilePic="";
+                        String melodyCoverPic="";
+                        MelodyInstruments melodyInstruments = null;
+                        if (audioJson.has("recordings")){
+                            melodyInstruments = new MelodyInstruments();
+                            JSONObject recJson=audioJson.getJSONArray("recordings").getJSONObject(0);
+                            melodyName=audioJson.getString("recording_topic");
+                            melodyurl=recJson.getString("recording_url");
+                            melodyProfilePic=recJson.getString("profile_url");
+                            melodyCoverPic=recJson.getString("coverpic_url");
+
+                            melodyInstruments.setInstrumentFile(melodyurl);
+                            melodyInstruments.setInstrumentName(melodyName);
+                            melodyInstruments.setInstrumentBpm("120");
+                            melodyInstruments.setUserProfilePic(melodyProfilePic);
+                            melodyInstruments.setInstrumentCover(melodyCoverPic);
+                            melodyInstruments.setUserName("@"+recJson.getString("user_name"));
+                            melodyInstruments.setInstrumentLength(recJson.getString("duration"));
+                            melodyInstruments.setInstrumentCreated(recJson.getString("date_added"));
+                            instrumentList.add(melodyInstruments);
+                        }
+                        else if(audioJson.has("instruments")){
+                            JSONArray instrumentArr=audioJson.getJSONArray("instruments");
+                            for (int j=0; j<instrumentArr.length();j++){
+                                instJson=instrumentArr.getJSONObject(j);
+                                melodyInstruments = new MelodyInstruments();
+                                melodyInstruments.setInstrumentBpm(instJson.getString("bpm"));
+                                melodyInstruments.setInstrumentFile("Blank");
+                                melodyInstruments.setInstrumentLength(instJson.getString("duration"));
+                                melodyInstruments.setUserProfilePic(instJson.getString("profilepic"));
+                                melodyInstruments.setInstrumentCover(instJson.getString("coverpic"));
+                                melodyInstruments.setInstrumentCreated(instJson.getString("uploadeddate"));
+                                melodyInstruments.setUserName(instJson.getString("username"));
+                                if (TextUtils.isEmpty(melodyurl)){
+                                    melodyInstruments.setInstrumentFile(instJson.getString("instrument_url"));
+                                    melodyInstruments.setInstrumentName(instJson.getString("instruments_name"));
+                                }
+                                else {
+                                    melodyInstruments.setInstrumentFile(melodyurl);
+                                    melodyInstruments.setInstrumentName(melodyName);
+                                    melodyInstruments.setInstrumentBpm("120");
+                                    melodyInstruments.setUserProfilePic(melodyProfilePic);
+                                    melodyInstruments.setInstrumentCover(melodyCoverPic);
+                                }
+                                list.add(j, new MixingData(instJson.getString("id"), "5", "-5", "20", "0", "44100", "0", "0", "0", "2000", "0", "0", "0", "0", "0", "0", "0", instJson.getString("instrument_url").replace(BASE_URL, ""), String.valueOf(j)));
+                                instrumentList.add(melodyInstruments);
+                            }
+
+                        }
+                    }
+
+                    if(audioJson!=null && audioJson.has("instruments")){
+                        setAdapter();
+                    }
+
+
+                    AppHelper.sop("instrumentList=size="+instrumentList.size());
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        AppHelper.sop("StudioActivity=previousScreen=outif="+previousScreen);
 
         if (joinRecordingId != null && melodyPackId == null) {
 
@@ -431,7 +538,6 @@ public class StudioActivity extends AppCompatActivity {
                 //rlSync.setVisibility(View.VISIBLE);
                 IsDirect = true;
             }
-
 
             ArrayList<MelodyCard> arrayMelody = new ArrayList<>();
 
@@ -475,7 +581,9 @@ public class StudioActivity extends AppCompatActivity {
             if (IscheckMelody == null) {
                 if (melodyPackId != null) {
                     IsDirect = true;
-                    fetchInstruments(melodyPackId);
+                    if (instJson==null){
+                        fetchInstruments(melodyPackId);
+                    }
                     switchPublic.setVisibility(View.VISIBLE);
 
                     JoinActivity.instrumentList.clear();
@@ -535,7 +643,7 @@ public class StudioActivity extends AppCompatActivity {
                     StudioActivity.rlRecordingButton.setVisibility(View.GONE);
                     StudioActivity.ivRecord_play.setVisibility(View.VISIBLE);
                     StudioActivity.rlRedoButton.setVisibility(View.VISIBLE);
-                    if (IsHomeMeloduId != null) {
+                    if (IsHomeMeloduId != null && instJson==null) {
                         rlPublic.setVisibility(View.VISIBLE);
                         fetchInstruments(IsHomeMeloduId);
                         melodyPackId = IsHomeMeloduId;
@@ -603,16 +711,19 @@ public class StudioActivity extends AppCompatActivity {
         SharedPreferences fromHometoST = getApplicationContext().getSharedPreferences("HomeStudio", MODE_PRIVATE);
         homeTostudio = fromHometoST.getString("clickFromSt", null);
         try {
-            if (home.equals("from home") || homeTostudio.equals("from home")) {
-                SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
-                FilterPref.clear();
-                FilterPref.apply();
-                SharedPreferences.Editor FilterPref1 = getApplicationContext().getSharedPreferences("HomeStudio", MODE_PRIVATE).edit();
-                FilterPref1.clear();
-                FilterPref1.apply();
+            if (home!=null && homeTostudio!=null){
+                if (home.equals("from home") || homeTostudio.equals("from home")) {
+                    SharedPreferences.Editor FilterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE).edit();
+                    FilterPref.clear();
+                    FilterPref.apply();
+                    SharedPreferences.Editor FilterPref1 = getApplicationContext().getSharedPreferences("HomeStudio", MODE_PRIVATE).edit();
+                    FilterPref1.clear();
+                    FilterPref1.apply();
 
 
+                }
             }
+
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
@@ -1009,7 +1120,11 @@ public class StudioActivity extends AppCompatActivity {
                         Toast.makeText(StudioActivity.this, "Your recording duration should be less then or equal to your subscription pack.", Toast.LENGTH_SHORT).show();
 
                     } else {
+<<<<<<< HEAD
                         if (instrumentList.size() < LayerCount) {
+=======
+                        if (instrumentList.size() <= LayerCount || LayerCount==0) {
+>>>>>>> Nadeem
                             if (joinRecordingId == null) {
                                 openDialog();
                                 ivRecord.setVisibility(View.VISIBLE);
@@ -1041,6 +1156,18 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+
+                    if (mediaPlayer!=null){
+                        try {
+                            mediaPlayer.stop();
+                            mediaPlayer.reset();
+                            mediaPlayer.release();
+                            mediaPlayer = null;
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+
                     if (IsDirect) {
 //                    FirebaseCrash.report(new Exception("My first Android non-fatal error"));
 //                    FirebaseCrash.log("My First Crash Log:");
@@ -1329,6 +1456,12 @@ public class StudioActivity extends AppCompatActivity {
             }
         });
 
+        mRecordingThread = new RecordingThread();
+        mBufferSize = AudioRecord.getMinBufferSize(SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO,
+                AudioFormat.ENCODING_PCM_16BIT);
+
+        mAudioBuffer = new short[mBufferSize / 2];
+
         ivRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1366,6 +1499,22 @@ public class StudioActivity extends AppCompatActivity {
                         chrono.setBase(SystemClock.elapsedRealtime());
                         chrono.start();
                         launchTask();
+
+                        if (mediaPlayer == null){
+                            mShouldContinue = true;
+                            mVisualizerView.setVisibility(View.GONE);
+                            waveform_view.setVisibility(View.VISIBLE);
+                            try {
+                                mRecordingThread.start();
+                            } catch (Throwable e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        else {
+                            mVisualizerView.setVisibility(View.VISIBLE);
+                            waveform_view.setVisibility(View.GONE);
+                        }
+
                         try {
 
                             recyclerViewInstruments.setVisibility(View.VISIBLE);
@@ -1380,6 +1529,7 @@ public class StudioActivity extends AppCompatActivity {
                             if (list.size() > 0) {
                                 list.clear();
                             }
+
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -1533,10 +1683,20 @@ public class StudioActivity extends AppCompatActivity {
                     ex.printStackTrace();
                 }
 
+                if (mRecordingThread != null) {
+                    try {
+                        mVisualizerView.setVisibility(View.VISIBLE);
+                        waveform_view.setVisibility(View.GONE);
+//                        mRecordingThread.stopRunning();
+                        mRecordingThread.stop();
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+                }
+
             }
 
         });
-
 
         ivRecord_play.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1547,7 +1707,6 @@ public class StudioActivity extends AppCompatActivity {
                     rlRedoButton.setVisibility(View.GONE);
                     ivRecord_pause.setVisibility(View.VISIBLE);
                     rlListeningButton.setVisibility(View.VISIBLE);
-                    mShouldContinue = true;
                     try {
 
                         playAurdio();
@@ -1649,6 +1808,25 @@ public class StudioActivity extends AppCompatActivity {
         String rate = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
         String size = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
         Log.d("BufferSize&samplerate", "Size :" + size + " & Rate: " + rate);
+
+    }
+
+
+    private void setAdapter(){
+        noMelodyNote.setVisibility(View.GONE);
+        recyclerViewInstruments.setVisibility(View.VISIBLE);
+        recyclerViewInstruments.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerViewInstruments.setLayoutManager(layoutManager);
+        recyclerViewInstruments.setItemAnimator(new DefaultItemAnimator());
+
+        adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
+        recyclerViewInstruments.setAdapter(adapter);
+    }
+
+    public int randomNumberInRange(int min, int max) {
+        Random random = new Random();
+        return random.nextInt((max - min) + 1) + min;
     }
 
     public void playAurdio() throws IOException {
@@ -1712,6 +1890,69 @@ public class StudioActivity extends AppCompatActivity {
             mp = null;
         }
         return true;
+    }
+
+    public class RecordingThread extends Thread {
+        @Override
+        public void run() {
+            //  android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
+            AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLING_RATE,
+                    AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, mBufferSize);
+            try {
+
+                recorder.startRecording();
+                Log.d("Recording issue", "SampleRate" + SAMPLING_RATE + "BufferSize" + mBufferSize + "AudioBuffer" + mAudioBuffer);
+            } catch (IllegalStateException e) {
+                Log.d("Recording issue", e.toString());
+            }
+
+
+            while (shouldContinue()) {
+                recorder.read(mAudioBuffer, 0, mBufferSize / 2);
+                waveform_view.updateAudioData(mAudioBuffer);
+                updateDecibelLevel();
+
+            }
+
+            try {
+                recorder.stop();
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
+
+            recorder.release();
+        }
+
+
+        public synchronized boolean shouldContinue() {
+            return mShouldContinue;
+        }
+
+        public synchronized void stopRunning() {
+            mShouldContinue = false;
+        }
+
+
+        public void updateDecibelLevel() {
+
+            double sum = 0;
+
+            for (short rawSample : mAudioBuffer) {
+                double sample = rawSample / 32768.0;
+                sum += sample * sample;
+            }
+
+            double rms = Math.sqrt(sum / mAudioBuffer.length);
+            final double db = 20 * Math.log10(rms);
+
+            // Update the text view on the main thread.
+            mDecibelView.post(new Runnable() {
+                @Override
+                public void run() {
+                    // mDecibelView.setText(String.format(mDecibelFormat, db));
+                }
+            });
+        }
     }
 
    /* private static String getDuration(File file) {
@@ -1963,6 +2204,7 @@ public class StudioActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(FILE_TYPE, "admin_melody");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("fetchInstruments=params=="+params+"\n URL=="+MELODY);
                 return params;
             }
         };
@@ -2169,7 +2411,8 @@ public class StudioActivity extends AppCompatActivity {
 
                         AppHelper.sop("fbSwitch=" + socialStatusPref.getBoolean(Const.FB_STATUS, false) +
                                 "=twitterSwitch=" + socialStatusPref.getBoolean(Const.TWITTER_STATUS, false) +
-                                "=googleSwitch" + socialStatusPref.getBoolean(Const.GOOGLE_STATUS, false));
+                                "=googleSwitch=" + socialStatusPref.getBoolean(Const.GOOGLE_STATUS, false)+
+                                "=previousScreen="+previousScreen);
 
                         if (socialStatusPref.getBoolean(Const.FB_STATUS, false)) {
                             FbShare();
@@ -2177,7 +2420,23 @@ public class StudioActivity extends AppCompatActivity {
                             GoogleShare();
                         } else if (socialStatusPref.getBoolean(Const.TWITTER_STATUS, false)) {
                             TweetShare();
+                        }else if (previousScreen.equalsIgnoreCase("ChatActivity")
+                                ||previousScreen.equalsIgnoreCase("JoinActivity")){
+                            finish();
+                        }else if (!value1.equalsIgnoreCase("Melody")){
+                            if (switchFlagTemp.equalsIgnoreCase("1")){
+                                Intent intent = new Intent(mActivity, StationActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                            else if (switchFlagTemp.equalsIgnoreCase("0")){
+                                Intent intent = new Intent(mActivity, MelodyActivity.class);
+                                intent.putExtra("MyRecording","MyRecording");
+                                startActivity(intent);
+                                finish();
+                            }
                         }
+
                         /*if (joinRecordingId != null) {
                             Intent intent = new Intent(StudioActivity.this, JoinActivity.class);
                             startActivity(intent);
@@ -2254,6 +2513,7 @@ public class StudioActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
+                switchFlagTemp=switchFlag;
                 params.put(Mixuser_id, userId);
                 params.put(Mixpublic_flag, switchFlag);
                 params.put(MixrecordWith, IsMicConnected);
@@ -2416,8 +2676,45 @@ public class StudioActivity extends AppCompatActivity {
             if (socialStatusPref.getBoolean(Const.TWITTER_STATUS, false)) {
                 TweetShare();
             }
+            else if (previousScreen.equalsIgnoreCase("ChatActivity")
+                    ||previousScreen.equalsIgnoreCase("JoinActivity")){
+                finish();
+            }
+            else if (!value1.equalsIgnoreCase("Melody")){
+                if (switchFlagTemp.equalsIgnoreCase("1")){
+                    Intent intent = new Intent(mActivity, StationActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+                else if (switchFlagTemp.equalsIgnoreCase("0")){
+                    Intent intent = new Intent(mActivity, MelodyActivity.class);
+                    intent.putExtra("MyRecording","MyRecording");
+                    startActivity(intent);
+                    finish();
+                }
+            }
 
-        } else {
+        }
+        else if (requestCode==TWEET_COMPOSER_REQUEST_CODE){
+            if (previousScreen.equalsIgnoreCase("ChatActivity")
+                    ||previousScreen.equalsIgnoreCase("JoinActivity")){
+                finish();
+            }
+            else if (!value1.equalsIgnoreCase("Melody")){
+                if (switchFlagTemp.equalsIgnoreCase("1")){
+                    Intent intent = new Intent(mActivity, StationActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+                else if (switchFlagTemp.equalsIgnoreCase("0")){
+                    Intent intent = new Intent(mActivity, MelodyActivity.class);
+                    intent.putExtra("MyRecording","MyRecording");
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        }
+        else {
             if (callbackManager != null) {
                 callbackManager.onActivityResult(requestCode, resultCode, data);
             }
@@ -2480,6 +2777,10 @@ public class StudioActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         unregisterReceiver(mReceiver);
+        if (mRecordingThread!=null){
+            mRecordingThread.stopRunning();
+        }
+
         super.onDestroy();
     }
 
@@ -2589,7 +2890,10 @@ public class StudioActivity extends AppCompatActivity {
             } else {
                 //Toast.makeText(StudioActivity.this, "Task not running.", Toast.LENGTH_SHORT).show();
             }
-            mMyTask.cancel(true);
+            if (mMyTask!=null){
+                mMyTask.cancel(true);
+            }
+
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -2626,6 +2930,23 @@ public class StudioActivity extends AppCompatActivity {
                 } else if (socialStatusPref.getBoolean(Const.TWITTER_STATUS, false)) {
                     TweetShare();
                 }
+                else if (previousScreen.equalsIgnoreCase("ChatActivity")
+                        ||previousScreen.equalsIgnoreCase("JoinActivity")){
+                    finish();
+                }
+                else if (!value1.equalsIgnoreCase("Melody")){
+                    if (switchFlagTemp.equalsIgnoreCase("1")){
+                        Intent intent = new Intent(mActivity, StationActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                    else if (switchFlagTemp.equalsIgnoreCase("0")){
+                        Intent intent = new Intent(mActivity, MelodyActivity.class);
+                        intent.putExtra("MyRecording","MyRecording");
+                        startActivity(intent);
+                        finish();
+                    }
+                }
             }
 
             @Override
@@ -2637,6 +2958,23 @@ public class StudioActivity extends AppCompatActivity {
                 } else if (socialStatusPref.getBoolean(Const.TWITTER_STATUS, false)) {
                     TweetShare();
                 }
+                else if (previousScreen.equalsIgnoreCase("ChatActivity")
+                        ||previousScreen.equalsIgnoreCase("JoinActivity")){
+                    finish();
+                }
+                else if (!value1.equalsIgnoreCase("Melody")){
+                    if (switchFlagTemp.equalsIgnoreCase("1")){
+                        Intent intent = new Intent(mActivity, StationActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                    else if (switchFlagTemp.equalsIgnoreCase("0")){
+                        Intent intent = new Intent(mActivity, MelodyActivity.class);
+                        intent.putExtra("MyRecording","MyRecording");
+                        startActivity(intent);
+                        finish();
+                    }
+                }
             }
 
             @Override
@@ -2646,6 +2984,23 @@ public class StudioActivity extends AppCompatActivity {
                     GoogleShare();
                 } else if (socialStatusPref.getBoolean(Const.TWITTER_STATUS, false)) {
                     TweetShare();
+                }
+                else if (previousScreen.equalsIgnoreCase("ChatActivity")
+                        ||previousScreen.equalsIgnoreCase("JoinActivity")){
+                    finish();
+                }
+                else if (!value1.equalsIgnoreCase("Melody")){
+                    if (switchFlagTemp.equalsIgnoreCase("1")){
+                        Intent intent = new Intent(mActivity, StationActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                    else if (switchFlagTemp.equalsIgnoreCase("0")){
+                        Intent intent = new Intent(mActivity, MelodyActivity.class);
+                        intent.putExtra("MyRecording","MyRecording");
+                        startActivity(intent);
+                        finish();
+                    }
                 }
             }
 
@@ -2667,11 +3022,22 @@ public class StudioActivity extends AppCompatActivity {
             /*TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
             Fabric.with(this, new TwitterCore(authConfig), new TweetComposer());*/
 
+<<<<<<< HEAD
             TweetComposer.Builder builder = new TweetComposer.Builder(this)
                     .text("Audio Url")
+=======
+            /*TweetComposer.Builder builder = new TweetComposer.Builder(this)
+                    .text("")
+>>>>>>> Nadeem
                     .url(new URL(thumbnailUrl));
 //                .image(Uri.parse(cover));
-            builder.show();
+            builder.show();*/
+
+            Intent intent = new TweetComposer.Builder(this)
+                    .text("")
+                    .url(new URL(thumbnailUrl))
+                    .createIntent();
+            startActivityForResult(intent, TWEET_COMPOSER_REQUEST_CODE);
 
 
         /*TwitterSession session = TwitterCore.getInstance().getSessionManager()
@@ -2685,6 +3051,9 @@ public class StudioActivity extends AppCompatActivity {
         startActivityForResult(intent,107) ;*/
 
         } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        catch (Exception e){
             e.printStackTrace();
         }
     }
@@ -2956,7 +3325,6 @@ public class StudioActivity extends AppCompatActivity {
                     }
                     launchTask();
 
-
                     chrono.setBase(SystemClock.elapsedRealtime());
                     chrono.start();
                 }else{
@@ -3028,7 +3396,7 @@ public class StudioActivity extends AppCompatActivity {
         return recordTask;
     }
 
-    private static class RecordWaveTask extends AsyncTask<File, Void, Object[]> {
+    private class RecordWaveTask extends AsyncTask<File, Void, Object[]> {
 
         // Configure me!
         private static final int AUDIO_SOURCE = MediaRecorder.AudioSource.MIC;
@@ -3037,7 +3405,7 @@ public class StudioActivity extends AppCompatActivity {
         private static final int CHANNEL_MASK = AudioFormat.CHANNEL_IN_MONO;
         //
 
-        private static final int BUFFER_SIZE = 2 * AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_MASK, ENCODING);
+        private final int BUFFER_SIZE = 2 * AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_MASK, ENCODING);
 
         private Context ctx;
 
@@ -3059,7 +3427,7 @@ public class StudioActivity extends AppCompatActivity {
          */
         @Override
         protected Object[] doInBackground(File... files) {
-            AudioRecord audioRecord = null;
+
             FileOutputStream wavOut = null;
             long startTime = 0;
             long endTime = 0;
@@ -3081,6 +3449,7 @@ public class StudioActivity extends AppCompatActivity {
                 // Let's go
                 startTime = SystemClock.elapsedRealtime();
                 audioRecord.startRecording();
+
                 while (run && !isCancelled()) {
                     read = audioRecord.read(buffer, 0, buffer.length);
 
@@ -3145,7 +3514,7 @@ public class StudioActivity extends AppCompatActivity {
          * @param encoding    An AudioFormat.ENCODING_PCM_* value
          * @throws IOException
          */
-        private static void writeWavHeader(OutputStream out, int channelMask, int sampleRate, int encoding) throws IOException {
+        private void writeWavHeader(OutputStream out, int channelMask, int sampleRate, int encoding) throws IOException {
             short channels;
             switch (channelMask) {
                 case AudioFormat.CHANNEL_IN_MONO:
@@ -3186,7 +3555,7 @@ public class StudioActivity extends AppCompatActivity {
          * @param bitDepth   The bit depth
          * @throws IOException
          */
-        private static void writeWavHeader(OutputStream out, short channels, int sampleRate, short bitDepth) throws IOException {
+        private void writeWavHeader(OutputStream out, short channels, int sampleRate, short bitDepth) throws IOException {
             // Convert the multi-byte integers to raw bytes in little endian format as required by the spec
             byte[] littleBytes = ByteBuffer
                     .allocate(14)
@@ -3225,7 +3594,7 @@ public class StudioActivity extends AppCompatActivity {
          * @param wav The wav file to update
          * @throws IOException
          */
-        private static void updateWavHeader(File wav) throws IOException {
+        private void updateWavHeader(File wav) throws IOException {
             byte[] sizes = ByteBuffer
                     .allocate(8)
                     .order(ByteOrder.LITTLE_ENDIAN)
@@ -3307,7 +3676,7 @@ public class StudioActivity extends AppCompatActivity {
         // setupVisualizerFxAndUI because we likely want to have more,
         // non-Visualizer related code
         // in this callback.
-       /* mpst
+            /* mpst
                 .setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     public void onCompletion(MediaPlayer mediaPlayer) {
                         mVisualizer.setEnabled(false);
@@ -3391,7 +3760,7 @@ public class StudioActivity extends AppCompatActivity {
 
                                     } else {
                                         if (instrumentList.size() > LayerCount) {
-                                            Toast.makeText(StudioActivity.this, "You can add only " + LayerCount + " layers of instruments." + "please subscribed another pack.", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(StudioActivity.this, "You can add only " + LayerCount + " layers of instruments. " + "Please subscribed another pack.", Toast.LENGTH_SHORT).show();
                                             IsValidPack = true;
                                         }
 
@@ -3502,6 +3871,7 @@ public class StudioActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+<<<<<<< HEAD
 }
 
 
@@ -3692,3 +4062,8 @@ public class StudioActivity extends AppCompatActivity {
             task.execute();
         }
     }*/
+=======
+
+
+}
+>>>>>>> Nadeem

@@ -5,6 +5,7 @@ package com.yomelody.Models;
  */
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.text.ParseException;
@@ -17,6 +18,15 @@ public class Message implements Serializable {
 
     String id, message, createdAt, senderId, file, fileId, fileType, profilePic, isRead, recCount,MsgTime;
     JSONArray audioDetails;
+    JSONObject msgJson;
+
+    public JSONObject getMsgJson() {
+        return msgJson;
+    }
+
+    public void setMsgJson(JSONObject msgJson) {
+        this.msgJson = msgJson;
+    }
 
     public String getRecCount() {
         return recCount;

@@ -418,7 +418,17 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                         String position = Integer.toString(getAdapterPosition());
                         StudioActivity.instrumentList.clear();
                         Intent intent = new Intent(v.getContext(), StudioActivity.class);
-                        intent.putExtra("clickPosition", position);
+
+                        if (mActivity.getIntent()!=null && mActivity.getIntent().hasExtra("previous_screen")){
+                            intent.putExtra("previous_screen",mActivity.getIntent().getStringExtra("previous_screen"));
+                        }
+                        if (melodyList.get(getAdapterPosition()).getAddByAdmin().equalsIgnoreCase("1")){
+                            intent.putExtra("clickPosition", position);
+                        }
+                        else {
+                            intent.putExtra("melody_data_MelodyActivity",melodyList.get(getAdapterPosition()));
+                        }
+
                         v.getContext().startActivity(intent);
                         StudioActivity.list.clear();
                         if (mediaPlayer != null) {

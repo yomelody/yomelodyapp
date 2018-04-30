@@ -196,7 +196,7 @@ public class MessengerActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
+                        AppHelper.sop("response=="+response);
 //                        Toast.makeText(MessengerActivity.this, " Shubz" + response, Toast.LENGTH_LONG).show();
 
                         chatList.clear();
@@ -270,6 +270,7 @@ public class MessengerActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(USER_ID, user_Id);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params="+params+"\nURL="+USER_CONVERSATION);
                 return params;
             }
         };

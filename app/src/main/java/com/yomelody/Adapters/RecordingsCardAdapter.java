@@ -17,9 +17,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +32,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.yomelody.JoinActivity;
+import com.yomelody.MelodyActivity;
 import com.yomelody.MessengerActivity;
 import com.yomelody.Models.JoinRecordingModel;
 import com.yomelody.Models.RecordingsModel;
@@ -38,6 +41,7 @@ import com.yomelody.ProfileActivity;
 import com.yomelody.R;
 import com.yomelody.SignInActivity;
 import com.yomelody.StationCommentActivity;
+import com.yomelody.utils.AppHelper;
 import com.yomelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
@@ -61,6 +65,7 @@ import static com.yomelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.yomelody.utils.Const.ServiceType.JoinRecording;
 import static com.yomelody.utils.Const.ServiceType.LIKESAPI;
 import static com.yomelody.utils.Const.ServiceType.PLAY_COUNT;
+import static com.yomelody.utils.Const.ServiceType.PUBLIC;
 
 //import com.instamelody.instamelody.Models.RecJoinRecordingModel;
 
@@ -143,6 +148,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         ImageView ivJoin, ivStationPlay, ivStationPause;
         SeekBar seekBarRecordings;
         RelativeLayout rlProfilePic, rlLike;
+        Switch publicPrivSwitch;
 
         MediaPlayer mediaPlayerJoin;
 
@@ -175,6 +181,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             ivStationNext = (ImageView) itemView.findViewById(R.id.ivStationNext);
             txtJoinCount = (TextView) itemView.findViewById(R.id.txtJoinCount);
             TemptxtJoinCount = (TextView) itemView.findViewById(R.id.TemptxtJoinCount);
+            publicPrivSwitch = (Switch) itemView.findViewById(R.id.publicPrivSwitch);
             SharedPreferences editorGenre = getApplicationContext().getSharedPreferences("prefGenreName", MODE_PRIVATE);
             genreName = editorGenre.getString("GenreName", null);
 
@@ -548,7 +555,33 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             } else {
                 holder.TemptxtJoinCount.setText("0");
             }
+            if ((context instanceof MelodyActivity)) {
+                holder.publicPrivSwitch.setVisibility(VISIBLE);
+                holder.publicPrivSwitch.setOnCheckedChangeListener(null);
+                if (recordingList.get(listPosition).getIsPublic().equalsIgnoreCase("1")){
+                    holder.publicPrivSwitch.setChecked(true);
+                }
+                else {
+                    holder.publicPrivSwitch.setChecked(false);
+                }
 
+                holder.publicPrivSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        // do something, the isChecked will be
+                        // true if the switch is in the On position
+                        AppHelper.sop("isChecked="+isChecked+"=buttonView="+buttonView);
+                        if (isChecked){
+                            publicPrivateApi("1",recordingList.get(listPosition).getRecordingId());
+                        }
+                        else if (!isChecked){
+                            publicPrivateApi("0",recordingList.get(listPosition).getRecordingId());
+                        }
+                    }
+                });
+            }
+            else {
+                holder.publicPrivSwitch.setVisibility(GONE);
+            }
 
             holder.txtJoinCount.setText(totaljoincount);
 
@@ -896,6 +929,53 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         requestQueue1.add(stringRequest);
     }
 
+
+
+    public void publicPrivateApi(final String isPublic, final String recID) {
+        progressDialog = new ProgressDialog(mActivity);
+        progressDialog.setMessage("Loading...");
+        progressDialog.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, PUBLIC,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        progressDialog.dismiss();
+                        AppHelper.sop("response=="+response);
+                        try {
+                            JSONObject jsoneobj = new JSONObject(response);
+                            String flag = jsoneobj.getString("flag");
+                            if (flag.equalsIgnoreCase("Success")) {
+                                Toast.makeText(context, jsoneobj.getString("msg"), Toast.LENGTH_LONG).show();
+                            }
+                            else {
+                                Toast.makeText(context, "Something is wrong.", Toast.LENGTH_LONG).show();
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                        progressDialog.dismiss();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("ispublic", isPublic);
+                params.put("user_id", userId);
+                params.put("rid", recID);
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params="+params+"\nUrl="+PUBLIC);
+                return params;
+            }
+        };
+        RequestQueue requestQueue1 = Volley.newRequestQueue(context);
+        requestQueue1.add(stringRequest);
+    }
 
     public void releaseMediaPlayer() {
         try {

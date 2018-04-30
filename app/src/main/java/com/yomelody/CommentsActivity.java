@@ -346,12 +346,17 @@ public class CommentsActivity extends AppCompatActivity {
                             if (getIntent() != null && getIntent().hasExtra("melody_card")) {
                                 MelodyCard melody = (MelodyCard) getIntent().getSerializableExtra("melody_card");
                                 SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
-                                editor.putString("recID", melody.getMelodyPackId());
+                                editor.putString("melodyID", melody.getMelodyPackId());
+                                editor.putString("added_by_admin", melody.getAddByAdmin());
                                 editor.apply();
                                 Intent intent = new Intent(mActivity, MessengerActivity.class);
                                 intent.putExtra("commingForm", "Melody");
                                 intent.putExtra("share", melody);
-                                intent.putExtra("file_type", "admin_melody");
+                                if (!melody.getAddByAdmin().equalsIgnoreCase("1")){
+                                    intent.putExtra("file_type", "user_melody");
+                                }else {
+                                    intent.putExtra("file_type", "admin_melody");
+                                }
                                 startActivityForResult(intent, MelodyCardListAdapter.REQUEST_MELODY_COMMENT);
                                 finish();
                             }

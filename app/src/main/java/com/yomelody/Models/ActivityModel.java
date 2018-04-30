@@ -1,10 +1,12 @@
 package com.yomelody.Models;
 
+import java.io.Serializable;
+
 /**
  * Created by Saurabh Singh on 12/21/2016.
  */
 
-public class ActivityModel {
+public class ActivityModel implements Serializable{
     public String getMsgfirst_user() {
         return Msgfirst_user;
     }
@@ -23,8 +25,25 @@ public class ActivityModel {
 
     int id_;
     String tvmsg, tvtopic, tvtime, UserImgURL, createdByUserId,Msgfirst_user,Msgsecond_user;
+    String recordingID,melodyID,adminmelodyid;
 
-    public ActivityModel(int id_, String tvmsg, String tvtopic, String tvtime, String ImageUrl, String createdByUserId,String MsgFirst,String MsgSecond) {
+    public String getRecordingID() {
+        return recordingID;
+    }
+
+    public String getMelodyID() {
+        return melodyID;
+    }
+
+    public String getAdminmelodyid() {
+        return adminmelodyid;
+    }
+
+
+
+    public ActivityModel(int id_, String tvmsg, String tvtopic, String tvtime,String ImageUrl,
+                         String createdByUserId, String MsgFirst,String MsgSecond,
+                         String recordingID, String melodyID,String adminmelodyid) {
         this.tvmsg = tvmsg;
         this.tvtopic = tvtopic;
         this.tvtime = tvtime;
@@ -34,6 +53,9 @@ public class ActivityModel {
         this.Msgfirst_user=MsgFirst;
         this.Msgsecond_user=MsgSecond;
 
+        this.recordingID=recordingID;
+        this.melodyID=melodyID;
+        this.adminmelodyid=adminmelodyid;
     }
 
     public String getCreatedByUserId() {

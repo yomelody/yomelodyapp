@@ -174,7 +174,17 @@ public class MelodyActivity extends AppCompatActivity {
             btnSubscriptions.setBackgroundColor(Color.parseColor("#FFFFFF"));
             SubscriptionsFragment subf = new SubscriptionsFragment();
             getFragmentManager().beginTransaction().replace(R.id.activity_melody, subf).commit();
-        } else {
+        }
+        else if ((getIntent()!=null && (getIntent().hasExtra("MyRecording")))) {
+            btnMelodyPacks.setBackgroundColor(Color.parseColor("#E4E4E4"));
+            btnRecordings.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            btnSubscriptions.setBackgroundColor(Color.parseColor("#E4E4E4"));
+            clicked_button = 1;
+            clearSharePrefMelody();
+            rf = new RecordingsFragment();
+            getFragmentManager().beginTransaction().replace(R.id.activity_melody, rf).commit();
+        }
+        else {
             mpf = new MelodyPacksFragment();
             getFragmentManager().beginTransaction().replace(R.id.activity_melody, mpf).commit();
         }
