@@ -43,6 +43,7 @@ import com.yomelody.Models.MixingData;
 import com.yomelody.Models.ModelPlayAllMediaPlayer;
 import com.yomelody.R;
 import com.yomelody.StudioActivity;
+import com.yomelody.utils.AppHelper;
 import com.yomelody.utils.UtilsRecording;
 import com.squareup.picasso.Picasso;
 
@@ -72,6 +73,7 @@ import static com.yomelody.StudioActivity.rlBase;
 public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAdapter.MyViewHolder> {
 
     static ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
+    ArrayList<Boolean> checkBoolList = new ArrayList<>();
     ArrayList<String> vocalsound = new ArrayList<>();
     String audioValue;
     static String audioUrl;
@@ -116,8 +118,14 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
         this.instrumentList = instrumentList;
         InstrumentListCount = instrumentList.size();
         this.context = context;
-
+        checkBoolList.clear();
+        for (int i=0; i<instrumentList.size(); i++){
+            checkBoolList.add(false);
+        }
+        AppHelper.sop("checkBoolList=size="+checkBoolList.size());
     }
+
+
 
     private Context context;
 
@@ -404,14 +412,34 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
             Log.d("Instruments size", "" + instrumentFile);
             audioValue = instruments.getAudioType();
 
+            if (checkBoolList.get(listPosition)){
+                holder.deleteLl.setVisibility(View.VISIBLE);
+            }else {
+                holder.deleteLl.setVisibility(View.GONE);
+            }
+
             holder.rlivDeleteMelody.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     try {
                         if (!StudioActivity.IsRecordingStart) {
                             holder.deleteLl.setVisibility(View.VISIBLE);
+                            checkBoolList.set(listPosition,true);
                         }
 
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+                }
+            });
+
+            holder.cancelTv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        holder.deleteLl.setVisibility(View.GONE);
+                        checkBoolList.set(listPosition,false);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -454,6 +482,8 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
 
                             int newPosition = holder.getAdapterPosition();
                             instrumentList.remove(newPosition);
+                            StudioActivity.list.remove(newPosition);
+                            checkBoolList.remove(newPosition);
                             if (mediaPlayersAll.size() > 0) {
                                 mediaPlayersAll.remove(newPosition);
                             }
@@ -466,22 +496,10 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-
-
                 }
             });
 
-            holder.cancelTv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        holder.deleteLl.setVisibility(View.GONE);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
 
-                }
-            });
 
             holder.rlMute.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -1430,6 +1448,12 @@ public class InstrumentListAdapter extends RecyclerView.Adapter<InstrumentListAd
     @Override
     public int getItemCount() {
         //  rvLength = instrumentList.size();
+        if (checkBoolList.size()<=0){
+            for (int i=0; i<instrumentList.size(); i++){
+                checkBoolList.add(false);
+            }
+        }
+        AppHelper.sop("checkBoolList=size="+checkBoolList.size());
         return instrumentList.size();
     }
 

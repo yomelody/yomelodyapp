@@ -18,6 +18,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -141,7 +142,6 @@ public class DiscoverActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discover);
         mActivity = DiscoverActivity.this;
-
         progressDialog = new ProgressDialog(DiscoverActivity.this);
         progressDialog.setTitle("Processing...");
         progressDialog.setMessage("Please wait...");
@@ -233,19 +233,18 @@ public class DiscoverActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
 
-        if (userId != null && userId != "") {
+        /*if (userId != null && userId != "") {
             adapter = new RecordingsCardAdapter(mActivity, recordingList, recordingsPools);
             fetchGenreNames();
-//            callApi();
         } else {
             Toast.makeText(getApplicationContext(), "Log in to view your Profile", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             getApplicationContext().startActivity(intent);
-        }
+        }*/
 
         adapter = new RecordingsCardAdapter(mActivity, recordingList, recordingsPools);
-
+        fetchGenreNames();
         /*discover.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -613,7 +612,9 @@ public class DiscoverActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
+                if (!TextUtils.isEmpty(userId)){
+                    params.put(ID, userId);
+                }
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(limit, recordingList.size() + "");
@@ -689,7 +690,9 @@ public class DiscoverActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
+                if (!TextUtils.isEmpty(userId)){
+                    params.put(ID, userId);
+                }
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
@@ -913,7 +916,9 @@ public class DiscoverActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
+                if (!TextUtils.isEmpty(userId)){
+                    params.put(ID, userId);
+                }
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
@@ -990,7 +995,9 @@ public class DiscoverActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
+                if (!TextUtils.isEmpty(userId)){
+                    params.put(ID, userId);
+                }
                 params.put(KEY, STATION);
                 params.put(KEY_SEARCH, strSearch);
                 params.put(limit, recordingList.size() + "");
@@ -1060,7 +1067,9 @@ public class DiscoverActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
+                if (!TextUtils.isEmpty(userId)){
+                    params.put(ID, userId);
+                }
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
@@ -1134,7 +1143,9 @@ public class DiscoverActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put(ID, userId);
+                if (!TextUtils.isEmpty(userId)){
+                    params.put(ID, userId);
+                }
                 params.put(KEY, STATION);
                 params.put(GENRE, genreString);
                 params.put(FILE_TYPE, "user_recording");
@@ -1304,7 +1315,9 @@ public class DiscoverActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                params.put("userid", userId);
+                if (!TextUtils.isEmpty(userId)){
+                    params.put("userid", userId);
+                }
                 return params;
             }
         };

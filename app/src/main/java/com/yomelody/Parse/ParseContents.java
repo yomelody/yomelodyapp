@@ -169,7 +169,7 @@ public class ParseContents {
                     card.setInstrumentCount(instrumentArray.length()+"");
                     card.setMelodyInstrumentsList(instrumentsListLocal);
                     if (instrumentArray.length()<=0){
-                        card.setMelodyLength("00");
+//                        card.setMelodyLength("00");
                     }else {
                         card.setMelodyLength(instrumentArray.getJSONObject(0).getString(KEY_INSTRUMENT_DURATION));
                     }
@@ -363,7 +363,8 @@ public class ParseContents {
                     JSONObject chatJson = resultArray.getJSONObject(i);
                     message.setMessage(chatJson.getString("message"));
                     message.setId(chatJson.getString("id"));
-                    message.setCreatedAt(chatJson.getString("sendat"));
+                    message.setDateTime(chatJson.getString("dateTime"));
+//                    message.setCreatedAt(chatJson.getString("sendat"));
                     message.setSenderId(chatJson.getString("senderID"));
                     SharedPreferences loginSharedPref = mContext.getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
                     String profilePic = loginSharedPref.getString("profilePic", null);

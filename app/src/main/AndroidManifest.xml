@@ -22,7 +22,7 @@
     <!-- android:name="com.sixmod.com.client.permission.C2D_MESSAGE" -->
     <!-- android:protectionLevel="signature" /> -->
     <uses-permission android:name="com.sixmod.com.client.permission.C2D_MESSAGE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
 <<<<<<< HEAD
 
@@ -210,7 +210,11 @@
 
 =======
             android:screenOrientation="portrait"
+<<<<<<< HEAD
             android:theme="@style/AppTheme"></activity>
+>>>>>>> Nadeem
+=======
+            android:theme="@style/AppTheme" />
 >>>>>>> Nadeem
         <activity
             android:name="com.auth0.android.lock.LockActivity"
@@ -268,7 +272,22 @@
             android:configChanges="orientation"
             android:label="Phone Book"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".FanFollowingActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+
+        <activity
+            android:name=".GroupChatDetailActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
+
+        <activity
+            android:name=".AddMemberActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
 
     </application>
 

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layoutDirection="rtl">
 
     <LinearLayout
         android:id="@+id/llMessage"
@@ -97,4 +98,17 @@
 
         </RelativeLayout>
     </LinearLayout>
+    <TextView
+        android:id="@+id/gpCreatedTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:padding="10dp"
+        android:singleLine="true"
+        android:text=" created a new group"
+        android:layout_centerHorizontal="true"
+        android:textColor="#425661"
+        android:background="#e6ffff"
+        android:visibility="gone"
+        android:textSize="10dp" />
 </RelativeLayout>

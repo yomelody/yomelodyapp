@@ -306,7 +306,8 @@ public class RecentImagesAdapter extends RecyclerView.Adapter<RecentImagesAdapte
                                         message.setFile(chatJson.getString("file_url"));
                                         message.setFileId(chatJson.getString("file_ID"));
                                         message.setIsRead(chatJson.getString("isread"));
-                                        message.setCreatedAt(chatJson.getString("sendat"));
+                                        message.setDateTime(chatJson.getString("dateTime"));
+//                                        message.setCreatedAt(chatJson.getString("sendat"));
                                         message.setRecCount((chatJson.getString("Rec_count")));
                                         if (!chatJson.get("Audioshared").equals(null) && !chatJson.get("Audioshared").equals("")) {
                                             message.setAudioDetails(chatJson.getJSONArray("Audioshared"));

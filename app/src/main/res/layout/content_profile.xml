@@ -210,6 +210,7 @@
                 android:background="#FFFFFF">
 
                 <RelativeLayout
+                    android:id="@+id/fanRl"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_centerHorizontal="true">
@@ -222,7 +223,7 @@
                         android:gravity="center"
                         android:text="Fans : "
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textColor="#495C67" />
+                        android:textColor="#0098fe" />
 
                     <TextView
                         android:id="@+id/tv_fans"
@@ -233,7 +234,7 @@
                         android:gravity="center"
                         android:text=""
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textColor="#495C67" />
+                        android:textColor="#0098fe" />
 
                 </RelativeLayout>
             </RelativeLayout>
@@ -245,6 +246,7 @@
                 android:background="#FFFFFF">
 
                 <RelativeLayout
+                    android:id="@+id/followingRl"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_centerHorizontal="true">
@@ -257,7 +259,7 @@
                         android:gravity="center"
                         android:text="Following : "
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textColor="#495C67" />
+                        android:textColor="#0098fe" />
 
                     <TextView
                         android:id="@+id/tv_following"
@@ -268,7 +270,7 @@
                         android:gravity="center"
                         android:text=""
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textColor="#495C67" />
+                        android:textColor="#0098fe" />
                 </RelativeLayout>
             </RelativeLayout>
         </LinearLayout>

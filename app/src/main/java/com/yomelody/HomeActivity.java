@@ -39,6 +39,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.login.LoginManager;
 import com.yomelody.Services.LogoutService;
+import com.yomelody.utils.AppHelper;
 import com.yomelody.utils.Const;
 import com.yomelody.utils.NotificationUtils;
 import com.squareup.picasso.Picasso;
@@ -427,7 +428,14 @@ public class HomeActivity extends AppCompatActivity {
         if (getIntent().getExtras() != null) {
             for (String key : getIntent().getExtras().keySet()) {
                 Object value = getIntent().getExtras().get(key);
+                AppHelper.sop("getIntent()="+getIntent()+"=getIntent().getExtras()="+getIntent().getExtras());
                 Log.d("HomeActivity: ", "Key: " + key + " Value: " + value);
+
+                /*if (key.equalsIgnoreCase("file_type")){
+                    Intent intent = new Intent(mActivity, StationCommentActivity .class);
+                    intent.putExtra("notification_bundle",getIntent().getExtras());
+                    startActivity(intent);
+                }*/
                 if (key.equalsIgnoreCase("notification_type") &&
                         (value.toString()).equalsIgnoreCase("Activity")){
                     Intent intent = new Intent(getApplicationContext(), StationActivity.class);

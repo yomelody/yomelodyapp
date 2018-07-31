@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.icu.text.SimpleDateFormat;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
@@ -45,7 +46,9 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -483,7 +486,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             holder.tvUserName.setText(melody.getUserName());
             holder.tvMelodyName.setText(melody.getMelodyName());
             holder.tvMelodyLength.setText(melody.getMelodyLength());
-            holder.tvMelodyDate.setText(melody.getMelodyCreated());
+            holder.tvMelodyDate.setText(convertDate(melody.getMelodyCreated()));
             holder.tvPlayCount.setText(String.valueOf(melody.getPlayCount()));
             holder.tvLikeCount.setText(String.valueOf(melody.getLikeCount()));
             holder.tvCommentCount.setText(String.valueOf(melody.getCommentCount()));
@@ -592,7 +595,7 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             holder.ivPause.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    AppHelper.sop("ivPause=call=mediaPlayersAll=size="+mediaPlayersAll.size());
                     try {
                         for (MediaPlayer mediaPlayer : mediaPlayersAll) {
                             try {
@@ -608,6 +611,25 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
                                     ex.printStackTrace();
                                 }
                                 length = mediaPlayersAll.get(0).getCurrentPosition();
+                                isPausePressed = true;
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        if (mediaPlayersAll.size()<=0){
+                            try {
+                                holder.ivPlay.setVisibility(VISIBLE);
+                                holder.ivPause.setVisibility(GONE);
+                                try {
+                                    if (mediaPlayer.isPlaying()) {
+                                        mediaPlayer.stop();
+                                        mediaPlayer.reset();
+                                        mediaPlayer.release();
+                                    }
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+//                                length = mediaPlayersAll.get(0).getCurrentPosition();
                                 isPausePressed = true;
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -651,6 +673,20 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
             ex.printStackTrace();
         }
 
+    }
+
+    private String convertDate(String date) {
+        SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd");
+        SimpleDateFormat serverFormat = new SimpleDateFormat("MM/dd/yy");
+        Date d = null;
+        try {
+            d = format.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        ;
+
+        return serverFormat.format(d);
     }
 
     public MyViewHolder getViewHolder(int position) {
@@ -870,7 +906,52 @@ public class MelodyCardListAdapter extends RecyclerView.Adapter<MelodyCardListAd
 
                     }
                 }
+<<<<<<< HEAD
 
+=======
+                else {
+                    for (int i = 0; i < melodyInstrumentsArrayList.size(); i++) {
+                        try {
+
+                            MediaPlayer mpall = new MediaPlayer();
+                            mpall.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                            mpall.setDataSource(melodyInstrumentsArrayList.get(i).getInstrumentFile());
+
+                            mpall.prepare();
+                            mediaPlayersAll.add(mpall);
+                            Compdurations = mediaPlayersAll.get(i).getDuration();
+                            if (Compdurations > tmpduration) {
+                                tmpduration = Compdurations;
+                                MaxMpSessionID = mediaPlayersAll.get(i).getAudioSessionId();
+                            }
+
+
+                            mpall.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+                                @Override
+                                public boolean onInfo(MediaPlayer mp, int what, int extra) {
+                                    switch (what) {
+                                        case MediaPlayer.MEDIA_INFO_BUFFERING_START:
+                                            //holder.progressDialog.show();
+                                            break;
+                                        case MediaPlayer.MEDIA_INFO_BUFFERING_END:
+                                            //holder.progressDialog.dismiss();
+                                            break;
+                                    }
+                                    return false;
+                                }
+                            });
+                        } catch (Exception ex) {
+                            progressDialog.dismiss();
+                            lastModifiedHoled.itemView.findViewById(R.id.ivPlay).setVisibility(VISIBLE);
+                            lastModifiedHoled.itemView.findViewById(R.id.ivPause).setVisibility(GONE);
+                            ex.printStackTrace();
+
+                        } finally {
+
+                        }
+                    }
+                }
+>>>>>>> Nadeem
 
             } catch (Throwable e) {
                 e.printStackTrace();

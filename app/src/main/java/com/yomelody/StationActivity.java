@@ -51,6 +51,7 @@ import com.android.volley.toolbox.Volley;
 import com.yomelody.Adapters.ActivityCardAdapter;
 import com.yomelody.Fragments.ActivityFragment;
 import com.yomelody.Fragments.AudioFragment;
+import com.yomelody.Fragments.UsersFragment;
 import com.yomelody.Models.RecordingsModel;
 import com.yomelody.Models.RecordingsPool;
 import com.yomelody.Services.LogoutService;
@@ -76,7 +77,7 @@ import static com.yomelody.utils.Const.ServiceType.TOTAL_COUNT;
 
 public class StationActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
-    Button btnActivity, btnAudio, btnCancel;
+    Button btnActivity, btnAudio, btnCancel,btnUser;
     RelativeLayout rlFragmentActivity, rlPartStation, rlSearch;
     public static ImageView ivBackButton, ivHomeButton, discover, message, ivProfile, audio_feed, ivStationSearch,ivStationSearchActivity, ivMelodyStation, ivFilter;
     EditText subEtFilterName, subEtFilterInstruments, subEtFilterBPM;
@@ -125,7 +126,9 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
     int totalCount = 0;
     Activity mActivity;
     public static boolean IsActivity=false;
+    private boolean isUsers=false;
     ActivityFragment actf;
+    UsersFragment usersFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,6 +149,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
         ivFilter = (ImageView) findViewById(R.id.ivFilter);
         btnActivity = (Button) findViewById(R.id.btnActivity);
         btnAudio = (Button) findViewById(R.id.btnAudio);
+        btnUser = (Button) findViewById(R.id.btnUser);
         rlFragmentActivity = (RelativeLayout) findViewById(R.id.rlFragmentActivity);
         rlPartStation = (RelativeLayout) findViewById(R.id.rlPartStation);
         rlSearch = (RelativeLayout) findViewById(R.id.rlSearch);
@@ -185,6 +189,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
 
         if (getIntent()!=null && getIntent().hasExtra("notification_type")){
             btnAudio.setBackgroundColor(Color.parseColor("#E4E4E4"));
+            btnAudio.setBackgroundColor(Color.parseColor("#E4E4E4"));
             btnActivity.setBackgroundColor(Color.parseColor("#FFFFFF"));
             btnActivity.setEnabled(false);
             btnAudio.setEnabled(true);
@@ -198,6 +203,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
             af = new AudioFragment();
             getFragmentManager().beginTransaction().replace(R.id.activity_station, af).commit();
             btnActivity.setBackgroundColor(Color.parseColor("#E4E4E4"));
+            btnUser.setBackgroundColor(Color.parseColor("#E4E4E4"));
             btnAudio.setBackgroundColor(Color.parseColor("#FFFFFF"));
             btnAudio.setEnabled(false);
             btnActivity.setEnabled(true);
@@ -208,10 +214,13 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
             @Override
             public void onClick(View v) {
                 btnActivity.setBackgroundColor(Color.parseColor("#E4E4E4"));
+                btnUser.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnAudio.setBackgroundColor(Color.parseColor("#FFFFFF"));
                 btnAudio.setEnabled(false);
                 btnActivity.setEnabled(true);
+                btnUser.setEnabled(true);
                 IsActivity=false;
+                isUsers=false;
                 ivStationSearchActivity.setVisibility(View.VISIBLE);
 
                 //new FetchActivityDetails().execute(userId);
@@ -229,16 +238,37 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
             public void onClick(View v) {
 
                 btnAudio.setBackgroundColor(Color.parseColor("#E4E4E4"));
+                btnUser.setBackgroundColor(Color.parseColor("#E4E4E4"));
                 btnActivity.setBackgroundColor(Color.parseColor("#FFFFFF"));
                 btnActivity.setEnabled(false);
                 btnAudio.setEnabled(true);
+                btnUser.setEnabled(true);
                 IsActivity=true;
+                isUsers=false;
                 clearSharePrefStation();
                 ivFilter.setVisibility(View.GONE);
                 actf = new ActivityFragment();
                 getFragmentManager().beginTransaction().replace(R.id.activity_station, actf).commit();
 
 
+            }
+        });
+
+        btnUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnAudio.setBackgroundColor(Color.parseColor("#E4E4E4"));
+                btnActivity.setBackgroundColor(Color.parseColor("#E4E4E4"));
+                btnUser.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                btnUser.setEnabled(false);
+                btnActivity.setEnabled(true);
+                btnAudio.setEnabled(true);
+                IsActivity=false;
+                isUsers=true;
+                clearSharePrefStation();
+                ivFilter.setVisibility(View.GONE);
+                usersFragment = new UsersFragment();
+                getFragmentManager().beginTransaction().replace(R.id.activity_station, usersFragment).commit();
             }
         });
 
@@ -290,6 +320,7 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                 editorFilterInstruments.apply();
                 if(IsActivity){
                     btnAudio.setBackgroundColor(Color.parseColor("#E4E4E4"));
+                    btnUser.setBackgroundColor(Color.parseColor("#E4E4E4"));
                     btnActivity.setBackgroundColor(Color.parseColor("#FFFFFF"));
                     //btnActivity.setEnabled(false);
                     //btnAudio.setEnabled(true);
@@ -300,12 +331,31 @@ public class StationActivity extends AppCompatActivity implements SearchView.OnQ
                     search1.setIconified(true);
                     ActivityFragment actf = new ActivityFragment();
                     getFragmentManager().beginTransaction().replace(R.id.activity_station, actf).commit();
-                }else {
+                }
+                else if (isUsers){
+                    btnAudio.setBackgroundColor(Color.parseColor("#E4E4E4"));
+                    btnActivity.setBackgroundColor(Color.parseColor("#E4E4E4"));
+                    btnUser.setBackgroundColor(Color.parseColor("#FFFFFF"));
+//                    btnUser.setEnabled(false);
+//                    btnActivity.setEnabled(true);
+//                    btnAudio.setEnabled(true);
+//                    IsActivity=false;
+//                    isUsers=true;
+                    ivFilter.setVisibility(View.GONE);
+                    search1.setQuery("", false);
+                    search1.clearFocus();
+                    search1.setIconified(true);
+                    usersFragment = new UsersFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.activity_station, usersFragment).commit();
+
+                }
+                else {
                     search1.setQuery("", false);
                     search1.clearFocus();
                     search1.setIconified(true);
                     //IsActivity=false;
                     btnActivity.setBackgroundColor(Color.parseColor("#E4E4E4"));
+                    btnUser.setBackgroundColor(Color.parseColor("#E4E4E4"));
                     btnAudio.setBackgroundColor(Color.parseColor("#FFFFFF"));
                     //btnAudio.setEnabled(false);
                     //btnActivity.setEnabled(true);

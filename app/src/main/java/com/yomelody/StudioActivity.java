@@ -95,6 +95,7 @@ import com.yomelody.Models.MelodyInstruments;
 import com.yomelody.Models.MelodyMixing;
 import com.yomelody.Models.MixingData;
 import com.yomelody.Models.ModelPlayAllMediaPlayer;
+import com.yomelody.Models.RecordingsModel;
 import com.yomelody.Parse.ParseContents;
 import com.yomelody.utils.AppHelper;
 import com.yomelody.utils.Const;
@@ -133,6 +134,9 @@ import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.yomelody.app.Config.PUSH_NOTIFICATION;
 import static com.yomelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.yomelody.utils.Const.ServiceType.AuthenticationKeyValue;
@@ -281,6 +285,7 @@ public class StudioActivity extends AppCompatActivity {
     private short[] mAudioBuffer;
     private RecordingThread mRecordingThread;
 
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -401,12 +406,13 @@ public class StudioActivity extends AppCompatActivity {
                 melodyPackId = intent.getExtras().getString("clickPosition");
                 MelodyCard melodyCard = (MelodyCard) intent.getSerializableExtra("melody_data_MelodyActivity");
                 MelodyInstruments melodyInstruments = null;
-                instrumentList.clear();
+//                AppHelper.sop("melodyCard==="+melodyCard);
                 if (melodyCard!=null){
+                    instrumentList.clear();
                     melodyInstruments = new MelodyInstruments();
                     melodyInstruments.setInstrumentFile(melodyCard.getMelodyURL());
                     melodyInstruments.setInstrumentName(melodyCard.getMelodyName());
-                    melodyInstruments.setInstrumentBpm("120");
+                    melodyInstruments.setInstrumentBpm(melodyCard.getMelodyBpm().replace("BPM : ",""));
                     melodyInstruments.setUserProfilePic(melodyCard.getUserProfilePic());
                     melodyInstruments.setInstrumentCover(melodyCard.getMelodyCover());
                     melodyInstruments.setUserName(melodyCard.getUserName());
@@ -437,7 +443,6 @@ public class StudioActivity extends AppCompatActivity {
         SharedPreferences filterPref = getApplicationContext().getSharedPreferences("clickPositionJoin", MODE_PRIVATE);
         joinRecordingId = filterPref.getString("instrumentsPos", null);
 
-
         if (getIntent()!=null && getIntent().hasExtra("previous_screen")){
             previousScreen = getIntent().getStringExtra("previous_screen");
             AppHelper.sop("StudioActivity=previousScreen="+previousScreen);
@@ -461,14 +466,34 @@ public class StudioActivity extends AppCompatActivity {
                         if (audioJson.has("recordings")){
                             melodyInstruments = new MelodyInstruments();
                             JSONObject recJson=audioJson.getJSONArray("recordings").getJSONObject(0);
+                            if (audioJson.has("instruments")){
+                                JSONArray instArr=audioJson.getJSONArray("instruments");
+                                if(instArr.length()>0){
+                                    melodyInstruments.setInstrumentBpm(instArr.getJSONObject(0).getString("bpm"));
+                                }
+                                else {
+                                    if (audioJson.has("bpm")){
+                                        melodyInstruments.setInstrumentBpm(audioJson.getString("bpm"));
+                                    }
+                                    else {
+                                        melodyInstruments.setInstrumentBpm("120");
+                                    }
+                                }
+                            }
+                            else {
+                                if (audioJson.has("bpm")){
+                                    melodyInstruments.setInstrumentBpm(audioJson.getString("bpm"));
+                                }
+                                else {
+                                    melodyInstruments.setInstrumentBpm("120");
+                                }
+                            }
                             melodyName=audioJson.getString("recording_topic");
                             melodyurl=recJson.getString("recording_url");
                             melodyProfilePic=recJson.getString("profile_url");
                             melodyCoverPic=recJson.getString("coverpic_url");
-
                             melodyInstruments.setInstrumentFile(melodyurl);
                             melodyInstruments.setInstrumentName(melodyName);
-                            melodyInstruments.setInstrumentBpm("120");
                             melodyInstruments.setUserProfilePic(melodyProfilePic);
                             melodyInstruments.setInstrumentCover(melodyCoverPic);
                             melodyInstruments.setUserName("@"+recJson.getString("user_name"));
@@ -509,7 +534,6 @@ public class StudioActivity extends AppCompatActivity {
                     if(audioJson!=null && audioJson.has("instruments")){
                         setAdapter();
                     }
-
 
                     AppHelper.sop("instrumentList=size="+instrumentList.size());
 
@@ -773,6 +797,7 @@ public class StudioActivity extends AppCompatActivity {
             profile_image.setVisibility(View.VISIBLE);
             Picasso.with(StudioActivity.this).load(TwitprofilePic).into(profile_image);
         }
+
 
         SharedPreferences fbPref = this.getSharedPreferences("MyFbPref", MODE_PRIVATE);
         fbName = fbPref.getString("FbName", null);
@@ -1093,32 +1118,37 @@ public class StudioActivity extends AppCompatActivity {
         tvDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+<<<<<<< HEAD
                 if (IsDirect) {
                     if (joinRecordingId == null) {
                         if (userId != null && melodyPackId != null) {
                             if (Integer.parseInt(recordingDuration) > PackDuration && PackDuration != 0) {
                                 Toast.makeText(StudioActivity.this, "Your recording duration should be less then or equal to your subscription pack.", Toast.LENGTH_SHORT).show();
+=======
+>>>>>>> Nadeem
 
-                            } else {
-                                openDialog();
-                                ivRecord.setVisibility(View.VISIBLE);
-                                ivRecord.setEnabled(true);
-                            }
-                        } else if (userId == null) {
+                if (userId == null) {
 
+                    final AlertDialog.Builder alertDialog = new AlertDialog.Builder(StudioActivity.this);
+                    alertDialog.setTitle("Make Public?");
+                    alertDialog.setCancelable(false);
+                    alertDialog.setMessage("As a moderator feel free to make public or private anytime");
+                    alertDialog.setPositiveButton("Sign In", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
                             Intent i = new Intent(getApplicationContext(), SignInActivity.class);
                             i.putExtra("StudioBack", "ReturnStudioScreen");
                             i.putExtra("melodyPackId", melodyPackId);
                             startActivity(i);
-                            Toast.makeText(StudioActivity.this, "SignIn to Save Recording", Toast.LENGTH_SHORT).show();
                         }
-                    } else {
-                        uploadRecordingsMixing();
-                    }
-                } else {
-                    if (Integer.parseInt(recordingDuration) > PackDuration && PackDuration != 0) {
-                        Toast.makeText(StudioActivity.this, "Your recording duration should be less then or equal to your subscription pack.", Toast.LENGTH_SHORT).show();
+                    });
+                    alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    alertDialog.show();
 
+<<<<<<< HEAD
                     } else {
 <<<<<<< HEAD
                         if (instrumentList.size() < LayerCount) {
@@ -1136,17 +1166,62 @@ public class StudioActivity extends AppCompatActivity {
                             if (IsExp == "false") {
                                 if (instrumentList.size() == LayerCount && LayerCount != 0) {
                                     Toast.makeText(StudioActivity.this, "You can add only " + LayerCount + " layers of instruments." + "please subscribed another pack.", Toast.LENGTH_SHORT).show();
+=======
+                }
+                else {
+                    if (IsDirect) {
+                        if (joinRecordingId == null) {
+                            if (userId != null && melodyPackId != null) {
+                                if (Integer.parseInt(recordingDuration)-1 > PackDuration && PackDuration != 0) {
+                                    Toast.makeText(StudioActivity.this, "Your recording duration should be less then or equal to your subscription pack.", Toast.LENGTH_SHORT).show();
+>>>>>>> Nadeem
+
+                                } else {
+                                    openDialog();
+                                    ivRecord.setVisibility(View.VISIBLE);
+                                    ivRecord.setEnabled(true);
+                                }
+                            } /*else if (userId == null) {
+
+                                Intent i = new Intent(getApplicationContext(), SignInActivity.class);
+                                i.putExtra("StudioBack", "ReturnStudioScreen");
+                                i.putExtra("melodyPackId", melodyPackId);
+                                startActivity(i);
+                                Toast.makeText(StudioActivity.this, "SignIn to Save Recording", Toast.LENGTH_SHORT).show();
+                            }*/
+                        } else {
+                            uploadRecordingsMixing();
+                        }
+                    } else {
+                        if (Integer.parseInt(recordingDuration) > PackDuration && PackDuration != 0) {
+                            Toast.makeText(StudioActivity.this, "Your recording duration should be less then or equal to your subscription pack.", Toast.LENGTH_SHORT).show();
+
+                        } else {
+                            if (instrumentList.size() <= LayerCount || LayerCount==0) {
+                                if (joinRecordingId == null) {
+                                    openDialog();
+                                    ivRecord.setVisibility(View.VISIBLE);
+                                    ivRecord.setEnabled(true);
+                                } else {
+                                    uploadRecordingsMixing();
+                                }
+                            } else {
+                                if (IsExp == "false") {
+                                    if (instrumentList.size() > LayerCount && LayerCount != 0) {
+                                        Toast.makeText(StudioActivity.this, "You can add only " + LayerCount + " layers of instruments." + "please subscribed another pack.", Toast.LENGTH_SHORT).show();
+
+                                    }
+
+                                } else {
+                                    Toast.makeText(StudioActivity.this, "Your subscription pack has been expired please subscribed.", Toast.LENGTH_SHORT).show();
 
                                 }
-
-                            } else {
-                                Toast.makeText(StudioActivity.this, "Your subscription pack has been expired please subscribed.", Toast.LENGTH_SHORT).show();
-
                             }
-                        }
 
+                        }
                     }
                 }
+
 
             }
         });
@@ -1325,7 +1400,7 @@ public class StudioActivity extends AppCompatActivity {
                         }
                     });
                     alertDialog.show();
-                } else {
+                } /*else {
                     final AlertDialog.Builder alertDialog = new AlertDialog.Builder(StudioActivity.this);
                     alertDialog.setTitle("Make Public?");
                     alertDialog.setMessage("As a moderator feel free to make public or private anytime");
@@ -1343,7 +1418,7 @@ public class StudioActivity extends AppCompatActivity {
                         }
                     });
                     alertDialog.show();
-                }
+                }*/
             }
         });
 
@@ -1475,7 +1550,6 @@ public class StudioActivity extends AppCompatActivity {
                             if (IsExp == "false") {
                                 if (LayerCount < instrumentList.size() && LayerCount != 0) {
                                     Toast.makeText(StudioActivity.this, "You can add only " + LayerCount + " layers of instruments." + "please subscribed another pack.", Toast.LENGTH_SHORT).show();
-
                                 }
 
                             } else {
@@ -2316,10 +2390,11 @@ public class StudioActivity extends AppCompatActivity {
                             melodyInstruments.setInstrumentFile("Blank");
                             melodyInstruments.setInstrumentLength(MelodyResponseDetails.getString("duration"));
                             melodyInstruments.setUserProfilePic(recPic);
-                            melodyInstruments.setInstrumentCover(BASE_URL + MelodyResponseDetails.getString("coverpic"));
+                            melodyInstruments.setInstrumentCover(BASE_URL + MelodyResponseDetails.getString("original_cover"));
                             melodyInstruments.setInstrumentCreated(MelodyResponseDetails.getString("add_date"));
                             melodyInstruments.setUserName("@" + CommonUserName);
                             melodyInstruments.setInstrumentFile(melodyurl);
+                            melodyInstruments.setMelodyPacksId(Integer.parseInt(MelodyResponseDetails.getString("id")));
                             instrumentList.add(melodyInstruments);
                             adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
                             recyclerViewInstruments.setAdapter(adapter);
@@ -2343,10 +2418,11 @@ public class StudioActivity extends AppCompatActivity {
                             melodyInstruments.setInstrumentFile("Blank");
                             melodyInstruments.setInstrumentLength(MelodyResponseDetails.getString("duration"));
                             melodyInstruments.setUserProfilePic(recPic);
-                            melodyInstruments.setInstrumentCover(BASE_URL + MelodyResponseDetails.getString("coverpic"));
+                            melodyInstruments.setInstrumentCover(BASE_URL + MelodyResponseDetails.getString("original_cover"));
                             melodyInstruments.setInstrumentCreated(MelodyResponseDetails.getString("add_date"));
                             melodyInstruments.setUserName("@" + CommonUserName);
                             melodyInstruments.setInstrumentFile(melodyurl);
+                            melodyInstruments.setMelodyPacksId(Integer.parseInt(MelodyResponseDetails.getString("id")));
                             instrumentList.add(melodyInstruments);
                             adapter = new InstrumentListAdapter(instrumentList, getApplicationContext());
                             recyclerViewInstruments.setAdapter(adapter);
@@ -2412,7 +2488,8 @@ public class StudioActivity extends AppCompatActivity {
                         AppHelper.sop("fbSwitch=" + socialStatusPref.getBoolean(Const.FB_STATUS, false) +
                                 "=twitterSwitch=" + socialStatusPref.getBoolean(Const.TWITTER_STATUS, false) +
                                 "=googleSwitch=" + socialStatusPref.getBoolean(Const.GOOGLE_STATUS, false)+
-                                "=previousScreen="+previousScreen);
+                                "=previousScreen="+previousScreen+
+                                "=Join_case="+(getIntent().hasExtra("Join_case")));
 
                         if (socialStatusPref.getBoolean(Const.FB_STATUS, false)) {
                             FbShare();
@@ -2422,7 +2499,13 @@ public class StudioActivity extends AppCompatActivity {
                             TweetShare();
                         }else if (previousScreen.equalsIgnoreCase("ChatActivity")
                                 ||previousScreen.equalsIgnoreCase("JoinActivity")){
-                            finish();
+                            if (previousScreen.equalsIgnoreCase("ChatActivity")
+                                    && getIntent()!=null && !(getIntent().hasExtra("Join_case"))){
+                                openDialogRec();
+                            }
+                            else {
+                                finish();
+                            }
                         }else if (!value1.equalsIgnoreCase("Melody")){
                             if (switchFlagTemp.equalsIgnoreCase("1")){
                                 Intent intent = new Intent(mActivity, StationActivity.class);
@@ -2518,7 +2601,21 @@ public class StudioActivity extends AppCompatActivity {
                 params.put(Mixpublic_flag, switchFlag);
                 params.put(MixrecordWith, IsMicConnected);
                 params.put(Mixgenere, selectedGenre);
-                params.put(Mixbpms, "128");
+                try {
+                    if (instrumentList.size()>0){
+                        int bpmSum = 0;
+                        int bpmMean = 0;
+                        for (int i=0;i<instrumentList.size();i++){
+                            bpmSum = bpmSum+Integer.parseInt(instrumentList.get(i).getInstrumentBpm().replace("BPM: ",""));
+                        }
+                        bpmMean = bpmSum/instrumentList.size();
+                        params.put(Mixbpms, bpmMean+"");
+                    }else {
+                        params.put(Mixbpms, "120");
+                    }
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                }
                 params.put(Mixdurations, recordingDuration);
                 params.put(MixCommand, "SaveRecord");
                 if (joinRecordingId != null) {
@@ -2593,6 +2690,60 @@ public class StudioActivity extends AppCompatActivity {
         requestQueue.add(multipartRequest);
     }
 
+    private void openDialogRec(){
+        try {
+            if (!userId.equals("") && userId != null) {
+
+                final AlertDialog.Builder alertDialog = new AlertDialog.Builder(mActivity);
+                alertDialog.setTitle(mActivity.getString(R.string.share_with_YoMelody));
+//                        alertDialog.setMessage("Choose yes to share in chat.");
+                alertDialog.setCancelable(false);
+                alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        SharedPreferences.Editor editor = getSharedPreferences("audioShareData", MODE_PRIVATE).edit();
+                        MelodyInstruments melodyInstruments = instrumentList.get(instrumentList.size()-1);
+                        if (value1.equalsIgnoreCase("Melody")){
+                            editor.putString("melodyID", melodyInstruments.getMelodyPacksId()+"");
+                            editor.putString("fileType", "user_melody");
+                        }
+                        else {
+                            editor.putString("recID", melodyInstruments.getMelodyPacksId()+"");
+                            editor.putString("file_type", "user_recording");
+                        }
+                        editor.apply();
+                        Intent intent = new Intent();
+                        intent.putExtra("share", melodyInstruments);
+                        if (value1.equalsIgnoreCase("Melody")){
+                            intent.putExtra("fileType", "user_melody");
+                        }
+                        else {
+                            intent.putExtra("file_type", "user_recording");
+                        }
+
+                        mActivity.setResult(RESULT_OK, intent);
+                        finish();
+
+                    }
+                });
+                alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        finish();
+                    }
+                });
+                alertDialog.show();
+
+
+            } else {
+                Toast.makeText(mActivity, "Log in to Share this melody pack", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(mActivity, SignInActivity.class);
+                startActivity(intent);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
     public void fetchGenreNames() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, GENERE,
@@ -2678,7 +2829,13 @@ public class StudioActivity extends AppCompatActivity {
             }
             else if (previousScreen.equalsIgnoreCase("ChatActivity")
                     ||previousScreen.equalsIgnoreCase("JoinActivity")){
-                finish();
+                if (previousScreen.equalsIgnoreCase("ChatActivity")
+                        && getIntent()!=null && !(getIntent().hasExtra("Join_case"))){
+                    openDialogRec();
+                }
+                else {
+                    finish();
+                }
             }
             else if (!value1.equalsIgnoreCase("Melody")){
                 if (switchFlagTemp.equalsIgnoreCase("1")){
@@ -2698,7 +2855,13 @@ public class StudioActivity extends AppCompatActivity {
         else if (requestCode==TWEET_COMPOSER_REQUEST_CODE){
             if (previousScreen.equalsIgnoreCase("ChatActivity")
                     ||previousScreen.equalsIgnoreCase("JoinActivity")){
-                finish();
+                if (previousScreen.equalsIgnoreCase("ChatActivity")
+                        && getIntent()!=null && !(getIntent().hasExtra("Join_case"))){
+                    openDialogRec();
+                }
+                else {
+                    finish();
+                }
             }
             else if (!value1.equalsIgnoreCase("Melody")){
                 if (switchFlagTemp.equalsIgnoreCase("1")){
@@ -2932,7 +3095,13 @@ public class StudioActivity extends AppCompatActivity {
                 }
                 else if (previousScreen.equalsIgnoreCase("ChatActivity")
                         ||previousScreen.equalsIgnoreCase("JoinActivity")){
-                    finish();
+                    if (previousScreen.equalsIgnoreCase("ChatActivity")
+                            && getIntent()!=null && !(getIntent().hasExtra("Join_case"))){
+                        openDialogRec();
+                    }
+                    else {
+                        finish();
+                    }
                 }
                 else if (!value1.equalsIgnoreCase("Melody")){
                     if (switchFlagTemp.equalsIgnoreCase("1")){
@@ -2960,7 +3129,13 @@ public class StudioActivity extends AppCompatActivity {
                 }
                 else if (previousScreen.equalsIgnoreCase("ChatActivity")
                         ||previousScreen.equalsIgnoreCase("JoinActivity")){
-                    finish();
+                    if (previousScreen.equalsIgnoreCase("ChatActivity")
+                            && getIntent()!=null && !(getIntent().hasExtra("Join_case"))){
+                        openDialogRec();
+                    }
+                    else {
+                        finish();
+                    }
                 }
                 else if (!value1.equalsIgnoreCase("Melody")){
                     if (switchFlagTemp.equalsIgnoreCase("1")){
@@ -2987,7 +3162,13 @@ public class StudioActivity extends AppCompatActivity {
                 }
                 else if (previousScreen.equalsIgnoreCase("ChatActivity")
                         ||previousScreen.equalsIgnoreCase("JoinActivity")){
-                    finish();
+                    if (previousScreen.equalsIgnoreCase("ChatActivity")
+                            && getIntent()!=null && !(getIntent().hasExtra("Join_case"))){
+                        openDialogRec();
+                    }
+                    else {
+                        finish();
+                    }
                 }
                 else if (!value1.equalsIgnoreCase("Melody")){
                     if (switchFlagTemp.equalsIgnoreCase("1")){

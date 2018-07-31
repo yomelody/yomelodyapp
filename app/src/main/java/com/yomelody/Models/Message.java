@@ -4,6 +4,8 @@ package com.yomelody.Models;
  * Created by Shubhansh Jaiswal on 17/01/17.
  */
 
+import com.yomelody.utils.AppHelper;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -12,6 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 public class Message implements Serializable {
@@ -19,6 +22,24 @@ public class Message implements Serializable {
     String id, message, createdAt, senderId, file, fileId, fileType, profilePic, isRead, recCount,MsgTime;
     JSONArray audioDetails;
     JSONObject msgJson;
+    private String dateTime;
+    private String senderName;
+
+    public String getSenderName() {
+        return senderName;
+    }
+
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
+    }
+
+    public String getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(String dateTime) {
+        this.dateTime = getDate(dateTime);
+    }
 
     public JSONObject getMsgJson() {
         return msgJson;
@@ -107,6 +128,24 @@ public class Message implements Serializable {
 
     public String getCreatedAt() {
         return createdAt;
+    }
+
+    private String getDate(String ourDate) {
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, KK:mm a");
+            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date value = formatter.parse(ourDate);
+
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM dd, KK:mm a"); //this format changeable
+            dateFormatter.setTimeZone(TimeZone.getDefault());
+            ourDate = dateFormatter.format(value);
+//            AppHelper.sop("Date value=="+value+"=ourDate="+ourDate);
+        }
+        catch (Exception e) {
+            ourDate = "00-00-0000 00:00";
+            e.printStackTrace();
+        }
+        return ourDate;
     }
 
     public String DateTime(String created_At) {
