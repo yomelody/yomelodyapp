@@ -1,6 +1,7 @@
 package com.yomelody.Adapters;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,6 +11,7 @@ import android.icu.text.SimpleDateFormat;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -17,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Chronometer;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -31,6 +34,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.yomelody.Fragments.AudioFragment;
 import com.yomelody.JoinActivity;
 import com.yomelody.MelodyActivity;
 import com.yomelody.MessengerActivity;
@@ -40,6 +44,7 @@ import com.yomelody.Models.RecordingsPool;
 import com.yomelody.ProfileActivity;
 import com.yomelody.R;
 import com.yomelody.SignInActivity;
+import com.yomelody.StationActivity;
 import com.yomelody.StationCommentActivity;
 import com.yomelody.utils.AppHelper;
 import com.yomelody.utils.UtilsRecording;
@@ -127,6 +132,11 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
     private Activity mActivity;
     Handler mHandler1;
     boolean IsLiked = false;
+    boolean isLastInstrument = false;
+    private Fragment mFragment;
+    private Long chronoLen;
+    private long mStartTime = 0;
+    private long time;
 
     public RecordingsCardAdapter(Context context, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools) {
         this.recordingList = recordingList;
@@ -134,6 +144,16 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         this.lazycount = recordingList.size();
         this.context = context;
         mActivity = (Activity) context;
+
+    }
+
+    public RecordingsCardAdapter(Context context, ArrayList<RecordingsModel> recordingList, ArrayList<RecordingsPool> recordingsPools, Fragment frag) {
+        this.recordingList = recordingList;
+        this.recordingsPools = recordingsPools;
+        this.lazycount = recordingList.size();
+        this.context = context;
+        mActivity = (Activity) context;
+        mFragment = frag;
     }
 
 
@@ -149,7 +169,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         SeekBar seekBarRecordings;
         RelativeLayout rlProfilePic, rlLike;
         Switch publicPrivSwitch;
-
+//        Chronometer chrono;
         MediaPlayer mediaPlayerJoin;
 
         public MyViewHolder(View itemView) {
@@ -182,6 +202,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             txtJoinCount = (TextView) itemView.findViewById(R.id.txtJoinCount);
             TemptxtJoinCount = (TextView) itemView.findViewById(R.id.TemptxtJoinCount);
             publicPrivSwitch = (Switch) itemView.findViewById(R.id.publicPrivSwitch);
+//            chrono = (Chronometer) itemView.findViewById(R.id.chrono);
             SharedPreferences editorGenre = getApplicationContext().getSharedPreferences("prefGenreName", MODE_PRIVATE);
             genreName = editorGenre.getString("GenreName", null);
 
@@ -256,6 +277,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 record.commit();
                                 Intent intent = new Intent(context, JoinActivity.class);
                                 mActivity.startActivityForResult(intent, REQUEST_JOIN_COMMENT);
+                                ivStationPlay.setVisibility(VISIBLE);
+                                ivStationPause.setVisibility(GONE);
+                                seekBarRecordings.setProgress(0);
                             } catch (Throwable e) {
                                 e.printStackTrace();
                             }
@@ -342,6 +366,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                     ivStationPlay.setVisibility(VISIBLE);
                                     ivStationPause.setVisibility(GONE);
                                     seekBarRecordings.setProgress(0);
+
                                 }
                             });
                             alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -475,6 +500,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             intent.putExtra("showProfileUserId", showProfileUserId);
                             //view.getContext().startActivity(intent);
                             mActivity.startActivityForResult(intent, REQUEST_RECORDING_COMMENT);
+                            ivStationPlay.setVisibility(VISIBLE);
+                            ivStationPause.setVisibility(GONE);
+                            seekBarRecordings.setProgress(0);
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -555,7 +583,9 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             } else {
                 holder.TemptxtJoinCount.setText("0");
             }
-            if ((context instanceof MelodyActivity)) {
+            if (userId.equalsIgnoreCase(recordingList.get(listPosition).getAddedBy()) &&
+                    ((context instanceof MelodyActivity) || (context instanceof StationActivity)
+                            || (context instanceof ProfileActivity))) {
                 holder.publicPrivSwitch.setVisibility(VISIBLE);
                 holder.publicPrivSwitch.setOnCheckedChangeListener(null);
                 if (recordingList.get(listPosition).getIsPublic().equalsIgnoreCase("1")){
@@ -602,6 +632,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             try {
                 holder.tvContributeDate.setText(convertDate(recordingList.get(listPosition).getRecordingCreated()));
                 holder.tvContributeLength.setText("00:" + DateUtils.formatElapsedTime(Long.parseLong(recordingsPools.get(listPosition).getDuration())));
+//                holder.chrono.setText("00:" + DateUtils.formatElapsedTime(Long.parseLong(recordingsPools.get(listPosition).getDuration())));
             } catch (Throwable e) {
                 e.printStackTrace();
             }
@@ -633,6 +664,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         int playValue = Integer.parseInt(play) + 1;
                         play = String.valueOf(playValue);
                         holder.tvViewCount.setText(play);
+
                         position = recordingList.get(listPosition).getRecordingId();
                         CurrentAdapterIndex = holder.getAdapterPosition();
                         if (FirstIndex == 0) {
@@ -644,6 +676,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         if (PreviousAdapterIndex != CurrentAdapterIndex) {
                             PlayCounter = 0;
                             MinJoinCount = 1;
+                            AppHelper.sop("Previous=current");
                             if (lastModifiedHoled != null) {
                                 try {
                                     if (mHandler1 != null) {
@@ -656,6 +689,12 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
                                 SeekBar seekBar = lastModifiedHoled.itemView.findViewById(R.id.seekBarRecordings);
                                 seekBar.setProgress(0);
+                                /*Chronometer chronometer=lastModifiedHoled.itemView.findViewById(R.id.chrono);
+                                chronometer.setBase(SystemClock.elapsedRealtime());
+                                chronometer.stop();
+                                chronometer.setText("00:" + DateUtils.formatElapsedTime(Long.
+                                        parseLong(recordingsPools.get(lastModifiedHoled.
+                                                getAdapterPosition()).getDuration())));*/
                             }
                             lastModifiedHoled = holder;
                             PreviousAdapterIndex = CurrentAdapterIndex;
@@ -664,14 +703,16 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                         try {
                             if (PlayCounter >= 0) {
-                                progressDialog = new ProgressDialog(v.getContext());
-                                progressDialog.setMessage("Loading...");
-                                progressDialog.show();
                                 //lastModifiedHoled = holder;
-
+                                if (isLastInstrument){
+                                    PlayCounter = 0;
+                                    MinJoinCount = 1;
+                                    isLastInstrument=false;
+                                }
+                                TextView tvIncludedCount = lastModifiedHoled.itemView.findViewById(R.id.txtJoinCount);
+                                tvIncludedCount.setText(UpdateCalJoinCount(TempJoinCount));
                                 PlayAudio(holder.getAdapterPosition(), "main");
                                 //lastModifiedHoled = holder;
-
                             }
                         } catch (Exception ex) {
                             ex.printStackTrace();
@@ -690,6 +731,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     holder.ivStationPause.setVisibility(v.GONE);
 
                     try {
+                        length = mp.getCurrentPosition();
                         mp.stop();
                         mp.reset();
                         mp.release();
@@ -697,7 +739,10 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                         if (mHandler1 != null) {
                             mHandler1.removeCallbacksAndMessages(null);
                         }
-                        length = mp.getCurrentPosition();
+                        /*chronoLen=SystemClock.elapsedRealtime() - holder.chrono.getBase();
+                        holder.chrono.stop();*/
+                        pauseTime();
+
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
@@ -714,12 +759,11 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 public void onClick(View v) {
                     try {
                         if (CurrentAdapterIndex == holder.getAdapterPosition()) {
-                            if (PlayCounter <= TempJoinCount - 1 && PlayCounter != 0) {
-                                progressDialog = new ProgressDialog(v.getContext());
-                                progressDialog.setMessage("Loading...");
-                                progressDialog.show();
+                            if (PlayCounter <= TempJoinCount - 1 && PlayCounter !=0) {
                                 //lastModifiedHoled = holder;
                                 PlayCounter = PlayCounter - 1;
+                                length=0;
+                                stopTime();
                                 PlayAudio(holder.getAdapterPosition(), "pre");
                                 //lastModifiedHoled = holder;
                             }
@@ -735,11 +779,10 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                     try {
                         if (CurrentAdapterIndex == holder.getAdapterPosition()) {
                             if (PlayCounter < TempJoinCount - 1) {
-                                progressDialog = new ProgressDialog(v.getContext());
-                                progressDialog.setMessage("Loading...");
-                                progressDialog.show();
                                 //lastModifiedHoled = holder;
                                 PlayCounter = PlayCounter + 1;
+                                length=0;
+                                stopTime();
                                 PlayAudio(holder.getAdapterPosition(), "next");
                                 //lastModifiedHoled = holder;
                             }
@@ -946,6 +989,13 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             String flag = jsoneobj.getString("flag");
                             if (flag.equalsIgnoreCase("Success")) {
                                 Toast.makeText(context, jsoneobj.getString("msg"), Toast.LENGTH_LONG).show();
+                                if (context instanceof StationActivity){
+                                    ((AudioFragment)mFragment).clearArrayList();
+                                    ((AudioFragment)mFragment).callApi();
+                                } else if (context instanceof ProfileActivity) {
+                                    ((ProfileActivity)mActivity).clearArrayList();
+                                    ((ProfileActivity)mActivity).callApi();
+                                }
                             }
                             else {
                                 Toast.makeText(context, "Something is wrong.", Toast.LENGTH_LONG).show();
@@ -988,9 +1038,20 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 if (mHandler1 != null) {
                     mHandler1.removeCallbacksAndMessages(null);
                 }
+                stopTime();
+                resetViews();
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void resetViews(){
+        if (lastModifiedHoled!=null){
+            lastModifiedHoled.itemView.findViewById(R.id.ivStationPlay).setVisibility(VISIBLE);
+            lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
+            SeekBar seekBar=lastModifiedHoled.itemView.findViewById(R.id.seekBarRecordings);
+            seekBar.setProgress(0);
         }
     }
 
@@ -1008,9 +1069,21 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
         return serverFormat.format(d);
     }
 
-    private void PlayAudio(int pisition, final String Type) {
+    private void PlayAudio(final int pisition, final String Type) {
         try {
+            progressDialog = new ProgressDialog(mActivity);
+            progressDialog.setMessage("Loading...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
 
+            /*if (isLastInstrument && !(Type.equalsIgnoreCase("pre"))){
+                isLastInstrument=false;
+                PlayCounter = 0;
+                MinJoinCount = 1;
+                TextView tvIncludedCount = lastModifiedHoled.itemView.findViewById(R.id.txtJoinCount);
+                tvIncludedCount.setText(UpdateCalJoinCount(TempJoinCount));
+            }*/
+            AppHelper.sop("PlayCounter="+PlayCounter+"=MinJoinCount="+MinJoinCount);
             instrumentFile = recordingList.get(pisition).getJoinUrl().get(PlayCounter).toString();
 
             if (instrumentFile != "") {
@@ -1024,6 +1097,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                                 mp = null;
                                 duration1 = 0;
                                 length = 0;
+//                                chronoLen=SystemClock.elapsedRealtime();
 
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -1056,6 +1130,7 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+//                final Chronometer chrono=lastModifiedHoled.itemView.findViewById(R.id.chrono);
                 mp.prepareAsync();
                 mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
@@ -1072,18 +1147,21 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
 
                             if (Type == "main") {
 
-                                //MinJoinCount = MinJoinCount + 1;
                             } else if (Type == "next") {
-
+//                                PlayCounter = PlayCounter + 1;
                                 MinJoinCount = MinJoinCount + 1;
                                 TextView tvIncludedCount = lastModifiedHoled.itemView.findViewById(R.id.txtJoinCount);
                                 tvIncludedCount.setText(UpdateCalJoinCount(TempJoinCount));
                             } else if (Type == "pre") {
-
+//                                PlayCounter = PlayCounter - 1;
                                 MinJoinCount = MinJoinCount - 1;
                                 TextView tvIncludedCount = lastModifiedHoled.itemView.findViewById(R.id.txtJoinCount);
                                 tvIncludedCount.setText(UpdateCalJoinCount(TempJoinCount));
                             }
+                            /*chrono.setFormat("00:"+"%s");
+                            chrono.setBase(SystemClock.elapsedRealtime());
+                            chrono.start();*/
+                            startTime();
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -1102,6 +1180,10 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             lastModifiedHoled.itemView.findViewById(R.id.ivStationPause).setVisibility(GONE);
                             SeekBar seekBar = lastModifiedHoled.itemView.findViewById(R.id.seekBarRecordings);
                             seekBar.setProgress(0);
+                            /*chrono.setBase(SystemClock.elapsedRealtime());
+                            chrono.stop();
+                            chrono.setText("00:" + DateUtils.formatElapsedTime(Long.parseLong(recordingsPools.get(pisition).getDuration())));*/
+                            stopTime();
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -1121,6 +1203,23 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
                             seekBar.setProgress(0);
                             length = 0;
                             duration1 = 0;
+                            TextView tvContributeLength=lastModifiedHoled.itemView.findViewById(R.id.tvContributeLength);
+
+                            /*chrono.setBase(SystemClock.elapsedRealtime());
+                            chrono.stop();
+                            chrono.setText("00:" + DateUtils.formatElapsedTime(Long.parseLong(recordingsPools.get(pisition).getDuration())));*/
+
+                            if (PlayCounter < recordingList.get(pisition).getJoinUrl().size()-1){
+                                PlayCounter = PlayCounter + 1;
+                                MinJoinCount = MinJoinCount + 1;
+                                TextView tvIncludedCount = lastModifiedHoled.itemView.findViewById(R.id.txtJoinCount);
+                                tvIncludedCount.setText(UpdateCalJoinCount(TempJoinCount));
+                                PlayAudio(pisition,"main");
+                            }else {
+                                isLastInstrument=true;
+                            }
+                            stopTime();
+                            tvContributeLength.setText("00:" + DateUtils.formatElapsedTime(Long.parseLong(recordingsPools.get(pisition).getDuration())));
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -1137,7 +1236,54 @@ public class RecordingsCardAdapter extends RecyclerView.Adapter<RecordingsCardAd
             ex.printStackTrace();
         }
     }
+    private Handler mHandler = new Handler();
+    private Runnable mTickExecutor = new Runnable() {
+        @Override
+        public void run() {
+            tick();
+            mHandler.postDelayed(mTickExecutor,100);
+        }
+    };
 
+    private void startTime(){
+        mStartTime = SystemClock.elapsedRealtime()-time;
+        mHandler.postDelayed(mTickExecutor, 00);
+    }
+
+    private void stopTime(){
+        mStartTime = 0;
+        time=0;
+        mHandler.removeCallbacks(mTickExecutor);
+        if (lastModifiedHoled!=null){
+            TextView tvContributeLength=lastModifiedHoled.itemView.findViewById(R.id.tvContributeLength);
+            tvContributeLength.setText("00:" + DateUtils.formatElapsedTime(Long.parseLong(
+                    recordingsPools.get(lastModifiedHoled.getAdapterPosition()).getDuration())));
+        }
+    }
+
+    private void pauseTime(){
+        mStartTime = time;
+        mHandler.removeCallbacks(mTickExecutor);
+    }
+
+    private void tick() {
+        time = (mStartTime < 0) ? 0 : (SystemClock.elapsedRealtime() - mStartTime);
+        int minutes = (int) (time / 60000);
+        int seconds = (int) (time / 1000) % 60;
+        int milliseconds = (int) (time / 100) % 10;
+        TextView tvContributeLength = lastModifiedHoled.itemView.findViewById(R.id.tvContributeLength);
+        tvContributeLength.setText("00:"+(minutes < 10 ? "0"+minutes : minutes)+":"+
+                (seconds < 10 ? "0"+seconds : seconds));
+        /*if (mRecorder != null) {
+            amplitudes[i] = mRecorder.getMaxAmplitude();
+            //Log.d("Voice Recorder","amplitude: "+(amplitudes[i] * 100 / 32767));
+            if (i >= amplitudes.length -1) {
+                i = 0;
+            } else {
+                ++i;
+            }
+        }*/
+    }
 
     private void primarySeekBarProgressUpdater() {
         mHandler1 = new Handler();

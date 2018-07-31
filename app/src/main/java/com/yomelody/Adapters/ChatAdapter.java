@@ -8,11 +8,13 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -103,6 +105,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     private int PreviousAdapterIndex = 0, CurrentAdapterIndex = 0, FirstIndex = 0;
     private MyViewHolder myViewHolder;
     private Activity mActivity;
+    private boolean isLastInstrument=false;
 
     public ChatAdapter(Context context, ArrayList<Message> chatList) {
         this.chatList = chatList;
@@ -113,10 +116,12 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView chatMessage, chatImageName, timeStamp, tvUserName, tvMelodyName, tvNum, TemptvMelodyName;
-        ImageView userProfileImage, chatImage, ivPlay, ivSettings, ivTick, ivDoubleTick;
+        ImageView userProfileImage, chatImage, ivPlay, ivPause, ivSettings, ivTick, ivDoubleTick;
         RelativeLayout rlChatImage, rlBelowImage, rlChatRecTop;
         SeekBar seekBarChat;
         ImageView plusIv;
+        TextView gpCreatedTv;
+        LinearLayout llMessage;
         //  ProgressDialog progressDialog;
 
 
@@ -132,6 +137,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             tvMelodyName = (TextView) itemView.findViewById(R.id.tvMelodyName);
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
             ivPlay = (ImageView) itemView.findViewById(R.id.ivPlay);
+            ivPause = (ImageView) itemView.findViewById(R.id.ivPause);
             ivSettings = (ImageView) itemView.findViewById(R.id.ivSettings);
             seekBarChat = (SeekBar) itemView.findViewById(R.id.seekBarChat);
             ivTick = (ImageView) itemView.findViewById(R.id.tick);
@@ -140,6 +146,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             TemptvMelodyName = (TextView) itemView.findViewById(R.id.TemptvMelodyName);
             rlChatRecTop = (RelativeLayout) itemView.findViewById(R.id.rlChatRecTop);
             plusIv = (ImageView) itemView.findViewById(R.id.plusIv);
+            gpCreatedTv = (TextView) itemView.findViewById(R.id.gpCreatedTv);
+            llMessage = (LinearLayout) itemView.findViewById(R.id.llMessage);
         }
 
 
@@ -202,7 +210,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                     return SELF;
                 }
             } else {
-                if (message.getFileType().equals("station") || message.getFileType().equals("admin_melody")) {
+                if (message.getFileType().equals("station") ||
+                        message.getFileType().equals("admin_melody") ||
+                        message.getFileType().equals("user_melody")) {
                     return OTHER_AUDIO;
                 } else if (message.getFileType().equals("image")) {
                     return OTHER_IMAGE;
@@ -235,7 +245,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                 if (!message.getProfilePic().equals("")) {
                     Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
                 }
-                holder.timeStamp.setText(message.getCreatedAt());
+                holder.timeStamp.setText(message.getDateTime());
                 String stroke = "(1" + " of " + message.getRecCount() + ")";
                 holder.tvNum.setText(stroke);
                 if (message.getIsRead().equals("1")) {
@@ -334,14 +344,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                     @Override
                     public void onClick(View view) {
 
-
                         mMessage = chatList.get(position);
                         if (ParseContents.sharedAudioList.size() > 0) {
                             ParseContents.sharedAudioList.clear();
                         }
-
-                        myViewHolder=holder;
-
                         try {
                             new ParseContents(getApplicationContext()).parseSharedJoin(position, chatList);
                             if (ParseContents.sharedAudioList.get(count).getRecordingUrl() != null) {
@@ -350,6 +356,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                 flSeekbar.setVisibility(VISIBLE);
                                 ivPlayPlayer.setVisibility(View.GONE);
                                 ivPausePlayer.setVisibility(VISIBLE);
+                                holder.ivPlay.setVisibility(view.GONE);
+                                holder.ivPause.setVisibility(view.VISIBLE);
 
                                 if (message != null && message.getAudioDetails() != null && message.getAudioDetails().length() > 0) {
                                     try {
@@ -379,7 +387,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                 holder.tvNum.setText(str);
                                 if (FirstIndex == 0) {
                                     FirstIndex = 1;
-
+                                    myViewHolder=holder;
                                     TempJoinCount = ParseContents.sharedAudioList.size();
                                 }
 
@@ -389,29 +397,34 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                     PlayCounter = 0;
                                     MinJoinCount = 1;
 
-                                    try {
-                                        if (mHandler1 != null) {
-                                            mHandler1.removeCallbacksAndMessages(null);
+                                    if (myViewHolder != null){
+                                        try {
+                                            if (mHandler1 != null) {
+                                                mHandler1.removeCallbacksAndMessages(null);
+                                            }
+                                            seekBarChata.setProgress(0);
+                                        } catch (Exception ex) {
+                                            ex.printStackTrace();
                                         }
-                                        seekBarChata.setProgress(0);
-                                    } catch (Exception ex) {
-                                        ex.printStackTrace();
+                                        myViewHolder.itemView.findViewById(R.id.ivPlay).setVisibility(VISIBLE);
+                                        myViewHolder.itemView.findViewById(R.id.ivPause).setVisibility(GONE);
                                     }
-
+                                    myViewHolder=holder;
                                     PreviousAdapterIndex = CurrentAdapterIndex;
                                     TempJoinCount = ParseContents.sharedAudioList.size();
                                     str = "("+MinJoinCount + " of " + ParseContents.sharedAudioList.size() + ")";
                                     holder.tvNum.setText(str);
+
                                 }
                                 CurrentAdapterIndex = holder.getAdapterPosition();
                                 try {
                                     if (PlayCounter >= 0) {
+                                        PlayCounter = 0;
+                                        MinJoinCount = 1;
+                                        ChatActivity.tvNumPlayer.setText(UpdateCalJoinCount(TempJoinCount));
+                                        myViewHolder.tvNum.setText(UpdateCalJoinCount(TempJoinCount));
 
-                                        progressDialog.setMessage("Loading...");
-                                        progressDialog.setCancelable(false);
-                                        progressDialog.show();
                                         PlayAudio(holder.getAdapterPosition(), "main");
-
                                     }
                                 } catch (Exception ex) {
                                     progressDialog.dismiss();
@@ -430,9 +443,16 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                         try {
                             ivPausePlayer.setVisibility(View.VISIBLE);
                             ivPlayPlayer.setVisibility(GONE);
-                            progressDialog.setMessage("Loading...");
-                            progressDialog.setCancelable(false);
-                            progressDialog.show();
+                            myViewHolder.ivPlay.setVisibility(GONE);
+                            myViewHolder.ivPause.setVisibility(VISIBLE);
+                            if (isLastInstrument){
+                                PlayCounter = 0;
+                                MinJoinCount = 1;
+                                isLastInstrument=false;
+                            }
+                            ChatActivity.tvNumPlayer.setText(UpdateCalJoinCount(TempJoinCount));
+                            myViewHolder.tvNum.setText(UpdateCalJoinCount(TempJoinCount));
+
                             PlayAudio(holder.getAdapterPosition(), "main");
                         } catch (Exception ex) {
                             progressDialog.dismiss();
@@ -446,9 +466,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                         try {
                             //if (CurrentAdapterIndex == holder.getAdapterPosition()) {
                             if (PlayCounter < TempJoinCount - 1) {
-                                progressDialog.setMessage("Loading...");
-                                progressDialog.setCancelable(false);
-                                progressDialog.show();
+
                                 //lastModifiedHoled = holder;
                                 PlayCounter = PlayCounter + 1;
                                 ivPausePlayer.setVisibility(View.VISIBLE);
@@ -477,9 +495,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                         try {
                             //if (CurrentAdapterIndex == holder.getAdapterPosition()) {
                             if (PlayCounter <= TempJoinCount - 1 && PlayCounter != 0) {
-                                progressDialog.setMessage("Loading...");
-                                progressDialog.setCancelable(false);
-                                progressDialog.show();
+
                                 //lastModifiedHoled = holder;
                                 PlayCounter = PlayCounter - 1;
                                 ivPausePlayer.setVisibility(View.VISIBLE);
@@ -523,9 +539,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                             else {
                                 if (PlayCounter < TempJoinCount - 1) {
 
-                                    progressDialog.setMessage("Loading...");
-                                    progressDialog.setCancelable(false);
-                                    progressDialog.show();
                                     //lastModifiedHoled = holder;
                                     PlayCounter = PlayCounter + 1;
                                     ivPausePlayer.setVisibility(View.VISIBLE);
@@ -570,9 +583,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                             }
                             else {
                                 if (PlayCounter <= TempJoinCount - 1 && PlayCounter != 0) {
-                                    progressDialog.setMessage("Loading...");
-                                    progressDialog.setCancelable(false);
-                                    progressDialog.show();
+
                                     //lastModifiedHoled = holder;
                                     PlayCounter = PlayCounter - 1;
                                     ivPausePlayer.setVisibility(View.VISIBLE);
@@ -603,6 +614,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                     public void onClick(View view) {
                         ivPausePlayer.setVisibility(View.GONE);
                         ivPlayPlayer.setVisibility(VISIBLE);
+                        myViewHolder.ivPlay.setVisibility(VISIBLE);
+                        myViewHolder.ivPause.setVisibility(GONE);
                         if (mp != null) {
                             try {
                                 mp.reset();
@@ -615,6 +628,27 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
                     }
                 });
+
+                holder.ivPause.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        ivPausePlayer.setVisibility(View.GONE);
+                        holder.ivPause.setVisibility(view.GONE);
+                        ivPlayPlayer.setVisibility(VISIBLE);
+                        holder.ivPlay.setVisibility(view.VISIBLE);
+                        if (mp != null) {
+                            try {
+                                mp.reset();
+                                mp.release();
+                                mp = null;
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+
+                    }
+                });
+
 
 
                 holder.ivSettings.setOnClickListener(new View.OnClickListener() {
@@ -636,6 +670,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                                     record.commit();
                                     Intent intent = new Intent(mActivity, JoinActivity.class);
                                     intent.putExtra("previous_screen", "ChatActivity");
+                                    intent.putExtra("Join_case","Join_case");
                                     mActivity.startActivityForResult(intent, ChatActivity.REQUEST_JOIN_REC);
                                 }
                             } catch (JSONException e) {
@@ -653,7 +688,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                     if (!message.getProfilePic().equals("")) {
                         Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
                     }
-                    holder.timeStamp.setText(message.getCreatedAt());
+                    holder.timeStamp.setText(message.getDateTime());
                     if (message.getIsRead().equals("1")) {
                         holder.ivTick.setVisibility(View.GONE);
                         holder.ivDoubleTick.setVisibility(VISIBLE);
@@ -683,8 +718,16 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                     if (!message.getProfilePic().equals("")) {
                         Picasso.with(holder.userProfileImage.getContext()).load(message.getProfilePic()).placeholder(context.getResources().getDrawable(R.drawable.loading)).error(context.getResources().getDrawable(R.drawable.artist)).into(holder.userProfileImage);
                     }
-                    holder.chatMessage.setText(message.getMessage());
-                    holder.timeStamp.setText(message.getCreatedAt());
+                    if (TextUtils.isEmpty(message.getMessage())){
+                        holder.gpCreatedTv.setText(message.getSenderName()+" created a group");
+                        holder.llMessage.setVisibility(GONE);
+                        holder.gpCreatedTv.setVisibility(VISIBLE);
+                    }else {
+                        holder.chatMessage.setText(message.getMessage());
+                        holder.llMessage.setVisibility(VISIBLE);
+                        holder.gpCreatedTv.setVisibility(GONE);
+                    }
+                    holder.timeStamp.setText(message.getDateTime());
                     if (message.getIsRead().equals("1")) {
                         holder.ivTick.setVisibility(View.GONE);
                         holder.ivDoubleTick.setVisibility(VISIBLE);
@@ -763,9 +806,21 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         requestQueue1.add(stringRequest);
     }
 
-    private void PlayAudio(int pisition, final String Type) {
+    private void PlayAudio(final int pisition, final String Type) {
+
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
         try {
-            AppHelper.sop("PlayAudio=PlayCounter=="+PlayCounter);
+            AppHelper.sop("PlayCounter="+PlayCounter+"=MinJoinCount="+MinJoinCount);
+            /*if (isLastInstrument && !(Type.equalsIgnoreCase("pre"))){
+                isLastInstrument=false;
+                PlayCounter = 0;
+                MinJoinCount = 1;
+                ChatActivity.tvNumPlayer.setText(UpdateCalJoinCount(TempJoinCount));
+                myViewHolder.tvNum.setText(UpdateCalJoinCount(TempJoinCount));
+            }*/
             instrumentFile = ParseContents.sharedAudioList.get(PlayCounter).getRecordingUrl();
             if (instrumentFile != "") {
                 if (!instrumentFile.contains("http")){
@@ -816,7 +871,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
                         try {
                             mp.start();
-
+                            ivPausePlayer.setVisibility(View.VISIBLE);
+                            ivPlayPlayer.setVisibility(GONE);
+                            myViewHolder.ivPlay.setVisibility(GONE);
+                            myViewHolder.ivPause.setVisibility(VISIBLE);
                             progressDialog.dismiss();
                             duration1 = mp.getDuration();
                             //primarySeekBarProgressUpdater();
@@ -847,6 +905,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                         try {
                             ivPausePlayer.setVisibility(View.GONE);
                             ivPlayPlayer.setVisibility(VISIBLE);
+                            myViewHolder.ivPlay.setVisibility(VISIBLE);
+                            myViewHolder.ivPause.setVisibility(GONE);
                             if (mHandler1 != null) {
                                 mHandler1.removeCallbacksAndMessages(null);
                             }
@@ -867,6 +927,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                         try {
                             ivPausePlayer.setVisibility(View.GONE);
                             ivPlayPlayer.setVisibility(VISIBLE);
+                            myViewHolder.ivPlay.setVisibility(VISIBLE);
+                            myViewHolder.ivPause.setVisibility(GONE);
                             if (mHandler1 != null) {
                                 mHandler1.removeCallbacksAndMessages(null);
                             }
@@ -877,6 +939,15 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                         seekBar.setProgress(0);
                         length = 0;
                         duration1 = 0;*/
+                            if (PlayCounter < TempJoinCount - 1){
+                                PlayCounter = PlayCounter + 1;
+                                MinJoinCount = MinJoinCount + 1;
+                                ChatActivity.tvNumPlayer.setText(UpdateCalJoinCount(TempJoinCount));
+                                myViewHolder.tvNum.setText(UpdateCalJoinCount(TempJoinCount));
+                                PlayAudio(pisition,"main");
+                            }else {
+                                isLastInstrument=true;
+                            }
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }

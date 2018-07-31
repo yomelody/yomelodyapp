@@ -57,6 +57,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="8dp"
                 android:padding="8dp"
+                android:visibility="gone"
                 android:src="@drawable/edit" />
 
             <ImageView

@@ -24,6 +24,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -53,10 +54,13 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.yomelody.Adapters.MelodyCardListAdapter;
 import com.yomelody.Adapters.RecordingsCardAdapter;
 import com.yomelody.Fragments.BioFragment;
 import com.yomelody.Fragments.ProfileActivityFragment;
 import com.yomelody.Models.Genres;
+import com.yomelody.Models.MelodyCard;
+import com.yomelody.Models.MelodyInstruments;
 import com.yomelody.Models.RecordingsModel;
 import com.yomelody.Models.RecordingsPool;
 import com.yomelody.Models.UserDetails;
@@ -85,6 +89,7 @@ import static com.yomelody.utils.Const.ServiceType.AuthenticationKeyName;
 import static com.yomelody.utils.Const.ServiceType.AuthenticationKeyValue;
 import static com.yomelody.utils.Const.ServiceType.FOLLOWERS;
 import static com.yomelody.utils.Const.ServiceType.GENERE;
+import static com.yomelody.utils.Const.ServiceType.MELODY;
 import static com.yomelody.utils.Const.ServiceType.RECORDINGS;
 import static com.yomelody.utils.Const.ServiceType.TOTAL_COUNT;
 import static com.yomelody.utils.Const.ServiceType.UPLOAD_FILE;
@@ -158,6 +163,14 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView editCoverEt;
     private Bitmap bitmap;
     private String imageType="";
+    private RelativeLayout fanRl, followingRl;
+    private String SAVE_MELODY = "save_melody";
+
+    //My melody case
+    private ArrayList<MelodyCard> melodyList = new ArrayList<>();
+    private ArrayList<MelodyInstruments> instrumentList = new ArrayList<>();
+    SharedPreferences.Editor editor;
+    int currentTab;
 
 
     @Override
@@ -169,6 +182,11 @@ public class ProfileActivity extends AppCompatActivity {
         progressDialog.setTitle("Processing...");
         progressDialog.setMessage("Please wait...");
         progressDialog.setCancelable(false);
+
+        editor = getSharedPreferences("FileType", MODE_PRIVATE).edit();
+        editor.putString("File_Tyoe","user_melody");
+        editor.commit();
+
         sharePrefClearProfile();
         SharedPreferences filterPref = this.getSharedPreferences("FilterPref", MODE_PRIVATE);
         strName = filterPref.getString("stringFilter", null);
@@ -197,6 +215,8 @@ public class ProfileActivity extends AppCompatActivity {
         ivFollow = (ImageView) findViewById(R.id.ivFollow);
         tab1 = (RelativeLayout) findViewById(R.id.tab1);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewProfile);
+        fanRl = findViewById(R.id.fanRl);
+        followingRl = findViewById(R.id.followingRl);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -333,9 +353,16 @@ public class ProfileActivity extends AppCompatActivity {
                             editorSearchString.apply();
                             sharePrefClearProfile();
                             builderInner.setTitle("Your Selected Item is");
-                            recordingList.clear();
-                            recordingsPools.clear();
-                            fetchRecordingsFilter();
+                            if (currentTab==5){
+                                melodyList.clear();
+                                instrumentList.clear();
+                                fetchMelodyFilter();
+                            }
+                            else {
+                                recordingList.clear();
+                                recordingsPools.clear();
+                                fetchRecordingsFilter();
+                            }
                         }
                     }
                 });
@@ -361,13 +388,19 @@ public class ProfileActivity extends AppCompatActivity {
                 btnCancel.setVisibility(View.GONE);
                 search1.isSubmitButtonEnabled();
                 String searchContent = search1.getQuery().toString();
-                SharedPreferences.Editor editorSearchString = getApplicationContext().getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
+                SharedPreferences.Editor editorSearchString = getSharedPreferences("SearchPref", MODE_PRIVATE).edit();
                 editorSearchString.putString("stringSearch", searchContent);
                 editorSearchString.apply();
-                recordingList.clear();
-                recordingsPools.clear();
-                fetchSearchData();
-                SharedPreferences.Editor editorFilterString = getApplicationContext().getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
+                if (currentTab==5){
+                    melodyList.clear();
+                    instrumentList.clear();
+                    fetchMelodySearchData();
+                }else {
+                    recordingList.clear();
+                    recordingsPools.clear();
+                    fetchSearchData();
+                }
+                SharedPreferences.Editor editorFilterString = getSharedPreferences("FilterPref", MODE_PRIVATE).edit();
                 editorFilterString.clear();
                 editorFilterString.apply();
                 search1.setQuery("", false);
@@ -480,6 +513,28 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        fanRl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mActivity, FanFollowingActivity.class);
+                intent.putExtra("type","fan");
+                intent.putExtra("showProfileUserId",showProfileUserId);
+                intent.putExtra("header","Fans : "+tv_fans.getText().toString().trim());
+                startActivity(intent);
+            }
+        });
+
+        followingRl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mActivity, FanFollowingActivity.class);
+                intent.putExtra("type","following");
+                intent.putExtra("showProfileUserId",showProfileUserId);
+                intent.putExtra("header","Following : "+tv_following.getText().toString().trim());
+                startActivity(intent);
+            }
+        });
+
         ivHomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -567,18 +622,22 @@ public class ProfileActivity extends AppCompatActivity {
         editCoverEt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imageType="cover";
+                if (userId.equalsIgnoreCase(showProfileUserId)){
+                    imageType="cover";
 //                setPermissions();
-                showFileChooser();
+                    showFileChooser();
+                }
             }
         });
 
         userProfileImageInProf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imageType="profile";
+                if (userId.equalsIgnoreCase(showProfileUserId)){
+                    imageType="profile";
 //                setPermissions();
-                showFileChooser();
+                    showFileChooser();
+                }
             }
         });
     }
@@ -819,16 +878,43 @@ public class ProfileActivity extends AppCompatActivity {
                             public void onTabChanged(String arg0) {
                                 try {
                                     genreString = arg0;
-                                    int currentTab = host.getCurrentTab();
-                                    if (currentTab == 0) {
-                                        genreString = "";
-                                    } else {
-                                        genreString = genresArrayList.get(currentTab).getId();
+                                    currentTab = host.getCurrentTab();
+                                    if (currentTab == 5) {
+                                        //My melody case
+                                        if (TextUtils.isEmpty(userId)) {
+                                            Toast.makeText(mActivity, "Log in to see your melody.", Toast.LENGTH_SHORT).show();
+                                            Intent intent = new Intent(mActivity, SignInActivity.class);
+                                            startActivity(intent);
+                                        } else {
+
+                                            adapter = new MelodyCardListAdapter(melodyList, mActivity);
+                                            if (rv != null) {
+                                                rv.setAdapter(adapter);
+                                            }
+                                            melodyList.clear();
+                                            instrumentList.clear();
+
+                                            editor.putString("File_Tyoe","user_melody");
+                                            editor.commit();
+                                            fetchMelodyPacks();
+                                        }
                                     }
-//                                fetchRecordings();
-                                    recordingList.clear();
-                                    recordingsPools.clear();
-                                    callApi();
+                                    else {
+                                        if (currentTab == 0) {
+                                            genreString = "";
+                                        } else {
+                                            genreString = genresArrayList.get(currentTab).getId();
+                                        }
+                                        AppHelper.sop("currentTab="+currentTab+"=TabHost=arg0="+arg0);
+                                        recordingList.clear();
+                                        recordingsPools.clear();
+                                        adapter = new RecordingsCardAdapter(ProfileActivity.this, recordingList, recordingsPools);
+                                        if (rv != null) {
+                                            rv.setAdapter(adapter);
+                                        }
+//                                        callApi();
+                                        fetchRecordings();
+                                    }
                                 }catch (Exception ex){
                                     ex.printStackTrace();
                                 }
@@ -847,12 +933,485 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+                if (userId.equalsIgnoreCase(showProfileUserId)){
+                    params.put(SAVE_MELODY, "saverecording");
+                }
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 AppHelper.sop("Param===" + params + "\nURL====" + GENERE);
                 return params;
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
+
+    public void fetchMelodyPacks() {
+        progressDialog.show();
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        AppHelper.sop("response=fetchMelodyPacks==" + response);
+                        if (melodyList.size() <= 0) {
+                            melodyList.clear();
+                            instrumentList.clear();
+                        }
+
+                        JSONObject jsonObject;
+                        try {
+                            jsonObject = new JSONObject(response);
+                            if (jsonObject.getString(KEY_FLAG).equals("unsuccess")) {
+                                Toast.makeText(mActivity, msgUnsuccess, Toast.LENGTH_SHORT).show();
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        new ParseContents(mActivity).parseMelodyPacks(response, melodyList, instrumentList);
+                        adapter.notifyDataSetChanged();
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+                        isLoading = false;
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        isLoading = false;
+                        isLastPage = false;
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                if (userId != null) {
+                    params.put("users_id", userId);
+                    params.put(FILE_TYPE, "user_melody");
+                    params.put(limit, melodyList.size() + "");
+                    params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                }
+                try {
+                    SharedPreferences loginSharedPref = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
+                    String userId = loginSharedPref.getString("userId", null);
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
+                AppHelper.sop("params=fetchMelodyPacks==" + params + "\nURL==" + MELODY);
+                return params;
+            }
+
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(mActivity);
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
+        requestQueue.add(stringRequest);
+    }
+
+    public void fetchMelodySearchData() {
+        SharedPreferences searchPref = getSharedPreferences("SearchPref", MODE_PRIVATE);
+        strSearch = searchPref.getString("stringSearch", null);
+        progressDialog.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        AppHelper.sop("response=search=" + response);
+                        String successMsg = response.toString();
+                        try {
+                            JSONObject jsonObject = new JSONObject(successMsg);
+                            String flag = jsonObject.getString("flag");
+
+                            if (flag.equals("unsuccess")) {
+                                String msg = jsonObject.getString("msg");
+                                Toast.makeText(mActivity, "" + msg, Toast.LENGTH_SHORT).show();
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+//                        Toast.makeText(getActivity(), "" + response, Toast.LENGTH_SHORT).show();
+                        if (melodyList.size() <= 0) {
+                            melodyList.clear();
+                            instrumentList.clear();
+                        }
+
+                        new ParseContents(mActivity).parseMelodyPacks(response, melodyList, instrumentList);
+                        adapter.notifyDataSetChanged();
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+                        isLoading = false;
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        isLoading = false;
+                        isLastPage = false;
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(FILE_TYPE, "user_melody");
+                params.put("users_id", userId);
+                params.put(KEY_SEARCH, strSearch);
+                params.put(limit, melodyList.size() + "");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params=search=" + params + "\nURL==" + MELODY);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(mActivity);
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
+        requestQueue.add(stringRequest);
+    }
+
+    void getDataApi() {
+        //This for my melody case
+        if (strName == null && strSearch == null) {
+            fetchMelodyPacks();
+        } else if (strSearch != null) {
+            fetchMelodySearchData();
+        } else if (strArtist != null) {
+            fetchMelodyFilterArtist();
+        } else if (strInstruments != null && strName.equals("# of Instruments")) {
+            fetchMelodyFilterInstruments();
+        } else if (strBPM != null && strName.equals("BPM")) {
+            fetchMelodyFilterBPM();
+        } else {
+            fetchMelodyFilter();
+        }
+    }
+
+    public void fetchMelodyFilter() {
+
+        progressDialog.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        AppHelper.sop("response==" + response);
+
+                        if (melodyList.size() <= 0) {
+                            melodyList.clear();
+                            instrumentList.clear();
+                        }
+                        JSONObject jsonObject;
+                        try {
+                            jsonObject = new JSONObject(response);
+                            if (jsonObject.getString(KEY_FLAG).equals("unsuccess")) {
+                                Toast.makeText(mActivity, msgUnsuccess, Toast.LENGTH_SHORT).show();
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        new ParseContents(mActivity).parseMelodyPacks(response, melodyList, instrumentList);
+                        adapter.notifyDataSetChanged();
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+                        isLoading = false;
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        isLoading = false;
+                        isLastPage = false;
+
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(GENRE, genreString);
+                params.put(FILE_TYPE, "user_melody");
+                params.put("users_id", userId);
+                params.put(FILTER_TYPE, strName);
+                params.put(FILTER, "extrafilter");
+                params.put(limit, melodyList.size() + "");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params==" + params + "\nURL==" + MELODY);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(mActivity);
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
+        requestQueue.add(stringRequest);
+    }
+
+    public void fetchMelodyFilterArtist() {
+
+        progressDialog.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String rs = response.toString();
+                        AppHelper.sop("response=artist=" + response);
+                        try {
+                            JSONObject jsonObject = new JSONObject(rs);
+                            String flag = jsonObject.getString("flag");
+                            if (flag.equals("unsuccess")) {
+                                Toast.makeText(mActivity, msgUnsuccess, Toast.LENGTH_SHORT).show();
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        if (melodyList.size() <= 0) {
+                            melodyList.clear();
+                            instrumentList.clear();
+                        }
+
+                        new ParseContents(mActivity).parseMelodyPacks(response, melodyList, instrumentList);
+                        adapter.notifyDataSetChanged();
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+                        isLoading = false;
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        isLoading = false;
+                        isLastPage = false;
+
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+//                params.put(ID, userId);
+                params.put("users_id", userId);
+                params.put(GENRE, genreString);
+                params.put(FILE_TYPE, "user_melody");
+                params.put(FILTER_TYPE, strName);
+//                params.put(USER_NAME, strArtist);
+                params.put(USER_NAME, artistName);
+                params.put(FILTER, "extrafilter");
+                params.put(limit, melodyList.size() + "");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params=artist=" + params + "\nURL==" + MELODY);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(mActivity);
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
+        requestQueue.add(stringRequest);
+    }
+
+    public void fetchMelodyFilterInstruments() {
+        progressDialog.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        AppHelper.sop("response=instru=" + response);
+                        String rs = response.toString();
+                        try {
+                            JSONObject jsonObject = new JSONObject(rs);
+                            String flag = jsonObject.getString("flag");
+
+                            if (flag.equals("unsuccess")) {
+                                Toast.makeText(mActivity, msgUnsuccess, Toast.LENGTH_SHORT).show();
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        if (melodyList.size() <= 0) {
+                            melodyList.clear();
+                            instrumentList.clear();
+                        }
+                        new ParseContents(mActivity).parseMelodyPacks(response, melodyList, instrumentList);
+                        adapter.notifyDataSetChanged();
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+                        isLoading = false;
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        isLoading = false;
+                        isLastPage = false;
+
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+//                params.put(ID, userId);
+                params.put(GENRE, genreString);
+                params.put(FILE_TYPE, "user_melody");
+                params.put(FILTER_TYPE, "Instruments");
+                params.put(COUNT, Instruments);
+                params.put(FILTER, "extrafilter");
+                params.put(limit, melodyList.size() + "");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params=instru=" + params + "\nURL==" + MELODY);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(mActivity);
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
+        requestQueue.add(stringRequest);
+    }
+
+    public void fetchMelodyFilterBPM() {
+
+        progressDialog.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, MELODY,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String rs = response.toString();
+                        AppHelper.sop("response=BPM=" + response);
+                        try {
+                            JSONObject jsonObject = new JSONObject(rs);
+                            String flag = jsonObject.getString("flag");
+                            if (flag.equals("unsuccess")) {
+                                Toast.makeText(mActivity, msgUnsuccess, Toast.LENGTH_SHORT).show();
+                                isLastPage = true;
+                            } else {
+                                isLastPage = false;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        if (melodyList.size() <= 0) {
+                            melodyList.clear();
+                            instrumentList.clear();
+                        }
+
+                        new ParseContents(mActivity).parseMelodyPacks(response, melodyList, instrumentList);
+                        adapter.notifyDataSetChanged();
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+                        isLoading = false;
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        isLoading = false;
+                        isLastPage = false;
+
+                        if (progressDialog != null) {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                        }
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+//                params.put(ID, userId);
+                params.put(GENRE, genreString);
+                params.put(FILE_TYPE, "user_melody");
+                params.put(FILTER_TYPE, strName);
+                params.put(COUNT, BPM);
+                params.put(FILTER, "extrafilter");
+                params.put(limit, melodyList.size() + "");
+                params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params=BPM=" + params + "\nURL==" + MELODY);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(mActivity);
+        int socketTimeout = 30000; // 30 seconds. You can change it
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
         requestQueue.add(stringRequest);
     }
 
@@ -1028,7 +1587,12 @@ public class ProfileActivity extends AppCompatActivity {
                                         firstVisibleItemPosition >= 0 && totalItemCount >= count) {
                                     if (AppHelper.checkNetworkConnection(mActivity)) {
                                         isLoading = true;
-                                        callApi();
+                                        if (currentTab==5){
+                                            getDataApi();
+                                        }
+                                        else {
+                                            callApi();
+                                        }
                                     }
                                 }
                             }
@@ -1041,7 +1605,12 @@ public class ProfileActivity extends AppCompatActivity {
         };
     }
 
-    private void callApi() {
+    public void clearArrayList(){
+        recordingList.clear();
+        recordingsPools.clear();
+    }
+
+    public void callApi() {
         try {
             if (strName == null && strSearch == null) {
                 fetchRecordings();
@@ -1060,7 +1629,6 @@ public class ProfileActivity extends AppCompatActivity {
             ex.printStackTrace();
         }
     }
-
 
     public void fetchRecordingsFilter() {
         if (!progressDialog.isShowing()) {
@@ -1151,7 +1719,7 @@ public class ProfileActivity extends AppCompatActivity {
         if (!progressDialog.isShowing()) {
             progressDialog.show();
         }
-        SharedPreferences searchPref = this.getSharedPreferences("SearchPref", MODE_PRIVATE);
+        SharedPreferences searchPref = getSharedPreferences("SearchPref", MODE_PRIVATE);
         strSearch = searchPref.getString("stringSearch", null);
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, RECORDINGS,
@@ -1518,9 +2086,16 @@ public class ProfileActivity extends AppCompatActivity {
                 SharedPreferences.Editor editorFilterArtist = getApplicationContext().getSharedPreferences("FilterPrefArtist", MODE_PRIVATE).edit();
                 editorFilterArtist.putString("stringFilterArtist", artistName);
                 editorFilterArtist.apply();
-                recordingList.clear();
-                recordingsPools.clear();
-                fetchRecordingsFilterArtist();
+                if (currentTab==5){
+                    melodyList.clear();
+                    instrumentList.clear();
+                    fetchMelodyFilterArtist();
+                }
+                else {
+                    recordingList.clear();
+                    recordingsPools.clear();
+                    fetchRecordingsFilterArtist();
+                }
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtFilterName.getWindowToken(), 0);
 
@@ -1568,11 +2143,16 @@ public class ProfileActivity extends AppCompatActivity {
                 SharedPreferences.Editor editorFilterInstruments = getApplicationContext().getSharedPreferences("FilterPrefInstruments", MODE_PRIVATE).edit();
                 editorFilterInstruments.putString("stringFilterInstruments", Instruments);
                 editorFilterInstruments.apply();
-                recordingList.clear();
-                recordingsPools.clear();
-                fetchRecordingsFilterInstruments();
-
-
+                if (currentTab==5){
+                    melodyList.clear();
+                    instrumentList.clear();
+                    fetchMelodyFilterInstruments();
+                }
+                else {
+                    recordingList.clear();
+                    recordingsPools.clear();
+                    fetchRecordingsFilterInstruments();
+                }
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtFilterInstruments.getWindowToken(), 0);
 
@@ -1620,11 +2200,16 @@ public class ProfileActivity extends AppCompatActivity {
                 SharedPreferences.Editor editorFilterBPM = getApplicationContext().getSharedPreferences("FilterPrefBPM", MODE_PRIVATE).edit();
                 editorFilterBPM.putString("stringFilterBPM", BPM);
                 editorFilterBPM.apply();
-                recordingList.clear();
-                recordingsPools.clear();
-                fetchRecordingsFilterBPM();
-
-
+                if (currentTab==5){
+                    melodyList.clear();
+                    instrumentList.clear();
+                    fetchMelodyFilterBPM();
+                }
+                else {
+                    recordingList.clear();
+                    recordingsPools.clear();
+                    fetchRecordingsFilterBPM();
+                }
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(subEtFilterBPM.getWindowToken(), 0);
 

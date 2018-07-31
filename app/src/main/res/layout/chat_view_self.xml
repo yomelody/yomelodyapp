@@ -110,4 +110,18 @@
                 android:textSize="10sp" />
         </RelativeLayout>
     </LinearLayout>
+    <TextView
+        android:id="@+id/gpCreatedTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:padding="10dp"
+        android:singleLine="true"
+        android:text=" created a new group"
+        android:layout_centerHorizontal="true"
+        android:textColor="#425661"
+        android:background="#e6ffff"
+        android:visibility="gone"
+        android:textSize="10dp" />
+
 </RelativeLayout>

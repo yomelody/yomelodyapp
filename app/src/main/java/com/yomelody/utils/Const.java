@@ -67,6 +67,11 @@ public class Const {
 
         public static final String viewPost = BASE_URL + "view_post.php";
         public static final String PUBLIC = BASE_URL + "public.php";
+        public static final String USER_LIST = BASE_URL + "userlist.php";
+        public static final String FOLLOWER_LIST = BASE_URL + "followerlist.php";
+        public static final String Group_Members = BASE_URL + "group_members.php";
+        public static final String ADD_MEMBER = BASE_URL + "add_member.php";
+        public static final String REMOVE_MEMBER = BASE_URL + "remove_member.php";
 
 //        public static final String USERS_BIO = BASE_URL + "uploads/melody/instruments/";
     }

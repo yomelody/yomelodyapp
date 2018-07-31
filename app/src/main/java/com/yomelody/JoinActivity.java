@@ -444,28 +444,32 @@ public class JoinActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-
-        if (JoinListAdapter.mp != null) {
-            JoinListAdapter.mp.reset();
-        }
-        if (mVisualizer != null) {
-            mVisualizer.release();
-        }
-
-        if (JoinInstrumentListAdp.mp_start != null) {
-            for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
-                JoinInstrumentListAdp.mp_start.get(i).stop();
-
+        try{
+            if (JoinListAdapter.mp != null) {
+                JoinListAdapter.mp.reset();
             }
-        }
-        if (mediaPlayersAll != null) {
-            for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
-                mediaPlayersAll.get(i).stop();
+            if (mVisualizer != null) {
+                mVisualizer.release();
             }
-            mediaPlayersAll.clear();
-            lstViewHolder.clear();
+
+            if (JoinInstrumentListAdp.mp_start != null) {
+                for (int i = 0; i <= JoinInstrumentListAdp.mp_start.size() - 1; i++) {
+                    JoinInstrumentListAdp.mp_start.get(i).stop();
+
+                }
+            }
+            if (mediaPlayersAll != null) {
+                for (int i = 0; i <= mediaPlayersAll.size() - 1; i++) {
+                    mediaPlayersAll.get(i).stop();
+                }
+                mediaPlayersAll.clear();
+                lstViewHolder.clear();
+            }
+            finish();
         }
-        finish();
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

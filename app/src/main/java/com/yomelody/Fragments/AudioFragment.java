@@ -148,7 +148,7 @@ public class AudioFragment extends Fragment {
         } else if (twitterPref.getString("userId", null) != null) {
             userId = twitterPref.getString("userId", null);
         }
-        adapter = new RecordingsCardAdapter(mActivity, recordingList, recordingsPools);
+        adapter = new RecordingsCardAdapter(mActivity, recordingList, recordingsPools, AudioFragment.this);
         if (rv != null) {
             rv.setAdapter(adapter);
         }
@@ -158,7 +158,7 @@ public class AudioFragment extends Fragment {
 
     }
 
-    private void callApi() {
+    public void callApi() {
 
         if (strName == null && strSearch == null) {
             fetchRecordings();
@@ -175,6 +175,10 @@ public class AudioFragment extends Fragment {
         }
     }
 
+    public void clearArrayList(){
+        recordingList.clear();
+        recordingsPools.clear();
+    }
 
     public void fetchGenreNames() {
 

@@ -22,7 +22,7 @@
     <!-- android:name="com.sixmod.com.client.permission.C2D_MESSAGE" -->
     <!-- android:protectionLevel="signature" /> -->
     <uses-permission android:name="com.sixmod.com.client.permission.C2D_MESSAGE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -188,7 +188,7 @@
             android:name=".JoinCommentActivity"
             android:label="@string/title_activity_join_comment"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
         <activity
             android:name="com.auth0.android.lock.LockActivity"
             android:label="@string/app_name"
@@ -245,7 +245,22 @@
             android:configChanges="orientation"
             android:label="Phone Book"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".FanFollowingActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+
+        <activity
+            android:name=".GroupChatDetailActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
+
+        <activity
+            android:name=".AddMemberActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
 
     </application>
 

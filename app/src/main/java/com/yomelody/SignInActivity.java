@@ -156,7 +156,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     RelativeLayout btnfblogin, btnRlTwitterlogin, rlSoundCloud;
     private CallbackManager mcallbckmanager;
     LoginButton fbloginbtn;
-    String name, username, firstNamefb, lastNamefb, email, gender, birthday;
+    String name, username, firstNamefb, lastNamefb, email, gender="", birthday;
     String flag, user_id, First_name, Last_name, emailfinal, profilePic, coverPic, lastLogin, userName, fbId, fbEmail;
     String fans, followers, records;
     HandelLogin obj = new HandelLogin();
@@ -283,7 +283,9 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                                     }
                                     //tvFirstName.setText(namefb);
                                     //tvUserName.setText("@" + namefb);
-                                    gender = object.getString("gender");
+                                    if (object.has("gender")){
+                                        gender = object.getString("gender");
+                                    }
                                     //birthday = object.getString("birthday");
                                     //     String temp = object.getString("email");
                                     fbProfilePic = "https://graph.facebook.com/" + fbId + "/picture";
@@ -1225,7 +1227,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                             if (flag.equals("success")) {
                                 JSONObject rspns = jsonObject.getJSONObject("response");
 
-                                SharedPreferences.Editor editor = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
+                                 SharedPreferences.Editor editor = getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE).edit();
                                 editor.putString("userId", rspns.getString("id"));
                                 editor.putString("userName", rspns.getString("username"));
                                 editor.putString("firstName", rspns.getString("f_name"));

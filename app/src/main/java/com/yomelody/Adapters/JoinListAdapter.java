@@ -119,6 +119,8 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
     public static final int REQUEST_JOIN_TO_MESSANGER = 716;
     public static final int REQUEST_JOIN = 723;
     private String hideProfImg = "";
+    private JoinedArtists join;
+    private boolean isLastInstrument = false;
 
     public JoinListAdapter(ArrayList<JoinedArtists> Joined_artist, Context context) {
         this.Joined_artist = Joined_artist;
@@ -246,7 +248,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
             if (lstViewHolder.size() < getItemCount()) {
                 lstViewHolder.add(viewHolder);
             }
-            final JoinedArtists join = Joined_artist.get(0);
+            join = Joined_artist.get(0);
             holder.Join_usr_name.setText("@" + joinArt.getJoined_usr_name());
             if (hideProfImg.equalsIgnoreCase("hide")) {
                 holder.joined_profile.setVisibility(GONE);
@@ -317,6 +319,15 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                 public void onClick(View v) {
 
                     try {
+                        lstViewHolder.get(realPosition).Join_usr_name.setTextColor(Color.parseColor("#275AAB"));
+                        lstViewHolder.get(realPosition).join_image.setBackgroundColor(Color.parseColor("#383838"));
+                        lstViewHolder.get(realPosition).redCross.setVisibility(GONE);
+                        lstViewHolder.get(0).Join_usr_name.setTextColor(Color.parseColor("#FFFFFF"));
+                        lstViewHolder.get(0).join_image.setBackgroundColor(Color.parseColor("#656565"));
+                        if (userId.equals(Joined_artist.get(0).getUser_id())) {
+                            lstViewHolder.get(0).redCross.setVisibility(VISIBLE);
+                        }
+
                         if (position != 0) {
                             if (lstViewHolder.get(0).redCross.getVisibility() == VISIBLE) {
                                 lstViewHolder.get(0).redCross.setVisibility(GONE);
@@ -389,7 +400,9 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
 //                        e.printStackTrace();
 //                    }
 
-                            try {
+
+                            PlayAudio(realPosition, "main");
+                            /*try {
                                 JoinActivity.ivJoinPlay.setVisibility(v.GONE);
                                 JoinActivity.ivJoinPause.setVisibility(v.VISIBLE);
                                 progressDialog = new ProgressDialog(v.getContext());
@@ -469,11 +482,15 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                         JoinActivity.ivJoinPlay.setVisibility(VISIBLE);
                                         JoinActivity.ivJoinPause.setVisibility(GONE);
                                         progressDialog.dismiss();
+
+                                        if (realPosition < getItemCount() - 1) {
+                                            PlayAudio(realPosition, "main");
+                                        }
                                     }
                                 });
                             } catch (Exception ex) {
                                 ex.printStackTrace();
-                            }
+                            }*/
 
                         } else {
                             String showProfileUserId = JoinActivity.addedBy;
@@ -550,7 +567,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                     params.put(STATUS, "1");
                                     params.put(RECORDING_ID, joinArt.getRecording_id());
                                     params.put(AuthenticationKeyName, AuthenticationKeyValue);
-                                    AppHelper.sop("params=="+params+"\n URL="+JOIN_DELETE);
+                                    AppHelper.sop("params==" + params + "\n URL=" + JOIN_DELETE);
                                     return params;
                                 }
                             };
@@ -601,12 +618,15 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         editor.putString("instrumentsPos", String.valueOf(posForStudio));
                         editor.commit();
                         Intent intent = new Intent(v.getContext(), StudioActivity.class);
-                        if (mActivity.getIntent()!=null && mActivity.getIntent().hasExtra("previous_screen")){
-                            intent.putExtra("previous_screen","ChatActivity");
-                        }else {
-                            intent.putExtra("previous_screen","JoinActivity");
+                        if (mActivity.getIntent() != null && mActivity.getIntent().hasExtra("previous_screen")) {
+                            intent.putExtra("previous_screen", "ChatActivity");
+                            if (mActivity.getIntent().hasExtra("Join_case")) {
+                                intent.putExtra("Join_case", "Join_case");
+                            }
+                        } else {
+                            intent.putExtra("previous_screen", "JoinActivity");
                         }
-                        mActivity.startActivityForResult(intent,REQUEST_JOIN);
+                        mActivity.startActivityForResult(intent, REQUEST_JOIN);
                         StudioActivity.list.clear();
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -647,12 +667,15 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                         editor.putString("instrumentsPos", String.valueOf(posForStudio));
                         editor.commit();
                         Intent intent = new Intent(view.getContext(), StudioActivity.class);
-                        if (mActivity.getIntent()!=null && mActivity.getIntent().hasExtra("previous_screen")){
-                            intent.putExtra("previous_screen","ChatActivity");
-                        }else {
-                            intent.putExtra("previous_screen","JoinActivity");
+                        if (mActivity.getIntent() != null && mActivity.getIntent().hasExtra("previous_screen")) {
+                            intent.putExtra("previous_screen", "ChatActivity");
+                            if (mActivity.getIntent().hasExtra("Join_case")) {
+                                intent.putExtra("Join_case", "Join_case");
+                            }
+                        } else {
+                            intent.putExtra("previous_screen", "JoinActivity");
                         }
-                        mActivity.startActivityForResult(intent,REQUEST_JOIN);
+                        mActivity.startActivityForResult(intent, REQUEST_JOIN);
                         StudioActivity.list.clear();
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -664,12 +687,14 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                 @Override
                 public void onClick(View v) {
                     try {
-                        JoinActivity.ivJoinPlay.setVisibility(v.GONE);
+                        /*JoinActivity.ivJoinPlay.setVisibility(v.GONE);
                         JoinActivity.ivJoinPause.setVisibility(v.VISIBLE);
+
                         progressDialog = new ProgressDialog(v.getContext());
                         progressDialog.setMessage("Loading...");
                         progressDialog.setCancelable(false);
-                        progressDialog.show();
+                        progressDialog.show();*/
+
                         String play = JoinActivity.play_count.getText().toString().trim();
                         int playValue = Integer.parseInt(play) + 1;
                         String recording_id = join.getRecording_id().trim();
@@ -679,23 +704,34 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                             //CommentJoinFragment.tvPlayCount.setText(String.valueOf(playValue));
                             fetchViewCount(userId, recording_id);
                         }
-                        mp = new MediaPlayer();
-                        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                        lstViewHolder.get(realPosition).Join_usr_name.setTextColor(Color.parseColor("#275AAB"));
+                        lstViewHolder.get(realPosition).join_image.setBackgroundColor(Color.parseColor("#383838"));
+                        lstViewHolder.get(realPosition).redCross.setVisibility(GONE);
+                        lstViewHolder.get(0).Join_usr_name.setTextColor(Color.parseColor("#FFFFFF"));
+                        lstViewHolder.get(0).join_image.setBackgroundColor(Color.parseColor("#656565"));
+                        if (userId.equals(Joined_artist.get(0).getUser_id())) {
+                            lstViewHolder.get(0).redCross.setVisibility(VISIBLE);
+                        }
                         try {
                             if (posForStudio != 0) {
-                                JoinedArtists join = Joined_artist.get(posForStudio);
-                                Uri url = Uri.parse(join.getRecording_url());
-                                mp.setDataSource(context, url);
-                                mp.prepareAsync();
+                                realPosition = posForStudio;
                             } else {
-                                JoinedArtists join = Joined_artist.get(0);
-                                Uri url = Uri.parse(join.getRecording_url());
-                                mp.setDataSource(context, url);
-                                mp.prepareAsync();
+                                realPosition = 0;
                             }
                         } catch (Throwable e) {
                             e.printStackTrace();
                         }
+
+                        JoinActivity.txtCount.setText(UpdateCalJoinCount(getItemCount()));
+                        PlayAudio(realPosition, "main");
+
+
+                        /*Uri url = Uri.parse(join.getRecording_url());
+                        mp = new MediaPlayer();
+                        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+                        mp.setDataSource(context, url);
+                        mp.prepareAsync();
 
                         mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                             @Override
@@ -731,7 +767,9 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                 JoinActivity.ivJoinPause.setVisibility(GONE);
                                 progressDialog.dismiss();
                             }
-                        });
+                        });*/
+
+
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -782,7 +820,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                             }
 
                             JoinActivity.txtCount.setText(realPosition + 1 + " of " + getItemCount());
-                            JoinedArtists join = Joined_artist.get(realPosition);
+                            join = Joined_artist.get(realPosition);
 
                             if (JoinActivity.ivJoinPlay.getVisibility() == VISIBLE) {
                                 JoinActivity.ivJoinPlay.setVisibility(v.GONE);
@@ -793,12 +831,12 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                     .load(Joined_artist.get(realPosition).getRecCover())
                                     .into(JoinActivity.ivNewRecordCover);
 
-                            progressDialog = new ProgressDialog(v.getContext());
+                            /*progressDialog = new ProgressDialog(v.getContext());
                             progressDialog.setMessage("Loading...");
                             progressDialog.setCancelable(false);
-                            progressDialog.show();
+                            progressDialog.show();*/
 
-                            if (mp != null) {
+                            /*if (mp != null) {
                                 try {
                                     mp.reset();
                                     mp.release();
@@ -806,7 +844,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                 } catch (Throwable e) {
                                     e.printStackTrace();
                                 }
-                            }
+                            }*/
 
                             String play = JoinActivity.play_count.getText().toString().trim();
                             int playValue = Integer.parseInt(play) + 1;
@@ -817,7 +855,9 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                 fetchViewCount(userId, recording_id);
                             }
 
-                            mp = new MediaPlayer();
+                            PlayAudio(realPosition + 1, "next");
+
+                            /*mp = new MediaPlayer();
                             mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
                             try {
                                 Uri url = Uri.parse(join.getRecording_url());
@@ -863,7 +903,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                         ex.printStackTrace();
                                     }
                                 }
-                            });
+                            });*/
                         }
                         Log.d("Next play", "" + realPosition);
                     } catch (Exception ex) {
@@ -913,7 +953,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                 }
 
                                 JoinActivity.txtCount.setText(count + 1 + " of " + getItemCount());
-                                JoinedArtists join = Joined_artist.get(realPosition);
+                                join = Joined_artist.get(realPosition);
 
                                 if (JoinActivity.ivJoinPlay.getVisibility() == VISIBLE) {
                                     JoinActivity.ivJoinPlay.setVisibility(v.GONE);
@@ -924,7 +964,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                         .load(Joined_artist.get(realPosition).getRecCover())
                                         .into(JoinActivity.ivNewRecordCover);
 
-                                progressDialog = new ProgressDialog(v.getContext());
+                                /*progressDialog = new ProgressDialog(v.getContext());
                                 progressDialog.setMessage("Loading...");
                                 progressDialog.setCancelable(false);
                                 progressDialog.show();
@@ -941,7 +981,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                         e.printStackTrace();
                                     }
 
-                                }
+                                }*/
 
                                 String play = JoinActivity.play_count.getText().toString().trim();
                                 int playValue = Integer.parseInt(play) + 1;
@@ -951,8 +991,9 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                     JoinActivity.play_count.setText(String.valueOf(playValue));
                                     fetchViewCount(userId, recording_id);
                                 }
+                                PlayAudio(realPosition, "pre");
 
-                                mp = new MediaPlayer();
+                                /*mp = new MediaPlayer();
                                 mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
                                 try {
                                     Uri url = Uri.parse(join.getRecording_url());
@@ -962,7 +1003,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                     e.printStackTrace();
                                 }
 
-
+asd
                                 mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                                     @Override
                                     public void onPrepared(MediaPlayer mp) {
@@ -1001,7 +1042,7 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
                                         }
 
                                     }
-                                });
+                                });*/
 
                             } catch (IndexOutOfBoundsException e) {
                                 e.printStackTrace();
@@ -1069,6 +1110,123 @@ public class JoinListAdapter extends RecyclerView.Adapter<JoinListAdapter.MyView
             ex.printStackTrace();
         }
 
+    }
+
+    private void PlayAudio(final int pisition, final String Type) {
+
+        try {
+            progressDialog = new ProgressDialog(mActivity);
+            progressDialog.setMessage("Loading...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+            JoinActivity.ivJoinPlay.setVisibility(GONE);
+            JoinActivity.ivJoinPause.setVisibility(VISIBLE);
+
+            /*if (isLastInstrument && !(Type.equalsIgnoreCase("pre"))) {
+                isLastInstrument = false;
+                realPosition=0;
+                JoinActivity.txtCount.setText(UpdateCalJoinCount(getItemCount()));
+            }*/
+            join = Joined_artist.get(pisition);
+            AppHelper.sop("realPosition=" + realPosition);
+
+            if (mp != null) {
+//                mp.reset();
+                mp.stop();
+                mp.release();
+                mp = null;
+            }
+
+            mp = new MediaPlayer();
+            mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+            Uri url = Uri.parse(join.getRecording_url());
+            mp.setDataSource(context, url);
+            mp.prepareAsync();
+
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                    initAudio(mp);
+                    progressDialog.dismiss();
+                    JoinActivity.chrono.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
+                    JoinActivity.chrono.start();
+
+                    if (Type == "main") {
+
+                    } else if (Type == "next") {
+                        JoinActivity.txtCount.setText(UpdateCalJoinCount(getItemCount()));
+                    } else if (Type == "pre") {
+                        JoinActivity.txtCount.setText(UpdateCalJoinCount(getItemCount()));
+                    }
+                }
+            });
+
+            mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                @Override
+                public boolean onError(MediaPlayer mp, int what, int extra) {
+                    progressDialog.dismiss();
+                    return false;
+                }
+            });
+
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    JoinActivity.chrono.stop();
+                    if (JoinActivity.mVisualizer != null) {
+                        JoinActivity.mVisualizer.release();
+                    }
+                    JoinActivity.ivJoinPlay.setVisibility(VISIBLE);
+                    JoinActivity.ivJoinPause.setVisibility(GONE);
+                    progressDialog.dismiss();
+
+                    if (pisition < getItemCount() - 1) {
+                        realPosition++;
+                        JoinActivity.txtCount.setText(UpdateCalJoinCount(getItemCount()));
+                        lstViewHolder.get(realPosition - 1).Join_usr_name.setTextColor(Color.parseColor("#275AAB"));
+                        lstViewHolder.get(realPosition - 1).join_image.setBackgroundColor(Color.parseColor("#383838"));
+                        lstViewHolder.get(realPosition - 1).redCross.setVisibility(GONE);
+                        lstViewHolder.get(realPosition).Join_usr_name.setTextColor(Color.parseColor("#FFFFFF"));
+                        lstViewHolder.get(realPosition).join_image.setBackgroundColor(Color.parseColor("#656565"));
+                        if (userId.equals(Joined_artist.get(0).getUser_id())) {
+                            lstViewHolder.get(realPosition).redCross.setVisibility(VISIBLE);
+                        }
+                        Picasso.with(mActivity)
+                                .load(Joined_artist.get(realPosition).getRecCover())
+                                .into(JoinActivity.ivNewRecordCover);
+
+                        PlayAudio(realPosition, "main");
+                    } else {
+                        isLastInstrument = true;
+                    }
+
+                }
+            });
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private String UpdateCalJoinCount(int joincount) {
+        String jCount = "";
+        try {
+            if (joincount == 0) {
+                //currentSongIndex=1;
+                jCount = "(" + String.valueOf(realPosition + 1) + " of " + String.valueOf((joincount)) + ")";
+            } else {
+
+                jCount = String.valueOf(realPosition + 1) + " of " + String.valueOf(joincount);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return jCount;
     }
 
     @Override

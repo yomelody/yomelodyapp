@@ -10,6 +10,7 @@ import android.icu.text.SimpleDateFormat;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -24,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -124,7 +127,12 @@ public class StationCommentActivity extends AppCompatActivity {
     private int PreviousAdapterIndex = 0, CurrentAdapterIndex = 0, FirstIndex = 0;
     int includedCount = 1, TempJoinCount = 0;
     private ActivityModel activityModel;
-
+    private boolean isLastInstrument=false;
+//    private Chronometer chrono;
+    private long mStartTime = 0;
+    private long time;
+    String fileType="";
+    String fileId="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,6 +172,7 @@ public class StationCommentActivity extends AppCompatActivity {
         etComment = (EditText) findViewById(R.id.etComment);
         ivBackButton = (ImageView) findViewById(R.id.ivBackButton);
         ivHomeButton = (ImageView) findViewById(R.id.ivHomeButton);
+//        chrono = (Chronometer) findViewById(R.id.chrono);
 
         SharedPreferences loginSharedPref = getApplicationContext().getSharedPreferences("prefInstaMelodyLogin", MODE_PRIVATE);
         SharedPreferences twitterPref = getApplicationContext().getSharedPreferences("TwitterPref", MODE_PRIVATE);
@@ -183,10 +192,21 @@ public class StationCommentActivity extends AppCompatActivity {
             if (activityModel!=null){
                 getPost();
             }
-        }else {
+        }
+        else {
             setData();
             adapterWork();
         }
+        /*else if (getIntent()!=null && getIntent().hasExtra("notification_bundle")){
+            AppHelper.sop("notification_bun=="+getIntent().getBundleExtra("notification_bundle"));
+            Bundle bundle=getIntent().getBundleExtra("notification_bundle");
+            fileType=""+bundle.getString("file_type");
+            fileId=""+bundle.getString("file_id");
+            if (!TextUtils.isEmpty(fileType) && !TextUtils.isEmpty(fileId) ){
+                getPost();
+            }
+        }*/
+
 
         ivJoin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -239,6 +259,7 @@ public class StationCommentActivity extends AppCompatActivity {
                             record.commit();
                             Intent intent = new Intent(mActivity, JoinActivity.class);
                             startActivity(intent);
+                            killMediaPlayer();
                         } catch (Throwable e) {
                             e.printStackTrace();
                         }
@@ -379,6 +400,7 @@ public class StationCommentActivity extends AppCompatActivity {
                         Intent intent = new Intent(mActivity, ProfileActivity.class);
                         intent.putExtra("showProfileUserId", recordingsModel.getAddedBy());
                         startActivity(intent);
+                        killMediaPlayer();
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -420,11 +442,13 @@ public class StationCommentActivity extends AppCompatActivity {
 
                 try {
                     if (PlayCounter >= 0) {
-                        progressDialog = new ProgressDialog(v.getContext());
-                        progressDialog.setMessage("Loading...");
-                        progressDialog.show();
                         //lastModifiedHoled = holder;
-
+                        if (isLastInstrument){
+                            PlayCounter = 0;
+                            MinJoinCount = 1;
+                            isLastInstrument=false;
+                        }
+                        txtJoinCount.setText(UpdateCalJoinCount(TempJoinCount));
                         PlayAudio(0, "main");
                         //lastModifiedHoled = holder;
 
@@ -444,10 +468,11 @@ public class StationCommentActivity extends AppCompatActivity {
                 ivStationPause.setVisibility(v.GONE);
                 if (mp != null) {
                     try {
+                        length = mp.getCurrentPosition();
                         mp.stop();
                         mp.reset();
                         mp = null;
-                        length = mp.getCurrentPosition();
+                        pauseTime();
                     }catch (Exception ex){
                         ex.printStackTrace();
                     }
@@ -462,14 +487,12 @@ public class StationCommentActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     if (PlayCounter <= TempJoinCount - 1 && PlayCounter != 0) {
-                        progressDialog = new ProgressDialog(v.getContext());
-                        progressDialog.setMessage("Loading...");
-                        progressDialog.show();
                         //lastModifiedHoled = holder;
                         PlayCounter = PlayCounter - 1;
+                        stopTime();
                         PlayAudio(0, "pre");
-                        //lastModifiedHoled = holder;
 
+                        //lastModifiedHoled = holder;
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -483,19 +506,15 @@ public class StationCommentActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     if (PlayCounter < TempJoinCount - 1) {
-                        progressDialog = new ProgressDialog(v.getContext());
-                        progressDialog.setMessage("Loading...");
-                        progressDialog.show();
                         //lastModifiedHoled = holder;
                         PlayCounter = PlayCounter + 1;
+                        stopTime();
                         PlayAudio(0, "next");
                         //lastModifiedHoled = holder;
                     }
-
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-
             }
         });
 
@@ -625,6 +644,7 @@ public class StationCommentActivity extends AppCompatActivity {
                 tvIncludedCount.setText("Included: " + recordingsModel.getJoinCount());
                 tvRecordingGenres.setText("Genre:" + " " + recordingsModel.getGenreName());
                 tvContributeLength.setText(DateUtils.formatElapsedTime(Long.parseLong(recordingsPool.getDuration())));
+//                chrono.setText(DateUtils.formatElapsedTime(Long.parseLong(recordingsPool.getDuration())));
                 tvContributeDate.setText(convertDate(recordingsPool.getDateAdded()));
 
                 if (recordingsModel.getJoinCount() == null) {
@@ -1125,17 +1145,21 @@ public class StationCommentActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-
-                if (activityModel.getRecordingID() != null) {
-                    params.put(FILE_ID, activityModel.getRecordingID() + "");
-                    params.put(FILE_TYPE, "user_recording");
-                } else if (activityModel.getMelodyID() != null) {
-                    params.put(FILE_ID, activityModel.getMelodyID() + "");
-                    params.put(FILE_TYPE, "user_melody");
-                } else if (activityModel.getAdminmelodyid() != null) {
-                    params.put(FILE_ID, activityModel.getAdminmelodyid() + "");
-                    params.put(FILE_TYPE, "admin_melody");
-                }
+                if (activityModel!=null){
+                    if (activityModel.getRecordingID() != null) {
+                        params.put(FILE_ID, activityModel.getRecordingID() + "");
+                        params.put(FILE_TYPE, "user_recording");
+                    } else if (activityModel.getMelodyID() != null) {
+                        params.put(FILE_ID, activityModel.getMelodyID() + "");
+                        params.put(FILE_TYPE, "user_melody");
+                    } else if (activityModel.getAdminmelodyid() != null) {
+                        params.put(FILE_ID, activityModel.getAdminmelodyid() + "");
+                        params.put(FILE_TYPE, "admin_melody");
+                    }
+                }/*else if (!TextUtils.isEmpty(fileType) && !TextUtils.isEmpty(fileId) ){
+                    params.put(FILE_ID, fileId+"");
+                    params.put(FILE_TYPE, fileType+"");
+                }*/
                 params.put(USER_ID, userId);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
                 AppHelper.sop("params==" + params + "\nURL==" + viewPost);
@@ -1236,8 +1260,12 @@ public class StationCommentActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
+        killMediaPlayer();
+    }
+
+    private void killMediaPlayer(){
         try {
             if (mp != null) {
                 if (mp.isPlaying()) {
@@ -1249,18 +1277,32 @@ public class StationCommentActivity extends AppCompatActivity {
                 if (mHandler1 != null) {
                     mHandler1.removeCallbacksAndMessages(null);
                 }
+                stopTime();
+                ivStationPlay.setVisibility(VISIBLE);
+                ivStationPause.setVisibility(GONE);
+                seekBarRecordings.setProgress(0);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    private void PlayAudio(final int pisition, final String Type) {
+        progressDialog = new ProgressDialog(mActivity);
+        progressDialog.setMessage("Loading...");
+        progressDialog.show();
+        /*chrono.setBase(SystemClock.elapsedRealtime());
+        chrono.stop();*/
 
-    private void PlayAudio(int pisition, final String Type) {
         try {
-
+            /*if (isLastInstrument && !(Type.equalsIgnoreCase("pre"))){
+                isLastInstrument=false;
+                PlayCounter = 0;
+                MinJoinCount = 1;
+                txtJoinCount.setText(UpdateCalJoinCount(TempJoinCount));
+            }*/
+            AppHelper.sop("PlayCounter="+PlayCounter+"=MinJoinCount="+MinJoinCount);
             instrumentFile = recordingsModel.getJoinUrl().get(PlayCounter).toString();// recordingList.get(pisition).getJoinUrl().get(PlayCounter).toString();
-
             if (instrumentFile != "") {
                 try {
                     if (mp != null) {
@@ -1311,7 +1353,10 @@ public class StationCommentActivity extends AppCompatActivity {
                             progressDialog.dismiss();
                             duration1 = mp.getDuration();
                             primarySeekBarProgressUpdater();
-
+                            /*chrono.setFormat("00:"+"%s");
+                            chrono.setBase(SystemClock.elapsedRealtime());
+                            chrono.start();*/
+                            startTime();
 
                             if (Type == "main") {
 
@@ -1345,6 +1390,10 @@ public class StationCommentActivity extends AppCompatActivity {
                             if (mHandler1 != null) {
                                 mHandler1.removeCallbacksAndMessages(null);
                             }
+                            /*chrono.setBase(SystemClock.elapsedRealtime());
+                            chrono.stop();
+                            chrono.setText(DateUtils.formatElapsedTime(Long.parseLong(recordingsPool.getDuration())));*/
+                            stopTime();
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -1363,6 +1412,18 @@ public class StationCommentActivity extends AppCompatActivity {
                             seekBarRecordings.setProgress(0);
                             length = 0;
                             duration1 = 0;
+                            /*chrono.setBase(SystemClock.elapsedRealtime());
+                            chrono.stop();
+                            chrono.setText(DateUtils.formatElapsedTime(Long.parseLong(recordingsPool.getDuration())));*/
+                            stopTime();
+                            if (PlayCounter < recordingsModel.getJoinUrl().size()-1){
+                                PlayCounter = PlayCounter + 1;
+                                MinJoinCount = MinJoinCount + 1;
+                                txtJoinCount.setText(UpdateCalJoinCount(TempJoinCount));
+                                PlayAudio(pisition,"main");
+                            }else {
+                                isLastInstrument=true;
+                            }
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -1381,6 +1442,52 @@ public class StationCommentActivity extends AppCompatActivity {
             ivStationPause.setVisibility(GONE);
             ex.printStackTrace();
         }
+    }
+
+    private Handler mHandler = new Handler();
+    private Runnable mTickExecutor = new Runnable() {
+        @Override
+        public void run() {
+            tick();
+            mHandler.postDelayed(mTickExecutor,100);
+        }
+    };
+
+    private void startTime(){
+        mStartTime = SystemClock.elapsedRealtime()-time;
+        mHandler.postDelayed(mTickExecutor, 00);
+    }
+
+    private void stopTime(){
+        mStartTime = 0;
+        time=0;
+        mHandler.removeCallbacks(mTickExecutor);
+        tvContributeLength.setText(DateUtils.formatElapsedTime(Long.parseLong(recordingsPool.
+                getDuration())));
+
+    }
+
+    private void pauseTime(){
+        mStartTime = time;
+        mHandler.removeCallbacks(mTickExecutor);
+    }
+
+    private void tick() {
+        time = (mStartTime < 0) ? 0 : (SystemClock.elapsedRealtime() - mStartTime);
+        int minutes = (int) (time / 60000);
+        int seconds = (int) (time / 1000) % 60;
+        int milliseconds = (int) (time / 100) % 10;
+        tvContributeLength.setText((minutes < 10 ? "0"+minutes : minutes)+":"+
+                (seconds < 10 ? "0"+seconds : seconds));
+        /*if (mRecorder != null) {
+            amplitudes[i] = mRecorder.getMaxAmplitude();
+            //Log.d("Voice Recorder","amplitude: "+(amplitudes[i] * 100 / 32767));
+            if (i >= amplitudes.length -1) {
+                i = 0;
+            } else {
+                ++i;
+            }
+        }*/
     }
 
     private String UpdateCalJoinCount(int joincount) {

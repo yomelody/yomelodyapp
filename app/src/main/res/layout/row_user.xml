@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/mainRv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/userIv"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/artist" />
+
+        <LinearLayout
+            android:id="@+id/userLl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="15dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/userIv"
+            android:layout_toLeftOf="@+id/followLl"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/nameTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:singleLine="true"
+                android:layout_weight="1"
+                android:text="Alter Ego"
+                android:textColor="@color/cardview_dark_background"
+                android:textSize="14sp"
+                android:textStyle="normal|bold" />
+
+            <TextView
+                android:id="@+id/userNameTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:singleLine="true"
+                android:layout_below="@+id/tvRecordingName"
+                android:layout_weight="1"
+                android:text="'@sillypoet'"
+                android:textColor="@color/cardview_dark_background"
+                android:textSize="13sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/followLl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true">
+
+            <ImageView
+                android:id="@+id/msgIv"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginRight="7dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/message_icon_with_text" />
+
+            <CheckBox
+                android:id="@+id/followChk"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:background="@drawable/follow_selector"
+                android:button="@null" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/cardview_dark_background"/>
+
+</LinearLayout>

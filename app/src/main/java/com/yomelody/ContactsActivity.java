@@ -101,7 +101,7 @@ public class ContactsActivity extends AppCompatActivity {
             userId = twitterPref.getString("userId", null);
         }
 
-        getContacts();
+//        getContacts();
 
         btnCancel = (Button) findViewById(R.id.btnCancel);
         btnOK = (Button) findViewById(R.id.btnOK);
@@ -370,7 +370,7 @@ public class ContactsActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
+                        AppHelper.sop("response=getContacts="+response);
 //                        String str = response;
 //                        Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
                         try {
@@ -414,6 +414,7 @@ public class ContactsActivity extends AppCompatActivity {
                 params.put("myid", userId);
                 params.put("key", "passed");
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params=getContacts="+params+"\nURL="+CONTACT_LIST);
                 return params;
             }
         };
@@ -498,7 +499,7 @@ public class ContactsActivity extends AppCompatActivity {
                     public void onResponse(String response) {
 
 //                        Toast.makeText(context, " Shubz" + response, Toast.LENGTH_LONG).show();
-
+                        AppHelper.sop("response=getChatId="+response);
                         JSONObject jsonObject;
                         try {
                             jsonObject = new JSONObject(response);
@@ -562,6 +563,7 @@ public class ContactsActivity extends AppCompatActivity {
                 params.put("senderID", user_id);
                 params.put("receiverID", reciever_id);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params=getChatId="+params+"\nURL="+USER_CHAT_ID);
                 return params;
             }
         };
@@ -575,7 +577,7 @@ public class ContactsActivity extends AppCompatActivity {
                     public void onResponse(String response) {
 
 //                        Toast.makeText(context, " Shubz" + response, Toast.LENGTH_LONG).show();
-
+                        AppHelper.sop("response=createGroup="+response);
                         JSONObject jsonObject;
                         try {
                             jsonObject = new JSONObject(response);
@@ -632,7 +634,9 @@ public class ContactsActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("usersId", recId);
+                params.put("senderID", userId);
                 params.put(AuthenticationKeyName, AuthenticationKeyValue);
+                AppHelper.sop("params=createGroup="+params+"\nURL=="+CREATE_GROUP);
                 return params;
             }
         };
